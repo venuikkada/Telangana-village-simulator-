@@ -69,7 +69,7 @@ World.buildVillage = function () {
   buildWaterTower(-20, -68);
   buildArch(152, -5, Math.PI / 2, 'రామాపురం గ్రామానికి స్వాగతం', 'Welcome to Ramapuram');
   buildArch(-162, 8, Math.PI / 2, 'రామాపురం గ్రామానికి స్వాగతం', 'Welcome to Ramapuram');
-  POI.shelters.push({ x: POI.tea.counter.x, z: POI.tea.counter.z, kind: 'tea' }, { x: POI.busStop.stop.x, z: POI.busStop.stop.z - 2, kind: 'bus' }, { x: POI.panchayat.door.x, z: POI.panchayat.door.z, kind: 'office' }, { x: POI.seedShop.counter.x, z: POI.seedShop.counter.z, kind: 'shop' }, { x: POI.temple.inner.x, z: POI.temple.inner.z, kind: 'temple' });
+  POI.shelters.push({ x: POI.tea.counter.x, z: POI.tea.counter.z, kind: 'tea' }, { x: POI.busStop.stop.x, z: POI.busStop.stop.z - 2, kind: 'bus' }, { x: POI.panchayat.door[0], z: POI.panchayat.door[1], kind: 'office' }, { x: POI.seedShop.counter[0], z: POI.seedShop.counter[1], kind: 'shop' }, { x: POI.temple.inner.x, z: POI.temple.inner.z, kind: 'temple' });
   // santha (weekly market ground)
   POI.santha = { x: -34, z: 86, stalls: [] };
   {

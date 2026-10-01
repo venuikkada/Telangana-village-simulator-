@@ -711,6 +711,54 @@ const Services = {
     UI.fade(() => { if (Player.vehicle) Player.exitVehicle(true); Player.x = dest.x; Player.z = dest.z + 1.5; Player.y = World.groundHeight(Player.x, Player.z); Sim.advance(30); Cam.focus.set(Player.x, Player.y + 1.4, Player.z); });
     Bus.emit('bus', { to });
   },
+  // quick trips from the map: an auto-rickshaw on foot, or your own vehicle driven there for you
+  travelFare(d) { return Math.round(10 + d / 50); },
+  travelMins(d) { const v = Player.vehicle; const sp = v ? Math.max(3, v.def.maxSpeed * 0.75) : 8; return 6 + d / sp / 3; },
+  fastTravel(x, z, name) {
+    const P = Player.pos(); const d = Math.hypot(x - P.x, z - P.z);
+    if (d < 25) { UI.toast(L('You are already here.', 'మీరు ఇక్కడే ఉన్నారు.'), 'info'); return; }
+    const v = Player.vehicle;
+    if (v && v.def.fuelCap > 0 && v.fuel <= 0.05) { UI.toast(L('No diesel left. Refuel first, or get off and take an auto.', 'డీజిల్ లేదు. ముందు నింపించండి, లేదా దిగి ఆటోలో వెళ్ళండి.'), 'warn'); return; }
+    if (!v && !Money.spend(this.travelFare(d), 'travel')) return;
+    const mins = this.travelMins(d);
+    UI.fade(() => {
+      if (v) {
+        const sp = Vehicles.freeSpot(x, z, v.type === 'harvester' ? 3.4 : 2.6);
+        v.yaw = Math.atan2(sp.x - P.x, sp.z - P.z); v.tYaw = v.yaw; v.x = sp.x; v.z = sp.z; v.speed = 0; v.lowered = false;
+        if (v.def.fuelCap > 0) v.fuel = Math.max(0, v.fuel - v.def.fuelUse * mins / 60 * 0.6);
+        v.place(); Player.x = v.x; Player.z = v.z; Player.y = v.y;
+      } else {
+        const p = { x: x + (frand() - 0.5) * 2, z: z + 2 };
+        World.collideCircle(p, 0.6); World.collideCircle(p, 0.6);
+        Player.x = clamp(p.x, -PLAY_HALF, PLAY_HALF); Player.z = clamp(p.z, -PLAY_HALF, PLAY_HALF); Player.y = World.groundHeight(Player.x, Player.z); Player.speed = 0;
+      }
+      Sim.advance(mins);
+      const q = Player.pos(); Cam.focus.set(q.x, q.y + 1.4, q.z); Cam.yaw = (v ? v.yaw : Player.yaw) + Math.PI;
+      if (G.S.waypoint && Math.hypot(G.S.waypoint.x - x, G.S.waypoint.z - z) < 30) G.S.waypoint = null;
+      UI.toast(L(`You reached ${name}.`, `${name} చేరుకున్నారు.`), 'good');
+      UI.dirty = true;
+    }, v ? L('Driving…', 'నడుపుతున్నారు…') : L('Riding an auto…', 'ఆటోలో వెళ్తున్నారు…'));
+    Bus.emit('travel', { x, z });
+  },
+  // skip ahead an hour at a time until the crop needs something (water, food, weeding, spraying or harvest)
+  waitForCrop(f) {
+    if (!f || !f.crop) return;
+    const needs = () => { const cd = CROPS[f.crop]; return !f.crop || f.growth >= 0.97 || f.outbreak || f.pests > 10 || f.weeds > 16 || (f.nut < 40 && f.growth < 0.9) || (cd && cd.wLo && f.water < cd.wLo && !f.pump && !f.gate); };
+    UI.fade(() => {
+      let hrs = 0;
+      while (hrs < 24 && !needs()) {
+        const cd0 = CROPS[f.crop];   // a good farmer keeps the water running while resting
+        if (cd0 && cd0.wLo && f.water < cd0.wLo + 6) { if (f.borewell && !f.pump) f.pump = true; else if (f.canal && !f.gate && Weather.canalFlowing()) f.gate = true; }
+        Sim.advance(60); hrs++;
+      }
+      const P = G.S.player; P.energy = Math.min(100, P.energy + hrs * 2.5);
+      Player.need = null;
+      const cd = f.crop ? CROPS[f.crop] : null;
+      const what = !f.crop ? '' : f.growth >= 0.97 ? L('It is ready: hold Work to harvest!', 'పంట సిద్ధం: కోయడానికి \'పని\' పట్టుకోండి!') : f.outbreak || f.pests > 10 ? L('Pests! Hold Work to spray.', 'పురుగులు! పిచికారీకి \'పని\' పట్టుకోండి.') : f.weeds > 16 ? L('Weeds came up: hold Work to weed.', 'కలుపు వచ్చింది: \'పని\' పట్టుకోండి.') : f.nut < 40 ? L('The crop is hungry: hold Work to feed it.', 'పంటకు ఆకలి: ఎరువు కోసం \'పని\' పట్టుకోండి.') : cd && f.water < cd.wLo ? L('The field is dry: hold Work to water it.', 'పొలం ఎండిపోయింది: నీటికి \'పని\' పట్టుకోండి.') : '';
+      UI.toast(L(`${hrs} hours passed. `, `${hrs} గంటలు గడిచాయి. `) + (cd ? `${LN(cd)} ${Math.round(f.growth * 100)}%. ` : '') + what, 'good');
+      UI.dirty = true;
+    }, L('Resting while the crop grows…', 'పంట పెరిగే వరకు విశ్రాంతి…'));
+  },
   eat(k) { const F = FOODS[k]; if (!Money.spend(F.price, 'food')) return; const P = G.S.player; P.energy = Math.min(100, P.energy + F.energy); P.health = Math.min(100, P.health + F.health); UI.toast(L(`${F.en}: energy +${F.energy}`, `${F.te}: శక్తి +${F.energy}`), 'good'); Audio2.sfx('slurp'); Bus.emit('eat', { k }); },
   doctor() { const cost = G.S.village.health ? 100 : 200; if (!Money.spend(cost, 'doctor')) return; G.S.player.health = Math.min(100, G.S.player.health + 60); UI.toast(L('Dr. Sujatha checked you and gave medicine. Health +60.', 'డా. సుజాత పరీక్షించి మందులు ఇచ్చారు. ఆరోగ్యం +60.'), 'good'); Rel.add('sujatha', 2); },
   pray() { if (!Money.spend(51, 'temple')) return; const P = G.S.player; P.energy = Math.min(100, P.energy + 8); UI.toast(L('You offered ₹51 at the temple. You feel calm.', 'గుడిలో ₹51 కానుక సమర్పించారు. మనసు ప్రశాంతంగా ఉంది.'), 'good'); Audio2.sfx('bell'); Bus.emit('pray', {}); },

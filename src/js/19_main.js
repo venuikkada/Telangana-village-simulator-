@@ -131,7 +131,7 @@ const Sim = {
 const Game = {
   pickPreset() {
     const saved = Settings.v.preset; if (saved && PRESETS[saved]) return saved;
-    if (isMobile) { const mem = navigator.deviceMemory || 4, cores = navigator.hardwareConcurrency || 4; return mem >= 6 && cores >= 8 ? 'MEDIUM' : 'LOW'; }
+    if (isMobile) return 'LOW';   // phones: smooth first; players can raise quality in the menu
     return 'HIGH';
   },
   setPreset(p) {
@@ -310,7 +310,6 @@ const Game = {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
       UI.banner(L('Ramapuram · Vanakalam', 'రామాపురం · వానాకాలం'), L(`Welcome, ${S.player.name}`, `స్వాగతం, ${S.player.name}`), L('₹50,000, one acre of red soil and a pair of bullocks. Let\'s grow.', '₹50,000, ఒక ఎకరం ఎర్ర నేల, ఒక ఎడ్ల జత. ఎదుగుదాం.'), 5200);
-      setTimeout(() => UI.toast(isMobile ? L('Tip: follow the gold beacon. Tap the mission card for details, and Menu → Controls for help.', 'చిట్కా: బంగారు రంగు గుర్తును అనుసరించండి. వివరాల కోసం లక్ష్యాల కార్డును, సహాయం కోసం మెనూ → నియంత్రణలు నొక్కండి.') : L('Tip: follow the gold beacon and the mission list on the right. Press F1 for controls.', 'చిట్కా: బంగారు రంగు గుర్తును, కుడివైపు లక్ష్యాల జాబితాను అనుసరించండి. నియంత్రణల కోసం F1.'), 'info'), 5600);
       SaveSys.save(false);
     }
     document.getElementById('gl').focus();
@@ -347,13 +346,34 @@ const PLights = {
 // ---------------------------------------------------------------------------
 // Main loop
 // ---------------------------------------------------------------------------
-const Loop = { last: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0 };
+const Loop = { last: 0, next: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0, capFps: 0, win: [], work: [], winT: 0, retryAt: 0, backoff: 20000 };
+function fpsMode() { const m = Settings.v.fpsMode; return m === '30' || m === '60' || m === 'auto' ? m : Settings.v.fps60 ? '60' : 'auto'; }
+// phones: run at a steady 60 or 30 FPS. "Auto" starts at 60 and settles on 30 if the phone cannot keep up.
+function skipFrame(now) {
+  if (!isMobile) { Loop.capFps = 0; return false; }
+  const mode = fpsMode();
+  if (mode === '30') Loop.capFps = 30; else if (mode === '60' || !Loop.capFps) Loop.capFps = 60;
+  const iv = 1000 / Loop.capFps;
+  if (Loop.next && now < Loop.next - 2) return true;
+  Loop.next = Loop.next && now - Loop.next < iv ? Loop.next + iv : now + iv;
+  return false;
+}
+function adaptFps(now, interval, work) {
+  if (!isMobile || !G.started || fpsMode() !== 'auto') return;
+  Loop.win.push(interval); Loop.work.push(work);
+  if (now - Loop.winT < 2000) return;
+  Loop.winT = now;
+  const q = (a) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length * 0.6)] || 0; };
+  const iv = q(Loop.win), wk = q(Loop.work); Loop.win.length = 0; Loop.work.length = 0;
+  const P = G.preset;
+  if (Loop.capFps === 60 && iv > 22 && Render.pr <= P.minPr + 0.001) { Loop.capFps = 30; Loop.retryAt = now + Loop.backoff; Loop.backoff = Math.min(180000, Loop.backoff * 2); Render.frameTimes = []; Render.goodWindows = 0; }
+  else if (Loop.capFps === 30 && now > Loop.retryAt && wk < 9 && iv < 36 && Render.pr >= P.maxPr - 0.001) { Loop.capFps = 60; Render.frameTimes = []; Render.goodWindows = 0; }
+}
 function frame(now) {
   requestAnimationFrame(frame);
   if (!G.ready) return;
-  // phones: cap at 30 FPS unless the player asked for 60 (saves battery and heat)
-  const cap = isMobile && !Settings.v.fps60 ? 1000 / 30 : 0;
-  if (cap && Loop.last && now - Loop.last < cap - 3) return;
+  if (skipFrame(now)) return;
+  const t0 = performance.now();
   let dt = (now - (Loop.last || now)) / 1000; Loop.last = now;
   if (!(dt > 0)) dt = 0.001; if (dt > 0.1) dt = 0.1;
   G.dt = dt; G.t += dt; G.frame++; U.uTime.value = G.t;
@@ -397,9 +417,10 @@ function frame(now) {
   }
   Render.render();
   Input.endFrame();
+  adaptFps(now, dt * 1000, performance.now() - t0);
   // fps readout
   Loop.fpsN++; Loop.fpsT += dt;
-  if (Loop.fpsT > 0.5) { const el = document.getElementById('fps'); if (el && !el.hidden) el.textContent = `${Math.round(Loop.fpsN / Loop.fpsT)} FPS · ${G.preset.id} · ${Math.round(Render.pr * 100)}%`; Loop.fpsN = 0; Loop.fpsT = 0; }
+  if (Loop.fpsT > 0.5) { const el = document.getElementById('fps'); if (el && !el.hidden) el.textContent = `${Math.round(Loop.fpsN / Loop.fpsT)} FPS · ${G.preset.id} · ${Math.round(Render.pr * 100)}%${Loop.capFps ? ' · cap ' + Loop.capFps : ''}`; Loop.fpsN = 0; Loop.fpsT = 0; }
 }
 
 function showFatal(e) {
@@ -428,6 +449,8 @@ async function boot(hot) {
     G.ready = true;
     Sky.update(0.016); Weather.update(0.016);
     Game.titleCam();
+    UI.loading(1, L('Preparing graphics…', 'గ్రాఫిక్స్ సిద్ధం చేస్తున్నాం…')); await nextFrame();
+    Render.warm();
     requestAnimationFrame(frame);
     window.addEventListener('visibilitychange', () => { if (document.hidden) SaveSys.quickLocal(); else Game.keepAwake(); });
     try { matchMedia('(orientation: portrait)').addEventListener('change', () => { Game.rotateHint(); Render.resize(); }); } catch (e) { /* old browsers */ }

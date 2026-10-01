@@ -2,7 +2,7 @@
 // Renderer, quality presets, shared shader patches, post-processing
 // ============================================================================
 const PRESETS = {
-  LOW:       { id: 'LOW', pr: 0.75, minPr: 0.5, maxPr: 1.0, shadows: false, shadowSize: 512, shadowRange: 40, post: false, bloom: 0, msaa: 0, drawDist: 360, grass: 0, trees: 0.5, cropDist: 110, cropDetail: 0, env: false, npc: 0.55, particles: 0.45, cloudOct: 3, rainDrops: 2500, fps: 30 },
+  LOW:       { id: 'LOW', lite: true, pr: 0.8, minPr: 0.55, maxPr: 1.1, shadows: false, shadowSize: 512, shadowRange: 40, post: false, bloom: 0, msaa: 0, drawDist: 330, grass: 0, trees: 0.4, cropDist: 100, cropDetail: 0, env: false, npc: 0.45, particles: 0.35, cloudOct: 2, rainDrops: 1500, fps: 30 },
   MEDIUM:    { id: 'MEDIUM', pr: 1.0, minPr: 0.6, maxPr: 1.25, shadows: true, shadowSize: 1024, shadowRange: 50, post: false, bloom: 0, msaa: 0, drawDist: 520, grass: 0.45, trees: 0.8, cropDist: 170, cropDetail: 1, env: true, npc: 0.8, particles: 0.75, cloudOct: 4, rainDrops: 4500, fps: 40 },
   HIGH:      { id: 'HIGH', pr: 1.25, minPr: 0.7, maxPr: 1.5, shadows: true, shadowSize: 2048, shadowRange: 70, post: true, bloom: 0.55, msaa: 4, drawDist: 720, grass: 0.8, trees: 1.0, cropDist: 250, cropDetail: 1, env: true, npc: 1.0, particles: 1.0, cloudOct: 5, rainDrops: 7000, fps: 50 },
   ULTRA:     { id: 'ULTRA', pr: 1.5, minPr: 0.8, maxPr: 2.0, shadows: true, shadowSize: 4096, shadowRange: 90, post: true, bloom: 0.65, msaa: 4, drawDist: 1000, grass: 1.0, trees: 1.0, cropDist: 380, cropDetail: 2, env: true, npc: 1.0, particles: 1.0, cloudOct: 5, rainDrops: 9000, fps: 55 },
@@ -34,10 +34,14 @@ float tvsNoise(vec2 p){ vec2 i=floor(p); vec2 f=fract(p); vec2 u=f*f*(3.0-2.0*f)
   return mix(mix(a,b,u.x), mix(c,d,u.x), u.y); }
 float tvsFbm3(vec2 p){ float s=0.0, a=0.5; for(int i=0;i<3;i++){ s+=a*tvsNoise(p); p=p*2.03+vec2(17.1,9.3); a*=0.5;} return s/0.875; }
 float tvsCloudShadow(vec2 wp){
+#ifdef TVS_LITE
+  return 1.0;
+#else
   float n = tvsFbm3(wp*0.0024 + uCloudOff);
   float thr = 1.0 - uCloudCover;
   float c = smoothstep(thr - 0.12, thr + 0.18, n);
   return 1.0 - c * uCloudShadowStr;
+#endif
 }
 `;
 const GLSL_WP = /* glsl */`
@@ -50,12 +54,19 @@ vTvsW = tvsWP4.xyz;
 `;
 
 // generic patcher: kind = 'std' | 'terrain' | 'glow' | 'foliage' | 'grass'
+// every patched material, so a quality change can rebuild their shaders
+const PATCHED = [];
+// plain shader materials that read TVS_LITE through their defines
+const LITE_MATS = [];
+function liteDefine(mat) { mat.defines = mat.defines || {}; if (G.lite) mat.defines.TVS_LITE = ''; LITE_MATS.push(mat); return mat; }
 function patchMaterial(mat, kind, extra = {}) {
+  PATCHED.push(mat);
   mat.onBeforeCompile = (sh) => {
     Object.assign(sh.uniforms, U);
     if (extra.uniforms) Object.assign(sh.uniforms, extra.uniforms);
     let vs = sh.vertexShader, fs = sh.fragmentShader;
-    vs = vs.replace('#include <common>', '#include <common>\nvarying vec3 vTvsW;\n' + GLSL_NOISE + (extra.vsHead || ''));
+    const lite = G.lite ? '#define TVS_LITE\n' : '';
+    vs = vs.replace('#include <common>', '#include <common>\n' + lite + 'varying vec3 vTvsW;\n' + GLSL_NOISE + (extra.vsHead || ''));
     if (kind === 'foliage' || kind === 'grass') {
       vs = vs.replace('#include <begin_vertex>', `#include <begin_vertex>
         {
@@ -73,7 +84,7 @@ function patchMaterial(mat, kind, extra = {}) {
     }
     if (extra.vsBegin) vs = vs.replace('#include <begin_vertex>', '#include <begin_vertex>\n' + extra.vsBegin);
     vs = vs.replace('#include <worldpos_vertex>', '#include <worldpos_vertex>\n' + GLSL_WP);
-    fs = fs.replace('#include <common>', '#include <common>\nvarying vec3 vTvsW;\n' + GLSL_NOISE + (extra.fsHead || ''));
+    fs = fs.replace('#include <common>', '#include <common>\n' + lite + 'varying vec3 vTvsW;\n' + GLSL_NOISE + (extra.fsHead || ''));
     let colorCode = '#include <color_fragment>\nfloat tvsCS = tvsCloudShadow(vTvsW.xz);\n';
     if (kind === 'terrain') colorCode = TERRAIN_COLOR_GLSL;
     else if (kind === 'glow') colorCode = '#include <color_fragment>\nfloat tvsCS = 1.0;\nvec3 tvsGlowCol = diffuseColor.rgb;\ndiffuseColor.rgb = vec3(0.035,0.04,0.05) + tvsGlowCol*0.06;\n';
@@ -87,7 +98,7 @@ function patchMaterial(mat, kind, extra = {}) {
     sh.vertexShader = vs; sh.fragmentShader = fs;
     if (extra.onShader) extra.onShader(sh);
   };
-  mat.customProgramCacheKey = () => 'tvs-' + kind + '-' + (extra.key || '');
+  mat.customProgramCacheKey = () => 'tvs-' + kind + '-' + (extra.key || '') + (G.lite ? '-lite' : '');
   return mat;
 }
 
@@ -106,7 +117,12 @@ uniform vec3 cRed1, cRed2, cBlk1, cBlk2, cLush1, cLush2, cDry1, cDry2, cRock1, c
 const TERRAIN_COLOR_GLSL = /* glsl */`
 vec4 tw = vColor;
 vec2 tp = vTvsW.xz;
+#ifdef TVS_LITE
+float n1 = tvsNoise(tp*0.045), n2 = tvsNoise(tp*0.27+3.1);
+float n3 = 0.35 + n2*0.3 + n1*0.1, n4 = n1;
+#else
 float n1 = tvsNoise(tp*0.045), n2 = tvsNoise(tp*0.27+3.1), n3 = tvsNoise(tp*1.9+7.7), n4 = tvsNoise(tp*0.011+1.3);
+#endif
 vec3 soil = mix(mix(cBlk1, cBlk2, n2), mix(cRed1, cRed2, n2), tw.g);
 vec3 lush = mix(cLush1, cLush2, n1);
 vec3 dry = mix(cDry1, cDry2, n1);
@@ -118,7 +134,11 @@ tcol = mix(tcol, mix(cDirt1, cDirt2, n2), clamp(tw.a*1.2 - (n3-0.5)*0.3, 0.0, 1.
 tcol = mix(tcol, mix(cRock1, cRock2, n3), clamp(tw.b, 0.0, 1.0));
 tcol *= 0.86 + 0.28*n3;
 float wet = uWet * (1.0 - tw.b*0.5);
+#ifdef TVS_LITE
+float pud = 0.0;
+#else
 float pud = smoothstep(0.58, 0.64, tvsNoise(tp*0.085 + 11.0)) * smoothstep(0.35, 0.9, uWet) * (0.25 + tw.a*0.75) * (1.0 - tw.r*0.6);
+#endif
 tcol *= mix(1.0, 0.56, wet);
 tcol = mix(tcol, tcol*0.35 + vec3(0.02,0.025,0.03), pud);
 diffuseColor.rgb = tcol;
@@ -143,7 +163,7 @@ function buildMaterials() {
   });
   MAT.terrain = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 }), 'terrain', { uniforms: TERRAIN_U, fsHead: TERRAIN_HEAD });
   MAT.road = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }), 'std', { key: 'road',
-    color: 'float rn = tvsNoise(vTvsW.xz*1.3)*0.18 + tvsNoise(vTvsW.xz*0.2)*0.12; diffuseColor.rgb *= 0.88 + rn;' });
+    color: '#ifdef TVS_LITE\nfloat rn = tvsNoise(vTvsW.xz*0.2)*0.24;\n#else\nfloat rn = tvsNoise(vTvsW.xz*1.3)*0.18 + tvsNoise(vTvsW.xz*0.2)*0.12;\n#endif\ndiffuseColor.rgb *= 0.88 + rn;' });
   MAT.char = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, metalness: 0 });
   patchMaterial(MAT.char, 'std', { key: 'char', noWet: true });
   MAT.animal = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, metalness: 0 });
@@ -263,8 +283,17 @@ const Render = {
     this.pr = clamp(P.pr, P.minPr, P.maxPr);
     const r = G.renderer;
     const shadowChanged = !prev || prev.shadows !== P.shadows;
+    const liteChanged = !!G.lite !== !!P.lite;
+    G.lite = !!P.lite;
     r.shadowMap.enabled = P.shadows;
-    if (shadowChanged && G.scene) G.scene.traverse((o) => { if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => (m.needsUpdate = true)); } });
+    if ((shadowChanged || liteChanged) && G.scene) G.scene.traverse((o) => { if (o.material) { (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => (m.needsUpdate = true)); } });
+    if (liteChanged) {
+      for (const m of PATCHED) m.needsUpdate = true;
+      for (const m of LITE_MATS) { if (G.lite) m.defines.TVS_LITE = ''; else delete m.defines.TVS_LITE; m.needsUpdate = true; }
+    }
+    if (prev && (shadowChanged || liteChanged)) this.warm();
+    // nothing past the fog is visible, so clip it early (also sharpens depth precision on phones)
+    if (G.camera) { G.camera.far = Math.max(520, P.drawDist * 1.75); G.camera.updateProjectionMatrix(); }
     Bus.emit('preset', P);
     this.resize();
   },
@@ -288,11 +317,16 @@ const Render = {
     const arr = this.frameTimes; this.frameTimes = [];
     arr.sort((a, b) => a - b);
     const med = arr[Math.floor(arr.length * 0.6)];
-    const target = 1000 / P.fps;
+    const target = 1000 / (Loop.capFps || P.fps);
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
     else if (med < target * 1.02) { this.goodWindows++; if (this.goodWindows >= 3 && this.pr < P.maxPr - 0.001) { this.pr = Math.min(P.maxPr, this.pr + 0.05); this.goodWindows = 0; this.resize(); } }
     else this.goodWindows = 0;
+  },
+  // compile every shader up front so the first look at a new object does not stall a frame
+  warm() {
+    if (!G.renderer || !G.scene || !G.camera) return;
+    try { G.renderer.compile(G.scene, G.camera); } catch (e) { /* older drivers: compile lazily */ }
   },
   render() {
     const P = G.preset;

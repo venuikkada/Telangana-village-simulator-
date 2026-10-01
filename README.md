@@ -34,7 +34,9 @@ It runs in the browser on PC and on phones, in English and Telugu. There is noth
 - **Missions:** an eight-step tutorial, then missions that adapt to your farm, plus pest attacks, droughts and the festivals Bonalu, Bathukamma, Sankranti and Ugadi.
 - **Village life:** up to about 70 villagers with daily routines, including the sarpanch, the seed shop owner, the mechanic, the doctor, the moneylender and the shepherd. There are cattle, buffaloes, goats, sheep, dogs, chickens and birds, plus buses, lorries, autos and motorbikes on the roads.
 - **Sound:** wind, rain, crickets, temple bells, engines and animals, and music that follows the time of day. All of it is generated live in the browser.
-- **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Resolution adjusts automatically to keep the game smooth.
+- **Easy to play:** one Auto button does the next job on your field: plough, sow, water, feed, weed, spray or harvest. Missing seeds or fertilizer? One tap gets them delivered to the field. When the crop is growing, "Rest" jumps ahead to the next thing it needs.
+- **Never lost:** a gold arrow and an on-screen marker always point to your next goal. The minimap faces north and shows shops, roads and your fields. On the full map, tap any place and take an auto straight there.
+- **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Phones start on Low and run at a steady 60 or 30 FPS ("Auto" picks what the phone can hold). Far trees and fields switch to lighter models, and resolution adjusts automatically to keep the game smooth.
 - **Saving:** the game saves every morning, after you sleep and every few minutes. On claude.ai your farm can also save to your account, so you can continue on another device.
 
 ## Controls
@@ -42,18 +44,18 @@ It runs in the browser on PC and on phones, in English and Telugu. There is noth
 | PC | Phone | Action |
 | --- | --- | --- |
 | W A S D | Left stick | Walk or drive |
-| Shift | Run | Run |
+| Shift | Run, or push the stick all the way | Run |
 | Mouse drag, wheel | Drag the screen, pinch | Look around, zoom |
-| E | Use, or tap the prompt | Talk, use shops, get in and out of vehicles |
-| F (hold) | Work (hold) | Use the selected tool on your field |
-| 1 – 6 | Tool bar | Hand, hoe, seeds, fertilizer, sprayer, sickle |
+| E | Use, or tap the prompt | Talk, use shops, buy seeds, rest, get in and out of vehicles |
+| F (hold) | Work (hold) | Auto: does the next job on your field |
+| 1 – 6 | Tool bar | Auto, hoe, seeds, fertilizer, sprayer, sickle |
 | Q | Type | Switch seed, fertilizer or spray |
 | G | Lower / Raise | Lower or raise the implement |
 | H / L | Horn | Horn / headlights |
 | V | View | First or third person |
 | M, B, P, Esc | Top buttons | Map, farm office, photo mode, menu |
 
-Sleep at home to skip the night. Crops keep growing while you sleep.
+Follow the gold arrow. Sleep at home to skip the night, or use "Rest" on your field while the crop grows.
 
 ## Build from source
 

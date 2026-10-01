@@ -194,18 +194,21 @@ const Humans = {
     }
   },
   update(dt, cam) {
+    const hideD = Math.min(260, G.preset.drawDist * 0.62), farD = Math.min(140, G.preset.drawDist * 0.42);
     for (const h of this.list) {
       if (h.visible) {
         const d = Math.hypot(h.x - cam.x, h.z - cam.z);
-        h.far = d > 140;
-        if (d > 260) { if (!h._hidden) { this.hide(h); h._hidden = true; } continue; }
+        h.far = d > farD;
+        if (d > hideD) { if (!h._hidden) { this.hide(h); h._hidden = true; } continue; }
         if (h.far && (G.frame + h.idx) % 4 !== 0) continue;
       }
       this.pose(h, h.far ? dt * 4 : dt);
     }
-    for (const id in this.parts) this.parts[id].mesh.instanceMatrix.needsUpdate = true;
+    for (const id in this.parts) uploadInstances(this.parts[id].mesh);
   },
 };
+// send only the used part of an instance buffer to the GPU
+function uploadInstances(m) { const im = m.instanceMatrix; im.clearUpdateRanges(); im.addUpdateRange(0, Math.max(1, m.count) * 16); im.needsUpdate = true; }
 
 // ---------------- animals ----------------
 const APART_DEFS = [['body', 1], ['neck', 1], ['head', 1], ['snout', 1], ['ear', 2], ['horn', 2], ['hump', 1], ['leg', 4], ['tail', 1], ['comb', 1]];
@@ -308,15 +311,16 @@ const Animals = {
   },
   hide(a) { const i = a.idx; for (const id in this.parts) { const p = this.parts[id]; for (let k = 0; k < p.mult; k++) p.mesh.setMatrixAt(i * p.mult + k, this.zero); } },
   update(dt, cam) {
+    const hideD = Math.min(220, G.preset.drawDist * 0.55);
     for (const a of this.list) {
       if (!a.visible) { if (!a._hidden) { this.hide(a); a._hidden = true; } continue; }
       const d = Math.hypot(a.x - cam.x, a.z - cam.z);
-      if (d > 220) { if (!a._hidden) { this.hide(a); a._hidden = true; } continue; }
+      if (d > hideD) { if (!a._hidden) { this.hide(a); a._hidden = true; } continue; }
       a._hidden = false;
       if (d > 110 && (G.frame + a.idx) % 4 !== 0) continue;
       this.pose(a, d > 110 ? dt * 4 : dt);
     }
-    for (const id in this.parts) this.parts[id].mesh.instanceMatrix.needsUpdate = true;
+    for (const id in this.parts) uploadInstances(this.parts[id].mesh);
   },
 };
 

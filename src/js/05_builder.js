@@ -25,6 +25,8 @@ function makePrismGeom() { // gable roof: base 1x1 at y=0, ridge along x at y=1,
 const PRIM = {};
 function initPrims() {
   PRIM.box = primFrom(new THREE.BoxGeometry(1, 1, 1));
+  PRIM.cyl4 = primFrom(new THREE.CylinderGeometry(0.5, 0.5, 1, 4, 1, true));
+  PRIM.cone4 = primFrom(new THREE.CylinderGeometry(0, 0.5, 1, 4, 1, true));
   PRIM.cyl6 = primFrom(new THREE.CylinderGeometry(0.5, 0.5, 1, 6));
   PRIM.cyl8 = primFrom(new THREE.CylinderGeometry(0.5, 0.5, 1, 8));
   PRIM.cyl12 = primFrom(new THREE.CylinderGeometry(0.5, 0.5, 1, 12));
@@ -130,7 +132,7 @@ class GeoBuilder {
 
 // ---------------- chunk system (static world geometry) ----------------
 const Chunks = {
-  CH: 128, map: new Map(), meshes: [],
+  CH: isMobile ? 192 : 128, map: new Map(), meshes: [],
   key(x, z) { return Math.floor(x / this.CH) + ',' + Math.floor(z / this.CH); },
   get(x, z, bucket = 'std') {
     const k = this.key(x, z);
@@ -156,7 +158,7 @@ const Chunks = {
     }
   },
   updateVisibility(camPos) {
-    const D = G.preset.drawDist + 60;
+    const D = G.preset.drawDist * (G.preset.lite ? 0.8 : 1) + (G.preset.lite ? 30 : 60);
     for (const m of this.meshes) {
       const c = m.userData.chunk; const d = Math.hypot(c.cx - camPos.x, c.cz - camPos.z) - this.CH * 0.7;
       m.visible = d < D;

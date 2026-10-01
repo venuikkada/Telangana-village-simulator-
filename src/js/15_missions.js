@@ -2,14 +2,38 @@
 // Missions: tutorial chain + adaptive procedural missions
 // ============================================================================
 const TUTORIAL = [
-  { tpl: 't_walk', title: { en: 'Walk to your field', te: 'మీ పొలం దగ్గరికి నడవండి' }, desc: { en: 'Your 1-acre field is just south-west of your house. Follow the marker on the map.', te: 'మీ 1 ఎకరం పొలం ఇంటికి నైరుతి దిక్కున ఉంది. మ్యాప్‌లో గుర్తును అనుసరించండి.' }, descM: {en: "Your 1-acre field is just south-west of your house. Walk with the left stick and follow the gold beacon.", te: "మీ 1 ఎకరం పొలం ఇంటికి నైరుతి దిక్కున ఉంది. ఎడమ స్టిక్‌తో నడిచి బంగారు రంగు గుర్తును అనుసరించండి."}, reward: 500, target: 1, mark: 'F1' },
-  { tpl: 't_plough', title: { en: 'Plough your first field', te: 'మీ మొదటి పొలాన్ని దున్నండి' }, desc: { en: 'Stand by your bullocks and press E → "Change implement" → Wooden plough. Drive with E, lower the plough with G. Or use the hoe (key 2, hold F), or rent a tractor at Bhaskar\'s workshop.', te: 'మీ ఎడ్ల దగ్గర E నొక్కి → "పనిముట్టు మార్చండి" → నాగలి. E తో నడపండి, G తో నాగలి దించండి. లేదా పార (2 కీ, F పట్టుకోండి) వాడండి, లేదా భాస్కర్ వర్క్‌షాప్‌లో ట్రాక్టర్ అద్దెకు తీసుకోండి.' }, descM: {en: "Walk to your bullocks and tap Use → Change implement → Wooden plough. Tap Use again to drive, then tap Lower to start ploughing. Or pick the hoe in the tool bar and hold Work while you walk.", te: "మీ ఎడ్ల దగ్గర 'వాడు' నొక్కి → పనిముట్టు మార్చండి → నాగలి. మళ్లీ 'వాడు' నొక్కి నడపండి, 'దించు' నొక్కి దున్నండి. లేదా పనిముట్ల బార్‌లో పార ఎంచుకుని నడుస్తూ 'పని' పట్టుకోండి."}, reward: 1500, target: 0.8, mark: 'F1' },
-  { tpl: 't_seeds', title: { en: 'Buy seeds at Srinu\'s shop', te: 'శ్రీను దుకాణంలో విత్తనాలు కొనండి' }, desc: { en: 'Srinu\'s seed & fertilizer shop is at the village crossroads. It\'s Vanakalam — paddy or cotton are safe choices. Buy some urea too.', te: 'శ్రీను దుకాణం గ్రామ కూడలిలో ఉంది. ఇది వానాకాలం — వరి లేదా పత్తి మంచి ఎంపిక. కొంచెం యూరియా కూడా కొనండి.' }, reward: 500, target: 1, mark: 'seed' },
-  { tpl: 't_sow', title: { en: 'Sow your field', te: 'మీ పొలంలో విత్తండి' }, desc: { en: 'Pick the seed bag (key 3), press Q to choose the crop, and hold F while walking over ploughed soil.', te: 'విత్తనాల సంచి (3 కీ) ఎంచుకోండి, Q తో పంట మార్చండి, దున్నిన నేలపై నడుస్తూ F పట్టుకోండి.' }, descM: {en: "Pick the seed bag in the tool bar, tap Type to choose the crop, then hold Work while you walk over ploughed soil.", te: "పనిముట్ల బార్‌లో విత్తనాల సంచి ఎంచుకోండి, 'రకం' నొక్కి పంట మార్చండి, దున్నిన నేలపై నడుస్తూ 'పని' పట్టుకోండి."}, reward: 1500, target: 0.8, mark: 'F1' },
-  { tpl: 't_water', title: { en: 'Water your crop', te: 'పంటకు నీరు పెట్టండి' }, desc: { en: 'Switch on the borewell pump at the corner of your field (press E there). Get the field above 60% water.', te: 'పొలం మూలలోని బోరు మోటార్ వేయండి (అక్కడ E నొక్కండి). పొలంలో నీరు 60% దాటాలి.' }, descM: {en: "Walk to the pump house at the corner of your field and tap Use to switch the pump on. Get the field above 60% water.", te: "పొలం మూలలోని మోటార్ గది దగ్గరకు వెళ్ళి 'వాడు' నొక్కి మోటార్ వేయండి. పొలంలో నీరు 60% దాటాలి."}, reward: 1000, target: 60, mark: 'F1pump' },
-  { tpl: 't_fert', title: { en: 'Apply fertilizer', te: 'ఎరువు వేయండి' }, desc: { en: 'Select fertilizer (key 4) and hold F while walking across your crop. Q switches between urea, DAP and others.', te: 'ఎరువు (4 కీ) ఎంచుకుని, పంటపై నడుస్తూ F పట్టుకోండి. Q తో యూరియా, డీఏపీ మార్చవచ్చు.' }, descM: {en: "Pick fertilizer in the tool bar and hold Work while you walk across your crop. Type switches between urea, DAP and others.", te: "పనిముట్ల బార్‌లో ఎరువు ఎంచుకుని, పంటపై నడుస్తూ 'పని' పట్టుకోండి. 'రకం' నొక్కితే యూరియా, డీఏపీ మారుతాయి."}, reward: 1000, target: 0.5, mark: 'F1' },
-  { tpl: 't_harvest', title: { en: 'Harvest your crop', te: 'పంట కోయండి' }, desc: { en: 'When the crop is ready, use the sickle (key 6, hold F) or hire a combine harvester at the workshop. Sleep at home to pass the nights faster.', te: 'పంట సిద్ధమైనప్పుడు కొడవలి (6 కీ, F పట్టుకోండి) వాడండి లేదా వర్క్‌షాప్‌లో హార్వెస్టర్ పెట్టించండి. రాత్రులు త్వరగా గడపడానికి ఇంట్లో నిద్రపోండి.' }, descM: {en: "When the crop is ready, pick the sickle and hold Work, or hire a combine harvester at the workshop. Sleep at home to pass the nights faster.", te: "పంట సిద్ధమైనప్పుడు కొడవలి ఎంచుకుని 'పని' పట్టుకోండి, లేదా వర్క్‌షాప్‌లో హార్వెస్టర్ పెట్టించండి. రాత్రులు త్వరగా గడపడానికి ఇంట్లో నిద్రపోండి."}, reward: 2000, target: 0.8, mark: 'F1' },
-  { tpl: 't_sell', title: { en: 'Sell your harvest at the market yard', te: 'మార్కెట్ యార్డులో పంట అమ్మండి' }, desc: { en: 'Drive your bullock cart to the heap at your field and press E to load. Take it to the Agricultural Market Yard in Nagaram and sell at the weighbridge.', te: 'ఎడ్లబండిని పొలంలోని కుప్ప దగ్గరకు తెచ్చి E నొక్కి ఎక్కించండి. నగరంలోని వ్యవసాయ మార్కెట్ యార్డుకు తీసుకెళ్ళి వే బ్రిడ్జ్ దగ్గర అమ్మండి.' }, descM: {en: "Drive the bullock cart to the heap at your field and tap Use to load it. Take it to the Agricultural Market Yard in Nagaram and sell at the weighbridge.", te: "ఎడ్లబండిని పొలంలోని కుప్ప దగ్గరకు తెచ్చి 'వాడు' నొక్కి ఎక్కించండి. నగరంలోని మార్కెట్ యార్డుకు తీసుకెళ్ళి వే బ్రిడ్జ్ దగ్గర అమ్మండి."}, reward: 5000, target: 1, mark: 'yard' },
+  { tpl: 't_walk', title: { en: 'Walk to your field', te: 'మీ పొలానికి నడవండి' },
+    desc: { en: 'Follow the gold arrow to your field. Hold Shift to run.', te: 'బంగారు బాణాన్ని అనుసరించి మీ పొలానికి వెళ్ళండి. పరుగెత్తడానికి Shift పట్టుకోండి.' },
+    descM: { en: 'Push the left stick all the way to run. Follow the gold arrow to your field.', te: 'ఎడమ స్టిక్‌ను పూర్తిగా నెడితే పరుగెత్తుతారు. బంగారు బాణాన్ని అనుసరించండి.' },
+    hint: { en: 'Follow the gold arrow', te: 'బంగారు బాణాన్ని అనుసరించండి' }, reward: 500, target: 1, mark: 'F1' },
+  { tpl: 't_plough', title: { en: 'Plough your field', te: 'మీ పొలాన్ని దున్నండి' },
+    desc: { en: 'Stand on your field, hold F and walk around. You plough as you walk.', te: 'పొలంలో నిలబడి F పట్టుకుని నడవండి. నడుస్తుంటే దుక్కి అవుతుంది.' },
+    descM: { en: 'Stand on your field, hold the yellow Work button and walk around. You plough as you walk.', te: 'పొలంలో పసుపు \'పని\' బటన్ పట్టుకుని నడవండి. నడుస్తుంటే దుక్కి అవుతుంది.' },
+    hint: { en: 'Hold Work and walk on the field', te: '\'పని\' పట్టుకుని పొలంలో నడవండి' }, reward: 1500, target: 0.8, mark: 'F1' },
+  { tpl: 't_seeds', title: { en: 'Get seeds', te: 'విత్తనాలు తెప్పించండి' },
+    desc: { en: 'When Work asks for seeds, press E on “Buy seeds”. They are delivered to your field.', te: '\'పని\' విత్తనాలు అడిగితే \'విత్తనాలు కొనండి\' వద్ద E నొక్కండి. పొలానికే వస్తాయి.' },
+    descM: { en: 'When Work asks for seeds, tap “Buy seeds”. They are delivered to your field.', te: '\'పని\' విత్తనాలు అడిగితే \'విత్తనాలు కొనండి\' నొక్కండి. పొలానికే వస్తాయి.' },
+    hint: { en: 'Tap “Buy seeds”, pick the top crop', te: '\'విత్తనాలు కొనండి\' నొక్కి పై పంట ఎంచుకోండి' }, reward: 500, target: 1, mark: 'F1' },
+  { tpl: 't_sow', title: { en: 'Sow your field', te: 'పొలంలో విత్తండి' },
+    desc: { en: 'Hold F and walk across your field. The seeds go in as you walk.', te: 'F పట్టుకుని పొలమంతా నడవండి. నడుస్తుంటే విత్తనాలు పడతాయి.' },
+    descM: { en: 'Hold Work and walk across your field. The seeds go in as you walk.', te: '\'పని\' పట్టుకుని పొలమంతా నడవండి. నడుస్తుంటే విత్తనాలు పడతాయి.' },
+    hint: { en: 'Hold Work and walk on the field', te: '\'పని\' పట్టుకుని పొలంలో నడవండి' }, reward: 1500, target: 0.8, mark: 'F1' },
+  { tpl: 't_water', title: { en: 'Water your crop', te: 'పంటకు నీరు పెట్టండి' },
+    desc: { en: 'Hold F on your crop. The pump switches on by itself. Fill the field above 60% water.', te: 'పంటపై F పట్టుకోండి. మోటార్ తానే మొదలవుతుంది. నీరు 60% దాటాలి.' },
+    descM: { en: 'Hold Work on your crop. The pump switches on by itself. Fill the field above 60% water.', te: 'పంటపై \'పని\' పట్టుకోండి. మోటార్ తానే మొదలవుతుంది. నీరు 60% దాటాలి.' },
+    hint: { en: 'Hold Work on the crop', te: 'పంటపై \'పని\' పట్టుకోండి' }, reward: 1000, target: 60, mark: 'F1' },
+  { tpl: 't_fert', title: { en: 'Feed your crop', te: 'పంటకు ఎరువు వేయండి' },
+    desc: { en: 'When the crop is hungry, hold F on it to spread fertilizer. Out of fertilizer? Press E on “Buy fertilizer”.', te: 'పంటకు ఆకలైతే F పట్టుకుని ఎరువు చల్లండి. ఎరువు లేదా? \'ఎరువు కొనండి\' వద్ద E నొక్కండి.' },
+    descM: { en: 'When the crop is hungry, hold Work on it to spread fertilizer. Out of fertilizer? Tap “Buy fertilizer”.', te: 'పంటకు ఆకలైతే \'పని\' పట్టుకుని ఎరువు చల్లండి. ఎరువు లేదా? \'ఎరువు కొనండి\' నొక్కండి.' },
+    hint: { en: 'Hold Work on the crop', te: 'పంటపై \'పని\' పట్టుకోండి' }, reward: 1000, target: 0.5, mark: 'F1' },
+  { tpl: 't_harvest', title: { en: 'Harvest your crop', te: 'పంట కోయండి' },
+    desc: { en: 'When the crop turns golden, hold F on it to harvest. Sleep at home to make nights pass quickly.', te: 'పంట బంగారు రంగుకు మారాక F పట్టుకుని కోయండి. రాత్రి త్వరగా గడవడానికి ఇంట్లో నిద్రపోండి.' },
+    descM: { en: 'When the crop turns golden, hold Work on it to harvest. Sleep at home to make nights pass quickly.', te: 'పంట బంగారు రంగుకు మారాక \'పని\' పట్టుకుని కోయండి. రాత్రి త్వరగా గడవడానికి ఇంట్లో నిద్రపోండి.' },
+    hint: { en: 'Golden crop? Hold Work on it', te: 'బంగారు పంట? \'పని\' పట్టుకోండి' }, reward: 2000, target: 0.8, mark: 'F1' },
+  { tpl: 't_sell', title: { en: 'Sell your harvest', te: 'పంట అమ్మండి' },
+    desc: { en: 'Press E at the harvest heap by your field and sell to the trader. For a better price, take it to the market yard.', te: 'పొలం దగ్గరి కుప్ప వద్ద E నొక్కి వ్యాపారికి అమ్మండి. మంచి ధర కావాలంటే మార్కెట్ యార్డుకు తీసుకెళ్ళండి.' },
+    descM: { en: 'Tap the harvest heap by your field and sell to the trader. For a better price, take it to the market yard.', te: 'పొలం దగ్గరి కుప్పను నొక్కి వ్యాపారికి అమ్మండి. మంచి ధర కావాలంటే మార్కెట్ యార్డుకు తీసుకెళ్ళండి.' },
+    hint: { en: 'Use the heap by your field', te: 'పొలం దగ్గరి కుప్ప వద్ద \'వాడు\'' }, reward: 5000, target: 1, mark: 'heap' },
 ];
 
 const Missions = {
@@ -34,10 +58,23 @@ const Missions = {
     if (key === 'santha') return { x: POI.santha.x, z: POI.santha.z };
     if (key === 'bank') return POI.bank ? { x: POI.bank.x, z: POI.bank.z } : null;
     if (key === 'vbore') return { x: -17, z: -63 };
+    if (key === 'heap') { const f = Fields.playerFields().find((q) => q.heap && q.heap.qty > 0.05 && q.heapSpot); return f ? { x: f.heapSpot.x, z: f.heapSpot.z } : { x: POI.yard.weigh.x, z: POI.yard.weigh.z }; }
     if (key.startsWith('npc:')) { const n = NPCs.byId[key.slice(4)]; return n ? { x: n.h.x, z: n.h.z } : null; }
     if (key.startsWith('field:')) { const f = Fields.byId[key.slice(6)]; return f ? { x: f.x, z: f.z } : null; }
     return null;
   },
+  // short place name for the on-screen guide marker
+  markerName(key) {
+    if (!key) return '';
+    const N = { F1: L('Your field', 'మీ పొలం'), F1pump: L('Pump house', 'మోటార్ గది'), seed: L('Seed shop', 'విత్తనాల దుకాణం'), yard: L('Market yard', 'మార్కెట్ యార్డ్'), workshop: L('Workshop', 'వర్క్‌షాప్'), panchayat: L('Panchayat', 'పంచాయతీ'), home: L('Your house', 'మీ ఇల్లు'), temple: L('Temple', 'గుడి'), ghat: L('Lake ghat', 'చెరువు ఘాట్'), santha: L('Santha ground', 'సంత మైదానం'), bank: L('Bank', 'బ్యాంకు'), vbore: L('Village borewell', 'గ్రామ బోరు') };
+    if (N[key]) return N[key];
+    if (key === 'heap') return Fields.playerFields().some((q) => q.heap && q.heap.qty > 0.05) ? L('Harvest heap', 'పంట కుప్ప') : L('Market yard', 'మార్కెట్ యార్డ్');
+    if (key.startsWith('npc:')) { const n = NPCs.byId[key.slice(4)]; return n ? LN(n.name) : ''; }
+    if (key.startsWith('field:')) { const f = Fields.byId[key.slice(6)]; return f ? f.label() : ''; }
+    return '';
+  },
+  // the one-line "what to do now" for the current tutorial step
+  hintFor(m) { const t = m && TUTORIAL.find((x) => x.tpl === m.tpl); return t && t.hint ? LN(t.hint) : ''; },
   add(m) {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
@@ -189,7 +226,9 @@ const Missions = {
     }
     return null;
   },
+  // tutorial first, then urgent events, then the rest
+  ordered() { const a = G.S.missions.active; return [...a.filter((m) => m.tpl.startsWith('t_')), ...a.filter((m) => m.special && !m.tpl.startsWith('t_')), ...a.filter((m) => !m.special && !m.tpl.startsWith('t_'))]; },
   primaryMarker() {
-    const S = G.S; for (const m of S.missions.active) { const p = this.markerPos(m.mark); if (p) return { p, m }; } return null;
+    for (const m of this.ordered()) { const p = this.markerPos(m.mark); if (p) return { p, m }; } return null;
   },
 };

@@ -264,13 +264,29 @@ World.buildTerrain = function (seg) {
   g.setAttribute('color', new THREE.BufferAttribute(colA, 4));
   g.setIndex(new THREE.BufferAttribute(idx, 1));
   g.computeVertexNormals();
-  g.computeBoundingSphere();
-  const m = new THREE.Mesh(g, MAT.terrain);
-  m.receiveShadow = true; m.castShadow = false;
-  m.name = 'terrain';
-  if (this.terrainMesh) { G.scene.remove(this.terrainMesh); this.terrainMesh.geometry.dispose(); }
-  this.terrainMesh = m;
-  G.scene.add(m);
+  // Split into square tiles that share the vertex buffers, so the camera only draws the tiles it can see.
+  for (const t of this.terrainTiles || []) G.scene.remove(t);
+  this.terrainTiles = [];
+  const T = isMobile ? 6 : 4, per = Math.ceil(seg / T);
+  for (let ty = 0; ty < T; ty++) for (let tx = 0; tx < T; tx++) {
+    const i0 = tx * per, i1 = Math.min(seg, i0 + per), j0 = ty * per, j1 = Math.min(seg, j0 + per);
+    if (i1 <= i0 || j1 <= j0) continue;
+    const ti = new Uint32Array((i1 - i0) * (j1 - j0) * 6); let q = 0, hmin = 1e9, hmax = -1e9;
+    for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
+      const a = j * N + i, b = (j + 1) * N + i, c = (j + 1) * N + i + 1, d = j * N + i + 1;
+      ti[q++] = a; ti[q++] = b; ti[q++] = d; ti[q++] = b; ti[q++] = c; ti[q++] = d;
+      const ha = H[a]; if (ha < hmin) hmin = ha; if (ha > hmax) hmax = ha;
+    }
+    const tg = new THREE.BufferGeometry();
+    tg.setAttribute('position', g.attributes.position); tg.setAttribute('normal', g.attributes.normal); tg.setAttribute('color', g.attributes.color);
+    tg.setIndex(new THREE.BufferAttribute(ti, 1));
+    const cx = -half + (i0 + i1) / 2 * step, cz = -half + (j0 + j1) / 2 * step;
+    tg.boundingSphere = new THREE.Sphere(new THREE.Vector3(cx, (hmin + hmax) / 2, cz), Math.hypot((i1 - i0) * step / 2, (j1 - j0) * step / 2, (hmax - hmin) / 2 + 3));
+    const m = new THREE.Mesh(tg, MAT.terrain);
+    m.receiveShadow = true; m.castShadow = false; m.name = 'terrain'; m.matrixAutoUpdate = false;
+    G.scene.add(m); this.terrainTiles.push(m);
+  }
+  this.terrainMesh = { geometry: g };   // full geometry: colour weights for grass and the map
 };
 // exact height on terrain mesh surface
 World.groundHeight = function (x, z) {
@@ -378,12 +394,14 @@ const ROAD_STYLE = {
   track: { c: '#94704f', edge: '#8f7658', sh: 0.8, y: 0.075 },
 };
 World.buildRoads = function () {
-  const groups = {};
+  // all roads go into two merged meshes (village lanes separately, so they can be recoloured as CC roads)
+  const groups = { village: { pos: [], colr: [], idx: [], roads: [] }, other: { pos: [], colr: [], idx: [], roads: [] } };
   for (const r of ROADS) {
     const st = ROAD_STYLE[r.kind];
     const P = smoothPath(r.pts, 3);
     r.samples = P;
-    const pos = [], colr = [], idx = [];
+    const G2 = groups[r.kind === 'village' ? 'village' : 'other']; G2.roads.push(r);
+    const { pos, colr, idx } = G2; const base = pos.length / 3;
     const cMain = col(st.c), cEdge = col(st.edge);
     const offs = [-r.w / 2 - st.sh, -r.w / 2, r.w / 2, r.w / 2 + st.sh];
     for (let i = 0; i < P.length; i++) {
@@ -399,7 +417,7 @@ World.buildRoads = function () {
         colr.push(cc.r * j, cc.g * j, cc.b * j);
       }
       if (i > 0) {
-        const b0 = (i - 1) * 4, b1 = i * 4;
+        const b0 = base + (i - 1) * 4, b1 = base + i * 4;
         for (let k = 0; k < 3; k++) { idx.push(b0 + k, b1 + k, b0 + k + 1, b1 + k, b1 + k + 1, b0 + k + 1); }
       }
       // segments for lookup
@@ -416,25 +434,27 @@ World.buildRoads = function () {
       // occupancy
       for (let o = -r.w / 2 - 1; o <= r.w / 2 + 1; o += 1.5) this.occSet(P[i].x + nx * o, P[i].z + nz * o, OCC.ROAD);
     }
+  }
+  for (const key of ['other', 'village']) {
+    const G2 = groups[key]; if (!G2.pos.length) continue;
     const g = new THREE.BufferGeometry();
-    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-    g.setAttribute('color', new THREE.Float32BufferAttribute(colr, 3));
-    g.setIndex(idx); g.computeVertexNormals();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(G2.pos, 3));
+    g.setAttribute('color', new THREE.Float32BufferAttribute(G2.colr, 3));
+    g.setIndex(G2.idx); g.computeVertexNormals();
     const m = new THREE.Mesh(g, MAT.road);
-    m.receiveShadow = true;
-    m.userData.road = r;
-    if (r.kind === 'village') { (this.villageRoadMeshes || (this.villageRoadMeshes = [])).push(m); }
+    m.receiveShadow = true; m.name = 'roads:' + key; m.userData.roads = G2.roads;
+    if (key === 'village') this.villageRoadMeshes = [m];
     G.scene.add(m);
   }
   this.buildHighwayMarkings();
 };
 World.setCCRoads = function (on) {
   (this.villageRoadMeshes || []).forEach((m) => {
-    const c = m.geometry.attributes.color; const r = m.userData.road;
+    const c = m.geometry.attributes.color;
     const st = ROAD_STYLE.village; const main = col(on ? st.cc : st.c), edge = col(on ? '#8f8a80' : st.edge);
     for (let i = 0; i < c.count; i++) { const k = i % 4; const cc = k === 0 || k === 3 ? edge : main; const j = 0.94 + hash2(i, 5) * 0.1; c.setXYZ(i, cc.r * j, cc.g * j, cc.b * j); }
     c.needsUpdate = true;
-    r.kind = on ? 'cc' : 'village';
+    for (const r of m.userData.roads) r.kind = on ? 'cc' : 'village';
   });
   for (const s of this.roadSegs) if (s.road.kind === 'cc' || (s.kind === 'village' && on)) s.kind = on ? 'cc' : 'village';
 };
@@ -505,9 +525,16 @@ float hgt(vec2 p){
 }
 void main(){
   vec2 p = vW.xz;
+#ifdef TVS_LITE
+  // phones: analytic slope of the swell plus one ripple lookup
+  float sa = p.x*0.35 + uTime*1.1, sb = p.y*0.29 - uTime*0.9 + p.x*0.1;
+  float rip = wn(p*2.3 - uTime*0.35) - 0.5;
+  vec3 n = normalize(vec3(-(cos(sa)*0.028 + cos(sb)*0.007 + rip*0.09)*1.3, 1.0, -(cos(sb)*0.0203 + rip*0.07)*1.3));
+#else
   float e = 0.15;
   float h0 = hgt(p), hx = hgt(p + vec2(e, 0.0)), hz = hgt(p + vec2(0.0, e));
   vec3 n = normalize(vec3((h0 - hx) * 1.3, e, (h0 - hz) * 1.3));
+#endif
   vec3 V = normalize(cameraPosition - vW);
   float ndv = max(dot(n, V), 0.0);
   float fres = 0.03 + 0.97 * pow(1.0 - ndv, 5.0);
@@ -535,7 +562,7 @@ World.makeWaterMaterial = function (opts = {}) {
     uTime: U.uTime, uRain: U.uRain, uLevel: { value: 0 }, uUseDepth: { value: opts.depthTex ? 1 : 0 }, uFlow: { value: opts.flow || 0 }, uAlpha: { value: opts.alpha === undefined ? 0.94 : opts.alpha },
     tDepth: { value: opts.depthTex || null }, uDepthRect: { value: opts.rect || new THREE.Vector4(0, 0, 1, 1) }, uGlowNight: U.uGlow,
   });
-  return new THREE.ShaderMaterial({ uniforms: u, vertexShader: WATER_VS, fragmentShader: WATER_FS, transparent: true, depthWrite: false, fog: true });
+  return liteDefine(new THREE.ShaderMaterial({ uniforms: u, vertexShader: WATER_VS, fragmentShader: WATER_FS, transparent: true, depthWrite: false, fog: true }));
 };
 World.buildWater = function () {
   // lake depth texture (terrain height under the lake)

@@ -117,11 +117,11 @@ class Vehicle {
     const surf = World.surfaceAt(this.x, this.z);
     const wet = U.uWet.value;
     const roadsCC = G.S && G.S.village.roads;
-    let smul = surf === 'asphalt' || surf === 'concrete' ? 1 : surf === 'dirt' ? (roadsCC ? 1 : 0.9 - wet * 0.25) : surf === 'field' ? 0.72 - wet * 0.3 : surf === 'water' ? 0.3 : 0.82 - wet * 0.2;
+    let smul = surf === 'asphalt' || surf === 'concrete' ? 1 : surf === 'dirt' ? (roadsCC ? 1 : 0.9 - wet * 0.25) : surf === 'field' ? 0.88 - wet * 0.2 : surf === 'water' ? 0.3 : 0.82 - wet * 0.2;
     if (this.type === 'bullock' || this.type === 'harvester') smul = Math.max(smul, 0.85);
     let maxSp = d.maxSpeed * smul;
     if (this.lowered && this.impl && IMPLEMENTS[this.impl].op) maxSp = Math.min(maxSp, IMPLEMENTS[this.impl].maxSpeed);
-    if (this.type === 'harvester' && this.lowered) maxSp = Math.min(maxSp, 2.6);
+    if (this.type === 'harvester' && this.lowered) maxSp = Math.min(maxSp, 4.2);
     if (this.cond < 30) maxSp *= 0.7;
     const noFuel = d.fuelCap > 0 && this.fuel <= 0;
     if (noFuel) maxSp = 0;
@@ -254,8 +254,16 @@ const Vehicles = {
   spawnOwned(st) { const v = new Vehicle(st.type, Object.assign({ owned: true }, st)); this.all.push(v); this.player.push(v); return v; },
   removeOwned(v) { v.destroy(); this.all.splice(this.all.indexOf(v), 1); this.player.splice(this.player.indexOf(v), 1); if (Player.vehicle === v) Player.exitVehicle(true); },
   nearestOwned(x, z, r = 4.5) { let best = null, bd = r; for (const v of this.player) { const d = Math.hypot(v.x - x, v.z - z) - (v.type === 'harvester' ? 2 : v.type === 'bullock' ? 1 : 0.5); if (d < bd) { bd = d; best = v; } } return best; },
+  // hide vehicles that are too far away to see (saves draw calls on phones)
+  cull(v, d) {
+    const vis = d < G.preset.drawDist * 0.78 || v === Player.vehicle;
+    if (v.group.visible !== vis) { v.group.visible = vis; if (v.implG && v.towed) v.implG.visible = vis; }
+    return vis;
+  },
   update(dt) {
+    const P0 = Player.pos();
     for (const v of this.player) {
+      this.cull(v, Math.hypot(v.x - P0.x, v.z - P0.z));
       if (v === Player.vehicle) continue;
       if (v.job) { v.job.update(dt); continue; }
       if (Math.abs(v.speed) > 0.01) v.update(dt, { throttle: 0, steer: 0, brake: true });
@@ -332,7 +340,8 @@ const Traffic = {
   update(dt) {
     const P = Player.pos(); const pv = Player.vehicle;
     for (const v of this.list) {
-      const far = Math.hypot(v.x - P.x, v.z - P.z) > 320;
+      const dP = Math.hypot(v.x - P.x, v.z - P.z); const far = dP > 320;
+      const vis = Vehicles.cull(v, dP);
       if (v.wait > 0) { v.wait -= dt; v.update(dt, { throttle: 0, brake: true }); continue; }
       const R = v.route; if (!R || !R.length) { this.newTrip(v); continue; }
       let tgt = R[Math.max(0, Math.min(R.length - 1, v.ri))];
@@ -356,7 +365,7 @@ const Traffic = {
       }
       if (far) { // cheap kinematic move
         const sp = v.cruise * 0.9; const k = Math.min(1, sp * dt / dist);
-        v.x += ddx * k; v.z += ddz * k; v.yaw = Math.atan2(ddx, ddz); v.speed = sp; v.wheelAng += sp * dt / 0.66; v.place(); continue;
+        v.x += ddx * k; v.z += ddz * k; v.yaw = Math.atan2(ddx, ddz); v.speed = sp; v.wheelAng += sp * dt / 0.66; if (vis) v.place(); continue;
       }
       const desired = Math.atan2(ddx, ddz);
       const err = angleDiff(v.yaw, desired);

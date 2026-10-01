@@ -59,7 +59,7 @@ const Input = {
 };
 
 const TOOLS = [
-  { id: 'hand', en: 'Hand', te: 'చేయి', key: '1' },
+  { id: 'auto', en: 'Auto', te: 'ఆటో', key: '1' },
   { id: 'hoe', en: 'Hoe', te: 'పార', key: '2', op: 'hoe' },
   { id: 'seeds', en: 'Seeds', te: 'విత్తనాలు', key: '3', op: 'sow' },
   { id: 'fert', en: 'Fertilizer', te: 'ఎరువు', key: '4', op: 'fertilize' },
@@ -67,8 +67,14 @@ const TOOLS = [
   { id: 'sickle', en: 'Sickle', te: 'కొడవలి', key: '6', op: 'harvest' },
 ];
 
+// "tap Buy seeds" on phones, "press E for Buy seeds" on PC
+function buyHint(item) {
+  const nm = item === 'seed' ? L('Buy seeds', 'విత్తనాలు కొనండి') : item === 'pesticide' ? L('Buy pesticide', 'పురుగుమందు కొనండి') : L('Buy fertilizer', 'ఎరువు కొనండి');
+  return isMobile ? L(`tap “${nm}”.`, `“${nm}” నొక్కండి.`) : L(`press E for “${nm}”.`, `“${nm}” కోసం E నొక్కండి.`);
+}
+
 const Player = {
-  h: null, x: HOME.x + 10, z: HOME.z + 2, y: 0, yaw: -Math.PI / 2, vy: 0, onGround: true, speed: 0, vehicle: null, tool: 'hand', working: false, workT: 0,
+  h: null, x: HOME.x + 10, z: HOME.z + 2, y: 0, yaw: -Math.PI / 2, vy: 0, onGround: true, speed: 0, vehicle: null, tool: 'auto', working: false, workT: 0, need: null, axis: { x: 0, y: 0 },
   opt: { seeds: 'paddy', fert: 'urea', sprayer: 'pesticide' },
   init(app) {
     this.h = Humans.create(app, this.x, this.z);
@@ -81,7 +87,7 @@ const Player = {
     if (S.player.health < 20 && !this._lowWarned) { this._lowWarned = true; UI.toast(L('Your health is low. Visit the doctor at the PHC or rest at home.', 'మీ ఆరోగ్యం తగ్గింది. PHCలో డాక్టర్‌ను కలవండి లేదా ఇంట్లో విశ్రాంతి తీసుకోండి.'), 'bad'); }
     if (S.player.health > 40) this._lowWarned = false;
   },
-  canWorkHere() { const f = fieldAt(this.x, this.z); return !this.vehicle && this.tool !== 'hand' && f && f.isPlayer; },
+  canWorkHere() { const f = fieldAt(this.x, this.z); return !this.vehicle && f && f.isPlayer; },
   enterVehicle(v) {
     if (v.job) { UI.toast(L('A worker is using this vehicle.', 'ఒక కూలీ ఈ వాహనాన్ని వాడుతున్నారు.'), 'warn'); return; }
     this.vehicle = v; this.h.visible = v.ud.pose !== 'hidden';
@@ -111,21 +117,22 @@ const Player = {
     // tools
     for (const t of TOOLS) if (Input.pressed('Digit' + t.key)) this.setTool(t.id);
     if (Input.pressed('KeyQ')) this.cycleOpt();
-    const wantWork = (Input.down('KeyF') || Input.work || Input.mouseWork) && this.tool !== 'hand';
+    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork;
     const f = fieldAt(this.x, this.z);
-    this.working = wantWork && P.energy > 2 && !!f;
+    this.working = wantWork && P.energy > 1 && !!f;
+    this.axis.x = ax.x; this.axis.y = ax.y;
     // movement
     const camYaw = Cam.yaw;
     const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw);
     const rx = -fz, rz = fx;
     let mx = fx * ax.y + rx * ax.x, mz = fz * ax.y + rz * ax.x;
     const ml = Math.hypot(mx, mz);
-    const running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 5 && !this.working;
-    const tired = P.energy < 5 ? 0.6 : 1;
-    const maxSp = (this.working ? 1.1 : running ? 5.4 : 2.4) * tired * (U.uWet.value > 0.5 && f ? 0.8 : 1);
-    const target = ml > 0.05 ? maxSp * Math.min(1, ml) : 0;
-    this.speed = damp(this.speed, target, target > this.speed ? 8 : 12, dt);
-    if (ml > 0.05) { mx /= ml; mz /= ml; if (Cam.mode === 'first') this.yaw = Math.atan2(-Math.sin(camYaw) , -Math.cos(camYaw)); else this.yaw = dampAngle(this.yaw, Math.atan2(mx, mz), 12, dt); this.mvx = mx; this.mvz = mz; }
+    const running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 3;
+    const tired = P.energy < 3 ? 0.75 : 1;
+    const maxSp = (running ? 7.6 : 4.6) * tired * (U.uWet.value > 0.5 && f ? 0.92 : 1);
+    const target = ml > 0.05 ? maxSp * Math.min(1, ml / 0.9) : 0;
+    this.speed = damp(this.speed, Math.min(target, maxSp), target > this.speed ? 16 : 20, dt);
+    if (ml > 0.05) { mx /= ml; mz /= ml; if (Cam.mode === 'first') this.yaw = Math.atan2(-Math.sin(camYaw) , -Math.cos(camYaw)); else this.yaw = dampAngle(this.yaw, Math.atan2(mx, mz), 22, dt); this.mvx = mx; this.mvz = mz; }
     else if (Cam.mode === 'first') this.yaw = Math.atan2(-Math.sin(camYaw), -Math.cos(camYaw));
     if (this.speed > 0.01) { this.x += (this.mvx || 0) * this.speed * dt; this.z += (this.mvz || 0) * this.speed * dt; }
     // collisions: buildings, vehicles, lake, bounds
@@ -141,16 +148,16 @@ const Player = {
     this.x = q.x; this.z = q.z;
     // vertical
     const gy = World.groundHeight(this.x, this.z) + (f ? 0.03 : 0);
-    if (Input.pressed('Space') && this.onGround) { this.vy = 4.3; this.onGround = false; Audio2.sfx('jump'); }
+    if (Input.pressed('Space') && this.onGround) { this.vy = 5.4; this.onGround = false; Audio2.sfx('jump'); }
     this.vy -= 12 * dt; this.y += this.vy * dt;
     if (this.y <= gy) { this.y = gy; this.vy = 0; this.onGround = true; }
     // work
     if (this.working) {
       this.workT -= dt;
-      if (this.workT <= 0) { this.workT = 0.22; this.doWork(f); }
-      P.energy = Math.max(0, P.energy - dt * 0.11);
+      if (this.workT <= 0) { this.workT = 0.1; this.doWork(f); }
+      P.energy = Math.max(0, P.energy - dt * 0.03);
     }
-    P.energy = Math.max(0, P.energy - dt * (0.012 + (running ? 0.1 : 0)) * (Weather.cur.id === 'heatwave' ? 1.6 : 1));
+    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1));
     // heat stress outdoors at midday
     const hr = Time.hour();
     if (Weather.cur.id === 'heatwave' && hr > 11.5 && hr < 16 && !this.inShade()) { P.health = Math.max(1, P.health - dt * 0.03); if (!this._heatWarned) { this._heatWarned = true; UI.toast(L('Heat wave! Rest in the shade or drink buttermilk at the tea stall.', 'వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.'), 'warn'); } }
@@ -158,8 +165,7 @@ const Player = {
     // animation
     const h = this.h;
     h.x = this.x; h.y = this.y; h.z = this.z; h.yaw = this.yaw; h.speed = this.working ? (this.speed > 0.2 ? this.speed : 0) : this.speed;
-    h.pose = this.working ? (this.tool === 'sickle' || this.tool === 'hoe' ? 'work' : this.speed > 0.3 ? 'walk' : 'work') : 'walk';
-    if (this.working && (this.tool === 'seeds' || this.tool === 'fert') && this.speed > 0.2) { h.pose = 'walk'; }
+    h.pose = this.working && this.speed < 0.6 ? 'work' : 'walk';
     h.visible = Cam.mode !== 'first';
     Stats.walk += this.speed * dt;
   },
@@ -171,18 +177,72 @@ const Player = {
     else if (this.tool === 'sprayer') { this.opt.sprayer = this.opt.sprayer === 'pesticide' ? 'herbicide' : 'pesticide'; }
     UI.refreshTools(); Audio2.sfx('click');
   },
+  // pick the job for the Auto tool from the tile in front of the player
+  autoCrop(f) {
+    const has = (c) => Inv.count('seed_' + c) > 0.0001;
+    if (f.crop && f.sownTiles > 0) return has(f.crop) ? f.crop : null;
+    if (f.plannedCrop && has(f.plannedCrop)) return f.plannedCrop;
+    if (has(this.opt.seeds)) return this.opt.seeds;
+    let best = null, bn = 0; for (const c of CROP_IDS) { const n = Inv.count('seed_' + c); if (n > bn + 1e-6) { bn = n; best = c; } }
+    return best;
+  },
+  autoFert() { for (const k of [this.opt.fert, 'urea', 'dap', 'complex', 'organic']) if (Inv.count(k) > 0.0001) return k; return null; },
+  autoJob(f, x, z) {
+    const i = f.tileAt(x, z); const t = i >= 0 ? f.tiles[i] : -1;
+    const cd = f.crop && f.sownTiles > 0 ? CROPS[f.crop] : null;
+    if (cd) {
+      const tut = (t2) => G.S.missions.active.some((m) => m.tpl === t2);
+      // keep the crop watered without a trip to the pump (the tutorial asks for a full field)
+      if (cd.wLo && f.water < Math.max(cd.wLo + 6, tut('t_water') ? 64 : 0)) {
+        if (f.borewell && !f.pump) { f.pump = true; UI.toastOnce('autopump' + f.id, L('Pump switched on: the field needs water.', 'పొలానికి నీరు కావాలి: మోటార్ వేశాం.'), 'info'); Bus.emit('pump', { field: f, on: true }); }
+        else if (f.canal && !f.gate && Weather.canalFlowing()) { f.gate = true; UI.toastOnce('autogate' + f.id, L('Canal gate opened: the field needs water.', 'పొలానికి నీరు కావాలి: కాలువ తూము తెరిచాం.'), 'info'); Bus.emit('pump', { field: f, on: true }); }
+      }
+      if (f.growth >= 0.97) return { op: 'harvest', r: 3.4 };
+      // once a job starts, finish it across the whole field instead of stopping right at the threshold
+      const mode = f.autoMode;
+      if (f.outbreak || f.pests > 10 || (mode === 'spray' && f.pests > 2)) { f.autoMode = 'spray'; return Inv.count('pesticide') > 0.0001 ? { op: 'spray', item: 'pesticide', r: 3.8 } : { need: 'pesticide' }; }
+      if (f.weeds > 16 || (mode === 'weed' && f.weeds > 4)) { f.autoMode = 'weed'; return { op: 'weed', r: 3.4 }; }
+      if ((f.nut < 40 || (mode === 'fert' && f.nut < 68) || (tut('t_fert') && f.nut < 80)) && f.growth < 0.9) { f.autoMode = 'fert'; const it = this.autoFert(); return it ? { op: 'fertilize', item: it, r: 3.6 } : { need: 'urea' }; }
+      f.autoMode = null;
+      if (t >= 0 && t < 3) { const crop = this.autoCrop(f); return crop ? { op: 'sow', crop, r: 3.6 } : { op: 'prep', r: 3.2 }; }
+      return { idle: true };
+    }
+    // bare field: sowing also ploughs, so with seeds in hand do both in one pass
+    const crop = this.autoCrop(f);
+    if (crop) return { op: 'sow', crop, r: 3.6 };
+    return { op: 'prep', r: 3.2, noSeed: true };
+  },
   doWork(f) {
     if (!f) return;
     if (!f.isPlayer) { UI.toastOnce('notyours', L('This field is not yours. Buy or lease it first.', 'ఈ పొలం మీది కాదు. ముందు కొనండి లేదా కౌలుకు తీసుకోండి.'), 'warn'); return; }
-    const fx = this.x + Math.sin(this.yaw) * 0.8, fz = this.z + Math.cos(this.yaw) * 0.8;
-    const R = this.tool === 'seeds' || this.tool === 'fert' ? 2.3 : this.tool === 'sprayer' ? 2.0 : 1.4;
+    const fx = this.x + Math.sin(this.yaw) * 0.6, fz = this.z + Math.cos(this.yaw) * 0.6;
+    let job = null;
+    if (this.tool === 'auto') {
+      job = this.autoJob(f, fx, fz);
+      if (!job) return;
+      if (job.need) { this.need = { item: job.need, field: f, t: performance.now() }; UI.toastOnce('need' + job.need, (job.need === 'seed' ? L('No seeds: ', 'విత్తనాలు లేవు: ') : job.need === 'pesticide' ? L('Pests on your crop! ', 'పంటకు పురుగులు! ') : L('Your crop is hungry: ', 'పంటకు ఎరువు కావాలి: ')) + buyHint(job.need), 'warn'); return; }
+      if (job.idle) { this.need = { item: 'wait', field: f, t: performance.now() }; UI.toastOnce('growing' + f.id, L(`${LN(CROPS[f.crop])} is growing well (${Math.round(f.growth * 100)}%). `, `${LN(CROPS[f.crop])} బాగా పెరుగుతోంది (${Math.round(f.growth * 100)}%). `) + (isMobile ? L('Tap “Rest” to let it grow.', '\'విశ్రాంతి\' నొక్కితే పంట పెరుగుతుంది.') : L('Press E to rest while it grows.', 'పంట పెరిగే వరకు విశ్రాంతికి E నొక్కండి.')), 'info'); return; }
+      this.need = null;
+    }
+    const tool = this.tool;
+    const R = job ? job.r : tool === 'seeds' || tool === 'fert' ? 3.4 : tool === 'sprayer' ? 3.6 : 2.8;
     let n = 0; let op = null; let lastIssue = null;
-    for (let dz = -R; dz <= R; dz += TILE) for (let dx = -R; dx <= R; dx += TILE) {
-      if (dx * dx + dz * dz > R * R + 0.1) continue;
+    const R2 = R * R + 0.1;
+    for (let dz = -R; dz <= R + 1e-6; dz += TILE) for (let dx = -R; dx <= R + 1e-6; dx += TILE) {
+      if (dx * dx + dz * dz > R2) continue;
       const i = f.tileAt(fx + dx, fz + dz); if (i < 0) continue;
       const t = f.tiles[i];
       let ok = false;
-      switch (this.tool) {
+      if (job) {
+        switch (job.op) {
+          case 'prep': if (t < 2) { ok = f.apply('rotavate', i); if (f.weeds > 3) f.apply('weed', i); } op = 'plough'; break;
+          case 'sow': if (t === 0) { f.apply('rotavate', i); } ok = f.apply('sow', i, { crop: job.crop }); op = 'sow'; break;
+          case 'harvest': ok = f.apply('harvest', i, { byPlayer: true }); op = 'harvest'; break;
+          case 'spray': ok = f.apply('spray', i, { item: job.item, byPlayer: true }); op = 'spray'; break;
+          case 'weed': ok = f.apply('weed', i); op = 'weed'; break;
+          case 'fertilize': ok = f.apply('fertilize', i, { item: job.item }); op = 'fertilize'; break;
+        }
+      } else switch (tool) {
         case 'hoe':
           if (t === 0) { ok = f.apply('plough', i); op = 'plough'; }
           else if (t === 1) { ok = f.apply('cultivate', i); if (f.weeds > 3) f.apply('weed', i); op = 'cultivate'; }
@@ -195,15 +255,26 @@ const Player = {
       }
       if (ok) n++;
     }
+    // every tile was already done recently (fertilizer and sprays need a gap): the job is finished
+    if (job && n === 0 && (job.op === 'fertilize' || job.op === 'weed' || job.op === 'spray')) f.autoMode = null;
+    // Auto on a bare field without seeds: plough what is left, then ask for seeds
+    if (job && job.noSeed && (n === 0 || f.countMin(2) / f.n > 0.6)) {
+      this.need = { item: 'seed', field: f, t: performance.now() };
+      if (n === 0) UI.toastOnce('needseed', f.countMin(2) / f.n > 0.6 ? L('Field ploughed! Now ', 'దుక్కి అయింది! ఇప్పుడు ') + buyHint('seed') : L('Want to sow? ', 'విత్తాలా? ') + buyHint('seed') + L(' Sowing ploughs the rest too.', ' విత్తేటప్పుడు మిగతాది కూడా దున్నుతుంది.'), 'warn');
+    }
     if (n > 0) {
       Bus.emit('work', { op, field: f, n, by: 'player', crop: f.crop });
-      if (op === 'spray') for (let k = 0; k < 3; k++) FX.emit('spray', fx + (frand() - 0.5) * 2, this.y + 0.9, fz + (frand() - 0.5) * 2, 0, -0.3, 0);
-      if (op === 'plough' || op === 'weed') FX.emit('dust', fx, this.y + 0.2, fz, 0, 0.4, 0);
-      if (op === 'sow' || op === 'fertilize') FX.emit('grain', fx, this.y + 1.0, fz, (frand() - 0.5) * 2, 1, (frand() - 0.5) * 2);
-      if (op === 'harvest') FX.emit('chaff', fx, this.y + 0.6, fz, 0, 0.5, 0);
+      const P = this.y;
+      if (op === 'spray') for (let k = 0; k < 4; k++) FX.emit('spray', fx + (frand() - 0.5) * R * 1.6, P + 0.9, fz + (frand() - 0.5) * R * 1.6, 0, -0.3, 0);
+      if (op === 'plough' || op === 'weed' || op === 'cultivate') for (let k = 0; k < 3; k++) FX.emit('dust', fx + (frand() - 0.5) * R, P + 0.2, fz + (frand() - 0.5) * R, 0, 0.5, 0);
+      if (op === 'sow' || op === 'fertilize') for (let k = 0; k < 3; k++) FX.emit('grain', fx, P + 1.0, fz, (frand() - 0.5) * 3, 1, (frand() - 0.5) * 3);
+      if (op === 'harvest') for (let k = 0; k < 3; k++) FX.emit('chaff', fx + (frand() - 0.5) * R, P + 0.6, fz + (frand() - 0.5) * R, 0, 0.6, 0);
       Audio2.work(op);
+      UI.workPulse(op, n);
     } else if (lastIssue) {
-      const msg = { seed: L(`No ${LN(CROPS[this.opt.seeds])} seeds. Press Q to switch, or buy seeds at Srinu's shop.`, `${LN(CROPS[this.opt.seeds])} విత్తనాలు లేవు. Q నొక్కి మార్చండి లేదా శ్రీను దుకాణంలో కొనండి.`), mix: L('This field already has another crop.', 'ఈ పొలంలో ఇప్పటికే వేరే పంట ఉంది.'), fert: L(`No ${LN(ITEMS[this.opt.fert])} left. Press Q to switch type.`, `${LN(ITEMS[this.opt.fert])} లేదు. Q నొక్కి మార్చండి.`), chem: L(`No ${LN(ITEMS[this.opt.sprayer])}. Press Q to switch.`, `${LN(ITEMS[this.opt.sprayer])} లేదు. Q నొక్కి మార్చండి.`) }[lastIssue];
+      const msg = { seed: L(`No ${LN(CROPS[this.opt.seeds])} seeds: `, `${LN(CROPS[this.opt.seeds])} విత్తనాలు లేవు: `) + buyHint('seed'), mix: L('This field already has another crop.', 'ఈ పొలంలో ఇప్పటికే వేరే పంట ఉంది.'), fert: L(`No ${LN(ITEMS[this.opt.fert])} left: `, `${LN(ITEMS[this.opt.fert])} లేదు: `) + buyHint('urea'), chem: L(`No ${LN(ITEMS[this.opt.sprayer])}: `, `${LN(ITEMS[this.opt.sprayer])} లేదు: `) + buyHint('pesticide') }[lastIssue];
+      this.need = { item: lastIssue === 'seed' ? 'seed' : lastIssue === 'fert' ? 'urea' : lastIssue === 'chem' ? 'pesticide' : null, field: f, t: performance.now() };
+      if (!this.need.item) this.need = null;
       UI.toastOnce('work' + lastIssue, msg, 'warn');
     }
   },
@@ -268,13 +339,25 @@ const Cam = {
       this.focus.set(ex, ey, ez);
       return;
     }
+    // a touch wider view at speed: sprinting or driving fast feels fast
+    const spd = v ? Math.abs(v.speed) : Player.speed;
+    const fovT = 58 + (v ? clamp((spd - 6) / 18, 0, 1) * 9 : clamp((spd - 5) / 2.6, 0, 1) * 5);
+    if (Math.abs(cam.fov - fovT) > 0.05) { cam.fov = damp(cam.fov, fovT, 3, dt); cam.updateProjectionMatrix(); }
     // third person
     this.pitch = clamp(this.pitch, -0.2, 1.35);
     let tx, ty, tz;
     if (v) {
       tx = v.x; ty = v.y + (v.type === 'harvester' ? 3.2 : v.type === 'bus' || v.type === 'truck' ? 2.5 : 1.6); tz = v.z;
       if (performance.now() - this.lastManual > 1600 && Math.abs(v.speed) > 0.6) this.yaw = dampAngle(this.yaw, v.yaw + (v.speed < 0 ? 0 : Math.PI), 2.2, dt);
-    } else { tx = Player.x; ty = Player.y + 1.45; tz = Player.z; }
+    } else {
+      tx = Player.x; ty = Player.y + 1.45; tz = Player.z;
+      // swing the camera behind the player while they walk forward (no spiralling when strafing)
+      const a = Player.axis;
+      if (Settings.v.camFollow !== false && performance.now() - this.lastManual > 700 && Player.speed > 1.5 && a.y > 0.55 && Math.abs(a.x) < 0.6) {
+        const behind = Player.yaw + Math.PI;
+        if (Math.abs(angleDiff(this.yaw, behind)) < 2.2) this.yaw = dampAngle(this.yaw, behind, 2.4, dt);
+      }
+    }
     this.focus.x = damp(this.focus.x, tx, 14, dt); this.focus.y = damp(this.focus.y, ty, 10, dt); this.focus.z = damp(this.focus.z, tz, 14, dt);
     if (Math.hypot(this.focus.x - tx, this.focus.z - tz) > 12) this.focus.set(tx, ty, tz);
     const d = this.dist;
@@ -306,6 +389,11 @@ const Interact = {
       out.push({ d, o });
     }
     if (!inV) {
+      const nd = Player.need;
+      if (nd && performance.now() - nd.t < 25000) {
+        if (nd.item === 'wait') { if (nd.field && nd.field.crop && fieldAt(P.x, P.z) === nd.field) out.push({ d: 0.1, o: { id: 'rest', label: () => L('Rest until the crop needs you', 'పంటకు పని వచ్చే వరకు విశ్రాంతి'), act: () => Services.waitForCrop(nd.field), prio: 6 } }); }
+        else out.push({ d: 0.1, o: { id: 'quickbuy', label: () => nd.item === 'seed' ? L('Buy seeds (delivered here)', 'విత్తనాలు కొనండి (ఇక్కడికే)') : nd.item === 'pesticide' ? L('Buy pesticide (delivered here)', 'పురుగుమందు కొనండి (ఇక్కడికే)') : L('Buy fertilizer (delivered here)', 'ఎరువు కొనండి (ఇక్కడికే)'), act: () => UI.quickBuy(nd), prio: 6 } });
+      }
       const n = NPCs.nearestTo(P.x, P.z, 2.4);
       if (n && !n.worker) out.push({ d: 1, o: { id: 'npc', label: () => L('Talk to ', 'మాట్లాడండి: ') + LN(n.name), act: () => Dialog.open(n), prio: 2 } });
       const v = Vehicles.nearestOwned(P.x, P.z, 4.2);

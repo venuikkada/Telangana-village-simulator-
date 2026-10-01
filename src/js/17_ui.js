@@ -2,11 +2,12 @@
 // UI: settings, HUD, minimap & map, menus, shops, dialogs, title, touch
 // ============================================================================
 const Settings = {
-  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, portraitOk: false, timeScale: 1 },
+  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1 },
   load() { const s = Store.get('tvs_prefs', null); if (s) Object.assign(this.v, s); },
   save() { Store.set('tvs_prefs', this.v); },
 };
 const ICON = {
+  auto: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M13 5.5L8 13h4l-1 5.5 5-7.5h-4z" fill="currentColor"/></svg>',
   sun: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2" fill="#f2b52d" stroke="#d6950f"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8" stroke="#d6950f"/></svg>',
   partly: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><circle cx="9" cy="9" r="3.6" fill="#f2b52d" stroke="#d6950f"/><path d="M7 19h10a3.5 3.5 0 0 0 .3-7 5 5 0 0 0-9.6 1.3A2.9 2.9 0 0 0 7 19z" fill="#e9eef3" stroke="#7d8a99"/></svg>',
   cloud: '<svg viewBox="0 0 24 24" fill="none" stroke-width="1.6"><path d="M6.5 18h11a4 4 0 0 0 .3-8 5.5 5.5 0 0 0-10.6 1.5A3.3 3.3 0 0 0 6.5 18z" fill="#dfe4ea" stroke="#6f7b88"/></svg>',
@@ -53,6 +54,7 @@ const UI = {
     });
     this.beacon = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 160, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xf2b52d, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, fog: false }));
     this.beacon.visible = false; this.beacon.renderOrder = 7; G.scene.add(this.beacon);
+    Guide.init();
   },
   applyLang() {
     LANG = Settings.v.lang;
@@ -77,6 +79,43 @@ const UI = {
   toastOnce(key, msg, kind) { const now = performance.now(); if (this.toastKeys[key] && now - this.toastKeys[key] < 15000) return; this.toastKeys[key] = now; this.toast(msg, kind); },
   moneyFlash(n) { const m = this.el('money'); if (!m) return; m.classList.remove('up', 'down'); void m.offsetWidth; m.classList.add(n >= 0 ? 'up' : 'down'); clearTimeout(this._mf); this._mf = setTimeout(() => m.classList.remove('up', 'down'), 900); this.dirty = true; },
   news(n) { const bar = this.el('newsbar'); if (!bar || !G.started) return; this.el('newstext').textContent = LN(n); bar.hidden = false; clearTimeout(this._nt); this._nt = setTimeout(() => { bar.hidden = true; }, 14000); },
+  // floating "+N" feedback while working a field
+  workPulse(op, n) {
+    const el = this.el('workpulse'); if (!el) return;
+    const now = performance.now();
+    this._wpN = this._wpOp === op && now - (this._wpT || 0) < 1200 ? this._wpN + n : n;
+    this._wpOp = op; this._wpT = now;
+    const names = { plough: L('Ploughing', 'దున్నుతున్నారు'), cultivate: L('Ploughing', 'దున్నుతున్నారు'), sow: L('Sowing', 'విత్తుతున్నారు'), fertilize: L('Fertilizing', 'ఎరువు వేస్తున్నారు'), spray: L('Spraying', 'పిచికారీ'), weed: L('Weeding', 'కలుపు తీస్తున్నారు'), harvest: L('Harvesting', 'కోస్తున్నారు') };
+    el.textContent = `${names[op] || ''} +${this._wpN}`;
+    if (now - (this._wpAnim || 0) > 450) { this._wpAnim = now; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go'); }
+  },
+  // seeds / fertilizer / pesticide delivered to the field in one tap
+  quickBuy(need) {
+    const f = need && need.field; const acres = f ? Math.max(1, Math.ceil(f.acres - 0.05)) : 1; const FEE = 50;
+    const buy = (k, n) => {
+      const price = Market.itemPrice(k) * n + FEE;
+      if (!Money.spend(price, 'shop')) return;
+      Inv.add(k, n); Audio2.sfx('cash'); Bus.emit('bought', { item: k, qty: n });
+      if (k.startsWith('seed_')) { Player.opt.seeds = k.slice(5); if (f && !f.crop) f.plannedCrop = k.slice(5); }
+      this.toast(L(`${Inv.name(k)} delivered: ${n} for ${fmtINR(price)}. Hold Work on your field.`, `${Inv.name(k)} అందింది: ${n}, ${fmtINR(price)}. పొలంలో 'పని' పట్టుకోండి.`), 'good');
+      Player.need = null; this.refreshTools(); this.close();
+    };
+    this.sheet({ title: L('Quick delivery to your field', 'మీ పొలానికి త్వరిత డెలివరీ'), sub: L(`Srinu sends it right away · ₹${FEE} delivery`, `శ్రీను వెంటనే పంపిస్తాడు · డెలివరీ ₹${FEE}`), narrow: true, render: (b) => {
+      const o = h('div', { class: 'opts' });
+      if (need.item === 'seed') {
+        const s = Time.season(); const score = (c) => CROPS[c].season[s] * (f ? CROPS[c].soil[f.soil] || 1 : 1);
+        const list = CROP_IDS.slice().sort((a, c) => score(c) - score(a));
+        b.appendChild(h('p', { class: 'empty', style: { paddingTop: '0' } }, L(`Seeds for ${acres} acre${acres > 1 ? 's' : ''}. The top crops suit this season and soil best.`, `${acres} ఎకరాలకు విత్తనాలు. పైన ఉన్న పంటలు ఈ సీజన్‌కు, నేలకు బాగా సరిపోతాయి.`)));
+        list.forEach((c, i) => { const k = 'seed_' + c; const sc = score(c); o.appendChild(h('button', { class: 'btn ' + (i === 0 ? 'acc' : 'alt'), onclick: () => buy(k, acres) }, `${LN(CROPS[c])} ${sc >= 1.05 ? '★★★' : sc >= 0.95 ? '★★' : '★'} · ${CROPS[c].days} ${L('days', 'రోజులు')} · ${fmtINR(Market.itemPrice(k) * acres + FEE)}`)); });
+      } else if (need.item === 'pesticide') {
+        o.appendChild(h('button', { class: 'btn acc', onclick: () => buy('pesticide', acres) }, `${LN(ITEMS.pesticide)} × ${acres} · ${fmtINR(Market.itemPrice('pesticide') * acres + FEE)}`));
+      } else {
+        for (const k of ['urea', 'dap', 'complex', 'organic']) o.appendChild(h('button', { class: 'btn ' + (k === 'urea' ? 'acc' : 'alt'), onclick: () => buy(k, acres) }, `${LN(ITEMS[k])} × ${acres} · +${ITEMS[k].nut} ${L('nutrients', 'పోషకాలు')} · ${fmtINR(Market.itemPrice(k) * acres + FEE)}`));
+      }
+      b.appendChild(o);
+      b.appendChild(h('p', { class: 'empty' }, L('Money: ', 'డబ్బు: ') + fmtINR(G.S.money)));
+    } });
+  },
   savedFlash() { const s = this.el('savedot'); s.textContent = L('Saved', 'సేవ్ అయింది'); s.style.opacity = '1'; setTimeout(() => (s.style.opacity = '0'), 1400); },
   // ---------- tools ----------
   buildTools() {
@@ -97,8 +136,7 @@ const UI = {
       const unit = tl === 'seeds' ? L(' acre packs', ' ఎకరం ప్యాకెట్లు') : tl === 'fert' ? L(' bags', ' బస్తాలు') : L(' L', ' లీ.');
       o.innerHTML = ''; o.append(h('b', null, Inv.name(k)), ' · ' + fmt1(Inv.count(k)) + unit + ' · ', h('span', { class: 'kbd' }, 'Q'), ' ' + L('switch', 'మార్చు'));
       o.hidden = false;
-    } else if (tl !== 'hand') { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), L(' on your field', ' మీ పొలంలో')); o.hidden = false; }
-    else o.hidden = true;
+    } else { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), tl === 'auto' ? L(' on your field: it ploughs, sows, feeds and harvests by itself', ' మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది') : L(' on your field', ' మీ పొలంలో')); o.hidden = false; }
     const tbG = this.el('tbG'); if (tbG) tbG.hidden = false;
   },
   setPrompt(list) {
@@ -107,106 +145,123 @@ const UI = {
     p.hidden = false; p.innerHTML = '';
     p.append(h('kbd', null, isMobile ? L('Tap', 'తాకండి') : 'E'), h('span', null, list[0].label()));
     if (list.length > 1) p.append(h('span', { class: 'more' }, L(`+${list.length - 1} more`, `+${list.length - 1} ఇంకా`)));
-    const te = this.el('tbE'); if (te) te.textContent = list.length ? 'E' : 'E';
   },
   // ---------- HUD update ----------
+  // set text only when it changed (avoids needless layout work on phones)
+  setText(el, txt) { if (el && el._t !== txt) { el._t = txt; el.textContent = txt; } },
   update(dt) {
-    this.uiT -= dt; this.mapT -= dt;
-    if (this.mapT <= 0) { this.mapT = isMobile ? 0.2 : 0.1; Map2.drawMini(); }
-    // beacon
-    const pm = Missions.primaryMarker(); const wp = G.S.waypoint;
-    const tgt = wp || (pm && pm.p);
-    const P = Player.pos();
-    if (tgt && Math.hypot(tgt.x - P.x, tgt.z - P.z) > 14 && !this.photoMode) { this.beacon.visible = true; this.beacon.position.set(tgt.x, World.groundHeight(tgt.x, tgt.z) + 80, tgt.z); this.beacon.material.color.set(wp ? '#7fd3ff' : '#f2b52d'); this.beacon.material.opacity = 0.12 + 0.08 * Math.sin(G.t * 3); }
+    this.uiT -= dt; this.mapT -= dt; this.tickT = (this.tickT || 0) - dt;
+    if (this.mapT <= 0) { this.mapT = isMobile ? 0.15 : 0.1; Map2.drawMini(); }
+    Guide.update();
+    // light pillar over the target, seen from far away
+    const t = Map2.target(); const P = Player.pos();
+    if (t && Math.hypot(t.x - P.x, t.z - P.z) > 30 && !this.photoMode) { this.beacon.visible = true; this.beacon.position.set(t.x, World.groundHeight(t.x, t.z) + 80, t.z); this.beacon.material.color.set(t.wp ? '#7fd3ff' : '#f2b52d'); this.beacon.material.opacity = 0.12 + 0.08 * Math.sin(G.t * 3); }
     else this.beacon.visible = false;
     if (this.uiT > 0 && !this.dirty) return;
-    this.uiT = 0.2; this.dirty = false;
+    this.uiT = 0.25; this.dirty = false;
     const S = G.S; const Pl = S.player;
-    this.el('money').textContent = fmtINR(S.money);
-    this.el('pname').textContent = S.player.name;
-    this.el('prank').textContent = LN(RANKS[S.rank]);
-    const setBar = (id, v, col) => { const b = this.el('b' + id); b.style.width = clamp(v, 0, 100) + '%'; b.style.background = col || (v < 25 ? 'var(--bad)' : v < 50 ? 'var(--warn)' : 'var(--good)'); this.el('v' + id).textContent = isNaN(v) ? '-' : Math.round(v); };
+    this.setText(this.el('money'), fmtINR(S.money));
+    this.setText(this.el('pname'), S.player.name);
+    this.setText(this.el('prank'), LN(RANKS[S.rank]));
+    const setBar = (id, v, col) => { const b = this.el('b' + id); const w = clamp(Math.round(v), 0, 100) + '%'; const c = col || (v < 25 ? 'var(--bad)' : v < 50 ? 'var(--warn)' : 'var(--good)'); if (b._w !== w) { b._w = w; b.style.width = w; } if (b._c !== c) { b._c = c; b.style.background = c; } this.setText(this.el('v' + id), isNaN(v) ? '-' : String(Math.round(v))); };
     setBar('Health', Pl.health); setBar('Energy', Pl.energy, 'var(--accent)');
     const pf = Fields.playerFields(); const grow = pf.filter((f) => f.crop);
-    const avgW = pf.length ? pf.reduce((s, f) => s + f.water, 0) / pf.length : NaN; setBar('Water', avgW, 'var(--indigo)');
-    const avgH = grow.length ? grow.reduce((s, f) => s + f.health, 0) / grow.length : NaN; setBar('Crop', avgH);
-    this.el('clock').textContent = Time.fmtClock();
-    this.el('date').textContent = Time.fmtDate();
+    const avgW = pf.length ? pf.reduce((s2, f) => s2 + f.water, 0) / pf.length : NaN; setBar('Water', avgW, 'var(--indigo)');
+    const avgH = grow.length ? grow.reduce((s2, f) => s2 + f.health, 0) / grow.length : NaN; setBar('Crop', avgH);
+    this.setText(this.el('clock'), Time.fmtClock());
+    this.setText(this.el('date'), Time.fmtDate());
     const wid = G.S.weather.id; const W = WEATHER[wid];
     const fest = Time.festivalToday();
-    this.el('wx').innerHTML = (ICON[W.icon] || '') + `<span>${LN(W)} · ${Math.round(Weather.temp)}°C${G.S.weather.drought ? ' · ' + L('Drought', 'కరువు') : ''}${fest ? ' · ' + LN(fest) : ''}${Weather.powerCut ? ' · ' + L('Power cut', 'కరెంటు లేదు') : ''}</span>`;
-    // ticker
-    const rows = this.el('tkrows'); if (rows.offsetParent !== null) rows.innerHTML = '';
-    if (rows.offsetParent !== null) for (const c of [...CROP_IDS, 'mango']) {
-      const tr = Market.trend(c);
-      rows.appendChild(h('div', { class: 'tk' }, h('span', null, LN(PRODUCE[c])), h('span', { class: 'p' }, fmtINR(Market.price(c))), h('span', { class: tr > 0.005 ? 'u' : tr < -0.005 ? 'd' : '' }, tr > 0.005 ? '▲' : tr < -0.005 ? '▼' : '•')));
+    const wx = (ICON[W.icon] || '') + `<span>${LN(W)} · ${Math.round(Weather.temp)}°C${G.S.weather.drought ? ' · ' + L('Drought', 'కరువు') : ''}${fest ? ' · ' + LN(fest) : ''}${Weather.powerCut ? ' · ' + L('Power cut', 'కరెంటు లేదు') : ''}</span>`;
+    const wxEl = this.el('wx'); if (wxEl._t !== wx) { wxEl._t = wx; wxEl.innerHTML = wx; }
+    // market ticker (only when shown, every 2 s)
+    const rows = this.el('tkrows');
+    if (this.tickT <= 0 && rows.offsetParent !== null) {
+      this.tickT = 2; rows.innerHTML = '';
+      for (const c of [...CROP_IDS, 'mango']) {
+        const tr = Market.trend(c);
+        rows.appendChild(h('div', { class: 'tk' }, h('span', null, LN(PRODUCE[c])), h('span', { class: 'p' }, fmtINR(Market.price(c))), h('span', { class: tr > 0.005 ? 'u' : tr < -0.005 ? 'd' : '' }, tr > 0.005 ? '▲' : tr < -0.005 ? '▼' : '•')));
+      }
     }
-    // missions
-    const mb = this.el('missions'); mb.innerHTML = '';
-    mb.appendChild(h('h4', null, L('Missions', 'లక్ష్యాలు')));
-    const act = S.missions.active.slice(0, isMobile ? 2 : 4);
-    if (!act.length) mb.appendChild(h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
-    for (const m of act) {
-      const fr = clamp01(m.prog / m.target);
-      const progTxt = m.target > 1.5 ? ` · ${m.target >= 1000 ? fmtShortINR(m.prog).replace('₹', m.tpl === 'earnSales' || m.tpl === 'income' ? '₹' : '') : fmt1(m.prog)}/${m.target >= 1000 ? fmtShortINR(m.target) : m.target}` : '';
-      mb.appendChild(h('div', { class: 'ms' }, h('b', null, LN(m.title)), h('small', null, (m.reward ? L('Reward ', 'బహుమతి ') + fmtINR(m.reward) : '') + progTxt), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } }))));
+    // missions: tutorial first, with a one-line "what to do" and the distance to go
+    const act = Missions.ordered().slice(0, isMobile ? 2 : 4);
+    const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
+    const mkey = LANG + '|' + act.map((m) => m.uid + ':' + Math.round(clamp01(m.prog / m.target) * 50)).join(',') + '|' + (tg ? (tg.name || '') + Math.round(tgD / 10) : '');
+    if (mkey !== this._mKey) {
+      this._mKey = mkey;
+      const mb = this.el('missions'); mb.innerHTML = '';
+      mb.appendChild(h('h4', null, L('Missions', 'లక్ష్యాలు')));
+      if (!act.length) mb.appendChild(h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
+      act.forEach((m, i) => {
+        const fr = clamp01(m.prog / m.target);
+        const progTxt = m.target > 1.5 ? ` · ${m.target >= 1000 ? fmtShortINR(m.prog).replace('₹', m.tpl === 'earnSales' || m.tpl === 'income' ? '₹' : '') : fmt1(m.prog)}/${m.target >= 1000 ? fmtShortINR(m.target) : m.target}` : '';
+        const hint = Missions.hintFor(m);
+        const go = tg && tg.m === m && tgD > 7 ? `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}` : '';
+        mb.appendChild(h('div', { class: 'ms' + (i === 0 ? ' top' : '') }, h('b', null, LN(m.title)), hint ? h('span', { class: 'hint' }, hint) : null, go ? h('span', { class: 'go' }, go) : null, h('small', null, (m.reward ? L('Reward ', 'బహుమతి ') + fmtINR(m.reward) : '') + progTxt), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } }))));
+      });
+      mb.onclick = () => this.office('missions');
     }
-    mb.onclick = () => this.office('missions');
     this.updateBL();
-    this.el('fps').hidden = !Settings.v.fps;
+    const fpsEl = this.el('fps'); if (fpsEl.hidden === !!Settings.v.fps) fpsEl.hidden = !Settings.v.fps;
   },
   updateBL() {
     const box = this.el('hud-bl'); const v = Player.vehicle;
-    const tools = this.el('tools'); if (tools) tools.hidden = !!v || this.photoMode;
+    const tools = this.el('tools'); const th = !!v || !!this.photoMode; if (tools && tools.hidden !== th) tools.hidden = th;
     if (v) this.el('toolopt').hidden = true; else if (this._wasInV) this.refreshTools();
     this._wasInV = !!v;
-    if (this.photoMode) { box.hidden = true; return; }
+    if (this.photoMode) { box.hidden = true; this._blKey = ''; return; }
     if (v) {
-      box.hidden = false; box.innerHTML = '';
       const kmh = Math.round(Math.abs(v.speed) * 3.6);
-      box.appendChild(h('h5', null, h('span', null, v.label()), v.rentUntil ? h('span', { class: 'chip warn' }, L('Rented ', 'అద్దె ') + Math.max(0, Math.round((v.rentUntil - Time.totalMin()) / 60 * 10) / 10) + L(' h', ' గం.')) : null));
-      box.appendChild(h('div', { id: 'speedo' }, String(kmh), h('small', null, 'km/h')));
-      const kv = h('div', { class: 'kv' });
-      const add = (k, val) => kv.append(h('span', null, k), h('span', null, val));
-      if (v.def.fuelCap > 0) add(L('Diesel', 'డీజిల్'), `${fmt1(v.fuel)} / ${v.def.fuelCap} L`);
-      if (v.def.fuelCap > 0 || v.type === 'harvester') add(L('Condition', 'స్థితి'), Math.round(v.cond) + '%');
-      if (v.impl) add(L('Implement', 'పనిముట్టు'), LN(IMPLEMENTS[v.impl]) + (IMPLEMENTS[v.impl].op ? (v.lowered ? L(' · lowered', ' · దించారు') : L(' · raised', ' · ఎత్తారు')) : ''));
-      if (v.type === 'harvester') add(L('Header', 'హెడర్'), v.lowered ? L('Lowered — harvesting', 'దించారు — కోస్తోంది') : L('Raised', 'ఎత్తారు'));
-      if (v.impl === 'seeddrill' && v.sowCrop) add(L('Sowing', 'విత్తుతోంది'), `${LN(CROPS[v.sowCrop])} (${fmt1(Inv.count('seed_' + v.sowCrop))})`);
-      if (v.impl === 'sprayer') add(L('Tank', 'ట్యాంక్'), `${LN(ITEMS[v.chem])} (${fmt1(Inv.count(v.chem))} L)`);
-      if (v.impl === 'spreader') add(L('Hopper', 'హాపర్'), `${LN(ITEMS[v.fert])} (${fmt1(Inv.count(v.fert))})`);
-      if (v.impl === 'tanker') add(L('Water', 'నీరు'), Math.round(v.tank) + '%');
-      if (v.cargoCap > 0) add(L('Cargo', 'సరుకు'), `${fmt1(v.cargoQty)} / ${v.cargoCap} q${v.cargo[0] ? ' ' + LN(PRODUCE[v.cargo[0].crop]) : ''}`);
-      box.appendChild(kv);
+      const rows = [];
+      if (v.def.fuelCap > 0) rows.push([L('Diesel', 'డీజిల్'), `${fmt1(v.fuel)} / ${v.def.fuelCap} L`]);
+      if (v.def.fuelCap > 0 || v.type === 'harvester') rows.push([L('Condition', 'స్థితి'), Math.round(v.cond) + '%']);
+      if (v.impl) rows.push([L('Implement', 'పనిముట్టు'), LN(IMPLEMENTS[v.impl]) + (IMPLEMENTS[v.impl].op ? (v.lowered ? L(' · lowered', ' · దించారు') : L(' · raised', ' · ఎత్తారు')) : '')]);
+      if (v.type === 'harvester') rows.push([L('Header', 'హెడర్'), v.lowered ? L('Lowered — harvesting', 'దించారు — కోస్తోంది') : L('Raised', 'ఎత్తారు')]);
+      if (v.impl === 'seeddrill' && v.sowCrop) rows.push([L('Sowing', 'విత్తుతోంది'), `${LN(CROPS[v.sowCrop])} (${fmt1(Inv.count('seed_' + v.sowCrop))})`]);
+      if (v.impl === 'sprayer') rows.push([L('Tank', 'ట్యాంక్'), `${LN(ITEMS[v.chem])} (${fmt1(Inv.count(v.chem))} L)`]);
+      if (v.impl === 'spreader') rows.push([L('Hopper', 'హాపర్'), `${LN(ITEMS[v.fert])} (${fmt1(Inv.count(v.fert))})`]);
+      if (v.impl === 'tanker') rows.push([L('Water', 'నీరు'), Math.round(v.tank) + '%']);
+      if (v.cargoCap > 0) rows.push([L('Cargo', 'సరుకు'), `${fmt1(v.cargoQty)} / ${v.cargoCap} q${v.cargo[0] ? ' ' + LN(PRODUCE[v.cargo[0].crop]) : ''}`]);
+      const rent = v.rentUntil ? L('Rented ', 'అద్దె ') + Math.max(0, Math.round((v.rentUntil - Time.totalMin()) / 60 * 10) / 10) + L(' h', ' గం.') : '';
       const hint = isMobile ? '' : v.impl && IMPLEMENTS[v.impl].op || v.type === 'harvester' ? L('G lower/raise · E get off', 'G దించు/ఎత్తు · E దిగు') : L('E get off · H horn · L lights', 'E దిగు · H హారన్ · L లైట్లు');
+      const key = 'v|' + v.label() + kmh + rent + rows.join() + hint;
+      box.hidden = false;
+      if (key === this._blKey) return;
+      this._blKey = key; box.innerHTML = '';
+      box.appendChild(h('h5', null, h('span', null, v.label()), rent ? h('span', { class: 'chip warn' }, rent) : null));
+      box.appendChild(h('div', { id: 'speedo' }, String(kmh), h('small', null, 'km/h')));
+      const kv = h('div', { class: 'kv' }); for (const [a, b] of rows) kv.append(h('span', null, a), h('span', null, b)); box.appendChild(kv);
       if (hint) box.appendChild(h('small', { style: { color: 'var(--ink-2)' } }, hint));
       return;
     }
     const P = Player.pos();
     const f = fieldAt(P.x, P.z) || Fields.nearest(P.x, P.z, (q) => q.isPlayer && Math.hypot(q.x - P.x, q.z - P.z) < Math.hypot(q.w, q.d) / 2 + 6);
     if (f && (f.isPlayer || fieldAt(P.x, P.z))) {
-      box.hidden = false; box.innerHTML = '';
       const own = f.owner === 'player' ? L('Owned', 'సొంతం') : f.owner === 'lease' ? L('Leased', 'కౌలు') : f.avail ? (f.avail === 'lease' ? L('For lease', 'కౌలుకు') : L('For sale', 'అమ్మకానికి')) : L('Neighbour\'s field', 'పొరుగువారి పొలం');
-      box.appendChild(h('h5', null, h('span', null, f.label()), h('span', { class: 'chip' + (f.isPlayer ? ' good' : '') }, own)));
-      box.appendChild(h('small', { style: { color: 'var(--ink-2)' } }, `${fmt1(f.acres)} ${L('acres', 'ఎకరాలు')} · ${LN(SOILS[f.soil])}${f.borewell ? ' · ' + L('Borewell', 'బోరు') : ''}${f.canal ? ' · ' + L('Canal', 'కాలువ') : ''}`));
+      const sub = `${fmt1(f.acres)} ${L('acres', 'ఎకరాలు')} · ${LN(SOILS[f.soil])}${f.borewell ? ' · ' + L('Borewell', 'బోరు') : ''}${f.canal ? ' · ' + L('Canal', 'కాలువ') : ''}`;
+      let line = '', stats = [], heap = '';
       if (f.isPlayer) {
-        const st = f.stageName();
-        if (f.crop) box.appendChild(h('div', { style: { fontWeight: 700 } }, `${LN(CROPS[f.crop])} · ${LN(st)} · ${Math.round(f.growth * 100)}%`));
-        else { const pl = f.countMin(1) / f.n, pr = f.countMin(2) / f.n; box.appendChild(h('div', { style: { fontWeight: 600 } }, `${L('Ploughed', 'దున్నింది')} ${Math.round(pl * 100)}% · ${L('Seedbed', 'సిద్ధం')} ${Math.round(pr * 100)}%`)); }
-        const mini = h('div', { class: 'mini' });
         const cd = f.crop ? CROPS[f.crop] : null;
-        const item = (k, v, bad, col) => mini.append(h('div', null, k, h('b', null, Math.round(v) + '%'), h('div', { class: 'mb' }, h('i', { style: { width: clamp(v, 0, 100) + '%', background: bad ? 'var(--bad)' : col || 'var(--good)' } }))));
-        item(L('Water', 'నీరు'), f.water, cd && f.water < cd.wLo, 'var(--indigo)');
-        item(L('Nutr.', 'పోషకం'), f.nut, f.nut < 25);
-        item(L('Weeds', 'కలుపు'), f.weeds, f.weeds > 30);
-        item(L('Pests', 'పురుగు'), f.pests, f.pests > 15);
-        item(L('Health', 'ఆరోగ్యం'), f.crop ? f.health : 100, f.health < 50);
+        line = f.crop ? `${LN(CROPS[f.crop])} · ${LN(f.stageName())} · ${Math.round(f.growth * 100)}%` : `${L('Ploughed', 'దున్నింది')} ${Math.round(f.countMin(1) / f.n * 100)}% · ${L('Seedbed', 'సిద్ధం')} ${Math.round(f.countMin(2) / f.n * 100)}%`;
+        stats = [[L('Water', 'నీరు'), f.water, cd && f.water < cd.wLo, 'var(--indigo)'], [L('Nutr.', 'పోషకం'), f.nut, f.nut < 25], [L('Weeds', 'కలుపు'), f.weeds, f.weeds > 30], [L('Pests', 'పురుగు'), f.pests, f.pests > 15], [L('Health', 'ఆరోగ్యం'), f.crop ? f.health : 100, f.health < 50]];
+        if (f.heap) heap = L('Heap: ', 'కుప్ప: ') + `${fmt1(f.heap.qty)} q ${LN(PRODUCE[f.heap.crop])} (${L('grade', 'గ్రేడ్')} ${Market.qualityLabel(f.heap.q)})`;
+      }
+      const key = 'f|' + f.id + own + sub + line + stats.map((r) => r[0] + Math.round(r[1]) + r[2]).join() + heap;
+      box.hidden = false;
+      if (key === this._blKey) return;
+      this._blKey = key; box.innerHTML = '';
+      box.appendChild(h('h5', null, h('span', null, f.label()), h('span', { class: 'chip' + (f.isPlayer ? ' good' : '') }, own)));
+      box.appendChild(h('small', { style: { color: 'var(--ink-2)' } }, sub));
+      if (f.isPlayer) {
+        box.appendChild(h('div', { style: { fontWeight: f.crop ? 700 : 600 } }, line));
+        const mini = h('div', { class: 'mini' });
+        for (const [k, val, bad, col2] of stats) mini.append(h('div', null, k, h('b', null, Math.round(val) + '%'), h('div', { class: 'mb' }, h('i', { style: { width: clamp(val, 0, 100) + '%', background: bad ? 'var(--bad)' : col2 || 'var(--good)' } }))));
         box.appendChild(mini);
-        if (f.heap) box.appendChild(h('small', null, L('Heap: ', 'కుప్ప: ') + `${fmt1(f.heap.qty)} q ${LN(PRODUCE[f.heap.crop])} (${L('grade', 'గ్రేడ్')} ${Market.qualityLabel(f.heap.q)})`));
+        if (heap) box.appendChild(h('small', null, heap));
       }
       return;
     }
-    box.hidden = true;
+    box.hidden = true; this._blKey = '';
   },
   // ---------- modal sheets ----------
   modalOpen() { return !this.el('modal').hidden; },
@@ -221,7 +276,7 @@ const UI = {
     const head = h('header', null, h('div', { style: { minWidth: 0 } }, h('h2', null, o.title), o.sub ? h('p', null, o.sub) : null), h('button', { class: 'x', 'aria-label': L('Close', 'మూసివేయి'), onclick: () => this.close() }, '✕'));
     const tabs = h('div', { class: 'tabs', role: 'tablist' });
     const body = h('div', { class: 'body' });
-    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
+    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : '') + (o.wide ? ' wide' : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
     m.appendChild(sh);
     m.onclick = (e) => { if (e.target === m) this.close(); };
     const st = { kind: o.kind, onClose: o.onClose, tab: o.tab || (o.tabs ? o.tabs[0].id : null) };
@@ -673,17 +728,7 @@ const UI = {
   },
   // ---------- map ----------
   map() {
-    this.sheet({ title: L('Map of the mandal', 'మండలం మ్యాప్'), kind: 'map', render: (b) => {
-      const cv = h('canvas', { id: 'fullmap', width: 1000, height: 1000 });
-      const wrap = h('div', { style: { position: 'relative', width: 'min(100%, 70vh)', aspectRatio: '1', margin: '0 auto', maxWidth: '100%' } }, cv);
-      b.appendChild(wrap);
-      const lg = h('div', { class: 'legend', style: { marginTop: '10px' } });
-      for (const [c, t] of [['#f2b52d', L('You', 'మీరు')], ['#e8a81a', L('Your fields', 'మీ పొలాలు')], ['#c4573a', L('For sale / lease', 'అమ్మకం / కౌలు')], ['#2f6fb0', L('Water', 'నీరు')], ['#f7f2e8', L('Mission', 'లక్ష్యం')], ['#7fd3ff', L('Waypoint', 'గమ్యం')]]) lg.appendChild(h('span', null, h('i', { style: { background: c } }), t));
-      b.appendChild(lg);
-      b.appendChild(h('div', { class: 'row', style: { marginTop: '8px' } }, this.btn(L('Clear waypoint', 'గమ్యం తీసేయండి'), () => { G.S.waypoint = null; Map2.drawFull(cv); }, 'sm alt'), h('span', { style: { color: 'var(--ink-2)', fontSize: '12px' } }, L('Tap the map to set a waypoint.', 'గమ్యం పెట్టడానికి మ్యాప్‌ను నొక్కండి.'))));
-      cv.onclick = (e) => { const r = cv.getBoundingClientRect(); const px = (e.clientX - r.left) / r.width, pz = (e.clientY - r.top) / r.height; const w = Map2.fullToWorld(px, pz); G.S.waypoint = w; Map2.drawFull(cv); Audio2.sfx('click'); };
-      Map2.drawFull(cv);
-    } });
+    this.sheet({ title: L('Map', 'మ్యాప్'), kind: 'map', wide: true, onClose: () => Map2.close(), render: (b) => Map2.open(b) });
   },
   // ---------- settings ----------
   settings() {
@@ -699,7 +744,8 @@ const UI = {
       setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
       setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
       const chk = (key, label) => h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); } }), label);
-      setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), isMobile ? chk('fps60', L('Smooth 60 FPS (uses more battery)', 'స్మూత్ 60 FPS (బ్యాటరీ ఎక్కువ)')) : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
+      if (isMobile) setRow(L('Frame rate', 'ఫ్రేమ్ రేట్'), seg([['auto', L('Auto', 'ఆటో')], ['60', L('60 smooth', '60 స్మూత్')], ['30', L('30 battery', '30 బ్యాటరీ')]], fpsMode(), (m) => { v.fpsMode = m; Settings.save(); }));
+      setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది')), isMobile ? null : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
       if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
       b.appendChild(h('div', { class: 'row', style: { marginTop: '16px' } },
         this.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
@@ -712,14 +758,14 @@ const UI = {
   help() {
     this.sheet({ title: L('Controls', 'నియంత్రణలు'), narrow: true, render: (b) => {
       const rows = isMobile ? [
-        [L('Left stick', 'ఎడమ స్టిక్'), L('Walk / drive', 'నడవండి / నడపండి')], [L('Drag right side', 'కుడివైపు లాగండి'), L('Look around, pinch to zoom', 'చుట్టూ చూడండి, జూమ్ కోసం పించ్')], ['E', L('Interact, talk, drive, get off', 'మాట్లాడు, నడుపు, దిగు')], [L('Work', 'పని'), L('Hold to use the selected tool on your field', 'పొలంలో పనిముట్టు వాడటానికి పట్టుకోండి')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['V', L('Switch camera view', 'కెమెరా మార్చు')], [L('Tool bar', 'పనిముట్ల బార్'), L('Tap a tool; tap again to switch seed/fertilizer type', 'పనిముట్టు నొక్కండి; మళ్లీ నొక్కితే రకం మారుతుంది')],
+        [L('Left stick', 'ఎడమ స్టిక్'), L('Walk; push it all the way to run', 'నడవండి; పూర్తిగా నెడితే పరుగు')], [L('Drag right side', 'కుడివైపు లాగండి'), L('Look around, pinch to zoom', 'చుట్టూ చూడండి, జూమ్ కోసం పించ్')], [L('Work', 'పని'), L('Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests', 'పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది')], [L('Use', 'వాడు'), L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], [L('Gold arrow', 'బంగారు బాణం'), L('Always points to your next goal', 'మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది')], [L('Map', 'మ్యాప్'), L('Tap a place, then take an auto straight there', 'ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['V', L('Switch camera view', 'కెమెరా మార్చు')],
       ] : [
-        ['W A S D', L('Walk / drive', 'నడవండి / నడపండి')], ['Shift', L('Run', 'పరుగు')], ['Space', L('Jump / brake', 'దూకు / బ్రేక్')], [L('Mouse drag, wheel', 'మౌస్ లాగడం, వీల్'), L('Look around, zoom', 'చూడండి, జూమ్')], ['E', L('Interact, talk, drive, get off', 'మాట్లాడు, నడుపు, దిగు')], ['F', L('Hold to work with the selected tool', 'పనిముట్టుతో పని చేయడానికి పట్టుకోండి')],
-        ['1 – 6', L('Hand, hoe, seeds, fertilizer, sprayer, sickle', 'చేయి, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
+        ['W A S D', L('Walk / drive', 'నడవండి / నడపండి')], ['Shift', L('Run', 'పరుగు')], ['Space', L('Jump / brake', 'దూకు / బ్రేక్')], [L('Mouse drag, wheel', 'మౌస్ లాగడం, వీల్'), L('Look around, zoom', 'చూడండి, జూమ్')], ['E', L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], ['F', L('Hold on your field: Auto does the next job', 'పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది')],
+        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
       ];
       const t = h('table', { class: 't' }); for (const [k, v2] of rows) t.appendChild(h('tr', null, h('td', null, h('span', { class: 'kbd' }, k)), h('td', null, v2)));
       b.appendChild(t);
-      b.appendChild(h('p', { class: 'empty' }, L('Tip: sleep at home to skip the night. Crops grow while you sleep.', 'చిట్కా: రాత్రి గడపడానికి ఇంట్లో నిద్రపోండి. మీరు నిద్రపోతున్నప్పుడు పంటలు పెరుగుతాయి.')));
+      b.appendChild(h('p', { class: 'empty' }, L('Tip: follow the gold arrow. When the crop is growing and there is nothing to do, use “Rest” on your field to jump ahead.', 'చిట్కా: బంగారు బాణాన్ని అనుసరించండి. పంట పెరుగుతూ పని లేనప్పుడు పొలంలో \'విశ్రాంతి\' వాడి సమయం ముందుకు జరపండి.')));
     } });
   },
   photo() {
@@ -746,7 +792,7 @@ const UI = {
     let id = null, cx = 0, cy = 0;
     const R = 50;
     joy.addEventListener('pointerdown', (e) => { id = e.pointerId; joy.setPointerCapture(id); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; move(e); Input.joy.active = true; Audio2.unlock(); });
-    const move = (e) => { if (e.pointerId !== id) return; let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = d > R * 0.98 && !Player.vehicle && Input.runToggle; };
+    const move = (e) => { if (e.pointerId !== id) return; let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92); };
     joy.addEventListener('pointermove', move);
     const end = (e) => { if (e.pointerId !== id) return; id = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; };
     joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
@@ -768,7 +814,7 @@ const UI = {
     set('tbV', L('View', 'వ్యూ'));
     set('tbJump', inV ? L('Brake', 'బ్రేక్') : L('Jump', 'దూకు'));
     set('tbRun', L('Run', 'పరుగు'), !inV);
-    set('tbWork', L('Work', 'పని'), !inV && Player.tool !== 'hand');
+    set('tbWork', L('Work', 'పని'), !inV);
     const real = (Interact.current || []).filter((o) => o.id !== 'exit');
     set('tbE', inV && !real.length ? L('Get off', 'దిగు') : real.length ? L('Use', 'వాడు') : L('Use', 'వాడు'));
     this.el('tbE').classList.toggle('dim', !inV && !real.length);
@@ -860,87 +906,443 @@ const Dialog = {
 };
 
 // ---------------- minimap & full map ----------------
+// Places shown with icons: [interaction id or POI key, icon, colour, English, Telugu, label priority]
+const MAP_PLACES = [
+  ['home', 'home', '#d99a12', 'Your house', 'మీ ఇల్లు', 1], ['seed', 'seed', '#2f7d3a', 'Seed shop', 'విత్తనాల దుకాణం', 1],
+  ['kirana', 'bag', '#c0392b', 'Kirana', 'కిరాణం', 2], ['tea', 'cup', '#d9531e', 'Tea stall', 'టీ స్టాల్', 2],
+  ['workshop', 'tractor', '#20364a', 'Tractor workshop', 'ట్రాక్టర్ వర్క్‌షాప్', 1], ['temple', 'temple', '#c2501a', 'Temple', 'గుడి', 2],
+  ['panchayat', 'flag', '#2f5d8a', 'Panchayat', 'పంచాయతీ', 2], ['phc', 'plus', '#2e8b57', 'Health centre', 'ఆరోగ్య కేంద్రం', 2],
+  ['lender', 'coin', '#7a2f2f', 'Moneylender', 'వడ్డీ వ్యాపారి', 3], ['busV', 'bus', '#6b3fa0', 'Bus stop', 'బస్ స్టాప్', 2],
+  ['busT', 'bus', '#6b3fa0', 'Town bus stand', 'పట్టణ బస్ స్టాండ్', 2], ['bank', 'bank', '#1f3f8a', 'Bank', 'బ్యాంకు', 2],
+  ['dealer', 'tractor', '#b8321f', 'Kisan Motors', 'కిసాన్ మోటార్స్', 2], ['tiffin', 'cup', '#e07b22', 'Tiffin centre', 'టిఫిన్ సెంటర్', 3],
+  ['yardSell', 'scale', '#a86a12', 'Market yard', 'మార్కెట్ యార్డ్', 1], ['petrol', 'fuel', '#b8321f', 'Petrol bunk', 'పెట్రోల్ బంక్', 2],
+  ['dhaba', 'cup', '#d9531e', 'Dhaba', 'దాబా', 3], ['santha', 'basket', '#8a5a2a', 'Santha ground', 'సంత మైదానం', 3],
+  ['ghat', 'water', '#2f6fb0', 'Lake ghat', 'చెరువు ఘాట్', 3], ['shrine', 'hill', '#c2501a', 'Hill shrine', 'గుట్ట గుడి', 3],
+];
+// small white glyph on a coloured disc
+function mapIcon(ctx, kind, x, y, r, col, ring) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fillStyle = col; ctx.fill();
+  ctx.lineWidth = Math.max(1.2, r * 0.2); ctx.strokeStyle = ring || '#fffaf0'; ctx.stroke();
+  const k = r / 10; ctx.scale(k, k);
+  ctx.fillStyle = '#fff'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const P = (pts, close = true) => { ctx.beginPath(); pts.forEach(([a, b], i) => (i ? ctx.lineTo(a, b) : ctx.moveTo(a, b))); if (close) ctx.closePath(); };
+  const dot = (a, b, rr) => { ctx.beginPath(); ctx.arc(a, b, rr, 0, TAU); ctx.fill(); };
+  switch (kind) {
+    case 'home': P([[-6, 0], [0, -6], [6, 0], [4.5, 0], [4.5, 5.5], [-4.5, 5.5], [-4.5, 0]]); ctx.fill(); break;
+    case 'seed': P([[0, 6], [0, -1]], false); ctx.stroke(); ctx.beginPath(); ctx.ellipse(-3.2, -2.4, 3.6, 1.8, -0.6, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.ellipse(3.2, -3.4, 3.6, 1.8, 0.6, 0, TAU); ctx.fill(); break;
+    case 'bag': P([[-5, -2], [5, -2], [4, 6], [-4, 6]]); ctx.fill(); ctx.beginPath(); ctx.arc(0, -2, 3, Math.PI, 0); ctx.stroke(); break;
+    case 'cup': P([[-5, -2], [3, -2], [2.4, 5], [-4.4, 5]]); ctx.fill(); ctx.beginPath(); ctx.arc(3.6, 1.4, 2.2, -1.2, 1.4); ctx.stroke(); P([[-2.5, -4.5], [-2, -7]], false); ctx.stroke(); P([[0.5, -4.5], [1, -7]], false); ctx.stroke(); break;
+    case 'tractor': dot(-2.5, 2, 4); dot(4.5, 3.8, 2.3); P([[-1, -1], [5.5, -1], [5.5, 2], [-1, 2]]); ctx.fill(); P([[-3, -6], [1, -6], [1, -1], [-3, -1]]); ctx.fill(); ctx.fillStyle = col; dot(-2.5, 2, 1.6); break;
+    case 'temple': P([[-6, 6], [6, 6], [4, 1], [2.6, 1], [1.8, -3], [0.9, -3], [0, -7], [-0.9, -3], [-1.8, -3], [-2.6, 1], [-4, 1]]); ctx.fill(); break;
+    case 'flag': P([[-4, 7], [-4, -7]], false); ctx.stroke(); P([[-4, -7], [5.5, -4.5], [-4, -1.5]]); ctx.fill(); break;
+    case 'plus': ctx.fillRect(-1.9, -6, 3.8, 12); ctx.fillRect(-6, -1.9, 12, 3.8); break;
+    case 'coin': ctx.font = '800 13px "Hind Guntur", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('₹', 0, 0.8); break;
+    case 'bus': P([[-5.5, -5.5], [5.5, -5.5], [5.5, 4], [-5.5, 4]]); ctx.fill(); ctx.fillStyle = col; ctx.fillRect(-4, -4, 8, 3.2); ctx.fillStyle = '#fff'; dot(-3, 5, 1.6); dot(3, 5, 1.6); break;
+    case 'bank': P([[-6.5, -2.5], [0, -7], [6.5, -2.5]]); ctx.fill(); for (const xx of [-4.5, -0.8, 2.9]) ctx.fillRect(xx, -1.5, 1.7, 6); ctx.fillRect(-6.5, 5, 13, 1.8); break;
+    case 'fuel': P([[-5, -6], [2, -6], [2, 6], [-5, 6]]); ctx.fill(); ctx.fillStyle = col; ctx.fillRect(-3.6, -4.5, 4.2, 3); P([[2, -2], [5, 0], [5, 4]], false); ctx.stroke(); break;
+    case 'scale': P([[0, -6], [0, 6]], false); ctx.stroke(); P([[-6, -3.5], [6, -3.5]], false); ctx.stroke(); P([[-6, -3.5], [-8, 1.5], [-4, 1.5]]); ctx.fill(); P([[6, -3.5], [4, 1.5], [8, 1.5]]); ctx.fill(); ctx.fillRect(-3.5, 5.2, 7, 1.8); break;
+    case 'basket': P([[-6.5, -1], [6.5, -1], [4.5, 6], [-4.5, 6]]); ctx.fill(); ctx.fillStyle = col; for (const xx of [-3, 0, 3]) dot(xx, -2.8, 2.1); ctx.fillStyle = '#fff'; for (const xx of [-3, 0, 3]) dot(xx, -3.2, 1.5); break;
+    case 'water': for (const yy of [-3.5, 0.5, 4.5]) { ctx.beginPath(); ctx.moveTo(-6.5, yy); ctx.bezierCurveTo(-3.5, yy - 3, -1.5, yy + 3, 1.2, yy); ctx.bezierCurveTo(3.5, yy - 3, 5, yy + 2, 6.5, yy); ctx.stroke(); } break;
+    case 'hill': P([[-7, 6], [-1, -3], [2, 1], [3.5, -1], [7, 6]]); ctx.fill(); P([[-1, -3], [-1, -8]], false); ctx.lineWidth = 1.4; ctx.stroke(); P([[-1, -8], [3, -6.6], [-1, -5.2]]); ctx.fill(); break;
+    case 'field': ctx.lineWidth = 1.6; for (let i = -1; i <= 1; i++) { P([[-6, i * 3.6], [6, i * 3.6]], false); ctx.stroke(); } P([[-6, -6], [6, -6], [6, 6], [-6, 6]]); ctx.stroke(); break;
+    case 'star': P(Array.from({ length: 10 }, (_, i) => { const a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? 3.2 : 7.2; return [Math.cos(a) * rr, Math.sin(a) * rr]; })); ctx.fill(); break;
+    case 'pin': dot(0, 0, 3.6); break;
+  }
+  ctx.restore();
+}
+
 const Map2 = {
-  S: 800, scale: 2, baseCanvas: null,
+  x0: -800, z0: -800, span: 1600, N: 1024, k: 0.64, base: null, terrain: null, roadsC: null, composedAt: 0, miniR: 0,
+  view: null, full: null,
   build() {
-    const N = this.S; const c = document.createElement('canvas'); c.width = N; c.height = N; const ctx = c.getContext('2d');
+    this.N = isMobile ? 768 : 1024; this.k = this.N / this.span;
+    this.terrain = this.renderTerrain();
+    this.roadsC = this.renderRoads();
+    this.base = document.createElement('canvas'); this.base.width = this.base.height = this.N;
+    this.compose();
+    Bus.on('landBought', () => this.compose()); Bus.on('landLeased', () => this.compose());
+  },
+  canvasXY(x, z) { return [(x - this.x0) * this.k, (z - this.z0) * this.k]; },
+  // terrain colours from the same weights the 3D ground uses, with hill shading, water and buildings
+  renderTerrain() {
+    const N = this.N, k = this.k; const c = document.createElement('canvas'); c.width = c.height = N; const ctx = c.getContext('2d');
     const img = ctx.createImageData(N, N); const d = img.data;
     const H = World.heights, TN = World.N, step = World.step, half = WORLD_HALF;
-    for (let j = 0; j < N; j++) for (let i = 0; i < N; i++) {
-      const x = -800 + i * 2 + 1, z = -800 + j * 2 + 1;
-      const o = World.occGet(x, z);
-      const ti = clamp(Math.round((x + half) / step), 1, TN - 2), tj = clamp(Math.round((z + half) / step), 1, TN - 2);
-      const hh = H[tj * TN + ti]; const shade = clamp(1 + (H[tj * TN + ti - 1] - H[tj * TN + ti + 1]) * 0.12 + (H[(tj - 1) * TN + ti] - H[(tj + 1) * TN + ti]) * 0.12, 0.6, 1.35);
-      let r = 96, g = 116, b = 66;
-      if (hh > 8) { r = 118; g = 120; b = 98; }
-      if (o === OCC.WATER || lakeSD(x, z) < -3) { r = 47; g = 111; b = 160; }
-      else if (o === OCC.ROAD) { r = 205; g = 190; b = 160; }
-      else if (o === OCC.BUILD) { r = 150; g = 92; b = 70; }
-      else if (o === OCC.VILLAGE) { r = 170; g = 150; b = 112; }
-      else if (o === OCC.CANAL) { r = 70; g = 140; b = 190; }
-      else if (o === OCC.ROCK) { r = 140; g = 136; b = 128; }
-      const k = (j * N + i) * 4;
-      d[k] = clamp(r * shade, 0, 255); d[k + 1] = clamp(g * shade, 0, 255); d[k + 2] = clamp(b * shade, 0, 255); d[k + 3] = 255;
+    const W4 = World.terrainMesh.geometry.attributes.color.array;
+    const RED = [168, 102, 64], BLK = [92, 78, 64], LUSH = [104, 150, 66], DRY = [178, 163, 104], ROCK = [156, 150, 140], DIRT = [196, 172, 132];
+    // per-vertex hill shade, interpolated per pixel below
+    const SH = new Float32Array(TN * TN);
+    for (let j = 1; j < TN - 1; j++) for (let i = 1; i < TN - 1; i++) { const hk = j * TN + i; SH[hk] = clamp(1 + (H[hk - 1] - H[hk + 1]) * 0.07 + (H[hk - TN] - H[hk + TN]) * 0.07, 0.72, 1.28); }
+    for (let i = 0; i < TN; i++) { SH[i] = SH[i + TN] || 1; SH[(TN - 1) * TN + i] = SH[(TN - 2) * TN + i] || 1; }
+    for (let j = 0; j < TN; j++) { SH[j * TN] = SH[j * TN + 1] || 1; SH[j * TN + TN - 1] = SH[j * TN + TN - 2] || 1; }
+    const ROOF = [178, 92, 66], VIL = [205, 186, 150], WATER = [62, 132, 190], DEEP = [38, 92, 150];
+    const green = clamp01(U.uGreen.value);
+    const w = [0, 0, 0, 0];
+    for (let j = 0; j < N; j++) {
+      const z = this.z0 + (j + 0.5) / k;
+      const fj = clamp((z + half) / step, 0, TN - 1.001), j0 = Math.floor(fj), tj = fj - j0;
+      for (let i = 0; i < N; i++) {
+        const x = this.x0 + (i + 0.5) / k;
+        const fi = clamp((x + half) / step, 0, TN - 1.001), i0 = Math.floor(fi), ti = fi - i0;
+        const q00 = (j0 * TN + i0) * 4, q10 = q00 + 4, q01 = q00 + TN * 4, q11 = q01 + 4;
+        for (let c2 = 0; c2 < 4; c2++) w[c2] = (W4[q00 + c2] * (1 - ti) + W4[q10 + c2] * ti) * (1 - tj) + (W4[q01 + c2] * (1 - ti) + W4[q11 + c2] * ti) * tj;
+        const gw = w[0], rd = w[1], rk = clamp01(w[2]), dt = clamp01(w[3]);
+        const gm = smoothstep(0.25, 0.75, gw);
+        let r = 0, g = 0, b = 0;
+        for (let c2 = 0; c2 < 3; c2++) {
+          const soil = BLK[c2] + (RED[c2] - BLK[c2]) * rd;
+          const grass = DRY[c2] + (LUSH[c2] - DRY[c2]) * green;
+          let v = soil + (grass - soil) * gm;
+          v += (DIRT[c2] - v) * dt; v += (ROCK[c2] - v) * rk;
+          if (c2 === 0) r = v; else if (c2 === 1) g = v; else b = v;
+        }
+        // hill shading (light from the north-west)
+        const v00 = j0 * TN + i0;
+        const sh = (SH[v00] * (1 - ti) + SH[v00 + 1] * ti) * (1 - tj) + (SH[v00 + TN] * (1 - ti) + SH[v00 + TN + 1] * ti) * tj;
+        r = (r * 0.75 + 128 * 0.25) * sh; g = (g * 0.75 + 132 * 0.25) * sh; b = (b * 0.75 + 92 * 0.25) * sh;
+        const o = World.occGet(x, z);
+        if (o === OCC.BUILD) { r = ROOF[0]; g = ROOF[1]; b = ROOF[2]; }
+        else if (o === OCC.VILLAGE) { r = r * 0.35 + VIL[0] * 0.65; g = g * 0.35 + VIL[1] * 0.65; b = b * 0.35 + VIL[2] * 0.65; }
+        if (Math.abs(x - LAKE.x) < LAKE.r + 50 && Math.abs(z - LAKE.z) < LAKE.r + 50) {
+          const sd = lakeSD(x, z);
+          if (sd < 0) { const dp = smoothstep(0, 45, -sd); r = WATER[0] + (DEEP[0] - WATER[0]) * dp; g = WATER[1] + (DEEP[1] - WATER[1]) * dp; b = WATER[2] + (DEEP[2] - WATER[2]) * dp; }
+          else if (sd < 3) { r = r * 0.5 + 120; g = g * 0.5 + 115; b = b * 0.5 + 95; }
+        }
+        const p = (j * N + i) * 4;
+        d[p] = r; d[p + 1] = g; d[p + 2] = b; d[p + 3] = 255;
+      }
     }
     ctx.putImageData(img, 0, 0);
-    this.baseCanvas = c;
-    this.fieldLayer = document.createElement('canvas'); this.fieldLayer.width = N; this.fieldLayer.height = N;
-    this.redrawFields();
-  },
-  wx(x) { return (x + 800) / 2; }, wz(z) { return (z + 800) / 2; },
-  redrawFields() {
-    const ctx = this.fieldLayer.getContext('2d'); ctx.clearRect(0, 0, this.S, this.S);
-    for (const f of Fields.list) {
-      const x = this.wx(f.x0), y = this.wz(f.z0), w = f.w / 2, hgt = f.d / 2;
-      let col = f.soil === 'red' ? '#8e5236' : '#4a3f35';
-      if (f.crop) col = f.growth > 0.85 ? CROPS[f.crop].ripe : CROPS[f.crop].leaf;
-      ctx.fillStyle = col; ctx.fillRect(x, y, w, hgt);
-      if (f.isPlayer) { ctx.strokeStyle = '#f2b52d'; ctx.lineWidth = 2; ctx.strokeRect(x + 1, y + 1, w - 2, hgt - 2); }
-      else if (f.avail) { ctx.strokeStyle = '#e06a4a'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 2]); ctx.strokeRect(x + 1, y + 1, w - 2, hgt - 2); ctx.setLineDash([]); }
+    // tree canopy dots
+    if (Veg.sets) for (const S of Veg.sets) {
+      if (S.small) continue;
+      const rr = S.kind === 'banyan' ? 4.5 : S.kind === 'palm' || S.kind === 'datepalm' || S.kind === 'eucalyptus' ? 1.3 : 2.1;
+      ctx.fillStyle = S.kind === 'mango' ? 'rgba(34,70,24,.85)' : 'rgba(46,88,34,.8)';
+      for (let i = 0; i < S.n; i++) { ctx.beginPath(); ctx.arc((S.xs[i] - this.x0) * k, (S.zs[i] - this.z0) * k, Math.max(1, rr * k * 1.6), 0, TAU); ctx.fill(); }
     }
-    this.fieldsAt = performance.now();
+    return c;
   },
+  renderRoads() {
+    const N = this.N, k = this.k; const c = document.createElement('canvas'); c.width = c.height = N; const ctx = c.getContext('2d');
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    const path = (pts) => { ctx.beginPath(); pts.forEach((p, i) => { const x = (p.x - this.x0) * k, y = (p.z - this.z0) * k; if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y); }); };
+    const canal = CANAL.samples || CANAL.pts.map(([x, z]) => ({ x, z }));
+    path(canal); ctx.strokeStyle = 'rgba(220,238,248,.9)'; ctx.lineWidth = Math.max(4, (CANAL.w + 3) * k); ctx.stroke();
+    ctx.strokeStyle = '#3d86c6'; ctx.lineWidth = Math.max(2.4, CANAL.w * k); ctx.stroke();
+    const sty = { hwy: { cas: '#4a4741', fill: '#b9b4a8', min: 6 }, main: { cas: '#6c5c47', fill: '#fbf3dc', min: 3.2 }, village: { cas: '#857358', fill: '#efe2c4', min: 2.6 }, track: { cas: '#7a5f44', fill: '#d6bb8f', min: 1.9 } };
+    const order = ['track', 'village', 'main', 'hwy'];
+    for (const pass of ['cas', 'fill']) for (const kind of order) for (const r of ROADS) {
+      const kk = r.kind === 'cc' ? 'village' : r.kind; if (kk !== kind || !r.samples) continue;
+      const st = sty[kind]; const w = Math.max(st.min, r.w * k * 1.25);
+      path(r.samples); ctx.strokeStyle = st[pass]; ctx.lineWidth = pass === 'cas' ? w + 1.8 : w; ctx.stroke();
+    }
+    const hwy = ROADS.find((r) => r.kind === 'hwy');
+    if (hwy) { path(hwy.samples); ctx.setLineDash([6, 6]); ctx.strokeStyle = '#e8c547'; ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]); }
+    return c;
+  },
+  fieldColor(f) {
+    if (f.crop && f.sownTiles > 0) { const cd = CROPS[f.crop]; return f.growth > 0.85 ? cd.ripe : f.growth > 0.25 ? cd.leaf : (f.soil === 'red' ? '#8a5a36' : '#4a4034'); }
+    const pl = f.countMin(1) / Math.max(1, f.n);
+    if (f.soil === 'red') return pl > 0.5 ? '#86452a' : f.wasStubble ? '#a07a52' : '#94643f';
+    return pl > 0.5 ? '#3e352d' : f.wasStubble ? '#62574a' : '#4c4136';
+  },
+  fsig(f) { return (f.crop && f.sownTiles > 0 ? f.crop + (f.growth > 0.85 ? 2 : f.growth > 0.25 ? 1 : 0) : f.countMin(1) * 2 > f.n ? 'p' : f.wasStubble ? 's' : 'n') + (f.isPlayer ? 'o' : f.avail ? 'a' : ''); },
+  // one field on the map: fill, bund line, roads over it, ownership outline
+  drawField(ctx, f) {
+    const k = this.k; const x = Math.floor((f.x0 - this.x0) * k), y = Math.floor((f.z0 - this.z0) * k), w = Math.ceil(f.w * k), h = Math.ceil(f.d * k);
+    ctx.fillStyle = this.fieldColor(f); ctx.fillRect(x, y, w, h);
+    ctx.strokeStyle = 'rgba(70,48,30,.6)'; ctx.lineWidth = 1; ctx.strokeRect(x + 0.5, y + 0.5, w - 1, h - 1);
+    ctx.drawImage(this.roadsC, x, y, w, h, x, y, w, h);
+    if (f.isPlayer) { ctx.strokeStyle = '#ffd23a'; ctx.lineWidth = 2.6; ctx.strokeRect(x + 1.3, y + 1.3, w - 2.6, h - 2.6); }
+    else if (f.avail) { ctx.setLineDash([4, 3]); ctx.strokeStyle = '#ff7a45'; ctx.lineWidth = 1.8; ctx.strokeRect(x + 1, y + 1, w - 2, h - 2); ctx.setLineDash([]); }
+    f.mapSig = this.fsig(f);
+  },
+  compose() {
+    if (!this.base) return;
+    const ctx = this.base.getContext('2d');
+    ctx.drawImage(this.terrain, 0, 0);
+    ctx.drawImage(this.roadsC, 0, 0);
+    for (const f of Fields.list) this.drawField(ctx, f);
+    this.composedAt = performance.now();
+  },
+  // repaint only the fields whose look changed (a few at a time, no hitch)
+  refreshFields() {
+    this.composedAt = performance.now();
+    const ctx = this.base.getContext('2d'); let n = 0;
+    for (const f of Fields.list) { if (this.fsig(f) === f.mapSig) continue; this.drawField(ctx, f); if (++n >= 10) break; }
+  },
+  places() {
+    if (this._places) return this._places;
+    if (!Interact.list.some((q) => q.id === 'home')) return [];
+    const out = [];
+    for (const [id, icon, col, en, te, pri] of MAP_PLACES) {
+      let p = null;
+      if (id === 'ghat') p = POI.ghat; else if (id === 'shrine') p = POI.shrine;
+      else { const o = Interact.list.find((q) => q.id === id); if (o) p = o; }
+      if (p) out.push({ id, icon, col, en, te, pri, x: p.x, z: p.z });
+    }
+    this._places = out; return out;
+  },
+  placeName(p) { return LANG === 'te' ? p.te : p.en; },
+  // the place, mission target or waypoint the guide is pointing at
+  target() {
+    const wp = G.S && G.S.waypoint;
+    if (wp) return { x: wp.x, z: wp.z, name: wp.name || L('Waypoint', 'గమ్యం'), wp: true };
+    const pm = Missions.primaryMarker();
+    if (!pm) return null;
+    // standing on the target field already: nothing to point at
+    const mk = pm.m.mark; const f = mk === 'F1' ? Fields.byId.F1 : mk && mk.startsWith('field:') ? Fields.byId[mk.slice(6)] : null;
+    if (f) { const P = Player.pos(); if (P.x > f.x0 - 2 && P.x < f.x1 + 2 && P.z > f.z0 - 2 && P.z < f.z1 + 2) return null; }
+    return { x: pm.p.x, z: pm.p.z, name: Missions.markerName(mk) || LN(pm.m.title), m: pm.m };
+  },
+  fmtDist(d) { return d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m'; },
+  // ---- minimap: north-up, zooms out with vehicle speed ----
   drawMini() {
-    const cv = document.getElementById('minimap'); if (!cv || !this.baseCanvas) return;
-    if (performance.now() - (this.fieldsAt || 0) > 4000) this.redrawFields();
-    const ctx = cv.getContext('2d'); const W = cv.width; const P = Player.pos();
-    const zoom = Player.vehicle ? 1.35 : 1.9;
-    const yaw = Cam.yaw;
-    ctx.save(); ctx.clearRect(0, 0, W, W);
-    ctx.translate(W / 2, W / 2); ctx.rotate(yaw); ctx.scale(zoom, zoom); ctx.translate(-this.wx(P.x), -this.wz(P.z));
-    ctx.drawImage(this.baseCanvas, 0, 0); ctx.drawImage(this.fieldLayer, 0, 0);
-    ctx.restore();
-    const toScr = (x, z) => { const dx = (this.wx(x) - this.wx(P.x)) * zoom, dy = (this.wz(z) - this.wz(P.z)) * zoom; const c = Math.cos(yaw), s = Math.sin(yaw); return [W / 2 + dx * c - dy * s, W / 2 + dx * s + dy * c]; };
-    const R = W / 2 - 4;
-    const dot = (x, z, col, r = 5, clampEdge = false) => { let [sx, sy] = toScr(x, z); const dx = sx - W / 2, dy = sy - W / 2, d = Math.hypot(dx, dy); if (d > R) { if (!clampEdge) return; sx = W / 2 + dx / d * R; sy = W / 2 + dy / d * R; } ctx.fillStyle = col; ctx.beginPath(); ctx.arc(sx, sy, r, 0, TAU); ctx.fill(); ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 1.5; ctx.stroke(); };
-    for (const v of Vehicles.player) if (v !== Player.vehicle) dot(v.x, v.z, '#ffffff', 5);
-    const pm = Missions.primaryMarker(); if (pm) dot(pm.p.x, pm.p.z, '#f7f2e8', 7, true);
-    if (G.S.waypoint) dot(G.S.waypoint.x, G.S.waypoint.z, '#7fd3ff', 7, true);
-    // player arrow (heading relative to map rotation)
-    const hd = Player.vehicle ? Player.vehicle.yaw : Player.yaw;
-    const a = Math.atan2(Math.sin(hd), -Math.cos(hd)) * -1 + yaw;
-    ctx.save(); ctx.translate(W / 2, W / 2); ctx.rotate(-(Math.atan2(Math.sin(hd), Math.cos(hd))) + yaw + Math.PI);
-    ctx.fillStyle = '#f2b52d'; ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -13); ctx.lineTo(9, 10); ctx.lineTo(0, 5); ctx.lineTo(-9, 10); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
-    void a;
-    const n = document.getElementById('compassN'); if (n) { const r = 72; const nx = Math.sin(yaw) * -1, ny = -Math.cos(yaw); n.style.left = `calc(50% + ${(-Math.sin(-yaw)) * r * 0.62 * (cv.clientWidth / 176)}px)`; n.style.top = `calc(50% + ${(-Math.cos(-yaw)) * r * 0.62 * (cv.clientWidth / 176)}px)`; n.style.transform = 'translate(-50%, -50%)'; void nx; void ny; }
+    const cv = document.getElementById('minimap'); if (!cv || !this.base) return;
+    if (performance.now() - this.composedAt > 2000) this.refreshFields();
+    const dpr = Math.min(2, window.devicePixelRatio || 1); const W = Math.max(64, Math.round((cv.clientWidth || 132) * dpr));
+    if (cv.width !== W) { cv.width = W; cv.height = W; }
+    const ctx = cv.getContext('2d'); const P = Player.pos(); const v = Player.vehicle;
+    const want = v ? clamp(120 + Math.abs(v.speed) * 7, 120, 280) : 100;
+    this.miniR = this.miniR ? this.miniR + (want - this.miniR) * 0.15 : want;
+    const R = this.miniR, k = this.k, s = W / (2 * R);
+    ctx.fillStyle = '#7a8a58'; ctx.fillRect(0, 0, W, W);
+    ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(this.base, (P.x - R - this.x0) * k, (P.z - R - this.z0) * k, 2 * R * k, 2 * R * k, 0, 0, W, W);
+    const toS = (x, z) => [W / 2 + (x - P.x) * s, W / 2 + (z - P.z) * s];
+    // camera view cone
+    _vegFw.set(0, 0, -1).applyQuaternion(G.camera.quaternion);
+    const ca = Math.atan2(_vegFw.x, -_vegFw.z);
+    ctx.save(); ctx.translate(W / 2, W / 2); ctx.rotate(ca);
+    const cone = ctx.createRadialGradient(0, 0, 0, 0, 0, W * 0.42); cone.addColorStop(0, 'rgba(255,248,220,.45)'); cone.addColorStop(1, 'rgba(255,248,220,0)');
+    ctx.fillStyle = cone; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, W * 0.42, -Math.PI / 2 - 0.62, -Math.PI / 2 + 0.62); ctx.closePath(); ctx.fill(); ctx.restore();
+    const edge = W / 2 - 3 * dpr;
+    const ir = 6.5 * dpr;
+    for (const pl of this.places()) { const [x, y] = toS(pl.x, pl.z); if (Math.hypot(x - W / 2, y - W / 2) < edge - ir) mapIcon(ctx, pl.icon, x, y, ir, pl.col); }
+    for (const q of Vehicles.player) { if (q === v) continue; const [x, y] = toS(q.x, q.z); if (Math.hypot(x - W / 2, y - W / 2) < edge - 4 * dpr) { ctx.fillStyle = '#fff'; ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 1.5 * dpr; ctx.beginPath(); ctx.arc(x, y, 3.6 * dpr, 0, TAU); ctx.fill(); ctx.stroke(); } }
+    const t = this.target();
+    if (t) this.drawTarget(ctx, toS(t.x, t.z), W / 2, W / 2, edge - 8 * dpr, dpr, t, Math.hypot(t.x - P.x, t.z - P.z), true);
+    this.drawPlayer(ctx, W / 2, W / 2, dpr * 1.05);
   },
-  fullToWorld(px, pz) { return { x: -800 + px * 1600, z: -800 + pz * 1600 }; },
-  drawFull(cv) {
-    const ctx = cv.getContext('2d'); const W = cv.width; const k = W / this.S;
-    ctx.clearRect(0, 0, W, W); ctx.imageSmoothingEnabled = true;
-    ctx.drawImage(this.baseCanvas, 0, 0, W, W); ctx.drawImage(this.fieldLayer, 0, 0, W, W);
-    const X = (x) => this.wx(x) * k, Z = (z) => this.wz(z) * k;
-    const label = (x, z, txt, size = 18, col = '#1b1b1f') => { ctx.font = `700 ${size}px "Baloo Tammudu 2", sans-serif`; ctx.textAlign = 'center'; ctx.lineWidth = 4; ctx.strokeStyle = 'rgba(255,250,240,.85)'; ctx.strokeText(txt, X(x), Z(z)); ctx.fillStyle = col; ctx.fillText(txt, X(x), Z(z)); };
-    label(0, -12, L('Ramapuram', 'రామాపురం'), 26); label(SEETHA.x, SEETHA.z - 40, L('Seethampet', 'సీతంపేట'), 22); label(TOWN.x - 20, TOWN.z - 50, L('Nagaram town', 'నగరం పట్టణం'), 22);
-    label(YARD.x, YARD.z + 50, L('Market yard', 'మార్కెట్ యార్డ్'), 16); label(LAKE.x, LAKE.z, L('Pedda Cheruvu (lake)', 'పెద్ద చెరువు'), 18, '#0e3352');
-    label(HOME.x, HOME.z - 22, L('Your farm', 'మీ పొలం'), 18, '#7a4a00'); label(640, -700, L('Highway to Hyderabad', 'హైదరాబాద్ హైవే'), 15);
-    label(POI.temple.inner.x, POI.temple.inner.z - 16, L('Temple', 'గుడి'), 13); label(POI.seedShop.counter[0] + 8, POI.seedShop.counter[1] + 18, L('Seeds', 'విత్తనాలు'), 13); label(POI.workshop.counter.x + 10, POI.workshop.counter.z + 18, L('Workshop', 'వర్క్‌షాప్'), 13);
-    label(POI.shrine.x, POI.shrine.z + 30, L('Hill shrine', 'గుట్ట గుడి'), 13); label(POI.petrol.pump.x + 10, POI.petrol.pump.z + 24, L('Petrol', 'పెట్రోల్'), 13);
+  drawPlayer(ctx, x, y, sc) {
+    const hd = Player.vehicle ? Player.vehicle.yaw : Player.yaw;
+    ctx.save(); ctx.translate(x, y); ctx.rotate(Math.PI - hd); ctx.scale(sc, sc);
+    ctx.shadowColor = 'rgba(0,0,0,.45)'; ctx.shadowBlur = 4;
+    ctx.fillStyle = '#ffcf33'; ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(0, -11); ctx.lineTo(8, 9); ctx.lineTo(0, 4.5); ctx.lineTo(-8, 9); ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0; ctx.stroke();
+    ctx.restore();
+  },
+  // gold target: a pulsing marker when in view, an arrow with the distance on the rim when not
+  drawTarget(ctx, [tx, ty], cx, cy, rim, dpr, t, dist, round) {
+    const col = t.wp ? '#43b6ff' : '#ffc61a';
+    const dx = tx - cx, dy = ty - cy; const d = Math.hypot(dx, dy);
+    let out = false;
+    if (round) out = d > rim; else out = Math.abs(dx) > cx - 16 * dpr || Math.abs(dy) > cy - 16 * dpr;
+    if (!out) {
+      const pulse = 0.5 + 0.5 * Math.sin(G.t * 5);
+      ctx.beginPath(); ctx.arc(tx, ty, (9 + pulse * 6) * dpr, 0, TAU); ctx.strokeStyle = col; ctx.globalAlpha = 0.8 - pulse * 0.5; ctx.lineWidth = 2.5 * dpr; ctx.stroke(); ctx.globalAlpha = 1;
+      mapIcon(ctx, t.wp ? 'pin' : 'star', tx, ty, 7.5 * dpr, t.wp ? '#1d7fc4' : '#d99a12', '#fff');
+      return;
+    }
+    const a = Math.atan2(dy, dx);
+    let ex, ey;
+    if (round) { ex = cx + Math.cos(a) * rim; ey = cy + Math.sin(a) * rim; }
+    else { const m = 16 * dpr; const sx = (cx - m) / Math.abs(Math.cos(a) || 1e-6), sy = (cy - m) / Math.abs(Math.sin(a) || 1e-6); const rr = Math.min(sx, sy); ex = cx + Math.cos(a) * rr; ey = cy + Math.sin(a) * rr; }
+    ctx.save(); ctx.translate(ex, ey); ctx.rotate(a);
+    ctx.fillStyle = col; ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 1.6 * dpr;
+    ctx.beginPath(); ctx.moveTo(8 * dpr, 0); ctx.lineTo(-6 * dpr, -7 * dpr); ctx.lineTo(-3 * dpr, 0); ctx.lineTo(-6 * dpr, 7 * dpr); ctx.closePath(); ctx.fill(); ctx.stroke(); ctx.restore();
+    const lx = ex - Math.cos(a) * 20 * dpr, ly = ey - Math.sin(a) * 15 * dpr;
+    const txt = this.fmtDist(dist);
+    ctx.font = `800 ${10.5 * dpr}px "Hind Guntur", sans-serif`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.lineWidth = 3 * dpr; ctx.strokeStyle = 'rgba(20,18,28,.85)'; ctx.strokeText(txt, lx, ly); ctx.fillStyle = '#fff6d8'; ctx.fillText(txt, lx, ly);
+  },
+  // ---- full map: drag to pan, wheel or pinch to zoom, tap a place for options ----
+  open(body) {
     const P = Player.pos();
-    const dot = (x, z, col, r) => { ctx.fillStyle = col; ctx.beginPath(); ctx.arc(X(x), Z(z), r, 0, TAU); ctx.fill(); ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 2; ctx.stroke(); };
-    for (const m of G.S.missions.active) { const p = Missions.markerPos(m.mark); if (p) dot(p.x, p.z, '#f7f2e8', 8); }
-    if (G.S.waypoint) dot(G.S.waypoint.x, G.S.waypoint.z, '#7fd3ff', 9);
-    for (const v of Vehicles.player) dot(v.x, v.z, '#ffffff', 5);
-    dot(P.x, P.z, '#f2b52d', 11);
+    if (!this.view) this.view = { cx: P.x, cz: P.z, s: 0 };
+    else { this.view.cx = P.x; this.view.cz = P.z; }
+    const wrap = h('div', { class: 'mapx' });
+    const box = h('div', { class: 'mapcv' });
+    const cv = h('canvas', { id: 'fullmap', 'aria-label': L('Map of the mandal', 'మండలం మ్యాప్') });
+    const btn = (t, lab, fn) => h('button', { 'aria-label': lab, title: lab, onclick: (e) => { e.stopPropagation(); fn(); Audio2.sfx('click'); } }, t);
+    box.append(cv, h('div', { class: 'mapbtns' },
+      btn('+', L('Zoom in', 'జూమ్ ఇన్'), () => this.zoom(1.5)), btn('−', L('Zoom out', 'జూమ్ అవుట్'), () => this.zoom(1 / 1.5)),
+      btn('◎', L('Centre on me', 'నా దగ్గరికి'), () => { const q = Player.pos(); this.view.cx = q.x; this.view.cz = q.z; this.fullDirty = true; })));
+    const side = h('div', { class: 'mapside' });
+    const sel = h('div', { class: 'mapsel' });
+    const lg = h('div', { class: 'legend' });
+    for (const [c, t] of [['#ffcf33', L('You', 'మీరు')], ['#ffd23a', L('Your fields', 'మీ పొలాలు')], ['#ff7a45', L('For sale / lease', 'అమ్మకం / కౌలు')], ['#d99a12', L('Mission', 'లక్ష్యం')], ['#43b6ff', L('Waypoint', 'గమ్యం')]]) lg.appendChild(h('span', null, h('i', { style: { background: c } }), t));
+    side.append(sel, lg);
+    wrap.append(box, side); body.appendChild(wrap);
+    this.full = { cv, box, sel, sel0: null };
+    this.renderSel(null);
+    this.bindFull(cv);
+    this.sizeFull();
+    this._fullLoop = () => { if (!this.full) return; if (!this.full.cv.isConnected) { this.close(); return; } this.drawFull(); requestAnimationFrame(this._fullLoop); };
+    requestAnimationFrame(this._fullLoop);
+    this._onResize = () => this.sizeFull(); window.addEventListener('resize', this._onResize);
+  },
+  close() { this.full = null; if (this._onResize) window.removeEventListener('resize', this._onResize); },
+  sizeFull() {
+    const F = this.full; if (!F) return;
+    const dpr = Math.min(2, window.devicePixelRatio || 1); const w = Math.max(120, F.box.clientWidth), hh = Math.max(120, F.box.clientHeight);
+    F.cv.width = Math.round(w * dpr); F.cv.height = Math.round(hh * dpr); F.dpr = dpr; F.w = w; F.h = hh;
+    if (!this.view.s) this.view.s = Math.min(w, hh) / 520;
+    this.fullDirty = true;
+  },
+  zoom(f, sx, sy) {
+    const F = this.full; if (!F) return; const V = this.view;
+    const ax = sx === undefined ? F.w / 2 : sx, ay = sy === undefined ? F.h / 2 : sy;
+    const wx = V.cx + (ax - F.w / 2) / V.s, wz = V.cz + (ay - F.h / 2) / V.s;
+    V.s = clamp(V.s * f, Math.min(F.w, F.h) / 1500, 6);
+    V.cx = wx - (ax - F.w / 2) / V.s; V.cz = wz - (ay - F.h / 2) / V.s;
+    this.clampView(); this.fullDirty = true;
+  },
+  clampView() { const V = this.view; V.cx = clamp(V.cx, -760, 760); V.cz = clamp(V.cz, -760, 760); },
+  screenToWorld(sx, sy) { const F = this.full, V = this.view; return { x: V.cx + (sx - F.w / 2) / V.s, z: V.cz + (sy - F.h / 2) / V.s }; },
+  bindFull(cv) {
+    const ptrs = new Map(); let moved = 0, pinch = 0;
+    const local = (e) => { const r = cv.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    cv.addEventListener('pointerdown', (e) => { try { cv.setPointerCapture(e.pointerId); } catch (err) { /* synthetic pointer */ } ptrs.set(e.pointerId, local(e)); moved = 0; if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; pinch = Math.hypot(a[0] - b[0], a[1] - b[1]); } });
+    cv.addEventListener('pointermove', (e) => {
+      const p = ptrs.get(e.pointerId); if (!p) return; const q = local(e);
+      if (ptrs.size === 1) { const dx = q[0] - p[0], dy = q[1] - p[1]; moved += Math.abs(dx) + Math.abs(dy); this.view.cx -= dx / this.view.s; this.view.cz -= dy / this.view.s; this.clampView(); this.fullDirty = true; }
+      ptrs.set(e.pointerId, q);
+      if (ptrs.size === 2) { const [a, b] = [...ptrs.values()]; const d = Math.hypot(a[0] - b[0], a[1] - b[1]); if (pinch > 0) this.zoom(d / pinch, (a[0] + b[0]) / 2, (a[1] + b[1]) / 2); pinch = d; moved = 99; }
+    });
+    const up = (e) => { const had = ptrs.size; const p = ptrs.get(e.pointerId); ptrs.delete(e.pointerId); if (ptrs.size < 2) pinch = 0; if (had === 1 && p && moved < 8 && e.type === 'pointerup') this.tap(p[0], p[1]); };
+    cv.addEventListener('pointerup', up); cv.addEventListener('pointercancel', up);
+    cv.addEventListener('wheel', (e) => { e.preventDefault(); const [x, y] = local(e); this.zoom(Math.exp(-e.deltaY * 0.0016), x, y); }, { passive: false });
+  },
+  tap(sx, sy) {
+    const V = this.view; let best = null, bd = 22;
+    for (const pl of this.places()) { const x = (pl.x - V.cx) * V.s + this.full.w / 2, y = (pl.z - V.cz) * V.s + this.full.h / 2; const d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = pl; } }
+    if (!best) for (const f of Fields.playerFields()) { const x = (f.x - V.cx) * V.s + this.full.w / 2, y = (f.z - V.cz) * V.s + this.full.h / 2; const d = Math.hypot(x - sx, y - sy); if (d < bd) { bd = d; best = { id: 'field:' + f.id, x: f.x, z: f.z, en: f.label(), te: f.label(), icon: 'field', col: '#b0861a' }; } }
+    if (!best) { const w = this.screenToWorld(sx, sy); best = { id: 'wp', x: w.x, z: w.z, en: 'Marked spot', te: 'గుర్తు పెట్టిన చోటు', icon: 'pin', col: '#1d7fc4' }; }
+    G.S.waypoint = { x: best.x, z: best.z, name: this.placeName(best) };
+    this.renderSel(best); this.fullDirty = true; Audio2.sfx('click'); UI.dirty = true;
+  },
+  renderSel(pl) {
+    const F = this.full; if (!F) return; const sel = F.sel; sel.innerHTML = '';
+    const P = Player.pos();
+    if (!pl) {
+      const t = this.target();
+      sel.append(h('b', null, L('Where to?', 'ఎక్కడికి?')), h('small', null, L('Tap a place on the map. The gold arrow will lead you there, or take an auto straight there.', 'మ్యాప్‌లో ఒక చోటు నొక్కండి. బంగారు బాణం దారి చూపిస్తుంది, లేదా ఆటోలో నేరుగా వెళ్ళండి.')));
+      if (t) sel.append(h('small', null, L('Now heading to: ', 'ఇప్పుడు వెళ్తున్నది: ') + t.name + ' · ' + this.fmtDist(Math.hypot(t.x - P.x, t.z - P.z))));
+      return;
+    }
+    const d = Math.hypot(pl.x - P.x, pl.z - P.z);
+    const fare = Services.travelFare(d);
+    sel.append(h('b', null, this.placeName(pl)), h('small', null, this.fmtDist(d) + L(' away · the gold arrow now points here', ' దూరం · బంగారు బాణం ఇటు చూపిస్తుంది')));
+    const row = h('div', { class: 'opts' });
+    row.appendChild(h('button', { class: 'btn acc', onclick: () => { UI.close(); Services.fastTravel(pl.x, pl.z, this.placeName(pl)); } }, Player.vehicle ? L(`Drive there now (${Math.round(Services.travelMins(d))} min)`, `ఇప్పుడే అక్కడికి నడపండి (${Math.round(Services.travelMins(d))} నిమి.)`) : L(`Take an auto there (${fmtINR(fare)})`, `ఆటోలో వెళ్ళండి (${fmtINR(fare)})`)));
+    row.appendChild(h('button', { class: 'btn alt', onclick: () => { UI.close(); } }, L('Walk with the arrow', 'బాణంతో నడవండి')));
+    row.appendChild(h('button', { class: 'btn alt sm', onclick: () => { G.S.waypoint = null; this.renderSel(null); this.fullDirty = true; UI.dirty = true; } }, L('Clear target', 'గమ్యం తీసేయండి')));
+    sel.appendChild(row);
+  },
+  drawFull() {
+    const F = this.full; if (!F) return;
+    if (!this.fullDirty && G.frame % 6) return; this.fullDirty = false;
+    const cv = F.cv, ctx = cv.getContext('2d'), dpr = F.dpr, V = this.view, k = this.k;
+    const W = cv.width, H = cv.height, s = V.s * dpr;
+    ctx.fillStyle = '#6b7a50'; ctx.fillRect(0, 0, W, H);
+    ctx.imageSmoothingEnabled = true;
+    const hw = W / 2 / s, hh = H / 2 / s;
+    ctx.drawImage(this.base, (V.cx - hw - this.x0) * k, (V.cz - hh - this.z0) * k, 2 * hw * k, 2 * hh * k, 0, 0, W, H);
+    const toS = (x, z) => [W / 2 + (x - V.cx) * s, H / 2 + (z - V.cz) * s];
+    const P = Player.pos();
+    // labels never overlap: each one claims its box, later ones that would collide are skipped
+    const boxes = [], iconBoxes = [];
+    const hit = (list, x0, y0, x1, y1) => list.some((b) => x0 < b[2] && x1 > b[0] && y0 < b[3] && y1 > b[1]);
+    const label = (x, y, txt, size, col = '#1b1b1f', halo = 'rgba(255,250,240,.9)', avoidIcons = true) => {
+      ctx.font = `700 ${size * dpr}px "Baloo Tammudu 2", "Hind Guntur", sans-serif`;
+      const w = ctx.measureText(txt).width / 2 + 3 * dpr, hh2 = size * dpr * 0.62;
+      const x0 = x - w, y0 = y - hh2, x1 = x + w, y1 = y + hh2;
+      if (hit(boxes, x0, y0, x1, y1) || (avoidIcons && hit(iconBoxes, x0, y0, x1, y1))) return;
+      boxes.push([x0, y0, x1, y1]);
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round'; ctx.lineWidth = 4 * dpr; ctx.strokeStyle = halo; ctx.strokeText(txt, x, y); ctx.fillStyle = col; ctx.fillText(txt, x, y);
+    };
+    // places: icons first (they reserve their spot), then names by importance
+    const ir = clamp(5 + V.s * 4, 7, 12) * dpr;
+    const vis = [];
+    for (const pl of this.places()) {
+      const [sx, sy] = toS(pl.x, pl.z); if (sx < -20 || sy < -20 || sx > W + 20 || sy > H + 20) continue;
+      mapIcon(ctx, pl.icon, sx, sy, ir, pl.col); iconBoxes.push([sx - ir, sy - ir, sx + ir, sy + ir]); vis.push([pl, sx, sy]);
+    }
+    const [ppx, ppy] = toS(P.x, P.z); iconBoxes.push([ppx - 12 * dpr, ppy - 12 * dpr, ppx + 12 * dpr, ppy + 12 * dpr]);
+    const big = V.s < 0.9;
+    for (const [x, z, en, te, sz] of [[0, -30, 'Ramapuram', 'రామాపురం', 22], [SEETHA.x, SEETHA.z - 50, 'Seethampet', 'సీతంపేట', 19], [TOWN.x - 20, TOWN.z - 60, 'Nagaram town', 'నగరం పట్టణం', 19], [LAKE.x, LAKE.z, 'Pedda Cheruvu', 'పెద్ద చెరువు', 16], [640, -640, 'Highway', 'హైవే', 14]]) { if (!big && V.s > 1.4) continue; const [sx, sy] = toS(x, z); label(sx, sy, LANG === 'te' ? te : en, big ? sz : sz * 0.85, '#2a1f14', 'rgba(255,250,240,.9)', false); }
+    for (const pri of [1, 2, 3]) for (const [pl, sx, sy] of vis) if (pl.pri === pri && (pri === 1 || (pri === 2 && V.s > 0.75) || V.s > 1.4)) label(sx, sy + ir + 9 * dpr, this.placeName(pl), 12, '#1b1b1f');
+    for (const f of Fields.playerFields()) { const [sx, sy] = toS(f.x, f.z); if (V.s > 0.5) label(sx, sy + Math.max(14 * dpr, f.d * s * 0.32), f.label(), 12, '#5a3a00'); }
+    for (const q of Vehicles.player) { if (q === Player.vehicle) continue; const [sx, sy] = toS(q.x, q.z); ctx.fillStyle = '#fff'; ctx.strokeStyle = '#1b1b1f'; ctx.lineWidth = 1.6 * dpr; ctx.beginPath(); ctx.arc(sx, sy, 4.5 * dpr, 0, TAU); ctx.fill(); ctx.stroke(); }
+    const t = this.target();
+    if (t) {
+      const [tx, ty] = toS(t.x, t.z); const [px, py] = toS(P.x, P.z);
+      ctx.setLineDash([6 * dpr, 6 * dpr]); ctx.strokeStyle = t.wp ? 'rgba(67,182,255,.9)' : 'rgba(255,198,26,.95)'; ctx.lineWidth = 2.5 * dpr; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(tx, ty); ctx.stroke(); ctx.setLineDash([]);
+      this.drawTarget(ctx, [tx, ty], W / 2, H / 2, 0, dpr, t, Math.hypot(t.x - P.x, t.z - P.z), false);
+    }
+    const [px, py] = toS(P.x, P.z);
+    this.drawPlayer(ctx, px, py, dpr * 1.25);
+  },
+};
+
+// ---------------- on-screen guide: a gold marker over the target, or an arrow at the screen edge ----------------
+const Guide = {
+  el: null, last: '',
+  init() {
+    this.el = document.getElementById('nav');
+    // gold chevron that floats ahead of you and points the way
+    const sh = new THREE.Shape(); sh.moveTo(0, 1.1); sh.lineTo(0.85, -0.2); sh.lineTo(0.42, -0.2); sh.lineTo(0.42, -0.95); sh.lineTo(-0.42, -0.95); sh.lineTo(-0.42, -0.2); sh.lineTo(-0.85, -0.2); sh.closePath();
+    const g = new THREE.ShapeGeometry(sh); g.rotateX(Math.PI / 2);
+    this.arrow = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffc61a, transparent: true, opacity: 0.92, depthWrite: false, fog: false, side: THREE.DoubleSide }));
+    this.arrow.renderOrder = 999; this.arrow.visible = false; this.arrow.frustumCulled = false; G.scene.add(this.arrow);
+  },
+  update() {
+    const el = this.el; if (!el) return;
+    const t = G.started && !UI.photoMode && !UI.modalOpen() ? Map2.target() : null;
+    const P = Player.pos();
+    const dist = t ? Math.hypot(t.x - P.x, t.z - P.z) : 0;
+    if (t && t.wp && dist < 10) { G.S.waypoint = null; UI.toast(L(`You reached ${t.name}.`, `${t.name} చేరుకున్నారు.`), 'good'); UI.dirty = true; }
+    if (!t || dist < 7) { if (!el.hidden) el.hidden = true; this.arrow.visible = false; return; }
+    // 3D arrow just ahead of the player
+    const ang = Math.atan2(t.x - P.x, t.z - P.z);
+    const v = Player.vehicle; const ahead = v ? (v.type === 'harvester' ? 7 : 5) : 3;
+    const ax = P.x + Math.sin(ang) * ahead, az = P.z + Math.cos(ang) * ahead;
+    this.arrow.visible = dist > 12;
+    this.arrow.position.set(ax, World.groundHeight(ax, az) + (v ? 0.7 : 0.45) + Math.sin(G.t * 4) * 0.08, az);
+    // lie flat but lean toward the camera so it reads clearly from any side
+    const cx = G.camera.position.x - ax, cz = G.camera.position.z - az, cl = Math.hypot(cx, cz) || 1;
+    _v2.set(cx / cl * 0.8, 1, cz / cl * 0.8).normalize();
+    _q1.setFromUnitVectors(UP, _v2); _q2.setFromAxisAngle(UP, ang);
+    this.arrow.quaternion.copy(_q1).multiply(_q2);
+    this.arrow.scale.setScalar(v ? 1.6 : 1.05);
+    this.arrow.material.color.set(t.wp ? 0x43b6ff : 0xffc61a);
+    // screen marker
+    const cam = G.camera; const W = window.innerWidth, H = window.innerHeight;
+    _v1.set(t.x, World.groundHeight(t.x, t.z) + 2.2, t.z).applyMatrix4(cam.matrixWorldInverse);
+    const behind = _v1.z > -0.5;
+    _v1.applyMatrix4(cam.projectionMatrix);
+    let sx = (_v1.x * 0.5 + 0.5) * W, sy = (-_v1.y * 0.5 + 0.5) * H;
+    if (behind) { sx = W - sx; sy = H - sy; }
+    const mx = isMobile ? 72 : 70, top = isMobile ? 64 : 90, bot = isMobile ? 150 : 110;
+    let edge = behind || sx < mx || sx > W - mx || sy < top || sy > H - bot;
+    let rot = 0;
+    if (edge) {
+      const cx = W / 2, cy = (top + H - bot) / 2; let dx = sx - cx, dy = sy - cy;
+      if (behind && Math.abs(dy) < 1) dy = 1;
+      const kx = (W / 2 - mx) / Math.max(1e-3, Math.abs(dx)), ky = ((H - bot - top) / 2) / Math.max(1e-3, Math.abs(dy)); const kk = Math.min(kx, ky);
+      sx = cx + dx * kk; sy = cy + dy * kk; rot = Math.atan2(dy, dx) * 180 / Math.PI + 90;
+    }
+    el.hidden = false;
+    el.style.transform = `translate3d(${sx.toFixed(1)}px, ${sy.toFixed(1)}px, 0)`;
+    const txt = (t.name ? t.name + ' · ' : '') + Map2.fmtDist(dist);
+    const key = txt + (edge ? '|e' + Math.round(rot / 5) : '') + (t.wp ? 'w' : '');
+    if (key !== this.last) {
+      this.last = key;
+      el.classList.toggle('edge', edge); el.classList.toggle('wp', !!t.wp);
+      el.querySelector('.ar').style.transform = `rotate(${rot}deg)`;
+      el.querySelector('.tx').textContent = txt;
+    }
   },
 };

@@ -162,6 +162,9 @@ function makeCropDepthMaterial(fu) {
 
 // ---------- Field class ----------
 const SOIL_COL = { red: ['#8e4527', '#7c3b22', '#a4582f'], black: ['#2f2823', '#3a312a', '#46392f'] };
+// average colours of the field textures, for the far-away field quads
+const FAR_COL = { r0: col('#8f5d3d'), r0s: col('#9a7550'), b0: col('#473c33'), b0s: col('#5a5040'), r1: col('#86452a'), b1: col('#3e352d'), r2: col('#7f3d22'), b2: col('#2b2520'), weed: col('#5f8f36') };
+const _farC = new THREE.Color(), _farC2 = new THREE.Color(), _farC3 = new THREE.Color();
 class Field {
   constructor(r) {
     Object.assign(this, r);
@@ -185,7 +188,7 @@ class Field {
   countMin(state) { let c = 0; for (let i = 0; i < this.n; i++) if (this.tiles[i] >= state) c++; return c; }
   get isPlayer() { return this.owner === 'player' || this.owner === 'lease'; }
   stageName() { if (!this.crop) return null; let s = STAGES[0]; for (const st of STAGES) if (this.growth >= st.at - 1e-6) s = st; return s; }
-  setTile(i, v) { if (this.tiles[i] === v) return; const was = this.tiles[i]; this.tiles[i] = v; this.dirty.add(i); if (was === 3 || v === 3) this.cropDirty = true; }
+  setTile(i, v) { if (this.tiles[i] === v) return; const was = this.tiles[i]; this.tiles[i] = v; this.dirty.add(i); this.ver = (this.ver || 0) + 1; if (was === 3 || v === 3) this.cropDirty = true; }
   // ---- farming operation on a tile; returns true if something changed
   apply(op, i, o = {}) {
     const t = this.tiles[i]; const now = Time.totalHours();
@@ -366,6 +369,52 @@ const Fields = {
     this.detail = G.preset.cropDetail;
     for (const c of CROP_IDS) this.geoms[c] = [0, 1, 2].map((d) => cropGeometry(c, d));
     for (const f of this.list) this.buildField(f);
+    this.buildFar();
+  },
+  // Distant fields: one merged mesh of flat coloured quads (one draw call for all of them).
+  // Nearby fields use their own detailed ground texture instead.
+  buildFar() {
+    const n = this.list.length;
+    const pos = new Float32Array(n * 12), nor = new Float32Array(n * 12), colA = new Float32Array(n * 12), idx = new Uint32Array(n * 6);
+    this.list.forEach((f, k) => {
+      const o = k * 4;
+      for (let j = 0; j < 4; j++) { nor[(o + j) * 3 + 1] = 1; }
+      idx.set([o, o + 3, o + 2, o, o + 2, o + 1], k * 6);
+      f.farK = k; f.farOn = true; f.farSig = '';
+    });
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3)); g.setAttribute('normal', new THREE.BufferAttribute(nor, 3)); g.setAttribute('color', new THREE.BufferAttribute(colA, 3));
+    g.setIndex(new THREE.BufferAttribute(idx, 1));
+    g.boundingSphere = new THREE.Sphere(new THREE.Vector3(0, 0, 0), WORLD_HALF * 1.5);
+    this.farMat = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 }), 'std', { key: 'fieldfar' });
+    this.farMesh = new THREE.Mesh(g, this.farMat); this.farMesh.receiveShadow = true; this.farMesh.matrixAutoUpdate = false; this.farMesh.name = 'fieldsFar';
+    G.scene.add(this.farMesh);
+    for (const f of this.list) { this.farQuad(f, true); this.farColor(f); }
+    this.farT = 0;
+  },
+  farQuad(f, on) {
+    const p = this.farMesh.geometry.attributes.position; const o = f.farK * 4; const y = f.y + 0.02;
+    const pts = on ? [[f.x0, f.z0], [f.x1, f.z0], [f.x1, f.z1], [f.x0, f.z1]] : [[f.x, f.z], [f.x, f.z], [f.x, f.z], [f.x, f.z]];
+    for (let j = 0; j < 4; j++) p.setXYZ(o + j, pts[j][0], on ? y : y - 30, pts[j][1]);
+    p.needsUpdate = true; f.farOn = on;
+  },
+  farColor(f) {
+    const sig = (f.ver || 0) + '|' + f.crop + '|' + Math.round(f.growth * 12) + '|' + Math.round(f.weeds / 15) + '|' + f.wasStubble;
+    if (sig === f.farSig) return false;
+    f.farSig = sig;
+    let c0 = 0, c1 = 0, c2 = 0, c3 = 0; const t = f.tiles;
+    for (let i = 0; i < t.length; i++) { const v = t[i]; if (v === 0) c0++; else if (v === 1) c1++; else if (v === 2) c2++; else c3++; }
+    const red = f.soil === 'red', n = Math.max(1, t.length);
+    const k0 = FAR_COL[red ? (f.wasStubble ? 'r0s' : 'r0') : (f.wasStubble ? 'b0s' : 'b0')], k1 = FAR_COL[red ? 'r1' : 'b1'], k2 = FAR_COL[red ? 'r2' : 'b2'];
+    const cd = f.crop ? CROPS[f.crop] : null;
+    const cc = _farC.copy(k1);
+    if (cd && c3) { const crop = _farC2.set(cd.leaf).lerp(_farC3.set(cd.ripe), smoothstep(0.78, 1, f.growth)); cc.lerp(crop, clamp(0.15 + f.growth * 1.4, 0, 0.92)); }
+    const r = (k0.r * c0 + k1.r * c1 + k2.r * c2 + cc.r * c3) / n, g = (k0.g * c0 + k1.g * c1 + k2.g * c2 + cc.g * c3) / n, b = (k0.b * c0 + k1.b * c1 + k2.b * c2 + cc.b * c3) / n;
+    const w = clamp01((f.weeds - 20) / 100) * 0.35;
+    const col = this.farMesh.geometry.attributes.color; const o = f.farK * 4;
+    for (let j = 0; j < 4; j++) col.setXYZ(o + j, lerp(r, FAR_COL.weed.r, w), lerp(g, FAR_COL.weed.g, w), lerp(b, FAR_COL.weed.b, w));
+    col.needsUpdate = true;
+    return true;
   },
   buildField(f) {
     // ground canvas
@@ -466,12 +515,19 @@ const Fields = {
     if (Math.abs((f.lastWeedsDrawn || 0) - f.weeds) > 10) { f.allDirty = true; }
   },
   updateVisuals(cam) {
-    const D = G.preset.cropDist;
-    let budget = 3;
+    const P = G.preset; const D = P.cropDist;
+    const NEARF = P.lite ? 110 : P.id === 'MEDIUM' ? 180 : 320;
+    let budget = isMobile ? 1 : 3;
+    this.farT -= G.dt || 0.016; const recolor = this.farT <= 0; if (recolor) this.farT = 1.5;
+    const signD = P.lite ? 120 : 220;
     for (const f of this.list) {
       const d = Math.max(0, Math.hypot(f.x - cam.x, f.z - cam.z) - Math.hypot(f.w, f.d) / 2);
-      f.ground.visible = d < G.preset.drawDist + 60;
-      if (f.dirty.size || f.allDirty) { if (budget > 0 || d < 60) { this.redraw(f); budget--; } }
+      const near = d < NEARF;
+      f.ground.visible = near;
+      if (near === f.farOn) this.farQuad(f, !near);
+      if (!near && recolor) this.farColor(f);
+      const sg = Farm.signs[f.id]; if (sg) sg.visible = d < signD;
+      if (near && (f.dirty.size || f.allDirty)) { if (budget > 0 || d < 12) { this.redraw(f); budget--; } }
       // crop uniforms
       const fu = f.fu;
       fu.uGrowth.value = f.growth; fu.uHealth.value = f.health / 100; fu.uRipe.value = smoothstep(0.78, 1.0, f.growth); fu.uDry.value = clamp01((f.overHrs - 24) / 60) + (f.water < 12 ? 0.3 : 0);

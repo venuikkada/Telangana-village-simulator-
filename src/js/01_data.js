@@ -46,13 +46,13 @@ const CLIMATE = [
 // ---------- crops ----------
 // yield: quintals per acre at full health; price: base ₹/quintal; days: growth days; water: soil-water use per game hour
 const CROPS = {
-  paddy:     { en: 'Paddy', te: 'వరి', seedCost: 1800, days: 4.0, yield: 24, price: 2300, msp: 2369, vol: 0.035, depth: 900, water: 2.6, wLo: 55, wHi: 100, nut: 1.0, pest: 0.5, pestName: { en: 'Brown planthopper', te: 'దోమపోటు' }, soil: { red: 0.95, black: 1.06 }, season: [1.0, 0.95, 0.72], spoil: 0.002, heap: '#d6ad55', leaf: '#5d9a37', ripe: '#cfa84a', fruit: '#e0c060', fruitRipe: '#d9b34f', proc: true },
-  cotton:    { en: 'Cotton', te: 'పత్తి', seedCost: 2600, days: 5.0, yield: 9, price: 7200, msp: 7710, vol: 0.06, depth: 420, water: 1.3, wLo: 30, wHi: 80, nut: 1.0, pest: 0.9, pestName: { en: 'Pink bollworm', te: 'గులాబీ రంగు పురుగు' }, soil: { red: 0.86, black: 1.15 }, season: [1.0, 0.82, 0.62], spoil: 0.001, heap: '#f4f1ea', leaf: '#3f7a32', ripe: '#6b6a3a', fruit: '#8fae55', fruitRipe: '#f7f5ee', proc: true },
-  maize:     { en: 'Maize', te: 'మొక్కజొన్న', seedCost: 2200, days: 3.5, yield: 26, price: 2100, msp: 2400, vol: 0.05, depth: 700, water: 1.5, wLo: 35, wHi: 85, nut: 1.25, pest: 0.75, pestName: { en: 'Fall armyworm', te: 'కత్తెర పురుగు' }, soil: { red: 1.05, black: 1.0 }, season: [1.0, 1.05, 0.76], spoil: 0.004, heap: '#e9b43a', leaf: '#4f9a3a', ripe: '#b9a15a', fruit: '#9fbf5a', fruitRipe: '#e8c257', proc: true },
-  chilli:    { en: 'Chilli', te: 'మిర్చి', seedCost: 7500, days: 5.0, yield: 12, price: 14000, msp: 0, vol: 0.12, depth: 160, water: 1.35, wLo: 35, wHi: 80, nut: 1.3, pest: 1.0, pestName: { en: 'Thrips', te: 'తామర పురుగు' }, soil: { red: 1.1, black: 1.0 }, season: [0.95, 1.06, 0.7], spoil: 0.003, heap: '#b3261e', leaf: '#3c8a33', ripe: '#4c7a2a', fruit: '#3f9a2e', fruitRipe: '#c0231b', proc: false },
-  turmeric:  { en: 'Turmeric', te: 'పసుపు', seedCost: 14000, days: 6.0, yield: 22, price: 10000, msp: 0, vol: 0.09, depth: 220, water: 1.45, wLo: 40, wHi: 85, nut: 1.3, pest: 0.4, pestName: { en: 'Rhizome rot', te: 'దుంప కుళ్ళు' }, soil: { red: 1.1, black: 0.95 }, season: [1.0, 0.9, 0.62], spoil: 0.001, heap: '#e3a01b', leaf: '#5aa042', ripe: '#b49a3c', fruit: '#e0a020', fruitRipe: '#e3a01b', proc: false },
-  groundnut: { en: 'Groundnut', te: 'వేరుశెనగ', seedCost: 5500, days: 3.5, yield: 9, price: 6500, msp: 7263, vol: 0.06, depth: 300, water: 1.05, wLo: 28, wHi: 75, nut: 0.8, pest: 0.5, pestName: { en: 'Leaf miner', te: 'ఆకుముడత పురుగు' }, soil: { red: 1.15, black: 0.86 }, season: [1.0, 1.05, 0.85], spoil: 0.004, heap: '#b88a55', leaf: '#4f9a3c', ripe: '#8a8a40', fruit: '#e8c93c', fruitRipe: '#e8c93c', proc: true },
-  tomato:    { en: 'Tomato', te: 'టమాటా', seedCost: 4000, days: 2.5, yield: 80, price: 1500, msp: 0, vol: 0.22, depth: 260, water: 1.7, wLo: 40, wHi: 80, nut: 1.3, pest: 0.8, pestName: { en: 'Fruit borer', te: 'కాయ తొలుచు పురుగు' }, soil: { red: 1.05, black: 1.0 }, season: [0.9, 1.1, 0.8], spoil: 0.09, heap: '#c9302a', leaf: '#3f8a35', ripe: '#56802e', fruit: '#6fa83a', fruitRipe: '#d0342b', proc: false },
+  paddy:     { en: 'Paddy', te: 'వరి', seedCost: 1800, days: 2.4, yield: 24, price: 2300, msp: 2369, vol: 0.035, depth: 900, water: 2.6, wLo: 55, wHi: 100, nut: 1.0, pest: 0.5, pestName: { en: 'Brown planthopper', te: 'దోమపోటు' }, soil: { red: 0.95, black: 1.06 }, season: [1.0, 0.95, 0.72], spoil: 0.002, heap: '#d6ad55', leaf: '#5d9a37', ripe: '#cfa84a', fruit: '#e0c060', fruitRipe: '#d9b34f', proc: true },
+  cotton:    { en: 'Cotton', te: 'పత్తి', seedCost: 2600, days: 3.0, yield: 9, price: 7200, msp: 7710, vol: 0.06, depth: 420, water: 1.3, wLo: 30, wHi: 80, nut: 1.0, pest: 0.9, pestName: { en: 'Pink bollworm', te: 'గులాబీ రంగు పురుగు' }, soil: { red: 0.86, black: 1.15 }, season: [1.0, 0.82, 0.62], spoil: 0.001, heap: '#f4f1ea', leaf: '#3f7a32', ripe: '#6b6a3a', fruit: '#8fae55', fruitRipe: '#f7f5ee', proc: true },
+  maize:     { en: 'Maize', te: 'మొక్కజొన్న', seedCost: 2200, days: 2.2, yield: 26, price: 2100, msp: 2400, vol: 0.05, depth: 700, water: 1.5, wLo: 35, wHi: 85, nut: 1.25, pest: 0.75, pestName: { en: 'Fall armyworm', te: 'కత్తెర పురుగు' }, soil: { red: 1.05, black: 1.0 }, season: [1.0, 1.05, 0.76], spoil: 0.004, heap: '#e9b43a', leaf: '#4f9a3a', ripe: '#b9a15a', fruit: '#9fbf5a', fruitRipe: '#e8c257', proc: true },
+  chilli:    { en: 'Chilli', te: 'మిర్చి', seedCost: 7500, days: 3.0, yield: 12, price: 14000, msp: 0, vol: 0.12, depth: 160, water: 1.35, wLo: 35, wHi: 80, nut: 1.3, pest: 1.0, pestName: { en: 'Thrips', te: 'తామర పురుగు' }, soil: { red: 1.1, black: 1.0 }, season: [0.95, 1.06, 0.7], spoil: 0.003, heap: '#b3261e', leaf: '#3c8a33', ripe: '#4c7a2a', fruit: '#3f9a2e', fruitRipe: '#c0231b', proc: false },
+  turmeric:  { en: 'Turmeric', te: 'పసుపు', seedCost: 14000, days: 3.6, yield: 22, price: 10000, msp: 0, vol: 0.09, depth: 220, water: 1.45, wLo: 40, wHi: 85, nut: 1.3, pest: 0.4, pestName: { en: 'Rhizome rot', te: 'దుంప కుళ్ళు' }, soil: { red: 1.1, black: 0.95 }, season: [1.0, 0.9, 0.62], spoil: 0.001, heap: '#e3a01b', leaf: '#5aa042', ripe: '#b49a3c', fruit: '#e0a020', fruitRipe: '#e3a01b', proc: false },
+  groundnut: { en: 'Groundnut', te: 'వేరుశెనగ', seedCost: 5500, days: 2.2, yield: 9, price: 6500, msp: 7263, vol: 0.06, depth: 300, water: 1.05, wLo: 28, wHi: 75, nut: 0.8, pest: 0.5, pestName: { en: 'Leaf miner', te: 'ఆకుముడత పురుగు' }, soil: { red: 1.15, black: 0.86 }, season: [1.0, 1.05, 0.85], spoil: 0.004, heap: '#b88a55', leaf: '#4f9a3c', ripe: '#8a8a40', fruit: '#e8c93c', fruitRipe: '#e8c93c', proc: true },
+  tomato:    { en: 'Tomato', te: 'టమాటా', seedCost: 4000, days: 1.6, yield: 80, price: 1500, msp: 0, vol: 0.22, depth: 260, water: 1.7, wLo: 40, wHi: 80, nut: 1.3, pest: 0.8, pestName: { en: 'Fruit borer', te: 'కాయ తొలుచు పురుగు' }, soil: { red: 1.05, black: 1.0 }, season: [0.9, 1.1, 0.8], spoil: 0.09, heap: '#c9302a', leaf: '#3f8a35', ripe: '#56802e', fruit: '#6fa83a', fruitRipe: '#d0342b', proc: false },
 };
 const CROP_IDS = Object.keys(CROPS);
 const MANGO = { en: 'Mango', te: 'మామిడి', price: 3800, spoil: 0.08, heap: '#e9a22a' };
@@ -96,28 +96,28 @@ const DIESEL_PRICE = 95; // ₹ per litre at the pump
 
 // ---------- implements ----------
 const IMPLEMENTS = {
-  bplough:    { en: 'Wooden plough', te: 'నాగలి', op: 'plough', width: 1.5, maxSpeed: 1.9, price: 0, bullock: true },
+  bplough:    { en: 'Wooden plough', te: 'నాగలి', op: 'plough', width: 1.5, maxSpeed: 3.2, price: 0, bullock: true },
   bcart:      { en: 'Bullock cart', te: 'ఎడ్లబండి', op: null, cargo: 8, price: 0, bullock: true },
-  plough:     { en: 'MB plough', te: 'ఎంబీ నాగలి', op: 'plough', width: 1.9, maxSpeed: 3.4, price: 38000 },
-  cultivator: { en: 'Cultivator', te: 'కల్టివేటర్', op: 'cultivate', width: 2.7, maxSpeed: 3.9, price: 32000 },
-  rotavator:  { en: 'Rotavator', te: 'రోటవేటర్', op: 'rotavate', width: 2.3, maxSpeed: 3.1, price: 105000 },
-  seeddrill:  { en: 'Seed drill', te: 'సీడ్ డ్రిల్', op: 'sow', width: 2.6, maxSpeed: 3.5, price: 68000 },
-  spreader:   { en: 'Fertilizer spreader', te: 'ఎరువుల స్ప్రెడర్', op: 'fertilize', width: 6.5, maxSpeed: 4.2, price: 42000 },
-  sprayer:    { en: 'Boom sprayer', te: 'బూమ్ స్ప్రేయర్', op: 'spray', width: 8.5, maxSpeed: 4.2, price: 55000 },
+  plough:     { en: 'MB plough', te: 'ఎంబీ నాగలి', op: 'plough', width: 1.9, maxSpeed: 5.5, price: 38000 },
+  cultivator: { en: 'Cultivator', te: 'కల్టివేటర్', op: 'cultivate', width: 2.7, maxSpeed: 6, price: 32000 },
+  rotavator:  { en: 'Rotavator', te: 'రోటవేటర్', op: 'rotavate', width: 2.3, maxSpeed: 5, price: 105000 },
+  seeddrill:  { en: 'Seed drill', te: 'సీడ్ డ్రిల్', op: 'sow', width: 2.6, maxSpeed: 5.5, price: 68000 },
+  spreader:   { en: 'Fertilizer spreader', te: 'ఎరువుల స్ప్రెడర్', op: 'fertilize', width: 6.5, maxSpeed: 6.5, price: 42000 },
+  sprayer:    { en: 'Boom sprayer', te: 'బూమ్ స్ప్రేయర్', op: 'spray', width: 8.5, maxSpeed: 6.5, price: 55000 },
   trailer:    { en: 'Trailer', te: 'ట్రాలీ', op: null, cargo: 40, price: 140000 },
-  tanker:     { en: 'Water tanker', te: 'నీటి ట్యాంకర్', op: 'water', width: 3.2, maxSpeed: 4.2, price: 115000, tank: 100 },
+  tanker:     { en: 'Water tanker', te: 'నీటి ట్యాంకర్', op: 'water', width: 3.2, maxSpeed: 6.5, price: 115000, tank: 100 },
 };
 const TRACTOR_IMPLEMENTS = ['plough', 'cultivator', 'rotavator', 'seeddrill', 'spreader', 'sprayer', 'trailer', 'tanker'];
 
 // ---------- vehicles ----------
 const VEHICLES = {
-  bullock:   { en: 'Bullock pair', te: 'ఎడ్ల జత', maxSpeed: 2.1, rev: 0.8, accel: 1.1, turn: 1.1, wheelBase: 3.2, fuelCap: 0, fuelUse: 0, price: 0, cam: 7.5, sell: 60000 },
-  moped:     { en: 'Old moped', te: 'పాత మోపెడ్', maxSpeed: 12.5, rev: 2, accel: 3.4, turn: 1.9, wheelBase: 1.25, fuelCap: 5, fuelUse: 0.35, cargo: 1, price: 0, cam: 5.5, two: true, sell: 18000 },
-  bike:      { en: 'Motorcycle', te: 'మోటార్ సైకిల్', maxSpeed: 19, rev: 2.5, accel: 5.2, turn: 1.9, wheelBase: 1.35, fuelCap: 12, fuelUse: 0.5, cargo: 1, price: 92000, cam: 5.8, two: true, shop: 'dealer' },
-  tractor35: { en: 'Bhoomi 35 tractor', te: 'భూమి 35 ట్రాక్టర్', maxSpeed: 8.3, rev: 3, accel: 2.4, turn: 1.0, wheelBase: 2.1, fuelCap: 50, fuelUse: 3.2, price: 540000, cam: 9, power: 35, shop: 'workshop' },
-  tractor50: { en: 'Bhoomi 50 Power tractor', te: 'భూమి 50 పవర్ ట్రాక్టర్', maxSpeed: 9.7, rev: 3, accel: 2.9, turn: 1.0, wheelBase: 2.35, fuelCap: 65, fuelUse: 4.4, price: 820000, cam: 9.5, power: 50, rank: 1, shop: 'workshop' },
-  harvester: { en: 'Combine harvester', te: 'కంబైన్ హార్వెస్టర్', maxSpeed: 5.6, rev: 1.5, accel: 1.4, turn: 0.75, wheelBase: 3.4, fuelCap: 120, fuelUse: 9, price: 2100000, cam: 15, rank: 2, header: 4.6, shop: 'workshop' },
-  pickup:    { en: 'Pickup van', te: 'పికప్ వ్యాన్', maxSpeed: 22, rev: 4, accel: 4.2, turn: 1.25, wheelBase: 2.8, fuelCap: 45, fuelUse: 2.6, cargo: 20, price: 780000, cam: 9, shop: 'dealer' },
+  bullock:   { en: 'Bullock pair', te: 'ఎడ్ల జత', maxSpeed: 3.6, rev: 1.2, accel: 2.2, turn: 1.1, wheelBase: 3.2, fuelCap: 0, fuelUse: 0, price: 0, cam: 7.5, sell: 60000 },
+  moped:     { en: 'Old moped', te: 'పాత మోపెడ్', maxSpeed: 15, rev: 2.5, accel: 5, turn: 1.9, wheelBase: 1.25, fuelCap: 5, fuelUse: 0.35, cargo: 1, price: 0, cam: 5.5, two: true, sell: 18000 },
+  bike:      { en: 'Motorcycle', te: 'మోటార్ సైకిల్', maxSpeed: 22, rev: 3, accel: 6.5, turn: 1.9, wheelBase: 1.35, fuelCap: 12, fuelUse: 0.5, cargo: 1, price: 92000, cam: 5.8, two: true, shop: 'dealer' },
+  tractor35: { en: 'Bhoomi 35 tractor', te: 'భూమి 35 ట్రాక్టర్', maxSpeed: 11, rev: 3.5, accel: 3.6, turn: 1.15, wheelBase: 2.1, fuelCap: 50, fuelUse: 3.2, price: 540000, cam: 9, power: 35, shop: 'workshop' },
+  tractor50: { en: 'Bhoomi 50 Power tractor', te: 'భూమి 50 పవర్ ట్రాక్టర్', maxSpeed: 12.5, rev: 3.5, accel: 4.2, turn: 1.15, wheelBase: 2.35, fuelCap: 65, fuelUse: 4.4, price: 820000, cam: 9.5, power: 50, rank: 1, shop: 'workshop' },
+  harvester: { en: 'Combine harvester', te: 'కంబైన్ హార్వెస్టర్', maxSpeed: 7.5, rev: 2, accel: 2.4, turn: 0.9, wheelBase: 3.4, fuelCap: 120, fuelUse: 9, price: 2100000, cam: 15, rank: 2, header: 4.6, shop: 'workshop' },
+  pickup:    { en: 'Pickup van', te: 'పికప్ వ్యాన్', maxSpeed: 25, rev: 4, accel: 5.5, turn: 1.25, wheelBase: 2.8, fuelCap: 45, fuelUse: 2.6, cargo: 20, price: 780000, cam: 9, shop: 'dealer' },
 };
 const TRACTOR_RENT_PER_HOUR = 900;
 const HARVEST_SERVICE_PER_ACRE = 2400;
