@@ -24,6 +24,13 @@ const ALL = {
     const { browser, page, logs } = await open(Object.assign({ preset: 'LOW' }, o));
     try {
       await waitReady(page);
+      // title screen: the new-game form must show its Start button without scrolling by hand
+      const form = await page.evaluate(async () => {
+        const b = [...document.querySelectorAll('#tactions .tbtn')].find((x) => /New game/.test(x.textContent)); if (!b) return 'no new-game button';
+        b.click(); await new Promise((r) => setTimeout(r, 400));
+        const go = document.getElementById('startFarming'); if (!go) return 'no start button';
+        const r = go.getBoundingClientRect(); return r.top >= 0 && r.bottom <= innerHeight + 1 ? 'ok' : `start button off-screen ${Math.round(r.top)}..${Math.round(r.bottom)} of ${innerHeight}`;
+      });
       await page.evaluate(() => { const s = window.__tvs.sys; s.Settings.v.portraitOk = true; s.Settings.v.voice = false; s.Game.start(null, { name: 'Raju' }); });
       await page.waitForTimeout(3500);
       // stand at the edge of the field: field card + coach + guide all visible
@@ -50,6 +57,25 @@ const ALL = {
       console.log(`\n[${name}] ${r.W}x${r.H} touch=${r.touch} coach="${r.coach}"`);
       console.log('  card:', r.card);
       console.log(r.bad.length ? '  OVERLAP: ' + r.bad.join(' | ') : '  layout ok');
+      // the new cards: how to play, daily gift, puppy, trophies; their main button must be on screen
+      const cards = [];
+      for (const [nm, open, sel] of [['howto', 'HowTo.show()', '.btn.acc.big'], ['gift', 'DailyGift.show()', '.btn.acc.big'], ['pet', 'Pet.menu()', '.btn.pet'], ['trophies', "UI.office('trophies')", '.troph']]) {
+        const res = await page.evaluate(async ([open, sel]) => {
+          const s = window.__tvs.sys; new Function('s', 's.' + open)(s); await new Promise((r) => setTimeout(r, 350));
+          const sh = document.querySelector('#modal .sheet'); const b = document.querySelector('#modal ' + sel);
+          if (!sh || !b) return 'missing';
+          const a = sh.getBoundingClientRect(), r = b.getBoundingClientRect();
+          const bad = [];
+          if (a.left < -1 || a.top < -1 || a.right > innerWidth + 1 || a.bottom > innerHeight + 1) bad.push('sheet off-screen');
+          if (r.top < a.top - 1 || r.bottom > a.bottom + 1 || r.bottom > innerHeight + 1) bad.push(`button hidden (${Math.round(r.top)}..${Math.round(r.bottom)} in ${Math.round(a.top)}..${Math.round(a.bottom)})`);
+          const body = sh.querySelector('.body'); if (body && body.scrollWidth > body.clientWidth + 2) bad.push('sideways scroll');
+          return bad.length ? bad.join(', ') : 'ok';
+        }, [open, sel]);
+        cards.push(nm + ':' + res);
+        if (nm === 'howto' || nm === 'gift') await page.screenshot({ path: path.join(ROOT, `shots/dev_${name}_${nm}.png`), timeout: 180000 }).catch(() => { });
+        await page.evaluate(() => { const s = window.__tvs.sys; if (s.UI.sheetState) s.UI.sheetState.onClose = null; s.UI.close(); });
+      }
+      console.log('  form: ' + form + ' · cards: ' + cards.join(' '));
     } catch (e) { console.log(`[${name}] TEST ERROR`, e.message); }
     const errs = logs.filter((l) => /pageerror|\[error\]/i.test(l) && !l.includes('GPU stall'));
     if (errs.length) console.log('  errors:', errs.slice(0, 5).join('\n'));

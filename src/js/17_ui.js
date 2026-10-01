@@ -149,6 +149,17 @@ const UI = {
     if (list.length > 1) p.append(h('span', { class: 'more' }, L(`+${list.length - 1} more`, `+${list.length - 1} ఇంకా`)));
   },
   // ---------- HUD update ----------
+  // the coach strip while "Do it" is running: what is happening, and a Stop button
+  autoStatus() {
+    const el = this.el('coach'); if (!el) return;
+    this._mKey = '';
+    if (Auto.on) {
+      el.classList.add('auto'); el.hidden = false; clearTimeout(Coach._hide);
+      el.querySelector('.ci').innerHTML = COACH_ICON[Auto.mode === 'farm' ? 'work' : 'walk'];
+      el.querySelector('.ct').textContent = Auto.mode === 'farm' ? L(`Working ${Auto.name}…`, `${Auto.name}లో పని చేస్తున్నారు…`) : Auto.name ? L(`Walking to ${Auto.name}…`, `${Auto.name} వైపు నడుస్తున్నారు…`) : L('Walking there…', 'అక్కడికి నడుస్తున్నారు…');
+      const b = el.querySelector('.cdo'); b.textContent = L('Stop ■', 'ఆపు ■'); b.onclick = () => Auto.stop(true);
+    } else { el.classList.remove('auto'); el.hidden = true; Coach.key = ''; }
+  },
   // set text only when it changed (avoids needless layout work on phones)
   setText(el, txt) { if (el && el._t !== txt) { el._t = txt; el.textContent = txt; } },
   update(dt) {
@@ -190,7 +201,7 @@ const UI = {
     const st = Coach.step; const cur = st ? st.m : Coach.current();
     const nAct = S.missions.active.length;
     const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
-    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '');
+    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on;
     if (mkey !== this._mKey) {
       this._mKey = mkey;
       const mb = this.el('missions'); mb.innerHTML = '';
@@ -201,6 +212,7 @@ const UI = {
         mb.appendChild(h('b', { class: 'mt' }, LN(cur.title)));
         if (st) { const sp = h('div', { class: 'step' }); sp.innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk; sp.appendChild(h('span', null, st.text)); mb.appendChild(sp); }
         if (tg && !tg.wp && tg.m === cur) mb.appendChild(h('span', { class: 'go' }, `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}`));
+        if (st) mb.appendChild(h('button', { class: 'do' + (Auto.on ? ' stop' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); if (Auto.on) Auto.stop(true); else Auto.doStep(); } }, Auto.on ? L('■ Stop', '■ ఆపు') : L('▶ Do it for me', '▶ నా బదులు చేయి'), isMobile || Auto.on ? null : h('span', { class: 'kbd' }, 'Enter')));
         if (cur.reward) mb.appendChild(h('small', null, L('Reward ', 'బహుమతి ') + fmtINR(cur.reward)));
         mb.appendChild(h('div', { class: 'prog' }, h('b', { style: { width: (clamp01(cur.prog / cur.target) * 100).toFixed(0) + '%' } })));
       }
@@ -348,6 +360,7 @@ const UI = {
       { id: 'store', label: () => L('Storage & supplies', 'నిల్వ & సామాగ్రి'), act: () => this.office('storage') },
       { id: 'save', label: () => L('Save game', 'ఆట సేవ్ చేయండి'), act: () => SaveSys.save(true) },
     ];
+    if (!S.pet) list.splice(1, 0, { id: 'pet', label: () => L('Adopt a puppy (free) 🐶', 'కుక్కపిల్లను తెచ్చుకోండి (ఉచితం) 🐶'), act: () => Pet.menu() });
     this.actionMenu(list);
   },
   storageMenu(v) {
@@ -592,6 +605,7 @@ const UI = {
       { id: 'market', label: () => L('Market', 'మార్కెట్'), render: (b) => this.tabMarket(b) },
       { id: 'finance', label: () => L('Finance', 'ఆర్థికం'), render: (b) => this.tabFinance(b) },
       { id: 'missions', label: () => L('Missions', 'లక్ష్యాలు'), render: (b) => this.tabMissions(b) },
+      { id: 'trophies', label: () => L('Trophies', 'ట్రోఫీలు') + ` ${Trophies.count()}/${TROPHIES.length}`, render: (b) => Trophies.tab(b) },
       { id: 'profile', label: () => L('Profile', 'ప్రొఫైల్'), render: (b) => this.tabProfile(b) },
     ] });
   },
@@ -754,6 +768,7 @@ const UI = {
       setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
       setRow(L('Language', 'భాష'), seg([['en', 'English'], ['te', 'తెలుగు']], v.lang, (l) => { v.lang = l; Settings.save(); this.applyLang(); }));
       setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
+      if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
       const slider = (key) => h('input', { type: 'range', id: 'vol_' + key, min: 0, max: 1, step: 0.05, value: v[key], oninput: (e) => { v[key] = +e.target.value; Audio2.applyVolumes(); Settings.save(); } });
       setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
       setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
@@ -764,6 +779,8 @@ const UI = {
       if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
       b.appendChild(h('div', { class: 'row', style: { marginTop: '16px' } },
         this.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
+        this.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
+        this.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
         this.btn(L('Controls', 'నియంత్రణలు'), () => this.help(), 'alt'),
         this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); location.reload(); }, 'alt')));
       b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
@@ -788,8 +805,17 @@ const UI = {
     for (const id of ['hud-tl', 'hud-tc', 'hud-tr', 'missions', 'hud-bl', 'hud-bc', 'hud-br', 'news', 'savedot']) { const e = this.el(id); if (e) e.style.visibility = this.photoMode ? 'hidden' : ''; }
     this.el('touch').style.visibility = this.photoMode ? 'hidden' : '';
     this.el('letterbox').hidden = !(this.photoMode || (G.preset && G.preset.letterbox));
-    if (this.photoMode) this.toast(L('Photo mode — press P to return', 'ఫోటో మోడ్ — తిరిగి రావడానికి P నొక్కండి'), 'info');
-    if (isMobile && this.photoMode) setTimeout(() => { if (this.photoMode) { const once = () => { this.photo(); window.removeEventListener('pointerdown', once); }; window.addEventListener('pointerdown', once); } }, 400);
+    // a bar with two big buttons: take the photo, or go back to playing
+    const bar = this.el('photobar');
+    if (bar) {
+      bar.hidden = !this.photoMode;
+      if (this.photoMode) {
+        bar.innerHTML = '';
+        bar.append(h('button', { class: 'pb snap', type: 'button', onclick: () => Photo.take() }, '📸 ' + L('Take photo', 'ఫోటో తీయండి')),
+          h('button', { class: 'pb', type: 'button', onclick: () => this.photo() }, '✕ ' + L('Back', 'వెనక్కి')));
+      }
+    }
+    if (this.photoMode) this.toast(isMobile ? L('Photo mode: drag to frame your shot, then tap Take photo', 'ఫోటో మోడ్: లాగి చిత్రాన్ని సరిచేసి, ఫోటో తీయండి నొక్కండి') : L('Photo mode: frame your shot, then click Take photo (P to return)', 'ఫోటో మోడ్: చిత్రాన్ని సరిచేసి ఫోటో తీయండి నొక్కండి (తిరిగి రావడానికి P)'), 'info');
   },
   fade(fn, text = '') {
     const f = this.el('fade'); f.textContent = text; f.classList.add('on');
@@ -861,14 +887,20 @@ const UI = {
       a.appendChild(h('button', { class: 'tbtn ' + (hasSave ? 'sec2' : 'pri'), onclick: () => { Audio2.unlock(); newForm(); } }, L('New game', 'కొత్త ఆట'), h('span', null, '+')));
       a.appendChild(h('button', { class: 'tbtn sec2', onclick: () => this.help() }, L('Controls', 'నియంత్రణలు'), h('span', null, '?')));
     };
-    let gender = 'm';
+    let gender = 'm', easy = true;
     const newForm = () => {
       const f = this.el('newgame'); f.hidden = false; f.innerHTML = '';
       const name = h('input', { id: 'pnameInput', maxlength: 18, value: gender === 'm' ? L('Raju', 'రాజు') : L('Radha', 'రాధ'), 'aria-label': L('Your name', 'మీ పేరు') });
       const av = h('div', { class: 'av' });
       const draw = () => { av.innerHTML = ''; for (const [g, lab] of [['m', L('Farmer (man)', 'రైతు (పురుషుడు)')], ['f', L('Farmer (woman)', 'రైతు (స్త్రీ)')]]) av.appendChild(h('button', { class: gender === g ? 'on' : '', onclick: () => { gender = g; name.value = g === 'm' ? L('Raju', 'రాజు') : L('Radha', 'రాధ'); draw(); } }, lab)); };
       draw();
-      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→')));
+      // difficulty: easy is the default, so anyone (kids too) can grow a crop without failing
+      const dif = h('div', { class: 'av dif' });
+      const drawDif = () => { dif.innerHTML = ''; for (const [e, lab, sub] of [[true, L('Easy', 'సులభం'), L('Best for kids & first time', 'పిల్లలకు, కొత్తవారికి')], [false, L('Normal', 'సాధారణం'), L('Real farming', 'నిజమైన వ్యవసాయం')]]) dif.appendChild(h('button', { class: easy === e ? 'on' : '', type: 'button', onclick: () => { easy = e; drawDif(); } }, lab, h('small', null, sub))); };
+      drawDif();
+      const go = h('button', { class: 'tbtn pri', id: 'startFarming', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender, easy }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→'));
+      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, dif, go);
+      requestAnimationFrame(() => { try { go.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browsers */ } });   // short phone screens: keep Start in view
       if (!isMobile) name.focus();   // phones: no keyboard popping over the screen
     };
     segs(); acts();

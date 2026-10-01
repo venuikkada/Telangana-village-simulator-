@@ -63,7 +63,7 @@ const path = require('path');
     // every menu
     const menus = ['homeMenu', 'office', 'map', 'settings', 'help', 'villageMenu', 'workshop', 'dealer'];
     for (const m of menus) await ev('menu ' + m, (m) => { const s = window.__tvs.sys; s.UI[m](); const t = document.getElementById('modal').innerText.length; s.UI.close(); return 'chars=' + t; }, m);
-    for (const tab of ['fields', 'storage', 'workers', 'build', 'market', 'finance', 'missions', 'profile']) await ev('office tab ' + tab, (tab) => { const s = window.__tvs.sys; s.UI.office(tab); const t = document.getElementById('modal').innerText.length; s.UI.close(); return 'chars=' + t; }, tab);
+    for (const tab of ['fields', 'storage', 'workers', 'build', 'market', 'finance', 'missions', 'trophies', 'profile']) await ev('office tab ' + tab, (tab) => { const s = window.__tvs.sys; s.UI.office(tab); const t = document.getElementById('modal').innerText.length; s.UI.close(); return 'chars=' + t; }, tab);
     for (const k of ['seed', 'kirana']) await ev('shop ' + k, (k) => { const s = window.__tvs.sys; s.UI.shop(k); const t = document.getElementById('modal').innerText.length; s.UI.close(); return 'chars=' + t; }, k);
     await ev('finance menus', () => { const s = window.__tvs.sys; s.UI.financeMenu('bank'); const a = document.getElementById('modal').innerText.length; s.UI.close(); s.UI.financeMenu('lender'); const b = document.getElementById('modal').innerText.length; s.UI.close(); return [a, b]; });
     await ev('msp + land + heap menus', () => { const s = window.__tvs.sys; s.UI.mspMenu(null); s.UI.close(); const f = s.Fields.list.find((q) => q.avail); s.UI.landMenu(f); const t = document.getElementById('modal').innerText.slice(0, 200); s.UI.close(); return t; });

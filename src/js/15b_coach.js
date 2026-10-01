@@ -76,7 +76,7 @@ function coachSell(crop, where) {
     const opt = where === 'trader' ? L('“Sell all to trader”', '“వ్యాపారికి అమ్మండి”') : where === 'msp' ? L('“Send to the MSP centre by lorry”', '“లారీలో మద్దతు ధర కేంద్రానికి”') : L('“Send to the market yard by lorry”', '“లారీలో మార్కెట్ యార్డుకు”');
     return { text: (isMobile ? L('Tap the heap, then ', 'కుప్పను నొక్కి ') : L('Press E at the heap, then ', 'కుప్ప దగ్గర E నొక్కి ')) + opt, icon: 'tap' };
   }
-  if (CH.stored(crop) > 0.05) return { text: CH.office('Storage → “Send by lorry”', 'నిల్వ → “లారీలో పంపండి”'), icon: 'office' };
+  if (CH.stored(crop) > 0.05) return { text: CH.office('Storage → “Send by lorry”', 'నిల్వ → “లారీలో పంపండి”'), icon: 'office', tab: 'storage' };
   const g = CH.growing(crop);
   if (g) return coachGrow(g);
   return coachSow(crop || CH.bestCrop());
@@ -139,15 +139,15 @@ const COACH_STEPS = {
   expand: () => coachLand(),
   ownLand: () => coachLand(),
   leaseLand: () => coachLand(),
-  build: (m) => { const U2 = FARM_UPGRADES[m.up]; if (U2 && !CH.money(U2.cost)) return CH.needMoney(U2.cost); return { text: CH.office(`Build → ${U2 ? U2.en : ''}`, `నిర్మాణం → ${U2 ? U2.te : ''}`), icon: 'office' }; },
-  house: () => { const H = HOUSE_LEVELS[Math.min(4, G.S.houseLevel + 1)]; if (H && !CH.money(H.cost)) return CH.needMoney(H.cost); return { text: CH.office('Build → upgrade your house', 'నిర్మాణం → ఇల్లు పెంచండి'), icon: 'office' }; },
+  build: (m) => { const U2 = FARM_UPGRADES[m.up]; if (U2 && !CH.money(U2.cost)) return CH.needMoney(U2.cost); return { text: CH.office(`Build → ${U2 ? U2.en : ''}`, `నిర్మాణం → ${U2 ? U2.te : ''}`), icon: 'office', tab: 'build' }; },
+  house: () => { const H = HOUSE_LEVELS[Math.min(4, G.S.houseLevel + 1)]; if (H && !CH.money(H.cost)) return CH.needMoney(H.cost); return { text: CH.office('Build → upgrade your house', 'నిర్మాణం → ఇల్లు పెంచండి'), icon: 'office', tab: 'build' }; },
   village: (m) => { const P2 = VILLAGE_PROJECTS[m.proj]; if (P2 && !CH.money(P2.cost)) return CH.needMoney(P2.cost); return CH.visit('panchayat', L('the panchayat office', 'పంచాయతీ కార్యాలయం'), `fund ${P2 ? P2.en : 'the project'}`, `${P2 ? P2.te : 'ప్రాజెక్టు'}కు నిధులు ఇవ్వండి`); },
   repairBore: () => {
     if (Inv.count('pumppart') < 1) return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'buy a pump spare part', 'పంపు విడిభాగం కొనండి');
     return CH.visit('vbore', L('the village borewell', 'గ్రామ బోరు'), 'repair the borewell', 'బోరు బాగుచేయండి');
   },
-  hire: () => ({ text: CH.office('Workers → Hire', 'కూలీలు → పెట్టుకోండి'), icon: 'office' }),
-  rankUp: () => ({ text: CH.office('Profile: see what you need', 'ప్రొఫైల్: ఏం కావాలో చూడండి'), icon: 'office' }),
+  hire: () => ({ text: CH.office('Workers → Hire', 'కూలీలు → పెట్టుకోండి'), icon: 'office', tab: 'workers' }),
+  rankUp: () => ({ text: CH.office('Profile: see what you need', 'ప్రొఫైల్: ఏం కావాలో చూడండి'), icon: 'office', tab: 'profile' }),
   talk: (m) => { const n = NPCs.byId[m.npc]; if (!n) return null; const p = { x: n.h.x, z: n.h.z }; if (!CH.near(p, 3)) return CH.go(p, LN(n.name)); return { text: CH.tap(L('Talk to ', 'మాట్లాడండి: ') + LN(n.name)), icon: 'tap' }; },
   milk: () => (Inv.count('feed') < 1 ? CH.visit('kirana', L('the kirana shop', 'కిరాణం'), 'buy cattle feed', 'పశువుల దాణా కొనండి') : { text: L('Milk is sold every morning and evening. Keep the buffaloes fed', 'పాలు ప్రతి ఉదయం, సాయంత్రం అమ్ముతారు. గేదెలకు దాణా పెట్టండి'), icon: 'wait' }),
   repay: () => { const bank = G.S.loans.some((l) => l.kind === 'bank'); return bank ? CH.visit('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు'), 'repay the loan', 'రుణం తీర్చండి') : CH.visit('lender', L("Hanmanthu's house", 'హన్మంతు'), 'repay the loan', 'అప్పు తీర్చండి'); },
@@ -169,7 +169,7 @@ const COACH_STEPS = {
     if (Time.hour() < 16.5) return { text: L(`The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM`, `వేడుక సాయంత్రం 4:30 నుంచి`), target: { x: t.x, z: t.z, name: nm }, icon: 'wait' };
     return CH.go(t, nm);
   },
-  _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office('Missions', 'లక్ష్యాలు'), icon: 'office' }; },
+  _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office('Missions', 'లక్ష్యాలు'), icon: 'office', tab: 'missions' }; },
 };
 
 const Coach = {
@@ -200,11 +200,13 @@ const Coach = {
   },
   // big instruction strip above the controls; spoken aloud if the player wants
   show(st, reminder) {
-    const el = UI.el('coach'); if (!el || UI.photoMode) return;
+    const el = UI.el('coach'); if (!el || UI.photoMode || Auto.on) return;
+    el.classList.remove('auto');
     el.querySelector('.ci').innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk;
     el.querySelector('.ct').textContent = st.text;
+    const b = el.querySelector('.cdo'); b.textContent = L('Do it ▶', 'చేయి ▶'); b.onclick = () => Auto.doStep();
     el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
-    clearTimeout(this._hide); this._hide = setTimeout(() => { el.hidden = true; }, reminder ? 4500 : 7000);
+    clearTimeout(this._hide); this._hide = setTimeout(() => { if (!Auto.on) el.hidden = true; }, reminder ? 5000 : 8000);
     if (!reminder || Settings.v.voice === 'always') this.say(st.text);
   },
   say(text) {

@@ -92,6 +92,14 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #coach .ci { width: 30px; height: 30px; flex: none; color: #ffc61a; }
 #coach .ci svg { width: 100%; height: 100%; display: block; }
 #coach.go { animation: cin .35s ease-out; }
+#coach .ct { flex: 1 1 auto; min-width: 0; }
+#coach .cdo { pointer-events: auto; flex: none; border: 0; border-radius: 10px; padding: 8px 12px; background: #f2b52d; color: #1f1606; font: 800 14px/1 var(--font-body); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 0 #a8770c; }
+#coach .cdo:active { transform: translateY(1px); box-shadow: none; }
+#coach.auto { border-color: #43b6ff; }
+#coach.auto .cdo { background: #e9eef3; color: #1b1b1f; box-shadow: 0 2px 0 #98a2ad; }
+#missions .do { border: 0; border-radius: 9px; padding: 6px 10px; background: #f2b52d; color: #1f1606; font: 800 12.5px/1.1 var(--font-body); cursor: pointer; justify-self: start; box-shadow: 0 2px 0 #a8770c; }
+#missions .do.stop { background: #e9eef3; box-shadow: 0 2px 0 #98a2ad; }
+#missions .do .kbd { margin-left: 6px; font-size: 10px; padding: 1px 5px; background: rgba(0,0,0,.12); color: inherit; }
 @keyframes cin { from { opacity: 0; transform: translateY(8px) scale(.97); } }
 #missions .mt { font: 700 14px/1.25 var(--font-display); }
 #missions .step { display: flex; gap: 6px; align-items: flex-start; font: 700 13px/1.3 var(--font-body); color: #1f1606; background: rgba(242, 181, 45, .62); border-radius: 8px; padding: 4px 7px; }
@@ -248,6 +256,10 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #title { background: linear-gradient(90deg, rgba(12, 10, 20, 0.86) 0%, rgba(12, 10, 20, 0.62) 38%, rgba(12, 10, 20, 0) 70%); color: #f6efe2; padding-inline: max(16px, 6vw); padding-block: calc(env(safe-area-inset-top, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 16px); overflow-y: auto; }
 #title .tbox { margin-block: auto; }
 @media (max-height: 620px) {
+  #newgame { gap: 7px; padding: 10px 12px; }
+  #newgame input { padding: 7px 10px; }
+  #newgame .av button { padding: 7px 8px; font-size: 14px; }
+  #newgame .dif button { display: flex; gap: 6px; justify-content: center; align-items: baseline; flex-wrap: wrap; }
   #title h1 { font-size: clamp(30px, 9vh, 56px); }
   #title .tbox { gap: 9px; }
   #title .pitch { font-size: 13.5px; }
@@ -281,6 +293,57 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .credit { font-size: 11.5px; color: #a89f8e; }
 #fade { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .45s; display: grid; place-items: center; color: #f4ecdc; font: 700 22px var(--font-display); }
 #fade.on { opacity: 1; pointer-events: auto; }
+/* ---------- daily gift, trophies, pet, photos, how to play ---------- */
+.btn.big { padding: 12px 22px; font: 800 17px/1.15 var(--font-display); border-radius: 12px; }
+.gifts { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.gift { background: var(--panel-2); border-radius: 12px; padding: 8px 4px 9px; display: grid; justify-items: center; gap: 3px; text-align: center; border: 2px solid transparent; min-width: 0; }
+.gift small { font: 700 11px var(--font-body); color: var(--ink-2); }
+.gift b { font-size: 24px; line-height: 1.15; }
+.gift span { font: 700 11px/1.2 var(--font-body); overflow-wrap: anywhere; }
+.gift.got { opacity: .55; }
+.gift.got b { color: var(--good); }
+.gift.now { border-color: #f2b52d; background: rgba(242, 181, 45, .18); animation: giftpulse 1.2s ease-in-out infinite alternate; }
+@keyframes giftpulse { from { transform: scale(1); } to { transform: scale(1.06); } }
+.trophies { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.troph { background: var(--panel-2); border-radius: 12px; padding: 10px; display: grid; gap: 2px; align-content: start; border: 2px solid rgba(242, 181, 45, .55); min-width: 0; }
+.troph b { font-size: 28px; line-height: 1.1; }
+.troph strong { font: 700 15px/1.2 var(--font-display); }
+.troph span { font-size: 12px; color: var(--ink-2); }
+.troph em { font: 700 12px var(--font-body); font-style: normal; color: var(--soil); }
+.troph.locked { border-color: transparent; }
+.troph.locked b { filter: grayscale(1); opacity: .45; }
+.pets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.btn.pet { display: grid; justify-items: center; gap: 6px; padding: 14px 8px; font: 800 17px var(--font-display); }
+.btn.pet i { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(0,0,0,.15); }
+.howto { display: grid; gap: 8px; }
+@media (min-width: 600px) { .howto { grid-template-columns: 1fr 1fr; } }
+.hcard { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; background: var(--panel-2); border-radius: 12px; padding: 10px 12px; }
+.hcard > b { font-size: 30px; text-align: center; line-height: 1; }
+.hcard strong { display: block; font: 800 17px/1.2 var(--font-display); }
+.hcard span { font-size: 13.5px; color: var(--ink-2); }
+img.shot { display: block; width: 100%; max-height: 52vh; max-height: 52dvh; object-fit: contain; border-radius: 12px; background: #000; -webkit-touch-callout: default; user-select: auto; -webkit-user-select: auto; }
+.btn.wa { text-decoration: none; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
+#photobar { left: 50%; bottom: calc(var(--sb) + 22px); transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto; }
+#photobar .pb { border: 0; border-radius: 99px; padding: 13px 22px; font: 800 17px/1 var(--font-display); background: rgba(28, 22, 14, .88); color: #fff8e6; box-shadow: var(--shadow); cursor: pointer; }
+#photobar .pb.snap { background: #f2b52d; color: #1c1405; }
+#flash { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+#flash.on { animation: flash .5s ease-out; }
+@keyframes flash { from { opacity: .85; } to { opacity: 0; } }
+#newgame .dif button { display: grid; gap: 2px; justify-items: center; }
+#newgame .dif small { font: 600 11.5px var(--font-body); opacity: .8; }
+@media (max-width: 520px), (max-height: 430px) {
+  .gifts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .gift b { font-size: 20px; }
+  .hcard { grid-template-columns: 30px 1fr; gap: 8px; padding: 7px 9px; }
+  .hcard > b { font-size: 22px; }
+  .hcard strong { font-size: 15px; }
+  .hcard span { font-size: 12px; line-height: 1.3; display: block; }
+  .btn.big { padding: 10px 20px; font-size: 16px; }
+  .trophies { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  #photobar .pb { padding: 11px 18px; font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .gift.now { animation: none; } #flash.on { animation: none; } }
 /* ---------- phones & small screens ---------- */
 @media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
   #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: calc(var(--sl) + 10px); top: calc(var(--st) + 8px); }
@@ -430,7 +493,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
     <div id="hud-bl" class="card" hidden></div>
     <div id="hud-bc">
-      <div id="coach" hidden role="status" aria-live="polite"><span class="ci"></span><span class="ct"></span></div>
+      <div id="coach" hidden role="status" aria-live="polite"><span class="ci"></span><span class="ct"></span><button class="cdo" type="button">Do it</button></div>
       <div id="prompt" class="card" hidden></div>
       <div id="toolopt" class="card" hidden></div>
       <div id="tools" class="card"></div>
@@ -446,6 +509,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     <div id="nav" hidden><div class="ar"><svg class="pin" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2c-6.1 0-11 4.7-11 10.6C6 20.4 17 32 17 32s11-11.6 11-19.4C28 6.7 23.1 2 17 2z" fill="#ffc61a" stroke="#1b1b1f" stroke-width="2"/><circle cx="17" cy="12.5" r="4.2" fill="#1b1b1f"/></svg><svg class="arrow" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2l13 26-13-7-13 7z" fill="#ffc61a" stroke="#1b1b1f" stroke-width="2" stroke-linejoin="round"/></svg></div><span class="tx"></span></div>
     <div id="news"><div id="newsbar" class="card" hidden><b data-en="News" data-te="వార్తలు">News</b><span id="newstext"></span></div></div>
     <div id="fps" hidden></div>
+    <div id="photobar" hidden></div>
   </div>
   <div id="touch" hidden>
     <div id="joy"><div id="knob"></div></div>
@@ -494,4 +558,5 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   <div id="lost" hidden><div class="card"><b data-en="Tap to continue" data-te="కొనసాగించడానికి నొక్కండి">Tap to continue</b><p data-en="The phone paused the 3D graphics. Your farm is saved." data-te="ఫోన్ 3D గ్రాఫిక్స్‌ను ఆపింది. మీ పొలం సేవ్ అయింది.">The phone paused the 3D graphics. Your farm is saved.</p></div></div>
   <div id="modal" hidden></div>
   <div id="fade"></div>
+  <div id="flash"></div>
 </div>

@@ -16,12 +16,15 @@ It runs in the browser on PC and on phones, in English and Telugu. There is noth
 
 ## Play
 
+**Play now: <https://peru-dove-641366.hostingersite.com>** (free, nothing to install)
+
 Works on Android phones, iPhones, iPads, tablets and computers, in any modern browser (Chrome, Safari, Edge, Firefox).
 
 - **iPhone / iPad:** open the game in Safari, tap **Share → Add to Home Screen**, then start it from the home screen. It opens full screen like an app.
 - **Android:** the game goes full screen when you tap Start. You can also use Chrome's **Install app / Add to Home screen**.
 - **Turn the phone sideways** for the best view. Phones start on the Low quality setting so the game stays smooth.
 - **Just follow the coach:** the yellow strip at the bottom and the mission card always say the next step ("Go to your field", "Hold Work", "Tap Buy seeds"), and the gold arrow shows the way. The steps can also be read aloud (Menu → Voice guide).
+- **Stuck? Tap "▶ Do it for me":** your farmer walks to the next place along the roads, works the whole field row by row, taps the right button or rests until the crop needs you. Touch the stick to take control back. On a touch screen you can also tap the ground to walk there.
 
 - **Online:** once GitHub Pages is turned on for this repository (Settings → Pages → Deploy from branch → `main`, folder `/root`), the game is at `https://venuikkada.github.io/Telangana-village-simulator-/`.
 - **On your computer:** open `index.html` in Chrome, Edge or Firefox. An internet connection is needed the first time, for three.js and the fonts. If your browser blocks it, run `npx serve .` in this folder and open the address it prints.
@@ -44,6 +47,12 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Easy to play:** one Auto button does the next job on your field: plough, sow, water, feed, weed, spray or harvest. Missing seeds or fertilizer? One tap gets them delivered to the field. When the crop is growing, "Rest" jumps ahead to the next thing it needs.
 - **Never lost:** a gold arrow and an on-screen marker always point to your next goal. The minimap faces north and shows shops, roads and your fields. On the full map, tap any place and take an auto straight there.
 - **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Phones start on Low and run at a steady 60 or 30 FPS ("Auto" picks what the phone can hold). Far trees and fields switch to lighter models, and resolution adjusts automatically to keep the game smooth.
+- **Easy mode:** new games start in Easy mode, made for kids and first-time players: crops dry out, get weedy and catch pests about half as fast, a neglected crop still gives a fair harvest, and the farmer tires more slowly. Switch between Easy and Normal any time in the Menu.
+- **How to play:** four picture cards the first time you play (Move, Follow the gold arrow, Do it for me, Gifts & trophies). Open them again from the Menu.
+- **Daily gift:** come back every day for a gift that grows over a 7-day streak, from ₹1,000 and fertilizer to seeds and ₹10,000 on day 7.
+- **Trophies:** 21 trophies, from "First seeds" and "Lakhpati" to "Tractor owner" and "Crorepati", each with a cash reward. See them in Farm office → Trophies.
+- **Your own dog:** adopt Moti, Kalu or Tommy at your house for free. Your dog follows you everywhere, even beside your tractor, and patting it gives you energy.
+- **Photos and sharing:** photo mode has a Take photo button. The picture gets the game's name and link and can be saved, shared or sent on WhatsApp. "Invite friends" in the Menu shares the game link.
 - **Saving:** the game saves every morning, after you sleep and every few minutes. On claude.ai your farm can also save to your account, so you can continue on another device.
 
 ## Controls
@@ -61,6 +70,8 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 | H / L | Horn | Horn / headlights |
 | V | View | First or third person |
 | M, B, P, Esc | Top buttons | Map, farm office, photo mode, menu |
+| Enter | ▶ Do it for me | The game does the next step for you |
+| – | Tap the ground | Walk there |
 
 Follow the gold arrow. Sleep at home to skip the night, or use "Rest" on your field while the crop grows.
 
@@ -94,10 +105,13 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/11_vehicles_models.js` | Tractor, harvester, bike and implement models |
 | `src/js/11b_vehicles.js` | Driving, implements, traffic, AI field work, particles |
 | `src/js/12_player.js` | Input, player, cameras, interactions |
+| `src/js/12b_auto.js` | "Do it for me" autopilot and tap-to-walk |
 | `src/js/13_time_weather.js` | Clock, calendar, weather, rain |
 | `src/js/14_economy.js` | Money, market prices and news, storage, loans |
 | `src/js/14b_farm.js` | Land, house, upgrades, dairy, workers, village projects, services, ranks |
+| `src/js/14c_extras.js` | Daily gift, trophies, pet dog, photo sharing, easy mode, how-to-play cards |
 | `src/js/15_missions.js` | Tutorial and generated missions |
+| `src/js/15b_coach.js` | Step-by-step coach, gold guide arrow, spoken instructions |
 | `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
 | `src/js/18_save.js` | Browser and cloud saves |

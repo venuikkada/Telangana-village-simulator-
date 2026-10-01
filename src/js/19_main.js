@@ -20,6 +20,8 @@ function newGameState(o = {}) {
     village: { pop: 1460, biz: 22, landValue: 0 },
     houseLevel: 0,
     waypoint: null, fd: 0,
+    easy: !!o.easy,                                   // easy mode: chosen on the new-game screen, changeable in the menu
+    daily: { last: null, streak: 0 }, trophies: {},
   };
 }
 
@@ -311,6 +313,7 @@ const Game = {
     UI.applyLang(); UI.dirty = true; UI.refreshTools();
     Progress.check();
     Missions.ensure();
+    Extras.start(!!data);
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
@@ -398,6 +401,7 @@ function frame(now) {
     NPCs.update(dt);
     Fauna.update(dt);
     Cam.update(dt);
+    Auto.update(dt);
     Humans.update(dt, cam.position);
     Animals.update(dt, cam.position);
     Birds.update(dt);
@@ -414,6 +418,7 @@ function frame(now) {
     if (G.started) {
       Loop.missionT -= dt; if (Loop.missionT <= 0) { Loop.missionT = 0.5; Missions.update(); }
       UI.update(dt);
+      Extras.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -495,7 +500,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

@@ -35,6 +35,8 @@ async function open(opts = {}) {
     if (url.includes('fonts.gstatic.com')) return route.abort();
     return route.abort();
   });
+  // the first-time 'How to play' card and the daily gift pop up over the game; tests opt in with { popups: true }
+  await page.addInitScript((pop) => { window.__tvsNoPopups = !pop; }, !!opts.popups);
   if (opts.preset) await page.addInitScript((p) => { try { localStorage.setItem('tvs_prefs', JSON.stringify(Object.assign(JSON.parse(localStorage.getItem('tvs_prefs') || '{}'), { preset: p }))); } catch (e) {} }, opts.preset);
   await page.goto('http://tvs.test/', { waitUntil: 'load' });
   return { browser, ctx, page, logs };

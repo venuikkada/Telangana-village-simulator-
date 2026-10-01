@@ -105,6 +105,7 @@ const Audio2 = {
       case 'bell': this.bell(d, 700, 0.25); break;
       case 'hydraulic': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, c.currentTime); f.frequency.exponentialRampToValueAtTime(1800, c.currentTime + 0.6); const g = c.createGain(); this.env(g, c.currentTime, 0.05, 0.15, 0.6); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 0.8); break; }
       case 'jump': this.burst(0.08, 0.12, 'lowpass', 300, d); break;
+      case 'shutter': this.burst(0.04, 0.35, 'highpass', 2500, d); this.burst(0.06, 0.25, 'bandpass', 1200, d, 0.07, 2); break;
       case 'bump': this.burst(0.3, 0.5, 'lowpass', 160, d); this.tone('sine', 80, 40, 0.3, 0.3, d); break;
     }
   },

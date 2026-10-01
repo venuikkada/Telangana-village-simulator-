@@ -284,9 +284,11 @@ class Field {
     const temp = Weather.temp;
     const heat = W.id === 'heatwave' ? 1.7 : 1;
     const evapK = (0.55 + Math.max(0, temp - 26) * 0.045) * heat * (1 + W.wind * 0.25) * (1 - W.cloud * 0.35);
-    if (this.greenhouse) { this.water -= (cd ? cd.water * 0.7 : 0.4) * hrs; }
+    // easy mode: the player's crops dry out, get weedy and catch pests about half as fast
+    const ez = this.isPlayer && G.S && G.S.easy ? 0.5 : 1;
+    if (this.greenhouse) { this.water -= (cd ? cd.water * 0.7 : 0.4) * hrs * ez; }
     else {
-      this.water -= (cd && this.sownTiles > 0 ? cd.water * evapK : 0.5 * evapK) * hrs;
+      this.water -= (cd && this.sownTiles > 0 ? cd.water * evapK : 0.5 * evapK) * hrs * ez;
       this.water += W.rain * 15 * hrs;
     }
     // irrigation
@@ -305,14 +307,14 @@ class Field {
       if (this.water >= 99) this.gate = false;
     }
     this.water = clamp(this.water, 0, 100);
-    if (this.countMin(1) > 0 || this.crop) this.weeds = Math.min(100, this.weeds + (0.36 + W.rain * 0.6 + (this.nut > 60 ? 0.15 : 0)) * hrs * (this.greenhouse ? 0.3 : 1));
+    if (this.countMin(1) > 0 || this.crop) this.weeds = Math.min(100, this.weeds + (0.36 + W.rain * 0.6 + (this.nut > 60 ? 0.15 : 0)) * hrs * (this.greenhouse ? 0.3 : 1) * ez);
     if (!cd || this.sownTiles === 0) { this.nut = Math.min(55, this.nut + 0.05 * hrs); return; }
     // nutrients
     if (this.growth < 1) this.nut = Math.max(0, this.nut - cd.nut * 0.5 * hrs);
     // pests
     if (!this.outbreak && this.growth > 0.12 && this.growth < 1) {
       const hum = W.rain > 0.2 ? 1.8 : W.cloud > 0.6 ? 1.3 : 1;
-      const p = 0.0052 * cd.pest * hum * (1 + this.weeds / 90) * hrs * (this.greenhouse ? 0.3 : 1) * (G.S.flags.pestEvent === this.crop ? 3 : 1);
+      const p = 0.0052 * cd.pest * hum * (1 + this.weeds / 90) * hrs * (this.greenhouse ? 0.3 : 1) * (G.S.flags.pestEvent === this.crop ? 3 : 1) * (ez < 1 ? 0.4 : 1);
       if (frand() < p) { this.outbreak = true; if (this.isPlayer) { UI.toast(L(`${LN(cd.pestName)} attack in ${this.label()}! Spray pesticide soon.`, `${this.label()}లో ${LN(cd.pestName)} దాడి! త్వరగా పురుగుమందు పిచికారీ చేయండి.`), 'bad'); Audio2.sfx('alert'); Bus.emit('pestOutbreak', { field: this }); } }
     }
     if (this.outbreak) this.pests = Math.min(100, this.pests + 2.6 * hrs * cd.pest);
@@ -340,9 +342,9 @@ class Field {
     target -= Math.max(0, this.pests - 14) * 0.95;
     if (this.nut < 18) target -= (18 - this.nut) * 1.3;
     if (W.id === 'heatwave' && !this.greenhouse) target -= 9;
-    if (this.overHrs > 30) target -= Math.min(40, (this.overHrs - 30) * 0.8);
+    if (this.overHrs > 30) target -= Math.min(40, (this.overHrs - 30) * 0.8 * ez);
     target -= this.damage;
-    target = clamp(target, 0, 100);
+    target = clamp(target, ez < 1 ? 45 : 0, 100);   // easy mode: a neglected crop still gives a fair harvest
     this.health += (target < this.health ? -1.7 : 1.2) * hrs * (target < this.health ? Math.min(1, (this.health - target) / 25 + 0.15) : 1);
     this.health = clamp(this.health, 0, 100);
     // storm damage near maturity
