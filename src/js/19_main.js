@@ -165,6 +165,11 @@ const Game = {
     }
     UI.loading(1, L('Ready', 'సిద్ధం'));
   },
+  // phones that allow it (Android): go full screen and landscape when the game starts
+  autoFullscreen() {
+    if (!isMobile || document.fullscreenElement || !document.fullscreenEnabled || Settings.v.noAutoFs) return;
+    try { const r = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (r && r.then) r.then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {}); } catch (e) { /* not allowed here */ }
+  },
   async toggleFullscreen() {
     try {
       if (document.fullscreenElement) { await document.exitFullscreen(); return; }
@@ -363,10 +368,12 @@ function adaptFps(now, interval, work) {
   Loop.win.push(interval); Loop.work.push(work);
   if (now - Loop.winT < 2000) return;
   Loop.winT = now;
-  const q = (a) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length * 0.6)] || 0; };
-  const iv = q(Loop.win), wk = q(Loop.work); Loop.win.length = 0; Loop.work.length = 0;
+  const q = (a, f) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length * f)] || 0; };
+  const iv = q(Loop.win, 0.6), lo = q(Loop.win, 0.2), wk = q(Loop.work, 0.6); Loop.win.length = 0; Loop.work.length = 0;
   const P = G.preset;
-  if (Loop.capFps === 60 && iv > 22 && Render.pr <= P.minPr + 0.001) { Loop.capFps = 30; Loop.retryAt = now + Loop.backoff; Loop.backoff = Math.min(180000, Loop.backoff * 2); Render.frameTimes = []; Render.goodWindows = 0; }
+  // the phone itself runs the screen at 30 Hz (iPhone Low Power Mode, battery saver): just match it
+  if (Loop.capFps === 60 && lo > 29 && iv < 37 && wk < 14) { Loop.capFps = 30; Loop.retryAt = now + 60000; Render.frameTimes = []; Render.goodWindows = 0; }
+  else if (Loop.capFps === 60 && iv > 22 && Render.pr <= P.minPr + 0.001) { Loop.capFps = 30; Loop.retryAt = now + Loop.backoff; Loop.backoff = Math.min(180000, Loop.backoff * 2); Render.frameTimes = []; Render.goodWindows = 0; }
   else if (Loop.capFps === 30 && now > Loop.retryAt && wk < 9 && iv < 36 && Render.pr >= P.maxPr - 0.001) { Loop.capFps = 60; Render.frameTimes = []; Render.goodWindows = 0; }
 }
 function frame(now) {
@@ -433,9 +440,30 @@ function showFatal(e) {
     : L('Something went wrong while loading: ', 'లోడ్ చేస్తుండగా సమస్య వచ్చింది: ') + (e && e.message ? e.message : String(e));
 }
 
+// every device: touch class for CSS, no page zoom or bounce, sound and voice start on the first tap,
+// re-layout on rotation, and recover if the phone pauses the 3D graphics
+function deviceSetup() {
+  document.documentElement.classList.toggle('touch', isMobile);
+  for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
+  const first = () => { Audio2.unlock(); Coach.prime(); };
+  document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
+  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); };
+  window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
+  const cv = document.getElementById('gl');
+  cv.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault(); SaveSys.quickLocal();
+    const el = document.getElementById('lost'); if (el) { el.hidden = false; el.onclick = () => location.reload(); }
+  }, false);
+  cv.addEventListener('webglcontextrestored', () => location.reload(), false);
+}
+
 async function boot(hot) {
   try {
     Settings.load(); LANG = Settings.v.lang || 'en'; Time.scale = Settings.v.timeScale || 1;
+    deviceSetup();
     UI.el = (id) => document.getElementById(id);
     UI.applyLang();
     UI.loading(0.03, L('Loading fonts…', 'అక్షరాలు లోడ్ అవుతున్నాయి…'));
@@ -467,7 +495,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

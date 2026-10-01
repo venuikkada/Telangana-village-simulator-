@@ -699,6 +699,26 @@ const Services = {
     UI.toast(L(`Loaded ${fmt1(amt)} quintals.`, `${fmt1(amt)} క్వింటాళ్లు ఎక్కించారు.`), 'good'); Audio2.sfx('load');
     Bus.emit('loaded', { v, qty: amt });
   },
+  // hire a lorry: the produce is sold at the market yard (or MSP centre) without driving there
+  lorryFee(qty) { return Math.round(150 + qty * 30); },
+  lorry(where, crop, qty, q) {
+    const S = G.S; const fee = this.lorryFee(qty);
+    if (where === 'msp') {
+      const cd = CROPS[crop]; const amt = Math.round(cd.msp * qty);
+      S.pending.push({ amt: Math.max(0, amt - fee), due: Time.totalMin() + 2 * 1440, desc: `${fmt1(qty)} q ${cd.en} (MSP)` });
+      S.market.sup[crop] = (S.market.sup[crop] || 1) + qty / (DEPTH[crop] * 2); S.stats.sold[crop] = (S.stats.sold[crop] || 0) + qty;
+      Bus.emit('sold', { crop, qty, rev: amt, where: 'msp', price: cd.msp });
+      UI.toast(L(`The lorry took ${fmt1(qty)} q to the MSP centre. ${fmtINR(amt - fee)} arrives in 2 days (after ${fmtINR(fee)} transport).`, `లారీ ${fmt1(qty)} క్వి. మద్దతు ధర కేంద్రానికి తీసుకెళ్లింది. ${fmtINR(amt - fee)} 2 రోజుల్లో వస్తుంది (రవాణా ${fmtINR(fee)} తర్వాత).`), 'good');
+      Audio2.sfx('cash');
+      return amt - fee;
+    }
+    const rev = Market.sell(crop, qty, q, 'yard');
+    Money.spend(Math.min(fee, G.S.money), 'transport', true);
+    UI.toast(L(`The lorry sold ${fmt1(qty)} q at the market yard for ${fmtINR(rev)} (transport ${fmtINR(fee)}).`, `లారీ ${fmt1(qty)} క్వి. మార్కెట్ యార్డులో ${fmtINR(rev)}కు అమ్మింది (రవాణా ${fmtINR(fee)}).`), 'good');
+    return rev - fee;
+  },
+  lorryHeap(f, where) { const h = f.heap; if (!h) return; this.lorry(where, h.crop, h.qty, h.q); f.heap = null; f.heapDirty = true; },
+  lorryStored(crop, where) { const got = Storage.take(crop, 1e9); if (got.qty > 0.05) this.lorry(where, crop, got.qty, got.q); },
   sellHeapToTrader(f) {
     const h = f.heap; if (!h) return;
     const rev = Market.sell(h.crop, h.qty, h.q, 'trader');

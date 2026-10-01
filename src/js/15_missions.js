@@ -79,7 +79,6 @@ const Missions = {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
     UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');
-    if (m.tpl.startsWith('t_')) setTimeout(() => UI.toast(LN(isMobile && m.descM ? m.descM : m.desc), 'tip'), 900);
     UI.dirty = true;
     return m;
   },

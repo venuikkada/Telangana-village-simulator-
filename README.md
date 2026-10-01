@@ -16,6 +16,13 @@ It runs in the browser on PC and on phones, in English and Telugu. There is noth
 
 ## Play
 
+Works on Android phones, iPhones, iPads, tablets and computers, in any modern browser (Chrome, Safari, Edge, Firefox).
+
+- **iPhone / iPad:** open the game in Safari, tap **Share → Add to Home Screen**, then start it from the home screen. It opens full screen like an app.
+- **Android:** the game goes full screen when you tap Start. You can also use Chrome's **Install app / Add to Home screen**.
+- **Turn the phone sideways** for the best view. Phones start on the Low quality setting so the game stays smooth.
+- **Just follow the coach:** the yellow strip at the bottom and the mission card always say the next step ("Go to your field", "Hold Work", "Tap Buy seeds"), and the gold arrow shows the way. The steps can also be read aloud (Menu → Voice guide).
+
 - **Online:** once GitHub Pages is turned on for this repository (Settings → Pages → Deploy from branch → `main`, folder `/root`), the game is at `https://venuikkada.github.io/Telangana-village-simulator-/`.
 - **On your computer:** open `index.html` in Chrome, Edge or Firefox. An internet connection is needed the first time, for three.js and the fonts. If your browser blocks it, run `npx serve .` in this folder and open the address it prints.
 

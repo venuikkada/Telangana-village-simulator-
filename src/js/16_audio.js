@@ -10,7 +10,7 @@ const RAGAS = {
 const Audio2 = {
   ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null, nextBeat: 0, beatIdx: 0, phraseQ: [], droneT: 0, melT: 0, lastNote: 0,
   unlock() {
-    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    if (this.ctx) { if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') this.ctx.resume().catch(() => {}); return; }
     try {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       this.ctx = new AC();

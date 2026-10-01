@@ -2,7 +2,7 @@
 // UI: settings, HUD, minimap & map, menus, shops, dialogs, title, touch
 // ============================================================================
 const Settings = {
-  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1 },
+  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true },
   load() { const s = Store.get('tvs_prefs', null); if (s) Object.assign(this.v, s); },
   save() { Store.set('tvs_prefs', this.v); },
 };
@@ -105,6 +105,7 @@ const UI = {
       if (need.item === 'seed') {
         const s = Time.season(); const score = (c) => CROPS[c].season[s] * (f ? CROPS[c].soil[f.soil] || 1 : 1);
         const list = CROP_IDS.slice().sort((a, c) => score(c) - score(a));
+        const pc = f && f.plannedCrop; if (pc && list.includes(pc)) { list.splice(list.indexOf(pc), 1); list.unshift(pc); }
         b.appendChild(h('p', { class: 'empty', style: { paddingTop: '0' } }, L(`Seeds for ${acres} acre${acres > 1 ? 's' : ''}. The top crops suit this season and soil best.`, `${acres} ఎకరాలకు విత్తనాలు. పైన ఉన్న పంటలు ఈ సీజన్‌కు, నేలకు బాగా సరిపోతాయి.`)));
         list.forEach((c, i) => { const k = 'seed_' + c; const sc = score(c); o.appendChild(h('button', { class: 'btn ' + (i === 0 ? 'acc' : 'alt'), onclick: () => buy(k, acres) }, `${LN(CROPS[c])} ${sc >= 1.05 ? '★★★' : sc >= 0.95 ? '★★' : '★'} · ${CROPS[c].days} ${L('days', 'రోజులు')} · ${fmtINR(Market.itemPrice(k) * acres + FEE)}`)); });
       } else if (need.item === 'pesticide') {
@@ -121,7 +122,8 @@ const UI = {
   buildTools() {
     const box = this.el('tools'); if (!box) return; box.innerHTML = '';
     for (const t of TOOLS) {
-      const b = h('button', { class: 'tool' + (Player.tool === t.id ? ' on' : ''), 'aria-label': LN(t), onclick: () => Player.setTool(t.id) }, h('em', null, t.key));
+      // on touch screens the bar shows only the active tool; tapping it opens the rest
+      const b = h('button', { class: 'tool' + (Player.tool === t.id ? ' on' : ''), 'aria-label': LN(t), onclick: () => { if (isMobile && !box.classList.contains('open') && Player.tool === t.id) { box.classList.add('open'); Audio2.sfx('click'); return; } box.classList.remove('open'); Player.setTool(t.id); } }, h('em', null, t.key));
       b.insertAdjacentHTML('beforeend', ICON[t.id]); b.appendChild(h('span', null, LN(t)));
       box.appendChild(b);
     }
@@ -136,7 +138,7 @@ const UI = {
       const unit = tl === 'seeds' ? L(' acre packs', ' ఎకరం ప్యాకెట్లు') : tl === 'fert' ? L(' bags', ' బస్తాలు') : L(' L', ' లీ.');
       o.innerHTML = ''; o.append(h('b', null, Inv.name(k)), ' · ' + fmt1(Inv.count(k)) + unit + ' · ', h('span', { class: 'kbd' }, 'Q'), ' ' + L('switch', 'మార్చు'));
       o.hidden = false;
-    } else { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), tl === 'auto' ? L(' on your field: it ploughs, sows, feeds and harvests by itself', ' మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది') : L(' on your field', ' మీ పొలంలో')); o.hidden = false; }
+    } else { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), tl === 'auto' ? L(' on your field: it ploughs, sows, feeds and harvests by itself', ' మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది') : L(' on your field', ' మీ పొలంలో')); o.hidden = isMobile && tl === 'auto'; }
     const tbG = this.el('tbG'); if (tbG) tbG.hidden = false;
   },
   setPrompt(list) {
@@ -183,22 +185,25 @@ const UI = {
         rows.appendChild(h('div', { class: 'tk' }, h('span', null, LN(PRODUCE[c])), h('span', { class: 'p' }, fmtINR(Market.price(c))), h('span', { class: tr > 0.005 ? 'u' : tr < -0.005 ? 'd' : '' }, tr > 0.005 ? '▲' : tr < -0.005 ? '▼' : '•')));
       }
     }
-    // missions: tutorial first, with a one-line "what to do" and the distance to go
-    const act = Missions.ordered().slice(0, isMobile ? 2 : 4);
+    // mission card: the one mission you follow and exactly what to do next
+    Coach.update();
+    const st = Coach.step; const cur = st ? st.m : Coach.current();
+    const nAct = S.missions.active.length;
     const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
-    const mkey = LANG + '|' + act.map((m) => m.uid + ':' + Math.round(clamp01(m.prog / m.target) * 50)).join(',') + '|' + (tg ? (tg.name || '') + Math.round(tgD / 10) : '');
+    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '');
     if (mkey !== this._mKey) {
       this._mKey = mkey;
       const mb = this.el('missions'); mb.innerHTML = '';
-      mb.appendChild(h('h4', null, L('Missions', 'లక్ష్యాలు')));
-      if (!act.length) mb.appendChild(h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
-      act.forEach((m, i) => {
-        const fr = clamp01(m.prog / m.target);
-        const progTxt = m.target > 1.5 ? ` · ${m.target >= 1000 ? fmtShortINR(m.prog).replace('₹', m.tpl === 'earnSales' || m.tpl === 'income' ? '₹' : '') : fmt1(m.prog)}/${m.target >= 1000 ? fmtShortINR(m.target) : m.target}` : '';
-        const hint = Missions.hintFor(m);
-        const go = tg && tg.m === m && tgD > 7 ? `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}` : '';
-        mb.appendChild(h('div', { class: 'ms' + (i === 0 ? ' top' : '') }, h('b', null, LN(m.title)), hint ? h('span', { class: 'hint' }, hint) : null, go ? h('span', { class: 'go' }, go) : null, h('small', null, (m.reward ? L('Reward ', 'బహుమతి ') + fmtINR(m.reward) : '') + progTxt), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } }))));
-      });
+      if (!cur) mb.append(h('h4', null, L('Missions', 'లక్ష్యాలు')), h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
+      else {
+        const tut = cur.tpl.startsWith('t_');
+        mb.appendChild(h('h4', null, tut ? L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`) : L('Mission', 'లక్ష్యం') + (nAct > 1 ? L(` · ${nAct - 1} more`, ` · ఇంకా ${nAct - 1}`) : '')));
+        mb.appendChild(h('b', { class: 'mt' }, LN(cur.title)));
+        if (st) { const sp = h('div', { class: 'step' }); sp.innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk; sp.appendChild(h('span', null, st.text)); mb.appendChild(sp); }
+        if (tg && !tg.wp && tg.m === cur) mb.appendChild(h('span', { class: 'go' }, `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}`));
+        if (cur.reward) mb.appendChild(h('small', null, L('Reward ', 'బహుమతి ') + fmtINR(cur.reward)));
+        mb.appendChild(h('div', { class: 'prog' }, h('b', { style: { width: (clamp01(cur.prog / cur.target) * 100).toFixed(0) + '%' } })));
+      }
       mb.onclick = () => this.office('missions');
     }
     this.updateBL();
@@ -379,7 +384,13 @@ const UI = {
     const p = Market.price(hp.crop);
     this.sheet({ title: L('Harvest heap', 'పంట కుప్ప'), sub: `${f.label()} · ${fmt1(hp.qty)} q ${LN(PRODUCE[hp.crop])} · ${L('grade', 'గ్రేడ్')} ${Market.qualityLabel(hp.q)}`, narrow: true, render: (b) => {
       b.appendChild(h('p', null, L(`The village trader offers ${fmtINR(Math.round(p * hp.q * 0.88))}/q right here (88% of the yard price ${fmtINR(p)}). Or load it into your cart or trailer and sell at the market yard yourself.`, `గ్రామ వ్యాపారి ఇక్కడే క్వింటాలుకు ${fmtINR(Math.round(p * hp.q * 0.88))} ఇస్తాడు (యార్డు ధర ${fmtINR(p)}లో 88%). లేదా బండిలో ఎక్కించి మార్కెట్ యార్డులో మీరే అమ్మండి.`)));
-      b.appendChild(h('div', { class: 'row' }, this.btn(L(`Sell all to trader (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`, `వ్యాపారికి అమ్మండి (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`), () => { Services.sellHeapToTrader(f); this.close(); }, 'acc')));
+      const fee = Services.lorryFee(hp.qty); const yardNet = Math.round(p * hp.q * hp.qty * 0.99 - 10 * hp.qty - fee);
+      const opts = h('div', { class: 'opts' });
+      opts.appendChild(this.btn(L(`Send to the market yard by lorry (about ${fmtINR(yardNet)})`, `లారీలో మార్కెట్ యార్డుకు పంపండి (సుమారు ${fmtINR(yardNet)})`), () => { Services.lorryHeap(f, 'yard'); this.close(); }, 'acc'));
+      const cd = CROPS[hp.crop];
+      if (cd && cd.msp && Market.procurementOpen(hp.crop) && hp.q >= 0.99) opts.appendChild(this.btn(L(`Send to the MSP centre by lorry (about ${fmtINR(Math.round(cd.msp * hp.qty - fee))}, paid in 2 days)`, `లారీలో మద్దతు ధర కేంద్రానికి (సుమారు ${fmtINR(Math.round(cd.msp * hp.qty - fee))}, 2 రోజుల్లో)`), () => { Services.lorryHeap(f, 'msp'); this.close(); }, 'alt'));
+      opts.appendChild(this.btn(L(`Sell all to trader now (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`, `ఇప్పుడే వ్యాపారికి అమ్మండి (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`), () => { Services.sellHeapToTrader(f); this.close(); }, 'alt'));
+      b.appendChild(opts);
       if (Storage.cap() - Storage.used(false) > 0.1 && Math.hypot(f.heapSpot.x - YARD_PT.x, f.heapSpot.z - YARD_PT.z) < 70) b.appendChild(h('div', { class: 'row', style: { marginTop: '8px' } }, this.btn(L('Carry it home to storage', 'ఇంటి నిల్వకు తరలించండి'), () => { const m = Storage.add(hp.crop, hp.qty, hp.q); hp.qty -= m; if (hp.qty < 0.05) f.heap = null; f.heapDirty = true; this.close(); this.toast(L(`Moved ${fmt1(m)} q to storage.`, `${fmt1(m)} క్వి. నిల్వకు తరలించారు.`), 'good'); }, 'alt')));
     } });
   },
@@ -618,7 +629,10 @@ const UI = {
       const t = h('table', { class: 't' }, h('tr', null, h('th', null, L('Crop', 'పంట')), h('th', null, L('Quintals', 'క్వింటాళ్లు')), h('th', null, L('Grade', 'గ్రేడ్')), h('th', null, L('Trader pays', 'వ్యాపారి ధర')), h('th', null, '')));
       for (const e of S.storage) { const p = Math.round(Market.price(e.crop) * e.q * 0.88); t.appendChild(h('tr', null, h('td', null, LN(PRODUCE[e.crop]) + (e.cold ? ' ❄' : '')), h('td', { class: 'n' }, fmt1(e.qty)), h('td', null, Market.qualityLabel(e.q)), h('td', { class: 'n' }, fmtINR(p) + '/q'), h('td', null, this.btn(L('Sell 10 q', '10 క్వి. అమ్ము'), () => { const got = Storage.take(e.crop, 10); if (got.qty > 0) Market.sell(e.crop, got.qty, got.q, 'trader'); }, 'sm alt')))); }
       b.appendChild(h('div', { class: 'tw' }, t));
-      b.appendChild(h('p', { class: 'empty' }, L('Selling from storage goes to the village trader (88%). Load it into a vehicle for the full yard price.', 'నిల్వ నుంచి అమ్మితే గ్రామ వ్యాపారికి (88%). పూర్తి ధరకు వాహనంలో యార్డుకు తీసుకెళ్ళండి.')));
+      const lr = h('div', { class: 'row', style: { marginTop: '8px' } });
+      for (const c of [...new Set(S.storage.map((e) => e.crop))]) lr.appendChild(this.btn(L(`Send by lorry: ${LN(PRODUCE[c])} → market yard`, `లారీలో పంపండి: ${LN(PRODUCE[c])} → మార్కెట్ యార్డ్`), () => Services.lorryStored(c, 'yard'), 'sm acc'));
+      b.appendChild(lr);
+      b.appendChild(h('p', { class: 'empty' }, L(`A lorry gets the full market yard price for a small transport fee (₹150 + ₹30 a quintal). Selling here goes to the village trader (88%).`, `లారీలో పంపితే చిన్న రవాణా ఖర్చుతో (₹150 + క్వింటాలుకు ₹30) పూర్తి యార్డు ధర వస్తుంది. ఇక్కడ అమ్మితే గ్రామ వ్యాపారికి (88%).`)));
     }
     b.appendChild(h('div', { class: 'sec' }, L('Supplies', 'సామాగ్రి')));
     const t2 = h('table', { class: 't' });
@@ -704,7 +718,7 @@ const UI = {
     for (const m of S.missions.active) {
       const fr = clamp01(m.prog / m.target);
       b.appendChild(h('div', { class: 'item', style: { marginBottom: '8px' } }, h('h3', null, LN(m.title), h('span', { class: 'price' }, m.reward ? fmtINR(m.reward) : '')), h('p', null, LN(isMobile && m.descM ? m.descM : m.desc)), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } })),
-        Missions.markerPos(m.mark) ? h('div', { class: 'row' }, this.btn(L('Show on map', 'మ్యాప్‌లో చూపు'), () => { S.waypoint = Missions.markerPos(m.mark); this.close(); }, 'sm alt')) : null));
+        h('div', { class: 'row' }, Coach.current() === m ? h('span', { class: 'chip good' }, L('Following now', 'ఇప్పుడు ఇదే')) : this.btn(L('Follow this mission', 'ఈ లక్ష్యాన్ని అనుసరించండి'), () => { Coach.follow(m); S.waypoint = null; this.close(); }, 'sm acc'))));
     }
     b.appendChild(h('div', { class: 'sec' }, L(`Completed · ${S.missions.done}`, `పూర్తయినవి · ${S.missions.done}`)));
     for (const x of S.missions.history.slice(0, 12)) b.appendChild(h('p', { style: { margin: '3px 0', color: 'var(--ink-2)' } }, `${L('Day', 'రోజు')} ${x.day} · ${LN(x.title)} · ${fmtINR(x.reward || 0)}`));
@@ -744,6 +758,7 @@ const UI = {
       setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
       setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
       const chk = (key, label) => h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); } }), label);
+      setRow(L('Voice guide', 'వాయిస్ గైడ్'), seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.voice, (x) => { v.voice = x; Settings.save(); if (x && Coach.step) Coach.say(Coach.step.text); else if (window.speechSynthesis) speechSynthesis.cancel(); }));
       if (isMobile) setRow(L('Frame rate', 'ఫ్రేమ్ రేట్'), seg([['auto', L('Auto', 'ఆటో')], ['60', L('60 smooth', '60 స్మూత్')], ['30', L('30 battery', '30 బ్యాటరీ')]], fpsMode(), (m) => { v.fpsMode = m; Settings.save(); }));
       setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది')), isMobile ? null : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
       if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
@@ -831,9 +846,18 @@ const UI = {
       const q = this.el('tqual'); q.innerHTML = '';
       for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్య'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమా') }[p]));
     };
+    // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
+    const a2 = this.el('a2hs');
+    if (a2) {
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches;
+      let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+      a2.hidden = !(ios && !standalone && !framed);
+      if (!a2.hidden) { a2.innerHTML = ''; a2.append(h('b', null, L('Full screen on iPhone: ', 'ఐఫోన్‌లో ఫుల్ స్క్రీన్: ')), L('tap Share, then “Add to Home Screen”, and open the game from your home screen.', 'షేర్ నొక్కి “Add to Home Screen” ఎంచుకోండి, తర్వాత హోమ్ స్క్రీన్ నుంచి ఆట తెరవండి.')); }
+    }
     const acts = () => {
       const a = this.el('tactions'); a.innerHTML = '';
-      if (hasSave) a.appendChild(h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); onContinue(); } }, h('span', { class: 'tcont' }, L('Continue', 'కొనసాగించండి'), info ? h('small', null, typeof info === 'function' ? info() : info) : null), h('span', null, '→')));
+      if (hasSave) a.appendChild(h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onContinue(); } }, h('span', { class: 'tcont' }, L('Continue', 'కొనసాగించండి'), info ? h('small', null, typeof info === 'function' ? info() : info) : null), h('span', null, '→')));
       a.appendChild(h('button', { class: 'tbtn ' + (hasSave ? 'sec2' : 'pri'), onclick: () => { Audio2.unlock(); newForm(); } }, L('New game', 'కొత్త ఆట'), h('span', null, '+')));
       a.appendChild(h('button', { class: 'tbtn sec2', onclick: () => this.help() }, L('Controls', 'నియంత్రణలు'), h('span', null, '?')));
     };
@@ -844,8 +868,8 @@ const UI = {
       const av = h('div', { class: 'av' });
       const draw = () => { av.innerHTML = ''; for (const [g, lab] of [['m', L('Farmer (man)', 'రైతు (పురుషుడు)')], ['f', L('Farmer (woman)', 'రైతు (స్త్రీ)')]]) av.appendChild(h('button', { class: gender === g ? 'on' : '', onclick: () => { gender = g; name.value = g === 'm' ? L('Raju', 'రాజు') : L('Radha', 'రాధ'); draw(); } }, lab)); };
       draw();
-      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→')));
-      name.focus();
+      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→')));
+      if (!isMobile) name.focus();   // phones: no keyboard popping over the screen
     };
     segs(); acts();
   },
@@ -1089,12 +1113,9 @@ const Map2 = {
   target() {
     const wp = G.S && G.S.waypoint;
     if (wp) return { x: wp.x, z: wp.z, name: wp.name || L('Waypoint', 'గమ్యం'), wp: true };
-    const pm = Missions.primaryMarker();
-    if (!pm) return null;
-    // standing on the target field already: nothing to point at
-    const mk = pm.m.mark; const f = mk === 'F1' ? Fields.byId.F1 : mk && mk.startsWith('field:') ? Fields.byId[mk.slice(6)] : null;
-    if (f) { const P = Player.pos(); if (P.x > f.x0 - 2 && P.x < f.x1 + 2 && P.z > f.z0 - 2 && P.z < f.z1 + 2) return null; }
-    return { x: pm.p.x, z: pm.p.z, name: Missions.markerName(mk) || LN(pm.m.title), m: pm.m };
+    const st = Coach.step;   // the next step of the mission you follow
+    if (st && st.target) return { x: st.target.x, z: st.target.z, name: st.target.name, m: st.m };
+    return null;
   },
   fmtDist(d) { return d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m'; },
   // ---- minimap: north-up, zooms out with vehicle speed ----
