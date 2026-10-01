@@ -33,14 +33,22 @@ const Input = {
     cv.addEventListener('wheel', (e) => { e.preventDefault(); this.wheel += Math.sign(e.deltaY); }, { passive: false });
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     // touch look on the canvas (right side), pinch zoom
-    const touches = new Map();
-    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY }); if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
+    const touches = new Map(); let multi = false;
+    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
     cv.addEventListener('touchmove', (e) => {
       e.preventDefault();
-      if (touches.size >= 2) { for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY }); const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
-      for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; this.look.dx += t.clientX - p.x; this.look.dy += t.clientY - p.y; touches.set(t.identifier, { x: t.clientX, y: t.clientY }); }
+      if (touches.size >= 2) { for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (p) { p.x = t.clientX; p.y = t.clientY; } } const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
+      for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; const dx = t.clientX - p.x, dy = t.clientY - p.y; this.look.dx += dx; this.look.dy += dy; p.moved += Math.abs(dx) + Math.abs(dy); p.x = t.clientX; p.y = t.clientY; }
     }, { passive: false });
-    const tend = (e) => { for (const t of e.changedTouches) touches.delete(t.identifier); if (touches.size < 2) this.pinch = 0; };
+    const tend = (e) => {
+      for (const t of e.changedTouches) {
+        const p = touches.get(t.identifier); touches.delete(t.identifier);
+        // a quick single tap without dragging: walk there
+        if (p && !multi && e.type === 'touchend' && p.moved < 12 && performance.now() - p.t0 < 350) Auto.tapWalk(t.clientX, t.clientY);
+      }
+      if (touches.size < 2) this.pinch = 0;
+      if (!touches.size) multi = false;
+    };
     cv.addEventListener('touchend', tend); cv.addEventListener('touchcancel', tend);
   },
   down(c) { return !!this.keys[c]; },
@@ -113,11 +121,16 @@ const Player = {
     const S = G.S; const P = S.player;
     if (UI.modalOpen()) { this.h.speed = 0; if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
     const ax = Input.axis();
+    // any stick or key movement takes control back from "Do it"
+    if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
+    if (Input.pressed('Enter') || Input.pressed('NumpadEnter')) Auto.doStep();
     if (this.vehicle) { this.updateVehicle(dt, ax); return; }
     // tools
     for (const t of TOOLS) if (Input.pressed('Digit' + t.key)) this.setTool(t.id);
     if (Input.pressed('KeyQ')) this.cycleOpt();
-    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork;
+    const auto = Auto.on ? Auto.steer(dt, this) : null;
+    if (auto && auto.work && this.tool !== 'auto') this.tool = 'auto';
+    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work);
     const f = fieldAt(this.x, this.z);
     this.working = wantWork && P.energy > 1 && !!f;
     this.axis.x = ax.x; this.axis.y = ax.y;
@@ -126,8 +139,9 @@ const Player = {
     const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw);
     const rx = -fz, rz = fx;
     let mx = fx * ax.y + rx * ax.x, mz = fz * ax.y + rz * ax.x;
-    const ml = Math.hypot(mx, mz);
-    const running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 3;
+    let ml = Math.hypot(mx, mz);
+    let running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 3;
+    if (auto) { mx = auto.dx; mz = auto.dz; ml = 1; running = auto.run && P.energy > 3; this.axis.x = 0; this.axis.y = 1; }
     const tired = P.energy < 3 ? 0.75 : 1;
     const maxSp = (running ? 7.6 : 4.6) * tired * (U.uWet.value > 0.5 && f ? 0.92 : 1);
     const target = ml > 0.05 ? maxSp * Math.min(1, ml / 0.9) : 0;
@@ -155,9 +169,9 @@ const Player = {
     if (this.working) {
       this.workT -= dt;
       if (this.workT <= 0) { this.workT = 0.1; this.doWork(f); }
-      P.energy = Math.max(0, P.energy - dt * 0.03);
+      P.energy = Math.max(0, P.energy - dt * 0.03 * (S.easy ? 0.5 : 1));
     }
-    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1));
+    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1) * (S.easy ? 0.5 : 1));
     // heat stress outdoors at midday
     const hr = Time.hour();
     if (Weather.cur.id === 'heatwave' && hr > 11.5 && hr < 16 && !this.inShade()) { P.health = Math.max(1, P.health - dt * 0.03); if (!this._heatWarned) { this._heatWarned = true; UI.toast(L('Heat wave! Rest in the shade or drink buttermilk at the tea stall.', 'వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.'), 'warn'); } }
@@ -401,6 +415,8 @@ const Interact = {
         out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label()), act: () => Player.enterVehicle(v), prio: 3 } });
         if (v.type === 'tractor35' || v.type === 'tractor50' || v.type === 'bullock') out.push({ d: 0.6, o: { id: 'implement', label: () => L('Change implement', 'పనిముట్టు మార్చండి'), act: () => UI.implementMenu(v), prio: 1 } });
       }
+      // your dog: only when there is nothing else to do here, so it never gets in the way
+      if (!out.length && Pet.canPat(P)) out.push({ d: 1, o: { id: 'pat', label: () => L('Pat ', 'నిమరండి: ') + Pet.name(), act: () => Pet.pat(), prio: 0 } });
     } else {
       out.push({ d: 99, o: { id: 'exit', label: () => L('Get off', 'దిగండి'), act: () => Player.exitVehicle(), prio: -1 } });
     }

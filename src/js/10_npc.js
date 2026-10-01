@@ -352,6 +352,7 @@ const Fauna = {
     const P = Player.pos(); const night = Sky.night > 0.7; const hr = Time.hour();
     for (const a of this.list) {
       if (a.mode === 'vehicle') continue;
+      if (a.mode === 'pet') { if (G.started) Pet.steer(a, dt); continue; }
       const far = Math.hypot(a.x - P.x, a.z - P.z) > 170;
       a.timer -= dt;
       if (a.mode === 'herd' && a.leader) {

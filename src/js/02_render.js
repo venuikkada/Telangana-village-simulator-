@@ -317,6 +317,8 @@ const Render = {
     const arr = this.frameTimes; this.frameTimes = [];
     arr.sort((a, b) => a - b);
     const med = arr[Math.floor(arr.length * 0.6)];
+    // steady ~33 ms frames on a 60 FPS target: the screen is running at 30 Hz, not the GPU struggling
+    if (Loop.capFps === 60 && arr[Math.floor(arr.length * 0.2)] > 29 && med < 37) { this.lastAdjust = now; return; }
     const target = 1000 / (Loop.capFps || P.fps);
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }

@@ -2,9 +2,17 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#15141f">
-<style>:root{color-scheme:light}body{margin:0}[hidden]{display:none!important}</style>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Village Farm">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<style>:root{color-scheme:light}html,body{margin:0;background:#15141f}[hidden]{display:none!important}</style>
 </head>
 <body>
 <title>Telangana Village Simulator</title>
@@ -48,10 +56,12 @@
   --line: rgba(244, 236, 220, 0.14); --accent: #f2b52d; --accent-ink: #1c1405; --indigo: #9aa5ff; --soil: #e07457; --leaf: #8bc66a;
   --good: #6cc36f; --warn: #f2b52d; --bad: #f0705f; --scrim: rgba(4, 4, 10, 0.6); --shadow: 0 8px 28px rgba(0, 0, 0, 0.45); color-scheme: dark;
 }
-html, body { height: 100%; margin: 0; overflow: hidden; }
+:root { --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px); --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px); }
+html, body { height: 100%; margin: 0; overflow: hidden; overscroll-behavior: none; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+html { touch-action: manipulation; }
 body { background: var(--bg); color: var(--ink); font: 14px/1.45 var(--font-body); -webkit-tap-highlight-color: transparent; user-select: none; -webkit-user-select: none; }
-#app { position: fixed; inset: 0; overflow: hidden; }
-#gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+#app { position: fixed; top: 0; right: 0; bottom: 0; left: 0; inset: 0; overflow: hidden; }
+#gl { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
 button { font: inherit; color: inherit; touch-action: manipulation; }
 #hud, #touch, #gl { touch-action: none; -webkit-touch-callout: none; }
 .body, #title, #modal { touch-action: pan-y; }
@@ -63,10 +73,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
   linear-gradient(315deg, var(--soil) 25%, transparent 25%) 0 0/12px 8px,
   linear-gradient(45deg, var(--soil) 25%, var(--accent) 25%) 0 0/12px 8px; }
 /* ---------- HUD ---------- */
-#hud { position: absolute; inset: 0; pointer-events: none; }
+#hud { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; }
 #hud > * { position: absolute; }
 .card { background: var(--panel); border: 1px solid var(--line); box-shadow: var(--shadow); border-radius: 14px; }
-#hud-tl { top: calc(env(safe-area-inset-top, 0px) + 12px); left: 16px; width: 248px; padding: 10px 12px 11px; display: grid; gap: 6px; }
+#hud-tl { top: calc(var(--st) + 12px); left: calc(var(--sl) + 16px); width: 248px; padding: 10px 12px 11px; display: grid; gap: 6px; }
 .who { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
 .who b { font: 700 15px/1.1 var(--font-display); }
 .rank { font: 600 11px/1 var(--font-body); letter-spacing: .04em; color: var(--accent-ink); background: var(--accent); padding: 3px 7px; border-radius: 99px; white-space: nowrap; }
@@ -82,7 +92,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #date { font-size: 11.5px; color: var(--ink-2); margin-top: 3px; white-space: nowrap; }
 #wx { display: inline-flex; align-items: center; gap: 6px; margin-top: 4px; font-size: 12px; font-weight: 600; }
 #wx svg { width: 18px; height: 18px; }
-#hud-tr { top: calc(env(safe-area-inset-top, 0px) + 12px); right: 16px; display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+#hud-tr { top: calc(var(--st) + 12px); right: calc(var(--sr) + 16px); display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
 #mapwrap { width: 176px; height: 176px; border-radius: 50%; overflow: hidden; position: relative; border: 3px solid var(--panel-solid); box-shadow: var(--shadow); pointer-events: auto; cursor: pointer; background: #6b7a50; }
 #minimap { width: 100%; height: 100%; display: block; }
 #compassN { position: absolute; top: 3px; left: 50%; transform: translateX(-50%); font: 800 12px var(--font-display); color: #fff; text-shadow: 0 1px 2px #000; }
@@ -95,11 +105,28 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .ms { display: grid; gap: 3px; }
 .ms b { font: 700 13.5px/1.25 var(--font-display); }
 .ms small { color: var(--ink-2); font-size: 11.5px; }
+#coach { width: min(560px, calc(100vw - 32px)); box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 14px; background: rgba(28, 22, 14, .9); color: #fff8e6; font: 700 16px/1.3 var(--font-body); box-shadow: var(--shadow); border: 2px solid #f2b52d; pointer-events: none; }
+#coach .ci { width: 30px; height: 30px; flex: none; color: #ffc61a; }
+#coach .ci svg { width: 100%; height: 100%; display: block; }
+#coach.go { animation: cin .35s ease-out; }
+#coach .ct { flex: 1 1 auto; min-width: 0; }
+#coach .cdo { pointer-events: auto; flex: none; border: 0; border-radius: 10px; padding: 8px 12px; background: #f2b52d; color: #1f1606; font: 800 14px/1 var(--font-body); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 0 #a8770c; }
+#coach .cdo:active { transform: translateY(1px); box-shadow: none; }
+#coach.auto { border-color: #43b6ff; }
+#coach.auto .cdo { background: #e9eef3; color: #1b1b1f; box-shadow: 0 2px 0 #98a2ad; }
+#missions .do { border: 0; border-radius: 9px; padding: 6px 10px; background: #f2b52d; color: #1f1606; font: 800 12.5px/1.1 var(--font-body); cursor: pointer; justify-self: start; box-shadow: 0 2px 0 #a8770c; }
+#missions .do.stop { background: #e9eef3; box-shadow: 0 2px 0 #98a2ad; }
+#missions .do .kbd { margin-left: 6px; font-size: 10px; padding: 1px 5px; background: rgba(0,0,0,.12); color: inherit; }
+@keyframes cin { from { opacity: 0; transform: translateY(8px) scale(.97); } }
+#missions .mt { font: 700 14px/1.25 var(--font-display); }
+#missions .step { display: flex; gap: 6px; align-items: flex-start; font: 700 13px/1.3 var(--font-body); color: #1f1606; background: rgba(242, 181, 45, .62); border-radius: 8px; padding: 4px 7px; }
+#missions .step svg { width: 17px; height: 17px; flex: none; margin-top: 1px; }
+#missions .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
 .prog { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
 .prog b { display: block; height: 100%; background: var(--accent); }
-#hud-bl { bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); left: 16px; width: 268px; padding: 10px 12px; display: grid; gap: 5px; }
+#hud-bl { bottom: calc(var(--sb) + 16px); left: calc(var(--sl) + 16px); width: 268px; padding: 10px 12px; display: grid; gap: 5px; }
 #hud-bl h5 { margin: 0; font: 700 14px var(--font-display); display: flex; justify-content: space-between; gap: 8px; }
 .kv { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; font-size: 12px; }
 .kv span:nth-child(odd) { color: var(--ink-2); }
@@ -107,9 +134,9 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #speedo { font: 800 30px/1 var(--font-display); font-variant-numeric: tabular-nums; }
 #speedo small { font: 600 12px var(--font-body); color: var(--ink-2); margin-left: 4px; }
 .chip { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 99px; font-size: 11px; font-weight: 600; background: var(--panel-2); }
-.chip.good { background: color-mix(in srgb, var(--good) 22%, transparent); color: var(--good); }
-.chip.warn { background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
-.chip.bad { background: color-mix(in srgb, var(--bad) 22%, transparent); color: var(--bad); }
+.chip.good { background: rgba(47, 125, 58, .2); background: color-mix(in srgb, var(--good) 22%, transparent); color: var(--good); }
+.chip.warn { background: rgba(185, 119, 9, .2); background: color-mix(in srgb, var(--warn) 22%, transparent); color: var(--warn); }
+.chip.bad { background: rgba(179, 50, 42, .2); background: color-mix(in srgb, var(--bad) 22%, transparent); color: var(--bad); }
 #hud-bc { bottom: calc(env(safe-area-inset-bottom, 0px) + 14px); left: 50%; transform: translateX(-50%); display: grid; justify-items: center; gap: 8px; }
 #prompt { display: flex; gap: 8px; align-items: center; padding: 7px 14px; font-weight: 600; font-size: 14px; pointer-events: auto; cursor: pointer; }
 #prompt kbd, .kbd { font: 700 12px var(--font-body); background: var(--accent); color: var(--accent-ink); border-radius: 6px; padding: 2px 7px; min-width: 12px; text-align: center; }
@@ -122,10 +149,10 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .tool.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
 .tool.on em { color: var(--accent-ink); }
 #toolopt { font-size: 12px; padding: 4px 10px; }
-#workpulse { left: 50%; bottom: calc(env(safe-area-inset-bottom, 0px) + 168px); transform: translateX(-50%); font: 800 24px/1 var(--font-display); color: #fff8e6; text-shadow: 0 2px 0 #3a2a10, 0 0 14px rgba(0,0,0,.45); opacity: 0; white-space: nowrap; pointer-events: none; }
+#workpulse { left: 50%; top: 34%; transform: translateX(-50%); font: 800 24px/1 var(--font-display); color: #fff8e6; text-shadow: 0 2px 0 #3a2a10, 0 0 14px rgba(0,0,0,.45); opacity: 0; white-space: nowrap; pointer-events: none; }
 #workpulse.go { animation: wp 0.9s ease-out; }
 @keyframes wp { 0% { opacity: 0; transform: translate(-50%, 8px) scale(.92); } 15% { opacity: 1; transform: translate(-50%, 0) scale(1.06); } 70% { opacity: 1; transform: translate(-50%, -6px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -16px); } }
-#hud-br { bottom: calc(env(safe-area-inset-bottom, 0px) + 16px); right: 16px; display: flex; gap: 6px; pointer-events: auto; }
+#hud-br { bottom: calc(var(--sb) + 16px); right: calc(var(--sr) + 16px); display: flex; gap: 6px; pointer-events: auto; }
 .hb { height: 40px; min-width: 40px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 13px; }
 .hb .kbd { font-size: 10px; padding: 1px 5px; }
 .hb svg { width: 18px; height: 18px; flex: none; }
@@ -150,20 +177,20 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #savedot { top: calc(env(safe-area-inset-top, 0px) + 14px); left: 274px; font-size: 11px; color: var(--ink-2); opacity: 0; transition: opacity .4s; }
 #letterbox::before, #letterbox::after { content: ""; position: absolute; left: 0; right: 0; height: 9vh; background: #000; }
 #letterbox::before { top: 0; } #letterbox::after { bottom: 0; }
-#letterbox { position: absolute; inset: 0; pointer-events: none; }
+#letterbox { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; }
 /* ---------- touch controls ---------- */
-#touch { position: absolute; inset: 0; pointer-events: none; }
-#joy { position: absolute; left: 18px; bottom: calc(env(safe-area-inset-bottom, 0px) + 26px); width: 132px; height: 132px; border-radius: 50%; background: color-mix(in srgb, var(--panel) 70%, transparent); border: 2px solid var(--line); pointer-events: auto; touch-action: none; }
+#touch { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; pointer-events: none; }
+#joy { position: absolute; left: calc(var(--sl) + 22px); bottom: calc(var(--sb) + 22px); width: 132px; height: 132px; border-radius: 50%; background: rgba(250, 245, 235, 0.6); background: color-mix(in srgb, var(--panel) 70%, transparent); border: 2px solid var(--line); pointer-events: auto; touch-action: none; }
 #knob { position: absolute; left: 50%; top: 50%; width: 56px; height: 56px; margin: -28px 0 0 -28px; border-radius: 50%; background: var(--accent); box-shadow: var(--shadow); }
-#tbtns { position: absolute; right: 14px; bottom: calc(env(safe-area-inset-bottom, 0px) + 22px); display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; pointer-events: auto; }
+#tbtns { position: absolute; right: calc(var(--sr) + 14px); bottom: calc(var(--sb) + 18px); display: grid; grid-template-columns: repeat(3, 60px); gap: 10px; pointer-events: auto; }
 .tb { width: 60px; height: 60px; border-radius: 50%; border: 2px solid var(--line); background: var(--panel); box-shadow: var(--shadow); font: 700 12px var(--font-body); display: grid; place-items: center; touch-action: none; padding: 0; text-align: center; line-height: 1.05; }
 .tb.big { background: var(--accent); color: var(--accent-ink); }
 .tb.on { outline: 3px solid var(--accent); }
 .tb.dim { opacity: .6; }
 .toast.tip { border-left-color: var(--leaf); font-size: 13px; }
 /* ---------- modal sheets ---------- */
-#modal { position: absolute; inset: 0; background: var(--scrim); display: grid; place-items: center; padding: 16px; pointer-events: auto; }
-.sheet { width: min(980px, 100%); max-height: min(86vh, 860px); background: var(--panel-solid); color: var(--ink); border-radius: 18px; box-shadow: var(--shadow); display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; border: 1px solid var(--line); }
+#modal { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: var(--scrim); display: grid; place-items: center; padding: 16px; pointer-events: auto; }
+.sheet { width: min(980px, 100%); max-height: min(86vh, 860px); max-height: min(86dvh, 860px); background: var(--panel-solid); color: var(--ink); border-radius: 18px; box-shadow: var(--shadow); display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; border: 1px solid var(--line); }
 .sheet.narrow { width: min(560px, 100%); }
 .sheet header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 18px 10px; }
 .sheet header h2 { margin: 0; font: 800 24px/1.1 var(--font-display); text-wrap: balance; }
@@ -216,7 +243,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .big-banner span { display: block; font: 700 20px var(--font-display); color: var(--ink-2); }
 #fullmap { width: 100%; height: 100%; display: block; background: #55613f; cursor: grab; touch-action: none; }
 .sheet.wide { width: min(1180px, 100%); }
-.mapx { display: flex; gap: 12px; height: min(72vh, 660px); }
+.mapx { display: flex; gap: 12px; height: min(72vh, 660px); height: min(72dvh, 660px); }
 .mapcv { position: relative; flex: 1 1 auto; min-width: 0; border-radius: 12px; overflow: hidden; background: #55613f; touch-action: none; }
 .mapbtns { position: absolute; right: 8px; top: 8px; display: grid; gap: 6px; }
 .mapbtns button { width: 42px; height: 42px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-solid); color: var(--ink); font: 800 21px/1 var(--font-body); box-shadow: var(--shadow); cursor: pointer; padding: 0; }
@@ -235,7 +262,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 12px; color: var(--ink-2); }
 .legend i { display: inline-block; width: 10px; height: 10px; border-radius: 3px; margin-right: 4px; vertical-align: -1px; }
 /* ---------- title & loading ---------- */
-#title, #loading { position: absolute; inset: 0; display: grid; align-items: center; pointer-events: auto; }
+#title, #loading { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; display: grid; align-items: center; pointer-events: auto; }
 #loading { background: radial-gradient(120% 90% at 20% 80%, #3a2a1c 0%, #15141f 70%); color: #f4ecdc; place-items: center; }
 #loading .lbox { width: min(460px, calc(100vw - 32px)); display: grid; gap: 12px; }
 #loading h1 { margin: 0; font: 800 clamp(30px, 6vw, 46px)/1.05 var(--font-display); color: #f2b52d; }
@@ -269,46 +296,112 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #title .seg { border-color: rgba(246,239,226,.3); }
 #title .seg button { color: #f6efe2; }
 #title .seg button.on { background: #f2b52d; color: #1c1405; }
+#a2hs { max-width: 420px; font-size: 13px; line-height: 1.4; color: #f6efe2; background: rgba(242, 181, 45, .16); border: 1px solid rgba(242, 181, 45, .45); border-radius: 12px; padding: 8px 12px; }
+#a2hs b { color: #f2b52d; }
 #newgame { display: grid; gap: 10px; max-width: 420px; background: rgba(12,10,20,.55); border: 1px solid rgba(246,239,226,.18); border-radius: 14px; padding: 14px; }
 #newgame input { font: 600 16px var(--font-body); padding: 10px 12px; border-radius: 10px; border: 1px solid rgba(246,239,226,.3); background: rgba(255,255,255,.08); color: #f6efe2; }
 #newgame .av { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
 #newgame .av button { padding: 10px; border-radius: 10px; border: 1px solid rgba(246,239,226,.3); background: transparent; color: #f6efe2; cursor: pointer; font: 700 15px var(--font-display); }
 #newgame .av button.on { background: #f2b52d; color: #1c1405; border-color: transparent; }
 .credit { font-size: 11.5px; color: #a89f8e; }
-#fade { position: absolute; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .45s; display: grid; place-items: center; color: #f4ecdc; font: 700 22px var(--font-display); }
+#fade { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .45s; display: grid; place-items: center; color: #f4ecdc; font: 700 22px var(--font-display); }
 #fade.on { opacity: 1; pointer-events: auto; }
+/* ---------- daily gift, trophies, pet, photos, how to play ---------- */
+.btn.big { padding: 12px 22px; font: 800 17px/1.15 var(--font-display); border-radius: 12px; }
+.gifts { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.gift { background: var(--panel-2); border-radius: 12px; padding: 8px 4px 9px; display: grid; justify-items: center; gap: 3px; text-align: center; border: 2px solid transparent; min-width: 0; }
+.gift small { font: 700 11px var(--font-body); color: var(--ink-2); }
+.gift b { font-size: 24px; line-height: 1.15; }
+.gift span { font: 700 11px/1.2 var(--font-body); overflow-wrap: anywhere; }
+.gift.got { opacity: .55; }
+.gift.got b { color: var(--good); }
+.gift.now { border-color: #f2b52d; background: rgba(242, 181, 45, .18); animation: giftpulse 1.2s ease-in-out infinite alternate; }
+@keyframes giftpulse { from { transform: scale(1); } to { transform: scale(1.06); } }
+.trophies { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 8px; }
+.troph { background: var(--panel-2); border-radius: 12px; padding: 10px; display: grid; gap: 2px; align-content: start; border: 2px solid rgba(242, 181, 45, .55); min-width: 0; }
+.troph b { font-size: 28px; line-height: 1.1; }
+.troph strong { font: 700 15px/1.2 var(--font-display); }
+.troph span { font-size: 12px; color: var(--ink-2); }
+.troph em { font: 700 12px var(--font-body); font-style: normal; color: var(--soil); }
+.troph.locked { border-color: transparent; }
+.troph.locked b { filter: grayscale(1); opacity: .45; }
+.pets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.btn.pet { display: grid; justify-items: center; gap: 6px; padding: 14px 8px; font: 800 17px var(--font-display); }
+.btn.pet i { width: 40px; height: 40px; border-radius: 50%; border: 3px solid rgba(0,0,0,.15); }
+.howto { display: grid; gap: 8px; }
+@media (min-width: 600px) { .howto { grid-template-columns: 1fr 1fr; } }
+.hcard { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: center; background: var(--panel-2); border-radius: 12px; padding: 10px 12px; }
+.hcard > b { font-size: 30px; text-align: center; line-height: 1; }
+.hcard strong { display: block; font: 800 17px/1.2 var(--font-display); }
+.hcard span { font-size: 13.5px; color: var(--ink-2); }
+img.shot { display: block; width: 100%; max-height: 52vh; max-height: 52dvh; object-fit: contain; border-radius: 12px; background: #000; -webkit-touch-callout: default; user-select: auto; -webkit-user-select: auto; }
+.btn.wa { text-decoration: none; }
+a.btn { text-decoration: none; display: inline-flex; align-items: center; }
+#photobar { left: 50%; bottom: calc(var(--sb) + 22px); transform: translateX(-50%); display: flex; gap: 10px; pointer-events: auto; }
+#photobar .pb { border: 0; border-radius: 99px; padding: 13px 22px; font: 800 17px/1 var(--font-display); background: rgba(28, 22, 14, .88); color: #fff8e6; box-shadow: var(--shadow); cursor: pointer; }
+#photobar .pb.snap { background: #f2b52d; color: #1c1405; }
+#flash { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+#flash.on { animation: flash .5s ease-out; }
+@keyframes flash { from { opacity: .85; } to { opacity: 0; } }
+#newgame .dif button { display: grid; gap: 2px; justify-items: center; }
+#newgame .dif small { font: 600 11.5px var(--font-body); opacity: .8; }
+@media (max-height: 620px) {
+  #newgame { gap: 7px; padding: 10px 12px; }
+  #newgame input { padding: 7px 10px; }
+  #newgame .av button { padding: 7px 8px; font-size: 14px; }
+  #newgame .dif button { display: flex; gap: 6px; justify-content: center; align-items: baseline; flex-wrap: wrap; }
+}
+@media (max-width: 599px) { .gifts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* short landscape phones: the gift card goes wide so all seven days fit in one row */
+@media (max-height: 430px) and (min-width: 600px) {
+  .sheet.gsheet { width: min(780px, 100%); }
+  .gift { padding: 6px 3px 7px; gap: 2px; }
+  .gift span { font-size: 10.5px; }
+}
+@media (max-width: 520px), (max-height: 430px) {
+  .gift b { font-size: 20px; }
+  .hcard { grid-template-columns: 30px 1fr; gap: 8px; padding: 7px 9px; }
+  .hcard > b { font-size: 22px; }
+  .hcard strong { font-size: 15px; }
+  .hcard span { font-size: 12px; line-height: 1.3; display: block; }
+  .btn.big { padding: 10px 20px; font-size: 16px; }
+  .trophies { grid-template-columns: repeat(auto-fill, minmax(128px, 1fr)); }
+  #photobar .pb { padding: 11px 18px; font-size: 15px; }
+}
+@media (prefers-reduced-motion: reduce) { .gift.now { animation: none; } #flash.on { animation: none; } }
 /* ---------- phones & small screens ---------- */
 @media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
-  #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: 10px; top: calc(env(safe-area-inset-top, 0px) + 8px); }
+  #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: calc(var(--sl) + 10px); top: calc(var(--st) + 8px); }
   .who b { font-size: 13.5px; } .rank { font-size: 10px; padding: 2px 6px; }
   #money { font-size: 20px; }
   .bars { grid-template-columns: 1fr 1fr; gap: 3px 8px; }
   .bar { grid-template-columns: 30px minmax(0, 1fr) 20px; gap: 4px; font-size: 9.5px; }
   .bar i { height: 5px; }
-  #savedot { left: 206px; top: calc(env(safe-area-inset-top, 0px) + 10px); }
-  #hud-tc { min-width: 0; padding: 4px 10px 5px; top: calc(env(safe-area-inset-top, 0px) + 8px); }
+  #savedot { left: calc(var(--sl) + 206px); top: calc(var(--st) + 10px); }
+  #hud-tc { min-width: 0; padding: 4px 10px 5px; top: calc(var(--st) + 8px); }
   #clock { font-size: 18px; } #date { display: none; } #wx { font-size: 11px; margin-top: 2px; } #wx svg { width: 15px; height: 15px; }
-  #hud-tr { right: 10px; top: calc(env(safe-area-inset-top, 0px) + 8px); gap: 6px; }
+  #hud-tr { right: calc(var(--sr) + 10px); top: calc(var(--st) + 8px); gap: 6px; }
   #mapwrap { width: 132px; height: 132px; border-width: 2px; }
   #ticker { display: none; }
-  #missions { width: 176px; padding: 6px 9px 7px; gap: 4px; }
-  .ms b { font-size: 12.5px; } .ms small { display: none; }
-  #hud-bl { left: 10px; top: calc(env(safe-area-inset-top, 0px) + 100px); bottom: auto; width: 188px; padding: 7px 9px; gap: 3px; max-height: calc(100% - 288px); overflow: hidden; }
+  #missions { width: 196px; padding: 6px 9px 7px; gap: 4px; }
+  #missions .mt { font-size: 12.5px; } #missions .step { font-size: 12px; } #missions small { display: none; }
+  #hud-bl { left: calc(var(--sl) + 10px); top: calc(var(--st) + 100px); bottom: auto; width: 188px; padding: 7px 9px; gap: 3px; max-height: calc(100% - 288px); overflow: hidden; }
   #hud-bl small { font-size: 10.5px; }
   .kv { font-size: 11px; } #speedo { font-size: 24px; }
   .mini { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  #hud-bc { bottom: calc(env(safe-area-inset-bottom, 0px) + 10px); gap: 6px; }
+  #hud-bc { bottom: calc(var(--sb) + 10px); gap: 6px; }
   #tools { gap: 4px; padding: 4px; }
   .tool { width: 42px; height: 42px; } .tool span { display: none; } .tool svg { width: 20px; height: 20px; }
   #toolopt { font-size: 11px; padding: 3px 9px; }
   #prompt { padding: 7px 12px; font-size: 13.5px; }
-  #hud-br { top: calc(env(safe-area-inset-top, 0px) + 8px); bottom: auto; right: 152px; }
-  .mapx { height: calc(100vh - 92px); gap: 8px; } .mapside { width: 210px; } .mapsel b { font-size: 15px; }
+  #coach { font-size: 14px; padding: 7px 11px; width: min(470px, calc(100vw - 380px)); min-width: 220px; }
+  #coach .ci { width: 24px; height: 24px; }
+  #hud-br { top: calc(var(--st) + 8px); bottom: auto; right: calc(var(--sr) + 152px); }
+  .mapx { height: calc(100vh - 92px); height: calc(100dvh - 92px); gap: 8px; } .mapside { width: 210px; } .mapsel b { font-size: 15px; }
   #nav .tx { font-size: 11.5px; max-width: 170px; }
-  .ms .hint { font-size: 11.5px; }
   #hud-br .hb { height: 36px; padding: 0 9px; } #hud-br .hb .lbl, #hud-br .hb .kbd { display: none; }
   #newsbar { display: none; }
-  #toasts { top: calc(env(safe-area-inset-top, 0px) + 58px); width: min(430px, calc(100vw - 32px)); }
+  #toasts { top: calc(var(--st) + 68px); width: min(430px, calc(100vw - 420px)); min-width: 220px; }
   .toast { font-size: 12.5px; padding: 6px 11px; }
   .big-banner { top: 40%; width: min(92vw, 520px); } .big-banner strong { font-size: 27px; } .big-banner span { font-size: 15px; }
   #modal { padding: 4px; }
@@ -318,22 +411,78 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
   .body { padding: 2px 14px 14px; }
   .set { grid-template-columns: 1fr; }
 }
+/* landscape phones about 400-440 px tall: the mission card drops its heading and bar so it ends above the touch buttons */
+@media (pointer: coarse) and (max-height: 440px) {
+  #missions h4, #missions .prog { display: none; }
+}
+/* phones with a short screen (small phones, iPhone Safari with its bars showing): everything a size smaller */
+@media (pointer: coarse) and (max-height: 400px) {
+  #joy { width: 112px; height: 112px; left: calc(var(--sl) + 16px); bottom: calc(var(--sb) + 12px); }
+  #knob { width: 48px; height: 48px; margin: -24px 0 0 -24px; }
+  #tbtns { grid-template-columns: repeat(3, 52px); gap: 8px; right: calc(var(--sr) + 10px); bottom: calc(var(--sb) + 10px); }
+  .tb { width: 52px; height: 52px; font-size: 11px; }
+  #mapwrap { width: 104px; height: 104px; }
+  #hud-br { right: calc(var(--sr) + 124px); }
+  #hud-br .hb { height: 34px; min-width: 34px; padding: 0 7px; }
+  #hud-tl { width: 172px; padding: 5px 8px 6px; } #money { font-size: 17px; }
+  #missions { width: 168px; padding: 5px 8px 6px; gap: 3px; box-sizing: content-box; max-height: calc(100vh - 262px); max-height: calc(100dvh - 262px); overflow: hidden; }
+  #missions h4, #missions .mt { display: none; }
+  #hud-bl { top: calc(var(--st) + 88px); width: 172px; max-height: calc(100% - 228px); }
+  #hud-bl .mini, #hud-bl h5 + small { display: none; }
+  #hud-tc { padding: 3px 8px 4px; } #clock { font-size: 15px; } #wx { font-size: 10px; }
+  #coach { font-size: 13px; padding: 6px 10px; width: min(420px, calc(100vw - 392px)); min-width: 200px; }
+  #prompt { padding: 5px 10px; font-size: 12.5px; }
+  .tool { width: 38px; height: 38px; }
+  #toasts { top: calc(var(--st) + 62px); width: min(400px, calc(100vw - 420px)); min-width: 200px; }
+  #toasts .toast:nth-last-child(n+3) { display: none; }
+  .toast { font-size: 12px; padding: 5px 10px; }
+}
+@media (pointer: coarse) and (max-width: 700px) and (orientation: landscape) {
+  #hud-br { display: grid; grid-template-columns: repeat(2, 34px); gap: 5px; }
+  #hud-br .hb { width: 34px; height: 34px; min-width: 0; padding: 0; justify-content: center; }
+}
 /* phone held upright: stack the HUD down the two edges */
 @media (max-width: 540px) and (orientation: portrait) {
-  #hud-tc { left: 10px; transform: none; top: calc(env(safe-area-inset-top, 0px) + 98px); width: 188px; text-align: left; padding: 5px 9px 6px; }
+  #hud-tc { left: calc(var(--sl) + 10px); transform: none; top: calc(var(--st) + 98px); width: 188px; text-align: left; padding: 5px 9px 6px; }
   #clock { white-space: nowrap; font-size: 17px; }
   #wx span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 150px; display: inline-block; vertical-align: middle; }
-  #hud-br { right: 10px; top: calc(env(safe-area-inset-top, 0px) + 146px); display: grid; grid-template-columns: repeat(2, 40px); gap: 6px; }
-  .mapx { flex-direction: column; height: auto; } .mapcv { height: 60vh; flex: none; } .mapside { width: auto; }
+  #hud-br { right: calc(var(--sr) + 10px); top: calc(var(--st) + 146px); display: grid; grid-template-columns: repeat(2, 40px); gap: 6px; }
+  .mapx { flex-direction: column; height: auto; } .mapcv { height: 60vh; height: 60dvh; flex: none; } .mapside { width: auto; }
   #hud-br .hb { width: 40px; height: 40px; padding: 0; justify-content: center; }
-  #missions { position: fixed; left: 10px; top: calc(env(safe-area-inset-top, 0px) + 152px); width: 188px; }
-  #hud-bl { left: auto; right: 10px; top: calc(env(safe-area-inset-top, 0px) + 240px); width: 176px; max-height: 30vh; }
-  #hud-bc { bottom: calc(env(safe-area-inset-bottom, 0px) + 172px); }
-  #toasts { top: auto; bottom: calc(env(safe-area-inset-bottom, 0px) + 300px); }
-  #workpulse { bottom: calc(env(safe-area-inset-bottom, 0px) + 280px); }
+  #missions { position: fixed; left: calc(var(--sl) + 10px); top: calc(var(--st) + 152px); width: calc(50vw - 15px); box-sizing: border-box; }
+  #hud-bl { display: none; }
+  #hud-bc { bottom: calc(var(--sb) + 172px); }
+  #coach { width: calc(100vw - 24px); min-width: 0; }
+  #toasts { top: auto; bottom: calc(var(--sb) + 330px); width: calc(100vw - 24px); min-width: 0; }
+  #toasts .toast:nth-last-child(n+3) { display: none; }
+  #workpulse { top: 42%; }
 }
 @media (pointer: coarse) and (max-height: 520px) { #hud-bl h5 + small { display: none; } }
-#rotate { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; background: var(--scrim); pointer-events: auto; z-index: 5; }
+/* tablets (iPad, Android tabs): desktop layout with bigger touch controls kept clear of the panels */
+@media (pointer: coarse) and (min-width: 761px) and (min-height: 521px) {
+  #joy { width: 156px; height: 156px; left: calc(var(--sl) + 28px); bottom: calc(var(--sb) + 28px); }
+  #knob { width: 64px; height: 64px; margin: -32px 0 0 -32px; }
+  #tbtns { grid-template-columns: repeat(3, 72px); gap: 12px; right: calc(var(--sr) + 22px); bottom: calc(var(--sb) + 24px); }
+  .tb { width: 72px; height: 72px; font-size: 14px; }
+  #hud-bl { top: calc(var(--st) + 196px); bottom: auto; }
+  #hud-br { bottom: auto; top: calc(var(--st) + 12px); right: calc(var(--sr) + 210px); }
+  #hud-bc { bottom: calc(var(--sb) + 18px); }
+}
+@media (pointer: coarse) and (min-width: 761px) and (orientation: portrait) {
+  #hud-br { top: calc(var(--st) + 96px); }
+  #hud-bc { bottom: calc(var(--sb) + 204px); }
+  #toasts { top: auto; bottom: calc(var(--sb) + 360px); width: min(520px, calc(100vw - 32px)); }
+}
+/* no keyboard on touch screens: hide the key hints */
+.touch #hud-br .hb .kbd, .touch .tool em { display: none; }
+/* touch devices: the tool bar shows only the active tool until it is tapped */
+.touch #tools:not(.open) .tool:not(.on) { display: none; }
+.touch #tools .tool.on::after { content: ""; position: absolute; right: 4px; top: 4px; width: 0; height: 0; border-left: 4px solid transparent; border-right: 4px solid transparent; border-bottom: 5px solid currentColor; opacity: .7; }
+.touch #tools.open .tool.on::after { display: none; }
+#lost { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; display: grid; place-items: center; background: rgba(10, 8, 16, .82); z-index: 9; pointer-events: auto; cursor: pointer; }
+#lost .card { background: var(--panel-solid); padding: 18px 22px; text-align: center; display: grid; gap: 6px; max-width: 320px; }
+#lost b { font: 800 22px var(--font-display); } #lost p { margin: 0; color: var(--ink-2); }
+#rotate { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; display: grid; place-items: center; padding: 16px; background: var(--scrim); pointer-events: auto; z-index: 5; }
 #rotate .card { background: var(--panel-solid); width: min(340px, 100%); padding: 18px; display: grid; gap: 10px; justify-items: center; text-align: center; }
 #rotate svg { width: 64px; height: 64px; color: var(--accent); }
 #rotate b { font: 800 20px/1.2 var(--font-display); }
@@ -373,6 +522,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     </div>
     <div id="hud-bl" class="card" hidden></div>
     <div id="hud-bc">
+      <div id="coach" hidden role="status" aria-live="polite"><span class="ci"></span><span class="ct"></span><button class="cdo" type="button">Do it</button></div>
       <div id="prompt" class="card" hidden></div>
       <div id="toolopt" class="card" hidden></div>
       <div id="tools" class="card"></div>
@@ -388,6 +538,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
     <div id="nav" hidden><div class="ar"><svg class="pin" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2c-6.1 0-11 4.7-11 10.6C6 20.4 17 32 17 32s11-11.6 11-19.4C28 6.7 23.1 2 17 2z" fill="#ffc61a" stroke="#1b1b1f" stroke-width="2"/><circle cx="17" cy="12.5" r="4.2" fill="#1b1b1f"/></svg><svg class="arrow" viewBox="0 0 34 34" aria-hidden="true"><path d="M17 2l13 26-13-7-13 7z" fill="#ffc61a" stroke="#1b1b1f" stroke-width="2" stroke-linejoin="round"/></svg></div><span class="tx"></span></div>
     <div id="news"><div id="newsbar" class="card" hidden><b data-en="News" data-te="వార్తలు">News</b><span id="newstext"></span></div></div>
     <div id="fps" hidden></div>
+    <div id="photobar" hidden></div>
   </div>
   <div id="touch" hidden>
     <div id="joy"><div id="knob"></div></div>
@@ -421,6 +572,7 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
         <span data-en="Language" data-te="భాష">Language</span><div class="seg" id="tlang"></div>
         <span data-en="Quality" data-te="నాణ్యత">Quality</span><div class="seg" id="tqual"></div>
       </div>
+      <div id="a2hs" hidden></div>
       <div class="credit" id="tcredit">Prototype build · the world, sound and music are generated live in your browser.</div>
     </div>
   </div>
@@ -432,8 +584,10 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
       <button class="btn alt" id="rotateOk" data-en="Keep playing upright" data-te="నిలువుగానే ఆడతాను">Keep playing upright</button>
     </div>
   </div>
+  <div id="lost" hidden><div class="card"><b data-en="Tap to continue" data-te="కొనసాగించడానికి నొక్కండి">Tap to continue</b><p data-en="The phone paused the 3D graphics. Your farm is saved." data-te="ఫోన్ 3D గ్రాఫిక్స్‌ను ఆపింది. మీ పొలం సేవ్ అయింది.">The phone paused the 3D graphics. Your farm is saved.</p></div></div>
   <div id="modal" hidden></div>
   <div id="fade"></div>
+  <div id="flash"></div>
 </div>
 <script type="module">
 // ---- 00_core.js ----
@@ -1112,6 +1266,8 @@ const Render = {
     const arr = this.frameTimes; this.frameTimes = [];
     arr.sort((a, b) => a - b);
     const med = arr[Math.floor(arr.length * 0.6)];
+    // steady ~33 ms frames on a 60 FPS target: the screen is running at 30 Hz, not the GPU struggling
+    if (Loop.capFps === 60 && arr[Math.floor(arr.length * 0.2)] > 29 && med < 37) { this.lastAdjust = now; return; }
     const target = 1000 / (Loop.capFps || P.fps);
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
@@ -3830,9 +3986,11 @@ class Field {
     const temp = Weather.temp;
     const heat = W.id === 'heatwave' ? 1.7 : 1;
     const evapK = (0.55 + Math.max(0, temp - 26) * 0.045) * heat * (1 + W.wind * 0.25) * (1 - W.cloud * 0.35);
-    if (this.greenhouse) { this.water -= (cd ? cd.water * 0.7 : 0.4) * hrs; }
+    // easy mode: the player's crops dry out, get weedy and catch pests about half as fast
+    const ez = this.isPlayer && G.S && G.S.easy ? 0.5 : 1;
+    if (this.greenhouse) { this.water -= (cd ? cd.water * 0.7 : 0.4) * hrs * ez; }
     else {
-      this.water -= (cd && this.sownTiles > 0 ? cd.water * evapK : 0.5 * evapK) * hrs;
+      this.water -= (cd && this.sownTiles > 0 ? cd.water * evapK : 0.5 * evapK) * hrs * ez;
       this.water += W.rain * 15 * hrs;
     }
     // irrigation
@@ -3851,14 +4009,14 @@ class Field {
       if (this.water >= 99) this.gate = false;
     }
     this.water = clamp(this.water, 0, 100);
-    if (this.countMin(1) > 0 || this.crop) this.weeds = Math.min(100, this.weeds + (0.36 + W.rain * 0.6 + (this.nut > 60 ? 0.15 : 0)) * hrs * (this.greenhouse ? 0.3 : 1));
+    if (this.countMin(1) > 0 || this.crop) this.weeds = Math.min(100, this.weeds + (0.36 + W.rain * 0.6 + (this.nut > 60 ? 0.15 : 0)) * hrs * (this.greenhouse ? 0.3 : 1) * ez);
     if (!cd || this.sownTiles === 0) { this.nut = Math.min(55, this.nut + 0.05 * hrs); return; }
     // nutrients
     if (this.growth < 1) this.nut = Math.max(0, this.nut - cd.nut * 0.5 * hrs);
     // pests
     if (!this.outbreak && this.growth > 0.12 && this.growth < 1) {
       const hum = W.rain > 0.2 ? 1.8 : W.cloud > 0.6 ? 1.3 : 1;
-      const p = 0.0052 * cd.pest * hum * (1 + this.weeds / 90) * hrs * (this.greenhouse ? 0.3 : 1) * (G.S.flags.pestEvent === this.crop ? 3 : 1);
+      const p = 0.0052 * cd.pest * hum * (1 + this.weeds / 90) * hrs * (this.greenhouse ? 0.3 : 1) * (G.S.flags.pestEvent === this.crop ? 3 : 1) * (ez < 1 ? 0.4 : 1);
       if (frand() < p) { this.outbreak = true; if (this.isPlayer) { UI.toast(L(`${LN(cd.pestName)} attack in ${this.label()}! Spray pesticide soon.`, `${this.label()}లో ${LN(cd.pestName)} దాడి! త్వరగా పురుగుమందు పిచికారీ చేయండి.`), 'bad'); Audio2.sfx('alert'); Bus.emit('pestOutbreak', { field: this }); } }
     }
     if (this.outbreak) this.pests = Math.min(100, this.pests + 2.6 * hrs * cd.pest);
@@ -3886,9 +4044,9 @@ class Field {
     target -= Math.max(0, this.pests - 14) * 0.95;
     if (this.nut < 18) target -= (18 - this.nut) * 1.3;
     if (W.id === 'heatwave' && !this.greenhouse) target -= 9;
-    if (this.overHrs > 30) target -= Math.min(40, (this.overHrs - 30) * 0.8);
+    if (this.overHrs > 30) target -= Math.min(40, (this.overHrs - 30) * 0.8 * ez);
     target -= this.damage;
-    target = clamp(target, 0, 100);
+    target = clamp(target, ez < 1 ? 45 : 0, 100);   // easy mode: a neglected crop still gives a fair harvest
     this.health += (target < this.health ? -1.7 : 1.2) * hrs * (target < this.health ? Math.min(1, (this.health - target) / 25 + 0.15) : 1);
     this.health = clamp(this.health, 0, 100);
     // storm damage near maturity
@@ -4931,6 +5089,7 @@ const Fauna = {
     const P = Player.pos(); const night = Sky.night > 0.7; const hr = Time.hour();
     for (const a of this.list) {
       if (a.mode === 'vehicle') continue;
+      if (a.mode === 'pet') { if (G.started) Pet.steer(a, dt); continue; }
       const far = Math.hypot(a.x - P.x, a.z - P.z) > 170;
       a.timer -= dt;
       if (a.mode === 'herd' && a.leader) {
@@ -5809,14 +5968,22 @@ const Input = {
     cv.addEventListener('wheel', (e) => { e.preventDefault(); this.wheel += Math.sign(e.deltaY); }, { passive: false });
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     // touch look on the canvas (right side), pinch zoom
-    const touches = new Map();
-    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY }); if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
+    const touches = new Map(); let multi = false;
+    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
     cv.addEventListener('touchmove', (e) => {
       e.preventDefault();
-      if (touches.size >= 2) { for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY }); const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
-      for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; this.look.dx += t.clientX - p.x; this.look.dy += t.clientY - p.y; touches.set(t.identifier, { x: t.clientX, y: t.clientY }); }
+      if (touches.size >= 2) { for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (p) { p.x = t.clientX; p.y = t.clientY; } } const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
+      for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; const dx = t.clientX - p.x, dy = t.clientY - p.y; this.look.dx += dx; this.look.dy += dy; p.moved += Math.abs(dx) + Math.abs(dy); p.x = t.clientX; p.y = t.clientY; }
     }, { passive: false });
-    const tend = (e) => { for (const t of e.changedTouches) touches.delete(t.identifier); if (touches.size < 2) this.pinch = 0; };
+    const tend = (e) => {
+      for (const t of e.changedTouches) {
+        const p = touches.get(t.identifier); touches.delete(t.identifier);
+        // a quick single tap without dragging: walk there
+        if (p && !multi && e.type === 'touchend' && p.moved < 12 && performance.now() - p.t0 < 350) Auto.tapWalk(t.clientX, t.clientY);
+      }
+      if (touches.size < 2) this.pinch = 0;
+      if (!touches.size) multi = false;
+    };
     cv.addEventListener('touchend', tend); cv.addEventListener('touchcancel', tend);
   },
   down(c) { return !!this.keys[c]; },
@@ -5889,11 +6056,16 @@ const Player = {
     const S = G.S; const P = S.player;
     if (UI.modalOpen()) { this.h.speed = 0; if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
     const ax = Input.axis();
+    // any stick or key movement takes control back from "Do it"
+    if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
+    if (Input.pressed('Enter') || Input.pressed('NumpadEnter')) Auto.doStep();
     if (this.vehicle) { this.updateVehicle(dt, ax); return; }
     // tools
     for (const t of TOOLS) if (Input.pressed('Digit' + t.key)) this.setTool(t.id);
     if (Input.pressed('KeyQ')) this.cycleOpt();
-    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork;
+    const auto = Auto.on ? Auto.steer(dt, this) : null;
+    if (auto && auto.work && this.tool !== 'auto') this.tool = 'auto';
+    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work);
     const f = fieldAt(this.x, this.z);
     this.working = wantWork && P.energy > 1 && !!f;
     this.axis.x = ax.x; this.axis.y = ax.y;
@@ -5902,8 +6074,9 @@ const Player = {
     const fx = -Math.sin(camYaw), fz = -Math.cos(camYaw);
     const rx = -fz, rz = fx;
     let mx = fx * ax.y + rx * ax.x, mz = fz * ax.y + rz * ax.x;
-    const ml = Math.hypot(mx, mz);
-    const running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 3;
+    let ml = Math.hypot(mx, mz);
+    let running = (Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.run) && P.energy > 3;
+    if (auto) { mx = auto.dx; mz = auto.dz; ml = 1; running = auto.run && P.energy > 3; this.axis.x = 0; this.axis.y = 1; }
     const tired = P.energy < 3 ? 0.75 : 1;
     const maxSp = (running ? 7.6 : 4.6) * tired * (U.uWet.value > 0.5 && f ? 0.92 : 1);
     const target = ml > 0.05 ? maxSp * Math.min(1, ml / 0.9) : 0;
@@ -5931,9 +6104,9 @@ const Player = {
     if (this.working) {
       this.workT -= dt;
       if (this.workT <= 0) { this.workT = 0.1; this.doWork(f); }
-      P.energy = Math.max(0, P.energy - dt * 0.03);
+      P.energy = Math.max(0, P.energy - dt * 0.03 * (S.easy ? 0.5 : 1));
     }
-    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1));
+    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1) * (S.easy ? 0.5 : 1));
     // heat stress outdoors at midday
     const hr = Time.hour();
     if (Weather.cur.id === 'heatwave' && hr > 11.5 && hr < 16 && !this.inShade()) { P.health = Math.max(1, P.health - dt * 0.03); if (!this._heatWarned) { this._heatWarned = true; UI.toast(L('Heat wave! Rest in the shade or drink buttermilk at the tea stall.', 'వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.'), 'warn'); } }
@@ -6177,6 +6350,8 @@ const Interact = {
         out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label()), act: () => Player.enterVehicle(v), prio: 3 } });
         if (v.type === 'tractor35' || v.type === 'tractor50' || v.type === 'bullock') out.push({ d: 0.6, o: { id: 'implement', label: () => L('Change implement', 'పనిముట్టు మార్చండి'), act: () => UI.implementMenu(v), prio: 1 } });
       }
+      // your dog: only when there is nothing else to do here, so it never gets in the way
+      if (!out.length && Pet.canPat(P)) out.push({ d: 1, o: { id: 'pat', label: () => L('Pat ', 'నిమరండి: ') + Pet.name(), act: () => Pet.pat(), prio: 0 } });
     } else {
       out.push({ d: 99, o: { id: 'exit', label: () => L('Get off', 'దిగండి'), act: () => Player.exitVehicle(), prio: -1 } });
     }
@@ -6197,6 +6372,156 @@ const Interact = {
     if (Player.vehicle && real.length === 0) { Player.exitVehicle(); return; }
     if (g.length === 1 || (!Player.vehicle && real.length === 1)) { real.length ? real[0].act() : g[0].act(); Audio2.sfx('click'); return; }
     UI.actionMenu(g);
+  },
+};
+
+// ---- 12b_auto.js ----
+// ============================================================================
+// Auto: "Do it for me". Walks the farmer to the next place along the roads,
+// works a whole field row by row, presses the right button, or rests while the
+// crop grows. Touching the stick (or WASD) hands control straight back.
+// Also: tap the ground on a touch screen to walk there.
+// ============================================================================
+const Auto = {
+  on: false, mode: null, path: [], i: 0, field: null, name: '', passes: 0, chkT: 0, lastD: 1e9, stuckN: 0, ring: null,
+  // ---- start ----
+  walkTo(x, z, name, viaRoads = true) {
+    const P = Player.pos(); const d = Math.hypot(x - P.x, z - P.z);
+    this.reset('walk'); this.name = name || '';
+    this.path = viaRoads && d > 90 ? Graph.path(P.x, P.z, x, z, 0).map((p) => ({ x: p.x, z: p.z })) : [{ x, z }];
+    this.showRing(x, z);
+    UI.autoStatus();
+  },
+  farm(f) {
+    if (!f) return;
+    this.reset('farm'); this.field = f; this.name = f.id === 'F1' ? L('your field', 'మీ పొలం') : f.label();
+    this.path = this.rows(f, 0);
+    UI.autoStatus();
+  },
+  reset(mode) { this.on = true; this.mode = mode; this.path = []; this.i = 0; this.passes = 0; this.chkT = 0; this.lastD = 1e9; this.stuckN = 0; this.field = null; },
+  stop(byPlayer) {
+    if (!this.on) return;
+    this.on = false; this.mode = null; this.path = []; Input.autoWork = false;
+    if (this.ring) this.ring.visible = false;
+    UI.autoStatus();
+    if (byPlayer) Coach.key = '';   // let the coach repeat the step for the player
+  },
+  // serpentine rows over a field, starting at the corner nearest the farmer
+  rows(f, pass) {
+    const P = Player.pos(); const inset = 1.8, gap = 4.6, off = (pass % 2) * gap / 2;
+    const alongX = f.w >= f.d; const pts = [];
+    const a0 = alongX ? f.x0 + inset : f.z0 + inset, a1 = alongX ? f.x1 - inset : f.z1 - inset;
+    let b = (alongX ? f.z0 : f.x0) + inset + off; const bEnd = (alongX ? f.z1 : f.x1) - inset + 0.01;
+    let fwd = true; const lines = [];
+    for (; b <= bEnd; b += gap) { lines.push([fwd ? a0 : a1, fwd ? a1 : a0, b]); fwd = !fwd; }
+    // start from whichever end is closer
+    const first = (l) => (alongX ? { x: l[0], z: l[2] } : { x: l[2], z: l[0] });
+    const lastL = lines[lines.length - 1]; const endP = alongX ? { x: lastL[1], z: lastL[2] } : { x: lastL[2], z: lastL[1] };
+    const fp = lines.length ? first(lines[0]) : { x: f.x, z: f.z };
+    if (lines.length && Math.hypot(endP.x - P.x, endP.z - P.z) < Math.hypot(fp.x - P.x, fp.z - P.z)) { lines.reverse(); for (const l of lines) { const t = l[0]; l[0] = l[1]; l[1] = t; } }
+    for (const l of lines) { if (alongX) { pts.push({ x: l[0], z: l[2] }, { x: l[1], z: l[2] }); } else { pts.push({ x: l[2], z: l[0] }, { x: l[2], z: l[1] }); } }
+    return pts;
+  },
+  // ---- every frame, from Player.update: where to go and whether to work ----
+  steer(dt, Pl) {
+    if (!this.on) return null;
+    if (UI.modalOpen() || Pl.vehicle) { this.stop(false); return null; }
+    let p = this.path[this.i];
+    while (p && Math.hypot(p.x - Pl.x, p.z - Pl.z) < (this.mode === 'farm' ? 0.9 : 1.6)) { this.i++; p = this.path[this.i]; this.lastD = 1e9; }
+    if (!p) { this.finish(); return null; }
+    const dx = p.x - Pl.x, dz = p.z - Pl.z, d = Math.hypot(dx, dz);
+    // not getting closer: step around the obstacle, and if that keeps failing, hop there
+    this.chkT += dt;
+    if (this.chkT > 1.1) {
+      if (this.lastD - d < 0.6) this.stuck(Pl, p);
+      this.chkT = 0; this.lastD = d;
+    }
+    const f = this.field; const onF = !!f && CH.onField(f);
+    const working = this.mode === 'farm' && onF;
+    const nd = Pl.need;
+    if (working && nd && performance.now() - nd.t < 1500 && nd.item !== 'wait') {
+      // seeds, fertilizer or pesticide needed: stop so the coach can say what to tap. But a bare field
+      // asks for seeds while it is still being ploughed: keep ploughing while the coach wants work here.
+      const st = Coach.step;
+      if (!(nd.item === 'seed' && !f.crop && st && st.icon === 'work')) { this.stop(false); return null; }
+    }
+    if (this.mode === 'farm' && G.S.player.energy < 2) { this.stop(false); UI.toastOnce('tired', L('You are tired. Eat something at the tea stall or rest at home.', 'మీరు అలసిపోయారు. టీ స్టాల్‌లో తినండి లేదా ఇంట్లో విశ్రాంతి తీసుకోండి.'), 'warn'); return null; }
+    return { dx: dx / d, dz: dz / d, run: !working && d > 2.5, work: working };
+  },
+  stuck(Pl, p) {
+    this.stuckN++;
+    if (this.stuckN >= 4) {
+      // give up walking around it: skip to the waypoint (a short hop, no fade needed)
+      const q = { x: p.x, z: p.z }; World.collideCircle(q, 0.5);
+      Pl.x = q.x; Pl.z = q.z; Pl.y = World.groundHeight(q.x, q.z); this.stuckN = 0; this.i++;
+      return;
+    }
+    // sidestep: a detour point to the left or right of the blocked direction
+    const dx = p.x - Pl.x, dz = p.z - Pl.z, d = Math.hypot(dx, dz) || 1; const s = this.stuckN % 2 ? 1 : -1;
+    this.path.splice(this.i, 0, { x: Pl.x + (-dz / d) * 5 * s + dx / d * 2, z: Pl.z + (dx / d) * 5 * s + dz / d * 2 });
+  },
+  finish() {
+    if (this.mode === 'farm' && this.field) {
+      const st = Coach.step;
+      if (st && st.icon === 'work' && this.passes < 2 && CH.onField(this.field)) { this.passes++; this.path = this.rows(this.field, this.passes); this.i = 0; return; }
+    }
+    const name = this.name; const mode = this.mode;
+    this.stop(false);
+    if (mode === 'walk' && name) UI.toast(L(`Here: ${name}`, `చేరుకున్నారు: ${name}`), 'good');
+  },
+  // ---- the "Do it" button: carry out the coach's current step ----
+  doStep() {
+    const st = Coach.step; if (!st || !G.started || UI.modalOpen()) return;
+    Audio2.unlock(); Audio2.sfx('click');
+    if (st.act) { st.act(); return; }
+    if (st.target) {
+      const d = CH.dist(st.target);
+      if (Player.vehicle) { Services.fastTravel(st.target.x, st.target.z, st.target.name); return; }
+      if (d > 320) { Services.fastTravel(st.target.x, st.target.z, st.target.name); return; }   // a long way: take an auto
+      this.walkTo(st.target.x, st.target.z, st.target.name); return;
+    }
+    const P = Player.pos();
+    if (st.icon === 'work') {
+      if (Player.vehicle) Player.exitVehicle(true);
+      const f = fieldAt(P.x, P.z) || Fields.nearest(P.x, P.z, (q) => q.isPlayer);
+      if (f && f.isPlayer) this.farm(f);
+      return;
+    }
+    if (st.icon === 'tap') { Interact.update(); Interact.trigger(); return; }
+    if (st.icon === 'wait') {
+      const f = fieldAt(P.x, P.z);
+      if (f && f.isPlayer && f.crop) Services.waitForCrop(f); else if (!Player.vehicle) Sim.sleep(false);
+      return;
+    }
+    if (st.icon === 'office' || st.icon === 'coin') { UI.office(st.tab || (st.icon === 'coin' ? 'finance' : undefined)); return; }
+    if (st.icon === 'map') { UI.map(); return; }
+    if (st.icon === 'drive') { const v = Vehicles.nearestOwned(P.x, P.z, 400); if (v) this.walkTo(v.x, v.z, v.label()); }
+  },
+  // ---- tap the ground (touch screens): walk there ----
+  tapWalk(cx, cy) {
+    if (!G.started || UI.modalOpen() || Player.vehicle || Settings.v.tapWalk === false) return;
+    const cam = G.camera; const r = G.renderer.domElement.getBoundingClientRect();
+    _v1.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1, 0.5).unproject(cam);
+    const dir = _v1.sub(cam.position).normalize(); const o = cam.position;
+    let hit = null; let prev = 0;
+    for (let t = 1; t < 160; t += t < 30 ? 0.5 : 1.5) {   // march the ray until it dips under the ground
+      const x = o.x + dir.x * t, y = o.y + dir.y * t, z = o.z + dir.z * t;
+      if (y <= World.groundHeight(x, z)) { hit = { x: o.x + dir.x * (t + prev) / 2, z: o.z + dir.z * (t + prev) / 2 }; break; }
+      prev = t;
+    }
+    if (!hit) return;
+    this.walkTo(hit.x, hit.z, '', false);
+  },
+  showRing(x, z) {
+    if (!this.ring) {
+      const g = new THREE.RingGeometry(0.55, 0.85, 28); g.rotateX(-Math.PI / 2);
+      this.ring = new THREE.Mesh(g, new THREE.MeshBasicMaterial({ color: 0xffc61a, transparent: true, opacity: 0.85, depthWrite: false, fog: false }));
+      this.ring.renderOrder = 998; G.scene.add(this.ring);
+    }
+    this.ring.position.set(x, World.groundHeight(x, z) + 0.12, z); this.ring.visible = true; this.ringT = 0;
+  },
+  update(dt) {
+    if (this.ring && this.ring.visible) { this.ringT = (this.ringT || 0) + dt; const s = 1 + Math.sin(this.ringT * 6) * 0.12; this.ring.scale.set(s, 1, s); if (!this.on && this.ringT > 1.2) this.ring.visible = false; }
   },
 };
 
@@ -7319,6 +7644,26 @@ const Services = {
     UI.toast(L(`Loaded ${fmt1(amt)} quintals.`, `${fmt1(amt)} క్వింటాళ్లు ఎక్కించారు.`), 'good'); Audio2.sfx('load');
     Bus.emit('loaded', { v, qty: amt });
   },
+  // hire a lorry: the produce is sold at the market yard (or MSP centre) without driving there
+  lorryFee(qty) { return Math.round(150 + qty * 30); },
+  lorry(where, crop, qty, q) {
+    const S = G.S; const fee = this.lorryFee(qty);
+    if (where === 'msp') {
+      const cd = CROPS[crop]; const amt = Math.round(cd.msp * qty);
+      S.pending.push({ amt: Math.max(0, amt - fee), due: Time.totalMin() + 2 * 1440, desc: `${fmt1(qty)} q ${cd.en} (MSP)` });
+      S.market.sup[crop] = (S.market.sup[crop] || 1) + qty / (DEPTH[crop] * 2); S.stats.sold[crop] = (S.stats.sold[crop] || 0) + qty;
+      Bus.emit('sold', { crop, qty, rev: amt, where: 'msp', price: cd.msp });
+      UI.toast(L(`The lorry took ${fmt1(qty)} q to the MSP centre. ${fmtINR(amt - fee)} arrives in 2 days (after ${fmtINR(fee)} transport).`, `లారీ ${fmt1(qty)} క్వి. మద్దతు ధర కేంద్రానికి తీసుకెళ్లింది. ${fmtINR(amt - fee)} 2 రోజుల్లో వస్తుంది (రవాణా ${fmtINR(fee)} తర్వాత).`), 'good');
+      Audio2.sfx('cash');
+      return amt - fee;
+    }
+    const rev = Market.sell(crop, qty, q, 'yard');
+    Money.spend(Math.min(fee, G.S.money), 'transport', true);
+    UI.toast(L(`The lorry sold ${fmt1(qty)} q at the market yard for ${fmtINR(rev)} (transport ${fmtINR(fee)}).`, `లారీ ${fmt1(qty)} క్వి. మార్కెట్ యార్డులో ${fmtINR(rev)}కు అమ్మింది (రవాణా ${fmtINR(fee)}).`), 'good');
+    return rev - fee;
+  },
+  lorryHeap(f, where) { const h = f.heap; if (!h) return; this.lorry(where, h.crop, h.qty, h.q); f.heap = null; f.heapDirty = true; },
+  lorryStored(crop, where) { const got = Storage.take(crop, 1e9); if (got.qty > 0.05) this.lorry(where, crop, got.qty, got.q); },
   sellHeapToTrader(f) {
     const h = f.heap; if (!h) return;
     const rev = Market.sell(h.crop, h.qty, h.q, 'trader');
@@ -7440,6 +7785,323 @@ const Progress = {
   },
 };
 
+// ---- 14c_extras.js ----
+// ============================================================================
+// Extras: a daily gift, trophies, a pet dog that follows you, photos you can
+// share, an easy mode and a first-time "how to play" card. Small things that
+// make the game friendlier and give players a reason to come back every day.
+// ============================================================================
+const ymd = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
+// ---------------- daily gift: 7 days, bigger every day you come back ----------------
+const DailyGift = {
+  REWARDS: [
+    { money: 1000 },
+    { items: { urea: 2, dap: 1 } },
+    { seeds: 1 },
+    { money: 2500 },
+    { items: { pesticide: 2, feed: 1 } },
+    { money: 5000 },
+    { money: 10000, big: true },
+  ],
+  state() { const S = G.S; if (!S.daily) S.daily = { last: null, streak: 0 }; return S.daily; },
+  today() { return ymd(new Date()); },
+  due() { return this.state().last !== this.today(); },
+  // the gift day you get now: the next one if you came yesterday, else back to day 1
+  next() { const D = this.state(); const y = new Date(); y.setDate(y.getDate() - 1); return D.last === ymd(y) ? (D.streak % 7) + 1 : 1; },
+  seedCrop() { const s = Time.season(); return ['paddy', 'maize', 'groundnut', 'cotton'].sort((a, b) => CROPS[b].season[s] - CROPS[a].season[s])[0]; },
+  short(r) {
+    if (r.money) return fmtINR(r.money);
+    if (r.seeds) return L(`${LN(CROPS[this.seedCrop()])} seeds`, `${LN(CROPS[this.seedCrop()])} విత్తనాలు`);
+    return Object.keys(r.items).map((k) => `${r.items[k]} ${LN(ITEMS[k])}`).join(' + ');
+  },
+  icon(r) { return r.big ? '💰' : r.money ? '🪙' : r.seeds ? '🌱' : '🎒'; },
+  give(r) {
+    if (r.money) Money.add(r.money, 'gift');
+    if (r.items) for (const k in r.items) Inv.add(k, r.items[k]);
+    if (r.seeds) Inv.add('seed_' + this.seedCrop(), r.seeds);
+  },
+  // shown once a day, after the tutorial, when nothing else is on screen
+  check() {
+    if (window.__tvsNoPopups || !G.started || UI.modalOpen() || UI.photoMode || Auto.on || Player.vehicle) return;
+    if (G.S.missions.tut < TUTORIAL.length || !this.due()) return;
+    this.show();
+  },
+  show() {
+    const n = this.next();
+    UI.sheet({ title: L('Daily gift 🎁', 'రోజువారీ బహుమతి 🎁'), sub: L(`Day ${n} of 7 · come back every day for a bigger gift`, `7లో ${n}వ రోజు · రోజూ రండి, బహుమతి పెరుగుతుంది`), narrow: true, cls: 'gsheet', kind: 'gift',
+      onClose: () => this.claim(n, true),   // closing the card still gives the gift
+      render: (b) => {
+        const g = h('div', { class: 'gifts' });
+        this.REWARDS.forEach((r, i) => g.appendChild(h('div', { class: 'gift' + (i + 1 < n ? ' got' : i + 1 === n ? ' now' : '') },
+          h('small', null, L('Day ', 'రోజు ') + (i + 1)), h('b', null, i + 1 < n ? '✓' : this.icon(r)), h('span', null, this.short(r)))));
+        b.appendChild(g);
+        b.appendChild(h('div', { class: 'row', style: { justifyContent: 'center', marginTop: '14px' } },
+          h('button', { class: 'btn acc big', type: 'button', onclick: () => this.claim(n) }, L('Collect ', 'తీసుకోండి ') + this.short(this.REWARDS[n - 1]))));
+      } });
+    Audio2.sfx('ready');
+  },
+  claim(n, fromClose) {
+    if (!this.due()) return;
+    const D = this.state(); const r = this.REWARDS[n - 1];
+    D.last = this.today(); D.streak = n; D.total = (D.total || 0) + 1;
+    this.give(r);
+    if (!fromClose) UI.close();
+    Audio2.sfx('cash');
+    UI.toast(L(`Gift collected: ${this.short(r)}. Come back tomorrow for the Day ${n % 7 + 1} gift!`, `బహుమతి వచ్చింది: ${this.short(r)}. రేపు రండి, ${n % 7 + 1}వ రోజు బహుమతి మీకోసం!`), 'good');
+    SaveSys.save(false);
+  },
+};
+
+// ---------------- trophies ----------------
+const TROPHIES = [
+  { id: 'sow', icon: '🌱', en: 'First seeds', te: 'మొదటి విత్తనాలు', how: { en: 'Sow your first crop', te: 'మొదటి పంట విత్తండి' }, reward: 500, ok: (S) => S.stats.harvestQ > 0 || Fields.playerFields().some((f) => f.crop && f.sownTiles > 0) },
+  { id: 'harvest', icon: '🌾', en: 'First harvest', te: 'మొదటి కోత', how: { en: 'Harvest a crop', te: 'ఒక పంట కోయండి' }, reward: 1000, ok: (S) => S.stats.harvestQ > 0 },
+  { id: 'sale', icon: '🤝', en: 'First sale', te: 'మొదటి అమ్మకం', how: { en: 'Sell your crop', te: 'మీ పంట అమ్మండి' }, reward: 1000, ok: (S) => S.stats.cropIncome > 0 },
+  { id: 'worker', icon: '👷', en: 'The boss', te: 'యజమాని', how: { en: 'Hire a worker', te: 'ఒక కూలీని పెట్టుకోండి' }, reward: 1000, ok: (S) => S.workers.length > 0 },
+  { id: 'pray', icon: '🛕', en: 'Blessed', te: 'దేవుని దీవెన', how: { en: 'Pray at the temple', te: 'గుడిలో దండం పెట్టండి' }, reward: 500, ok: (S) => !!S.flags.prayed },
+  { id: 'pet', icon: '🐶', en: 'Best friend', te: 'ప్రాణ స్నేహితుడు', how: { en: 'Adopt a puppy at your house', te: 'మీ ఇంటి దగ్గర కుక్కపిల్లను తెచ్చుకోండి' }, reward: 500, ok: (S) => !!S.pet },
+  { id: 'photo', icon: '📸', en: 'Photographer', te: 'ఫోటోగ్రాఫర్', how: { en: 'Take a photo in photo mode', te: 'ఫోటో మోడ్‌లో ఫోటో తీయండి' }, reward: 500, ok: (S) => !!S.flags.photo },
+  { id: 'lakh', icon: '💰', en: 'Lakhpati', te: 'లక్షాధికారి', how: { en: 'Have ₹1 lakh', te: '₹1 లక్ష కూడబెట్టండి' }, reward: 2000, ok: (S) => S.money >= 100000 },
+  { id: 'friends', icon: '😊', en: 'Village friend', te: 'గ్రామ స్నేహితుడు', how: { en: 'Make 3 good friends in the village', te: 'గ్రామంలో 3 మంచి స్నేహితులను సంపాదించండి' }, reward: 2000, ok: () => NPCs.list.filter((n) => n.named && Rel.get(n.id) > 30).length >= 3 },
+  { id: 'house', icon: '🏠', en: 'New home', te: 'కొత్త ఇల్లు', how: { en: 'Upgrade your house', te: 'మీ ఇల్లు పెద్దది చేయండి' }, reward: 3000, ok: (S) => S.houseLevel >= 1 },
+  { id: 'milk', icon: '🥛', en: 'Milkman', te: 'పాల రైతు', how: { en: 'Sell 100 litres of milk', te: '100 లీటర్ల పాలు అమ్మండి' }, reward: 3000, ok: (S) => (S.stats.milk || 0) >= 100 },
+  { id: 'missions', icon: '🎯', en: 'Go-getter', te: 'పట్టుదల', how: { en: 'Complete 10 missions', te: '10 లక్ష్యాలు పూర్తి చేయండి' }, reward: 3000, ok: (S) => S.missions.done >= 10 },
+  { id: 'tractor', icon: '🚜', en: 'Tractor owner', te: 'ట్రాక్టర్ యజమాని', how: { en: 'Buy a tractor', te: 'ట్రాక్టర్ కొనండి' }, reward: 5000, ok: () => Vehicles.player.some((v) => /^tractor/.test(v.type) && !v.rentUntil) },
+  { id: 'acres', icon: '🗺️', en: 'Big farmer', te: 'పెద్ద రైతు', how: { en: 'Farm 5 acres', te: '5 ఎకరాలు సాగు చేయండి' }, reward: 5000, ok: () => Farm.farmedAcres() >= 5 },
+  { id: 'crops4', icon: '🧺', en: 'Crop expert', te: 'పంటల నిపుణుడు', how: { en: 'Sell 4 different crops', te: '4 రకాల పంటలు అమ్మండి' }, reward: 5000, ok: (S) => Object.keys(S.stats.sold).length >= 4 },
+  { id: 'harvest50', icon: '🏆', en: 'Bumper harvest', te: 'భారీ దిగుబడి', how: { en: 'Harvest 50 quintals in all', te: 'మొత్తం 50 క్వింటాళ్లు కోయండి' }, reward: 5000, ok: (S) => S.stats.harvestQ >= 50 },
+  { id: 'rank', icon: '⭐', en: 'Rising farmer', te: 'ఎదుగుతున్న రైతు', how: { en: 'Reach the third rank', te: 'మూడో హోదా చేరుకోండి' }, reward: 5000, ok: (S) => S.rank >= 2 },
+  { id: 'village', icon: '🏫', en: 'Village hero', te: 'గ్రామ హీరో', how: { en: 'Fund a village project', te: 'ఒక గ్రామ ప్రాజెక్టుకు డబ్బు ఇవ్వండి' }, reward: 5000, ok: () => Village.devScore() >= 1 },
+  { id: 'gift', icon: '🎁', en: 'Loyal farmer', te: 'నమ్మకమైన రైతు', how: { en: 'Collect the daily gift 7 days in a row', te: '7 రోజులు వరుసగా రోజువారీ బహుమతి తీసుకోండి' }, reward: 5000, ok: (S) => !!S.daily && S.daily.streak >= 7 },
+  { id: 'tenlakh', icon: '💎', en: 'Ten lakh club', te: 'పది లక్షల క్లబ్', how: { en: 'Have ₹10 lakh', te: '₹10 లక్షలు కూడబెట్టండి' }, reward: 10000, ok: (S) => S.money >= 1000000 },
+  { id: 'crore', icon: '👑', en: 'Crorepati', te: 'కోటీశ్వరుడు', how: { en: 'Have ₹1 crore', te: '₹1 కోటి కూడబెట్టండి' }, reward: 50000, ok: (S) => S.money >= 10000000 },
+];
+const Trophies = {
+  first: true,
+  got(id) { return !!(G.S.trophies && G.S.trophies[id]); },
+  count() { return TROPHIES.filter((t) => this.got(t.id)).length; },
+  check() {
+    const S = G.S; if (!S.trophies) S.trophies = {};
+    // a save from before trophies existed: hand out everything already earned in one go, quietly
+    if (this.first) {
+      this.first = false;
+      const won = TROPHIES.filter((t) => !S.trophies[t.id] && this.test(t));
+      if (won.length > 1) {
+        let sum = 0; for (const t of won) { S.trophies[t.id] = Time.day(); sum += t.reward; }
+        Money.add(sum, 'trophy');
+        UI.toast(L(`You already earned ${won.length} trophies! +${fmtINR(sum)}. See them in Farm office → Trophies.`, `మీకు ఇప్పటికే ${won.length} ట్రోఫీలు వచ్చాయి! +${fmtINR(sum)}. వ్యవసాయ కార్యాలయం → ట్రోఫీలు చూడండి.`), 'mission');
+        return;
+      }
+    }
+    if (UI.photoMode) return;
+    const t = TROPHIES.find((x) => !S.trophies[x.id] && this.test(x));   // one at a time, so each gets its moment
+    if (t) this.unlock(t);
+  },
+  test(t) { try { return !!t.ok(G.S); } catch (e) { return false; } },
+  unlock(t) {
+    const S = G.S; S.trophies[t.id] = Time.day();
+    Money.add(t.reward, 'trophy');
+    UI.banner(L('Trophy unlocked!', 'ట్రోఫీ వచ్చింది!'), `${t.icon} ${LN(t)}`, '+' + fmtINR(t.reward), 3800);
+    UI.toast(L(`Trophy: ${t.en} · +${fmtINR(t.reward)}`, `ట్రోఫీ: ${t.te} · +${fmtINR(t.reward)}`), 'mission');
+    Audio2.sfx('fanfare');
+    if (Settings.v.voice) Coach.say(L(`Trophy unlocked: ${t.en}!`, `ట్రోఫీ వచ్చింది: ${t.te}!`));
+  },
+  tab(b) {
+    const n = this.count();
+    b.appendChild(h('div', { class: 'sec' }, L(`Trophies · ${n} of ${TROPHIES.length}`, `ట్రోఫీలు · ${TROPHIES.length}లో ${n}`)));
+    b.appendChild(h('div', { class: 'prog', style: { margin: '2px 0 12px' } }, h('b', { style: { width: (n / TROPHIES.length * 100).toFixed(0) + '%' } })));
+    const g = h('div', { class: 'trophies' });
+    for (const t of TROPHIES) {
+      const day = G.S.trophies && G.S.trophies[t.id];
+      g.appendChild(h('div', { class: 'troph' + (day ? '' : ' locked') }, h('b', { 'aria-hidden': 'true' }, t.icon), h('strong', null, LN(t)),
+        h('span', null, day ? L(`Won on day ${day}`, `${day}వ రోజు గెలిచారు`) : LN(t.how)), h('em', null, '+' + fmtShortINR(t.reward))));
+    }
+    b.appendChild(g);
+  },
+};
+
+// ---------------- pet dog: follows you around, cheers you up ----------------
+const Pet = {
+  a: null, idle: 0, barkT: 12, jumpT: 0, patAt: -1e9,
+  KINDS: [{ en: 'Moti', te: 'మోతీ', col: '#b58352' }, { en: 'Kalu', te: 'కాలు', col: '#2a2420' }, { en: 'Tommy', te: 'టామీ', col: '#e6d9bf' }],
+  name() { const p = G.S && G.S.pet; return p ? (LANG === 'te' ? p.te : p.en) : ''; },
+  spawn() {
+    if (!G.S.pet || this.a) return;
+    const P = Player.pos();
+    const a = Fauna.add('dog', P.x - 2, P.z - 2, { mode: 'pet', col: G.S.pet.col });
+    if (a) { a.s = 0.92; this.a = a; }
+  },
+  menu() {
+    UI.sheet({ title: L('Adopt a puppy 🐶', 'కుక్కపిల్లను తెచ్చుకోండి 🐶'), sub: L('Free! Your dog follows you everywhere and cheers you up.', 'ఉచితం! మీ కుక్క మీతో పాటే తిరుగుతుంది, మీకు ఉత్సాహం ఇస్తుంది.'), narrow: true, render: (b) => {
+      const o = h('div', { class: 'pets' });
+      for (const k of this.KINDS) o.appendChild(h('button', { class: 'btn alt pet', type: 'button', onclick: () => this.adopt(k) }, h('i', { style: { background: k.col } }), LN(k)));
+      b.appendChild(o);
+    } });
+  },
+  adopt(k) {
+    G.S.pet = { en: k.en, te: k.te, col: k.col };
+    UI.close(); this.spawn();
+    if (this.a) { Audio2.at('bark', this.a.x, this.a.z); this.jumpT = 0.6; }
+    UI.toast(L(`${k.en} is your dog now! It follows you everywhere. Stand still next to it to pat it.`, `${k.te} ఇప్పుడు మీ కుక్క! మీ వెంటే వస్తుంది. దగ్గర ఆగి నిమరండి.`), 'good');
+    SaveSys.save(false);
+  },
+  // the "Pat" choice only shows when you stand still next to your dog, so it never crowds out real actions
+  canPat(P) { const a = this.a; return !!a && Player.speed < 0.3 && Math.hypot(a.x - P.x, a.z - P.z) < 2.6; },
+  pat() {
+    const a = this.a; if (!a) return;
+    this.jumpT = 0.6; this.idle = 0; a.pose = 'stand';
+    Audio2.at('bark', a.x, a.z);
+    const now = Time.totalMin();
+    if (now - this.patAt < 90) { UI.toast(L(`${this.name()} wags its tail.`, `${this.name()} తోక ఊపుతోంది.`), 'info'); return; }
+    this.patAt = now;
+    const P = G.S.player; P.energy = Math.min(100, P.energy + 10);
+    UI.toast(L(`${this.name()} is happy! +10 energy`, `${this.name()} సంతోషంగా ఉంది! +10 శక్తి`), 'good');
+  },
+  // every frame from Fauna.update: trot behind and to the left of the farmer (or the vehicle)
+  steer(a, dt) {
+    const P = Player.pos(); const v = Player.vehicle;
+    const yaw = v ? v.yaw : Player.yaw; const sy = Math.sin(yaw), cy = Math.cos(yaw);
+    const back = v ? 5.5 : 2.0, side = v ? 2.4 : 1.0;
+    const tx = P.x - sy * back + cy * side, tz = P.z - cy * back - sy * side;
+    const pd = Math.hypot(P.x - a.x, P.z - a.z);
+    if (pd > 45) {   // left far behind (fast travel, a fast vehicle): catch up out of sight
+      const q = { x: tx, z: tz }; World.collideCircle(q, 0.4); a.x = q.x; a.z = q.z; a.speed = 0;
+    }
+    const dx = tx - a.x, dz = tz - a.z, d = Math.hypot(dx, dz);
+    a.visible = true;
+    if (d > 0.7) {
+      const want = Math.min(v ? 17 : 10.5, 1.4 + d * 1.9);
+      a.speed = damp(a.speed, want, 6, dt);
+      const step = Math.min(d, a.speed * dt);
+      a.x += dx / d * step; a.z += dz / d * step;
+      a.yaw = dampAngle(a.yaw, Math.atan2(dx, dz), 9, dt);
+      a.pose = 'stand'; this.idle = 0;
+      const q = { x: a.x, z: a.z }; if (World.collideCircle(q, 0.3)) { a.x = q.x; a.z = q.z; }
+    } else {
+      a.speed = damp(a.speed, 0, 7, dt); this.idle += dt;
+      a.yaw = dampAngle(a.yaw, Math.atan2(P.x - a.x, P.z - a.z), 3, dt);
+      if (this.idle > 8 && !v) a.pose = 'lie';
+    }
+    a.happy = pd < 7; a.alert = this.jumpT > 0;
+    let lift = 0;
+    if (this.jumpT > 0) { this.jumpT -= dt; lift = Math.sin(Math.max(0, this.jumpT) / 0.6 * Math.PI) * 0.45; }
+    a.y = World.groundHeight(a.x, a.z) + lift;
+    this.barkT -= dt;
+    if (this.barkT <= 0) { this.barkT = 20 + frand() * 30; if (pd < 12 && frand() < 0.45) Audio2.at('bark', a.x, a.z); }
+  },
+};
+
+// ---------------- photos: frame a shot, save it or share it ----------------
+const Photo = {
+  url() {
+    const o = location.origin || '';
+    if (/^https:\/\//.test(o) && !/claude|localhost|127\.0\.0\.1/.test(o)) return (o + location.pathname).replace(/index\.html$/, '').replace(/^https:\/\//, '').replace(/\/$/, '');
+    return 'peru-dove-641366.hostingersite.com';
+  },
+  shareText() { return L(`My farm in Telangana Village Simulator 🌾 Play free: https://${this.url()}`, `తెలంగాణ గ్రామ సిమ్యులేటర్‌లో నా పొలం 🌾 ఉచితంగా ఆడండి: https://${this.url()}`); },
+  // share the game link: the phone's share sheet when there is one, else WhatsApp
+  invite() {
+    const text = L('Come farm with me in Telangana Village Simulator! Free in your browser, phone or PC 🌾', 'తెలంగాణ గ్రామ సిమ్యులేటర్‌లో నాతో వ్యవసాయం చేయండి! ఫోన్, కంప్యూటర్ బ్రౌజర్‌లో ఉచితం 🌾');
+    const url = 'https://' + this.url();
+    const wa = () => window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
+    // inside an embedded page the share sheet can be blocked: fall back to WhatsApp (but not if the player just cancelled)
+    if (navigator.share) { navigator.share({ title: 'Telangana Village Simulator', text, url }).catch((e) => { if (!e || e.name !== 'AbortError') wa(); }); return; }
+    wa();
+  },
+  take() {
+    if (!G.started) return;
+    const cv = G.renderer.domElement; const old = Render.pr;
+    const want = clamp(1600 / Math.max(1, innerWidth), old, 2);   // a sharper picture than the play view
+    let out = null;
+    try {
+      if (want > old + 0.05) { Render.pr = want; Render.resize(); }
+      Render.render();
+      out = document.createElement('canvas'); out.width = cv.width; out.height = cv.height;
+      const c = out.getContext('2d'); c.drawImage(cv, 0, 0);
+      this.stamp(c, out.width, out.height);
+    } catch (e) { out = null; console.warn('photo', e); }
+    finally { if (Render.pr !== old) { Render.pr = old; Render.resize(); } }
+    const fl = UI.el('flash'); if (fl) { fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); }
+    Audio2.sfx('shutter');
+    if (!out) { UI.toast(L('Could not take the photo on this device.', 'ఈ పరికరంలో ఫోటో తీయలేకపోయాం.'), 'bad'); return; }
+    G.S.flags.photo = true;
+    const done = (blob) => this.preview(blob || null, out);
+    try { out.toBlob(done, 'image/jpeg', 0.9); } catch (e) { done(null); }
+  },
+  stamp(c, W, H) {
+    const s = Math.max(0.7, Math.min(W, H * 1.6) / 1000); const S = G.S;
+    const bh = 100 * s;
+    const g = c.createLinearGradient(0, H - bh, 0, H); g.addColorStop(0, 'rgba(10,8,16,0)'); g.addColorStop(0.55, 'rgba(10,8,16,0.55)'); g.addColorStop(1, 'rgba(10,8,16,0.78)');
+    c.fillStyle = g; c.fillRect(0, H - bh, W, bh);
+    const x = 22 * s;
+    c.textBaseline = 'alphabetic'; c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 6 * s;
+    c.fillStyle = '#f4b62e'; c.font = `800 ${Math.round(30 * s)}px "Baloo Tammudu 2", system-ui, sans-serif`;
+    c.fillText(LANG === 'te' ? 'తెలంగాణ గ్రామ సిమ్యులేటర్' : 'Telangana Village Simulator', x, H - 44 * s);
+    c.fillStyle = '#ffffff'; c.font = `600 ${Math.round(18 * s)}px "Hind Guntur", system-ui, sans-serif`;
+    c.fillText(`${S.player.name} · ${L('Day', 'రోజు')} ${Time.day()} · ${L('Play free', 'ఉచితంగా ఆడండి')}: ${this.url()}`, x, H - 16 * s);
+    c.shadowBlur = 0;
+  },
+  preview(blob, canvas) {
+    let src = '';
+    try { src = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/jpeg', 0.88); } catch (e) { src = ''; }
+    const name = `telangana-farm-day-${Time.day()}.jpg`;
+    let file = null; try { if (blob) file = new File([blob], name, { type: 'image/jpeg' }); } catch (e) { file = null; }
+    let canShareFile = false; try { canShareFile = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { canShareFile = false; }
+    if (UI.photoMode) UI.photo();
+    UI.sheet({ title: L('Your photo 📸', 'మీ ఫోటో 📸'), sub: L('Show your farm to friends and family!', 'మీ పొలాన్ని స్నేహితులకు, కుటుంబానికి చూపించండి!'), narrow: true, kind: 'photo',
+      onClose: () => { if (blob && src) setTimeout(() => URL.revokeObjectURL(src), 2000); },
+      render: (b) => {
+        if (src) b.appendChild(h('img', { class: 'shot', src, alt: L('Photo of your farm', 'మీ పొలం ఫోటో') }));
+        const row = h('div', { class: 'row', style: { justifyContent: 'center', marginTop: '10px', flexWrap: 'wrap' } });
+        if (canShareFile) row.appendChild(h('button', { class: 'btn acc', type: 'button', onclick: () => { navigator.share({ files: [file], title: 'Telangana Village Simulator', text: this.shareText() }).catch((e) => { if (!e || e.name !== 'AbortError') UI.toast(L('Sharing is blocked here. Use Save photo, then share it from your gallery.', 'ఇక్కడ షేర్ కుదరదు. ఫోటో సేవ్ చేసి గ్యాలరీ నుంచి షేర్ చేయండి.'), 'warn'); }); } }, L('Share photo', 'ఫోటో షేర్ చేయండి')));
+        if (src) row.appendChild(h('a', { class: 'btn ' + (canShareFile ? 'alt' : 'acc'), href: src, download: name }, L('Save photo', 'ఫోటో సేవ్ చేయండి')));
+        row.appendChild(h('a', { class: 'btn alt wa', href: 'https://wa.me/?text=' + encodeURIComponent(this.shareText()), target: '_blank', rel: 'noopener' }, L('Invite on WhatsApp', 'వాట్సాప్‌లో ఆహ్వానించండి')));
+        b.appendChild(row);
+        b.appendChild(h('p', { class: 'empty', style: { textAlign: 'center', padding: '8px 0 0' } }, isMobile ? L('Tip: press and hold the photo to save it to your gallery.', 'చిట్కా: ఫోటోను నొక్కి పట్టుకుని గ్యాలరీలో సేవ్ చేయండి.') : L('Tip: right-click the photo to copy it.', 'చిట్కా: ఫోటోపై రైట్-క్లిక్ చేసి కాపీ చేయండి.')));
+      } });
+  },
+};
+
+// ---------------- how to play: three big cards the first time ----------------
+const HowTo = {
+  show() {
+    const cards = [
+      ['🕹️', L('Move', 'కదలండి'), isMobile ? L('Drag the left stick to walk; push it all the way to run. Or just tap the ground to walk there.', 'ఎడమ స్టిక్ లాగి నడవండి; పూర్తిగా నెడితే పరుగు. లేదా నేలపై నొక్కితే అక్కడికి నడుస్తారు.') : L('W A S D to walk, hold Shift to run. Drag the mouse to look around.', 'W A S D తో నడవండి, Shift పట్టుకుంటే పరుగు. మౌస్ లాగి చుట్టూ చూడండి.')],
+      ['🟡', L('Follow the gold arrow', 'బంగారు బాణాన్ని అనుసరించండి'), L('The gold arrow and the message at the bottom always show your next job, one step at a time.', 'బంగారు బాణం, కింద వచ్చే సందేశం మీ తదుపరి పనిని ఒక్కొక్కటిగా చూపిస్తాయి.')],
+      ['▶', L('Do it for me', 'నా బదులు చేయి'), L('Not sure what to do? Tap “▶ Do it for me” and the game does the next job for you.', 'ఏం చేయాలో తెలియదా? “▶ నా బదులు చేయి” నొక్కండి, తదుపరి పని ఆటే మీ కోసం చేస్తుంది.')],
+      ['🎁', L('Gifts & trophies', 'బహుమతులు & ట్రోఫీలు'), L('Come back every day for a gift, win trophies, and adopt a puppy at your house.', 'రోజూ వచ్చి బహుమతి తీసుకోండి, ట్రోఫీలు గెలవండి, ఇంటి దగ్గర కుక్కపిల్లను తెచ్చుకోండి.')],
+    ];
+    UI.sheet({ title: L('How to play', 'ఎలా ఆడాలి'), narrow: true, kind: 'howto', onClose: () => { Settings.v.seenHowTo = true; Settings.save(); }, render: (b) => {
+      const g = h('div', { class: 'howto' });
+      for (const [ic, t, d] of cards) g.appendChild(h('div', { class: 'hcard' }, h('b', { 'aria-hidden': 'true' }, ic), h('div', null, h('strong', null, t), h('span', null, d))));
+      b.appendChild(g);
+      b.appendChild(h('div', { class: 'row', style: { justifyContent: 'center', marginTop: '12px' } }, h('button', { class: 'btn acc big', type: 'button', onclick: () => UI.close() }, L("Let's play! ▶", 'ఆడదాం! ▶'))));
+    } });
+  },
+};
+
+// ---------------- glue ----------------
+const Extras = {
+  t: 0, howAt: 0,
+  start(loaded) {
+    if (!this._bound) { this._bound = true; Bus.on('pray', () => { if (G.started) G.S.flags.prayed = true; }); }
+    const S = G.S; if (!S.trophies) S.trophies = {}; if (!S.daily) S.daily = { last: null, streak: 0 };
+    Trophies.first = loaded; this.t = 2.5;
+    Pet.a = null; Pet.spawn();
+    // first game on this device: the how-to card, once the welcome banner has had a moment
+    this.howAt = !loaded && !Settings.v.seenHowTo && !window.__tvsNoPopups ? performance.now() + 1800 : 0;
+  },
+  update(dt) {
+    if (this.howAt && performance.now() >= this.howAt) { if (UI.modalOpen()) this.howAt += 1000; else { this.howAt = 0; HowTo.show(); } }
+    this.t -= dt; if (this.t > 0) return; this.t = 2;
+    Trophies.check();
+    DailyGift.check();
+  },
+  // easy mode: crops forgive mistakes, the farmer tires slowly
+  easy() { return !!(G.S && G.S.easy); },
+};
+
 // ---- 15_missions.js ----
 // ============================================================================
 // Missions: tutorial chain + adaptive procedural missions
@@ -7522,7 +8184,6 @@ const Missions = {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
     UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');
-    if (m.tpl.startsWith('t_')) setTimeout(() => UI.toast(LN(isMobile && m.descM ? m.descM : m.desc), 'tip'), 900);
     UI.dirty = true;
     return m;
   },
@@ -7676,6 +8337,245 @@ const Missions = {
   },
 };
 
+// ---- 15b_coach.js ----
+// ============================================================================
+// Coach: turns the mission you are following into one simple step at a time
+// ("Go to your field", "Hold Work", "Tap Buy seeds"...), points the gold arrow
+// at it, and can read it aloud. When a mission is done the next one follows.
+// ============================================================================
+const CH = {
+  pos() { return Player.pos(); },
+  dist(t) { const P = Player.pos(); return Math.hypot(t.x - P.x, t.z - P.z); },
+  near(t, r) { return !!t && this.dist(t) < r; },
+  onField(f) { const P = Player.pos(); return !!f && P.x > f.x0 - 1 && P.x < f.x1 + 1 && P.z > f.z0 - 1 && P.z < f.z1 + 1; },
+  ip(id) { const o = Interact.list.find((q) => q.id === id); return o ? { x: o.x, z: o.z, r: o.r || 3 } : null; },
+  // sentences, written whole in both languages so the Telugu reads naturally
+  go(t, name) {
+    const far = this.dist(t) > 260 && !Player.vehicle;
+    return { text: L(`Go to ${name}`, `${name} దగ్గరికి వెళ్ళండి`) + (far ? L(' — or tap Map and take an auto', ' — లేదా మ్యాప్ నొక్కి ఆటోలో వెళ్ళండి') : ''), target: { x: t.x, z: t.z, name }, icon: Player.vehicle ? 'drive' : 'walk' };
+  },
+  tap(label) { return isMobile ? L(`Tap “${label}”`, `“${label}” నొక్కండి`) : L(`Press E for “${label}”`, `“${label}” కోసం E నొక్కండి`); },
+  hold(en, te) { return isMobile ? L(`Hold Work ${en}`, `'పని' పట్టుకుని ${te}`) : L(`Hold F ${en}`, `F పట్టుకుని ${te}`); },
+  office(en, te) { return isMobile ? L(`Open the Farm office (top button) → ${en}`, `వ్యవసాయ కార్యాలయం (పై బటన్) తెరవండి → ${te}`) : L(`Press B (Farm office) → ${en}`, `B నొక్కండి (వ్యవసాయ కార్యాలయం) → ${te}`); },
+  yourField(f) { return f.id === 'F1' ? L('your field', 'మీ పొలం') : f.label(); },
+  goField(f) { return this.go({ x: f.x, z: f.z }, this.yourField(f)); },
+  goPlace(id, name) { const p = this.ip(id); return p ? this.go(p, name) : null; },
+  // at a shop or service: walk there, then use it
+  visit(id, name, en, te) {
+    const p = this.ip(id); if (!p) return null;
+    if (!this.near(p, p.r + 1.5)) return this.go(p, name);
+    return { text: (isMobile ? L('Tap the prompt, then ', 'పక్కన వచ్చే బటన్ నొక్కి, ') : L('Press E, then ', 'E నొక్కి, ')) + L(en, te), target: null, icon: 'tap' };
+  },
+  money(n) { return G.S.money + 1e-6 >= n; },
+  needMoney(n) { return { text: L(`Save ${fmtINR(Math.ceil(n - G.S.money))} more: sell crops, or take a crop loan at the bank`, `ఇంకా ${fmtINR(Math.ceil(n - G.S.money))} కావాలి: పంట అమ్మండి, లేదా బ్యాంకులో పంట రుణం తీసుకోండి`), icon: 'coin' }; },
+  heapField(crop) { return Fields.playerFields().find((f) => f.heap && f.heap.qty > 0.05 && (!crop || f.heap.crop === crop)); },
+  stored(crop) { return crop ? Storage.total(crop) : G.S.storage.reduce((s, e) => s + e.qty, 0); },
+  growing(crop) { return Fields.playerFields().filter((f) => f.crop && f.sownTiles > 0 && (!crop || f.crop === crop)).sort((a, b) => b.growth - a.growth)[0]; },
+  // a field to sow: finish a half-sown one first, else any empty field you farm
+  freeField(crop) {
+    const pf = Fields.playerFields();
+    return pf.find((f) => f.crop && f.sownTiles > 0 && f.sownTiles < f.n * 0.95 && (!crop || f.crop === crop)) || pf.find((f) => !f.crop || !f.sownTiles) || null;
+  },
+};
+const F1 = () => Fields.byId.F1;
+
+// ---- shared flows ----
+// grow a crop on a free field: walk there, buy seeds when asked, hold Work
+function coachSow(crop) {
+  const f = CH.freeField(crop);
+  if (!f) return coachLand();
+  if (!CH.onField(f)) return CH.goField(f);
+  if (!f.crop) f.plannedCrop = crop || f.plannedCrop;
+  const nd = Player.need;
+  if (nd && nd.item === 'seed' && nd.field === f && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy seeds (delivered here)', 'విత్తనాలు కొనండి (ఇక్కడికే)')) + (crop ? L(` and pick ${LN(CROPS[crop])}`, `, ${LN(CROPS[crop])} ఎంచుకోండి`) : ''), icon: 'tap' };
+  const nm = crop ? LN(CROPS[crop]) : L('the crop', 'పంట');
+  return { text: CH.hold(`and walk on the field to sow ${nm}`, `పొలంలో నడిచి ${nm} విత్తండి`), icon: 'work', progress: f.countMin(3) / f.n };
+}
+// look after a growing crop until harvest
+function coachGrow(f) {
+  if (!CH.onField(f)) return CH.goField(f);
+  const cd = CROPS[f.crop]; const pct = Math.round(f.growth * 100);
+  const nd = Player.need;
+  if (nd && nd.field === f && performance.now() - nd.t < 25000) {
+    if (nd.item === 'pesticide') return { text: CH.tap(L('Buy pesticide (delivered here)', 'పురుగుమందు కొనండి (ఇక్కడికే)')), icon: 'tap' };
+    if (nd.item === 'urea') return { text: CH.tap(L('Buy fertilizer (delivered here)', 'ఎరువు కొనండి (ఇక్కడికే)')), icon: 'tap' };
+  }
+  if (f.growth >= 0.97) return { text: CH.hold('and walk on the field to harvest', 'పొలంలో నడిచి కోయండి'), icon: 'work' };
+  if (f.outbreak || f.pests > 10) return { text: CH.hold('on the crop: Auto sprays the pests', 'పంటపై నిలబడండి: ఆటో పురుగుమందు చల్లుతుంది'), icon: 'work' };
+  if (f.weeds > 16) return { text: CH.hold('on the crop to pull the weeds', 'పంటపై నిలబడి కలుపు తీయండి'), icon: 'work' };
+  if (f.nut < 40) return { text: CH.hold('on the crop to feed it', 'పంటపై నిలబడి ఎరువు వేయండి'), icon: 'work' };
+  if (cd && cd.wLo && f.water < cd.wLo && !f.pump && !f.gate) return { text: CH.hold('on the crop to water it', 'పంటపై నిలబడి నీరు పెట్టండి'), icon: 'work' };
+  if (nd && nd.item === 'wait' && nd.field === f && performance.now() - nd.t < 25000) return { text: L(`${LN(cd)} is ${pct}% grown. `, `${LN(cd)} ${pct}% పెరిగింది. `) + CH.tap(L('Rest until the crop needs you', 'పంటకు పని వచ్చే వరకు విశ్రాంతి')), icon: 'wait' };
+  return { text: L(`${LN(cd)} is ${pct}% grown. `, `${LN(cd)} ${pct}% పెరిగింది. `) + CH.hold('for a moment, then tap “Rest”', 'కొద్దిసేపు ఉంచి, తర్వాత “విశ్రాంతి” నొక్కండి'), icon: 'wait' };
+}
+// sell what you have: heap by the field, home storage, or grow some first
+function coachSell(crop, where) {
+  const hf = CH.heapField(crop);
+  if (hf) {
+    if (!CH.near(hf.heapSpot, 4.5)) return CH.go(hf.heapSpot, L('the harvest heap', 'పంట కుప్ప'));
+    const opt = where === 'trader' ? L('“Sell all to trader”', '“వ్యాపారికి అమ్మండి”') : where === 'msp' ? L('“Send to the MSP centre by lorry”', '“లారీలో మద్దతు ధర కేంద్రానికి”') : L('“Send to the market yard by lorry”', '“లారీలో మార్కెట్ యార్డుకు”');
+    return { text: (isMobile ? L('Tap the heap, then ', 'కుప్పను నొక్కి ') : L('Press E at the heap, then ', 'కుప్ప దగ్గర E నొక్కి ')) + opt, icon: 'tap' };
+  }
+  if (CH.stored(crop) > 0.05) return { text: CH.office('Storage → “Send by lorry”', 'నిల్వ → “లారీలో పంపండి”'), icon: 'office', tab: 'storage' };
+  const g = CH.growing(crop);
+  if (g) return coachGrow(g);
+  return coachSow(crop || CH.bestCrop());
+}
+CH.bestCrop = () => { const s = Time.season(); return CROP_IDS.slice().sort((a, b) => CROPS[b].season[s] - CROPS[a].season[s])[0]; };
+// lease or buy another field
+function coachLand() {
+  const P = Player.pos();
+  const f = Fields.list.filter((q) => q.avail && q.heapSpot).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z))[0];
+  if (!f) return { text: L('Look for an orange “For sale / lease” field on the map', 'మ్యాప్‌లో నారింజ రంగు “అమ్మకం / కౌలు” పొలం చూడండి'), icon: 'map' };
+  if (!CH.near(f.heapSpot, 4.5)) return CH.go(f.heapSpot, L('the “For lease” board', '“కౌలుకు” బోర్డు'));
+  return { text: (isMobile ? L('Tap the board, then ', 'బోర్డు నొక్కి, ') : L('Press E at the board, then ', 'బోర్డు దగ్గర E నొక్కి, ')) + L('lease or buy the field', 'పొలం కౌలుకు తీసుకోండి లేదా కొనండి'), icon: 'tap' };
+}
+
+// ---- one step function per mission type ----
+const COACH_STEPS = {
+  t_walk: () => CH.goField(F1()),
+  t_plough: () => { const f = F1(); if (!CH.onField(f)) return CH.goField(f); return { text: CH.hold('and walk around the field to plough it', 'పొలమంతా నడిచి దున్నండి'), icon: 'work', progress: f.countMin(2) / f.n / 0.8 }; },
+  t_seeds: () => {
+    const f = F1(); if (!CH.onField(f)) return CH.goField(f);
+    const nd = Player.need;
+    if (nd && nd.item === 'seed' && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy seeds (delivered here)', 'విత్తనాలు కొనండి (ఇక్కడికే)')) + L(', then pick the top crop', ', పైన ఉన్న పంట ఎంచుకోండి'), icon: 'tap' };
+    return { text: CH.hold('on the field until it asks for seeds', 'విత్తనాలు అడిగే వరకు పొలంలో ఉంచండి'), icon: 'work' };
+  },
+  t_sow: () => coachSow(F1().crop || F1().plannedCrop || null),
+  t_water: () => {
+    const f = F1(); if (!CH.onField(f)) return CH.goField(f);
+    if (f.pump) return { text: L(`The pump is filling the field (${Math.round(f.water)}%). Keep holding Work or wait a little`, `మోటార్ పొలం నింపుతోంది (${Math.round(f.water)}%). 'పని' పట్టుకోండి లేదా కొద్దిసేపు ఆగండి`), icon: 'wait', progress: f.water / 60 };
+    return { text: CH.hold('on the crop: the pump starts by itself', 'పంటపై నిలబడండి: మోటార్ తానే మొదలవుతుంది'), icon: 'work', progress: f.water / 60 };
+  },
+  t_fert: () => {
+    const f = F1(); const nd = Player.need;
+    if (nd && nd.item === 'urea' && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy fertilizer (delivered here)', 'ఎరువు కొనండి (ఇక్కడికే)')), icon: 'tap' };
+    if (!CH.onField(f)) return CH.goField(f);
+    return { text: CH.hold('and walk on the crop to spread fertilizer', 'పంటపై నడిచి ఎరువు చల్లండి'), icon: 'work' };
+  },
+  t_harvest: () => { const f = F1(); if (f.crop && f.sownTiles > 0) return coachGrow(f); return coachSell(null, 'trader'); },
+  t_sell: () => coachSell(null, 'trader'),
+  plant: (m) => coachSow(m.crop),
+  harvestQ: (m) => { const g = CH.growing(m.crop); return g ? coachGrow(g) : coachSow(m.crop); },
+  deliver: (m) => coachSell(m.crop, 'yard'),
+  msp: () => coachSell(CROP_IDS.find((c) => Market.procurementOpen(c) && (CH.heapField(c) || CH.stored(c) > 0.05)) || null, 'msp'),
+  earnSales: () => coachSell(null, 'trader'),
+  income: () => coachSell(null, 'trader'),
+  sellHigh: (m) => {
+    const c = m.crop || m.crop2; const p = c ? Market.price(c) : 0;
+    if (c && p < m.price) return { text: L(`Wait for a better price: ${LN(PRODUCE[c])} is ${fmtINR(p)} now, you need ${fmtINR(m.price)}. Keep farming meanwhile`, `మంచి ధర వచ్చే వరకు ఆగండి: ${LN(PRODUCE[c])} ఇప్పుడు ${fmtINR(p)}, కావాల్సింది ${fmtINR(m.price)}. ఈలోగా వ్యవసాయం చేయండి`), icon: 'wait' };
+    return coachSell(c, 'yard');
+  },
+  santha: () => {
+    const p = { x: POI.santha.x, z: POI.santha.z };
+    if (Time.weekday() !== SANTHA_WEEKDAY) return { text: L('The santha is on Sunday. Keep your tomatoes until then', 'సంత ఆదివారం. అప్పటివరకు టమాటాలు దాచండి'), icon: 'wait' };
+    const v = Player.vehicle;
+    if (!v || !v.cargo.some((c) => c.crop === 'tomato' || c.crop === 'mango')) return { text: L('Load tomatoes into your bullock cart, then drive to the santha ground', 'ఎడ్లబండిలో టమాటాలు ఎక్కించి సంత మైదానానికి నడపండి'), icon: 'drive' };
+    return CH.near(p, 18) ? { text: CH.tap(L('Sell at the Sunday santha (+5%)', 'ఆదివారం సంతలో అమ్మండి (+5%)')), icon: 'tap' } : CH.go(p, L('the santha ground', 'సంత మైదానం'));
+  },
+  buyTractor: () => { const pr = VEHICLES.tractor35.price; if (!CH.money(pr)) return CH.needMoney(pr); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'buy the Bhoomi 35 tractor', 'భూమి 35 ట్రాక్టర్ కొనండి'); },
+  buyImpl: (m) => { const I = IMPLEMENTS[m.impl]; if (I && !CH.money(I.price)) return CH.needMoney(I.price); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), `buy the ${I ? I.en : 'implement'}`, `${I ? I.te : 'పనిముట్టు'} కొనండి`); },
+  rentT: () => CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'rent a tractor', 'ట్రాక్టర్ అద్దెకు తీసుకోండి'),
+  expand: () => coachLand(),
+  ownLand: () => coachLand(),
+  leaseLand: () => coachLand(),
+  build: (m) => { const U2 = FARM_UPGRADES[m.up]; if (U2 && !CH.money(U2.cost)) return CH.needMoney(U2.cost); return { text: CH.office(`Build → ${U2 ? U2.en : ''}`, `నిర్మాణం → ${U2 ? U2.te : ''}`), icon: 'office', tab: 'build' }; },
+  house: () => { const H = HOUSE_LEVELS[Math.min(4, G.S.houseLevel + 1)]; if (H && !CH.money(H.cost)) return CH.needMoney(H.cost); return { text: CH.office('Build → upgrade your house', 'నిర్మాణం → ఇల్లు పెంచండి'), icon: 'office', tab: 'build' }; },
+  village: (m) => { const P2 = VILLAGE_PROJECTS[m.proj]; if (P2 && !CH.money(P2.cost)) return CH.needMoney(P2.cost); return CH.visit('panchayat', L('the panchayat office', 'పంచాయతీ కార్యాలయం'), `fund ${P2 ? P2.en : 'the project'}`, `${P2 ? P2.te : 'ప్రాజెక్టు'}కు నిధులు ఇవ్వండి`); },
+  repairBore: () => {
+    if (Inv.count('pumppart') < 1) return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'buy a pump spare part', 'పంపు విడిభాగం కొనండి');
+    return CH.visit('vbore', L('the village borewell', 'గ్రామ బోరు'), 'repair the borewell', 'బోరు బాగుచేయండి');
+  },
+  hire: () => ({ text: CH.office('Workers → Hire', 'కూలీలు → పెట్టుకోండి'), icon: 'office', tab: 'workers' }),
+  rankUp: () => ({ text: CH.office('Profile: see what you need', 'ప్రొఫైల్: ఏం కావాలో చూడండి'), icon: 'office', tab: 'profile' }),
+  talk: (m) => { const n = NPCs.byId[m.npc]; if (!n) return null; const p = { x: n.h.x, z: n.h.z }; if (!CH.near(p, 3)) return CH.go(p, LN(n.name)); return { text: CH.tap(L('Talk to ', 'మాట్లాడండి: ') + LN(n.name)), icon: 'tap' }; },
+  milk: () => (Inv.count('feed') < 1 ? CH.visit('kirana', L('the kirana shop', 'కిరాణం'), 'buy cattle feed', 'పశువుల దాణా కొనండి') : { text: L('Milk is sold every morning and evening. Keep the buffaloes fed', 'పాలు ప్రతి ఉదయం, సాయంత్రం అమ్ముతారు. గేదెలకు దాణా పెట్టండి'), icon: 'wait' }),
+  repay: () => { const bank = G.S.loans.some((l) => l.kind === 'bank'); return bank ? CH.visit('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు'), 'repay the loan', 'రుణం తీర్చండి') : CH.visit('lender', L("Hanmanthu's house", 'హన్మంతు'), 'repay the loan', 'అప్పు తీర్చండి'); },
+  pray: () => CH.visit('temple', L('the temple', 'గుడి'), 'pray (₹51)', 'దండం పెట్టండి (₹51)'),
+  visitBank: () => CH.goPlace('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు')),
+  organic: () => {
+    if (Inv.count('organic') < 0.05) return CH.visit('seed', L("Srinu's shop", 'శ్రీను దుకాణం'), 'buy farmyard manure', 'పశువుల ఎరువు కొనండి');
+    Player.opt.fert = 'organic';
+    const g = CH.growing(); if (!g) return coachSow(CH.bestCrop());
+    if (!CH.onField(g)) return CH.goField(g);
+    g.autoMode = 'fert';
+    return { text: CH.hold('and walk on the crop to spread the manure', 'పంటపై నడిచి పశువుల ఎరువు చల్లండి'), icon: 'work' };
+  },
+  savePest: (m) => { const f = Fields.byId[m.field]; return f ? coachGrow(f) : null; },
+  drought: () => { const f = Fields.playerFields().filter((q) => q.crop).sort((a, b) => a.health - b.health)[0]; return f ? coachGrow(f) : { text: L('Keep every crop healthy until the season ends', 'సీజన్ ముగిసే వరకు పంటలన్నీ ఆరోగ్యంగా ఉంచండి'), icon: 'wait' }; },
+  festival: (m) => {
+    const t = Missions.markerPos(m.mark); if (!t) return null;
+    const nm = m.mark === 'ghat' ? L('the lake ghat', 'చెరువు ఘాట్') : L('the temple', 'గుడి');
+    if (Time.hour() < 16.5) return { text: L(`The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM`, `వేడుక సాయంత్రం 4:30 నుంచి`), target: { x: t.x, z: t.z, name: nm }, icon: 'wait' };
+    return CH.go(t, nm);
+  },
+  _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office('Missions', 'లక్ష్యాలు'), icon: 'office', tab: 'missions' }; },
+};
+
+const Coach = {
+  step: null, key: '', changedAt: 0, banT: 0,
+  // the mission the player follows: their own pick, else tutorial first
+  current() {
+    const S = G.S; if (!S || !S.missions) return null;
+    const act = Missions.ordered(); if (!act.length) return null;
+    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act[0];
+  },
+  follow(m) { G.S.missions.focus = m ? m.uid : null; this.key = ''; UI.dirty = true; UI._mKey = ''; },
+  compute() {
+    const m = this.current(); if (!m) return null;
+    let st = null;
+    try { st = (COACH_STEPS[m.tpl] || COACH_STEPS._default)(m); } catch (e) { st = null; }
+    if (!st) { try { st = COACH_STEPS._default(m); } catch (e) { st = null; } }
+    if (st) { st.m = m; if (st.target && CH.dist(st.target) < 6) st.target = null; }
+    return st;
+  },
+  update() {
+    if (!G.started) return;
+    const st = this.compute(); this.step = st;
+    // numbers (water %, growth %) update the card but do not count as a new step
+    const k = st ? st.m.uid + '|' + st.text.replace(/[\d,.%₹]+/g, '#') : '';
+    const now = performance.now();
+    if (k !== this.key) { this.key = k; this.changedAt = now; if (st) this.show(st, false); }
+    else if (st && now - this.changedAt > 35000 && !UI.modalOpen()) { this.changedAt = now; this.show(st, true); }   // gentle reminder when stuck
+  },
+  // big instruction strip above the controls; spoken aloud if the player wants
+  show(st, reminder) {
+    const el = UI.el('coach'); if (!el || UI.photoMode || Auto.on) return;
+    el.classList.remove('auto');
+    el.querySelector('.ci').innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk;
+    el.querySelector('.ct').textContent = st.text;
+    const b = el.querySelector('.cdo'); b.textContent = L('Do it ▶', 'చేయి ▶'); b.onclick = () => Auto.doStep();
+    el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
+    clearTimeout(this._hide); this._hide = setTimeout(() => { if (!Auto.on) el.hidden = true; }, reminder ? 5000 : 8000);
+    if (!reminder || Settings.v.voice === 'always') this.say(st.text);
+  },
+  say(text) {
+    if (!Settings.v.voice || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
+    try {
+      const vs = speechSynthesis.getVoices(); const want = LANG === 'te' ? 'te' : 'en';
+      const v = vs.find((x) => x.lang && x.lang.toLowerCase().startsWith(want + '-in')) || vs.find((x) => x.lang && x.lang.toLowerCase().startsWith(want));
+      if (!v && LANG === 'te') return;   // no Telugu voice on this device: stay quiet rather than mispronounce
+      speechSynthesis.cancel();
+      const u = new SpeechSynthesisUtterance(text.replace(/[“”"]/g, '').replace(/→/g, ', ').replace(/₹/g, 'rupees '));
+      if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-IN';
+      u.rate = 1; u.pitch = 1.05; u.volume = Math.min(1, (Settings.v.vol || 0.8) + 0.2);
+      speechSynthesis.speak(u);
+    } catch (e) { /* speech not available */ }
+  },
+  // iOS and Android only allow speech after a tap: say nothing once to unlock it
+  prime() { if (this._primed || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return; this._primed = true; try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) { /* ignore */ } },
+};
+const COACH_ICON = {
+  walk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2" fill="currentColor"/><path d="M9 21l3-7 3 3v4M7 12l3-4h4l3 4M12 8l-1 6"/></svg>',
+  drive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M4 14V8h7l2 5h6v5M11 8V5h-4"/></svg>',
+  work: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M13 5.5L8 13h4l-1 5.5 5-7.5h-4z" fill="currentColor"/></svg>',
+  tap: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11V5.5a1.5 1.5 0 0 1 3 0V11m0-1.5a1.5 1.5 0 0 1 3 0V11m0-.5a1.5 1.5 0 0 1 3 0v4.5a6 6 0 0 1-6 6h-1a6 6 0 0 1-5-2.7L4 15.6a1.6 1.6 0 0 1 2.6-1.8L9 15"/><path d="M5 4l1.5 1.5M3.5 8.5h2M12.5 1.5V3" /></svg>',
+  wait: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l3 2M9 2h6"/></svg>',
+  office: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v3H8z M6 5H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1 M8 12h8 M8 16h5"/></svg>',
+  map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14"/></svg>',
+  coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 8h7M8.5 11h7M9 8c4 0 5 3 0 3l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+
 // ---- 16_audio.js ----
 // ============================================================================
 // Audio: synthesized ambience, spatial one-shots, engines, generative raga music
@@ -7689,7 +8589,7 @@ const RAGAS = {
 const Audio2 = {
   ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null, nextBeat: 0, beatIdx: 0, phraseQ: [], droneT: 0, melT: 0, lastNote: 0,
   unlock() {
-    if (this.ctx) { if (this.ctx.state === 'suspended') this.ctx.resume(); return; }
+    if (this.ctx) { if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') this.ctx.resume().catch(() => {}); return; }
     try {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       this.ctx = new AC();
@@ -7784,6 +8684,7 @@ const Audio2 = {
       case 'bell': this.bell(d, 700, 0.25); break;
       case 'hydraulic': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, c.currentTime); f.frequency.exponentialRampToValueAtTime(1800, c.currentTime + 0.6); const g = c.createGain(); this.env(g, c.currentTime, 0.05, 0.15, 0.6); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 0.8); break; }
       case 'jump': this.burst(0.08, 0.12, 'lowpass', 300, d); break;
+      case 'shutter': this.burst(0.04, 0.35, 'highpass', 2500, d); this.burst(0.06, 0.25, 'bandpass', 1200, d, 0.07, 2); break;
       case 'bump': this.burst(0.3, 0.5, 'lowpass', 160, d); this.tone('sine', 80, 40, 0.3, 0.3, d); break;
     }
   },
@@ -7932,7 +8833,7 @@ const Audio2 = {
 // UI: settings, HUD, minimap & map, menus, shops, dialogs, title, touch
 // ============================================================================
 const Settings = {
-  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1 },
+  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true },
   load() { const s = Store.get('tvs_prefs', null); if (s) Object.assign(this.v, s); },
   save() { Store.set('tvs_prefs', this.v); },
 };
@@ -8035,6 +8936,7 @@ const UI = {
       if (need.item === 'seed') {
         const s = Time.season(); const score = (c) => CROPS[c].season[s] * (f ? CROPS[c].soil[f.soil] || 1 : 1);
         const list = CROP_IDS.slice().sort((a, c) => score(c) - score(a));
+        const pc = f && f.plannedCrop; if (pc && list.includes(pc)) { list.splice(list.indexOf(pc), 1); list.unshift(pc); }
         b.appendChild(h('p', { class: 'empty', style: { paddingTop: '0' } }, L(`Seeds for ${acres} acre${acres > 1 ? 's' : ''}. The top crops suit this season and soil best.`, `${acres} ఎకరాలకు విత్తనాలు. పైన ఉన్న పంటలు ఈ సీజన్‌కు, నేలకు బాగా సరిపోతాయి.`)));
         list.forEach((c, i) => { const k = 'seed_' + c; const sc = score(c); o.appendChild(h('button', { class: 'btn ' + (i === 0 ? 'acc' : 'alt'), onclick: () => buy(k, acres) }, `${LN(CROPS[c])} ${sc >= 1.05 ? '★★★' : sc >= 0.95 ? '★★' : '★'} · ${CROPS[c].days} ${L('days', 'రోజులు')} · ${fmtINR(Market.itemPrice(k) * acres + FEE)}`)); });
       } else if (need.item === 'pesticide') {
@@ -8051,7 +8953,8 @@ const UI = {
   buildTools() {
     const box = this.el('tools'); if (!box) return; box.innerHTML = '';
     for (const t of TOOLS) {
-      const b = h('button', { class: 'tool' + (Player.tool === t.id ? ' on' : ''), 'aria-label': LN(t), onclick: () => Player.setTool(t.id) }, h('em', null, t.key));
+      // on touch screens the bar shows only the active tool; tapping it opens the rest
+      const b = h('button', { class: 'tool' + (Player.tool === t.id ? ' on' : ''), 'aria-label': LN(t), onclick: () => { if (isMobile && !box.classList.contains('open') && Player.tool === t.id) { box.classList.add('open'); Audio2.sfx('click'); return; } box.classList.remove('open'); Player.setTool(t.id); } }, h('em', null, t.key));
       b.insertAdjacentHTML('beforeend', ICON[t.id]); b.appendChild(h('span', null, LN(t)));
       box.appendChild(b);
     }
@@ -8066,7 +8969,7 @@ const UI = {
       const unit = tl === 'seeds' ? L(' acre packs', ' ఎకరం ప్యాకెట్లు') : tl === 'fert' ? L(' bags', ' బస్తాలు') : L(' L', ' లీ.');
       o.innerHTML = ''; o.append(h('b', null, Inv.name(k)), ' · ' + fmt1(Inv.count(k)) + unit + ' · ', h('span', { class: 'kbd' }, 'Q'), ' ' + L('switch', 'మార్చు'));
       o.hidden = false;
-    } else { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), tl === 'auto' ? L(' on your field: it ploughs, sows, feeds and harvests by itself', ' మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది') : L(' on your field', ' మీ పొలంలో')); o.hidden = false; }
+    } else { o.innerHTML = ''; o.append(L('Hold ', 'పట్టుకోండి '), h('span', { class: 'kbd' }, isMobile ? L('Work', 'పని') : 'F'), tl === 'auto' ? L(' on your field: it ploughs, sows, feeds and harvests by itself', ' మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది') : L(' on your field', ' మీ పొలంలో')); o.hidden = isMobile && tl === 'auto'; }
     const tbG = this.el('tbG'); if (tbG) tbG.hidden = false;
   },
   setPrompt(list) {
@@ -8077,6 +8980,17 @@ const UI = {
     if (list.length > 1) p.append(h('span', { class: 'more' }, L(`+${list.length - 1} more`, `+${list.length - 1} ఇంకా`)));
   },
   // ---------- HUD update ----------
+  // the coach strip while "Do it" is running: what is happening, and a Stop button
+  autoStatus() {
+    const el = this.el('coach'); if (!el) return;
+    this._mKey = '';
+    if (Auto.on) {
+      el.classList.add('auto'); el.hidden = false; clearTimeout(Coach._hide);
+      el.querySelector('.ci').innerHTML = COACH_ICON[Auto.mode === 'farm' ? 'work' : 'walk'];
+      el.querySelector('.ct').textContent = Auto.mode === 'farm' ? L(`Working ${Auto.name}…`, `${Auto.name}లో పని చేస్తున్నారు…`) : Auto.name ? L(`Walking to ${Auto.name}…`, `${Auto.name} వైపు నడుస్తున్నారు…`) : L('Walking there…', 'అక్కడికి నడుస్తున్నారు…');
+      const b = el.querySelector('.cdo'); b.textContent = L('Stop ■', 'ఆపు ■'); b.onclick = () => Auto.stop(true);
+    } else { el.classList.remove('auto'); el.hidden = true; Coach.key = ''; }
+  },
   // set text only when it changed (avoids needless layout work on phones)
   setText(el, txt) { if (el && el._t !== txt) { el._t = txt; el.textContent = txt; } },
   update(dt) {
@@ -8113,22 +9027,26 @@ const UI = {
         rows.appendChild(h('div', { class: 'tk' }, h('span', null, LN(PRODUCE[c])), h('span', { class: 'p' }, fmtINR(Market.price(c))), h('span', { class: tr > 0.005 ? 'u' : tr < -0.005 ? 'd' : '' }, tr > 0.005 ? '▲' : tr < -0.005 ? '▼' : '•')));
       }
     }
-    // missions: tutorial first, with a one-line "what to do" and the distance to go
-    const act = Missions.ordered().slice(0, isMobile ? 2 : 4);
+    // mission card: the one mission you follow and exactly what to do next
+    Coach.update();
+    const st = Coach.step; const cur = st ? st.m : Coach.current();
+    const nAct = S.missions.active.length;
     const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
-    const mkey = LANG + '|' + act.map((m) => m.uid + ':' + Math.round(clamp01(m.prog / m.target) * 50)).join(',') + '|' + (tg ? (tg.name || '') + Math.round(tgD / 10) : '');
+    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on;
     if (mkey !== this._mKey) {
       this._mKey = mkey;
       const mb = this.el('missions'); mb.innerHTML = '';
-      mb.appendChild(h('h4', null, L('Missions', 'లక్ష్యాలు')));
-      if (!act.length) mb.appendChild(h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
-      act.forEach((m, i) => {
-        const fr = clamp01(m.prog / m.target);
-        const progTxt = m.target > 1.5 ? ` · ${m.target >= 1000 ? fmtShortINR(m.prog).replace('₹', m.tpl === 'earnSales' || m.tpl === 'income' ? '₹' : '') : fmt1(m.prog)}/${m.target >= 1000 ? fmtShortINR(m.target) : m.target}` : '';
-        const hint = Missions.hintFor(m);
-        const go = tg && tg.m === m && tgD > 7 ? `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}` : '';
-        mb.appendChild(h('div', { class: 'ms' + (i === 0 ? ' top' : '') }, h('b', null, LN(m.title)), hint ? h('span', { class: 'hint' }, hint) : null, go ? h('span', { class: 'go' }, go) : null, h('small', null, (m.reward ? L('Reward ', 'బహుమతి ') + fmtINR(m.reward) : '') + progTxt), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } }))));
-      });
+      if (!cur) mb.append(h('h4', null, L('Missions', 'లక్ష్యాలు')), h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
+      else {
+        const tut = cur.tpl.startsWith('t_');
+        mb.appendChild(h('h4', null, tut ? L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`) : L('Mission', 'లక్ష్యం') + (nAct > 1 ? L(` · ${nAct - 1} more`, ` · ఇంకా ${nAct - 1}`) : '')));
+        mb.appendChild(h('b', { class: 'mt' }, LN(cur.title)));
+        if (st) { const sp = h('div', { class: 'step' }); sp.innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk; sp.appendChild(h('span', null, st.text)); mb.appendChild(sp); }
+        if (tg && !tg.wp && tg.m === cur) mb.appendChild(h('span', { class: 'go' }, `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}`));
+        if (st) mb.appendChild(h('button', { class: 'do' + (Auto.on ? ' stop' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); if (Auto.on) Auto.stop(true); else Auto.doStep(); } }, Auto.on ? L('■ Stop', '■ ఆపు') : L('▶ Do it for me', '▶ నా బదులు చేయి'), isMobile || Auto.on ? null : h('span', { class: 'kbd' }, 'Enter')));
+        if (cur.reward) mb.appendChild(h('small', null, L('Reward ', 'బహుమతి ') + fmtINR(cur.reward)));
+        mb.appendChild(h('div', { class: 'prog' }, h('b', { style: { width: (clamp01(cur.prog / cur.target) * 100).toFixed(0) + '%' } })));
+      }
       mb.onclick = () => this.office('missions');
     }
     this.updateBL();
@@ -8206,7 +9124,7 @@ const UI = {
     const head = h('header', null, h('div', { style: { minWidth: 0 } }, h('h2', null, o.title), o.sub ? h('p', null, o.sub) : null), h('button', { class: 'x', 'aria-label': L('Close', 'మూసివేయి'), onclick: () => this.close() }, '✕'));
     const tabs = h('div', { class: 'tabs', role: 'tablist' });
     const body = h('div', { class: 'body' });
-    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : '') + (o.wide ? ' wide' : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
+    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : '') + (o.wide ? ' wide' : '') + (o.cls ? ' ' + o.cls : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
     m.appendChild(sh);
     m.onclick = (e) => { if (e.target === m) this.close(); };
     const st = { kind: o.kind, onClose: o.onClose, tab: o.tab || (o.tabs ? o.tabs[0].id : null) };
@@ -8273,6 +9191,7 @@ const UI = {
       { id: 'store', label: () => L('Storage & supplies', 'నిల్వ & సామాగ్రి'), act: () => this.office('storage') },
       { id: 'save', label: () => L('Save game', 'ఆట సేవ్ చేయండి'), act: () => SaveSys.save(true) },
     ];
+    if (!S.pet) list.splice(1, 0, { id: 'pet', label: () => L('Adopt a puppy (free) 🐶', 'కుక్కపిల్లను తెచ్చుకోండి (ఉచితం) 🐶'), act: () => Pet.menu() });
     this.actionMenu(list);
   },
   storageMenu(v) {
@@ -8309,7 +9228,13 @@ const UI = {
     const p = Market.price(hp.crop);
     this.sheet({ title: L('Harvest heap', 'పంట కుప్ప'), sub: `${f.label()} · ${fmt1(hp.qty)} q ${LN(PRODUCE[hp.crop])} · ${L('grade', 'గ్రేడ్')} ${Market.qualityLabel(hp.q)}`, narrow: true, render: (b) => {
       b.appendChild(h('p', null, L(`The village trader offers ${fmtINR(Math.round(p * hp.q * 0.88))}/q right here (88% of the yard price ${fmtINR(p)}). Or load it into your cart or trailer and sell at the market yard yourself.`, `గ్రామ వ్యాపారి ఇక్కడే క్వింటాలుకు ${fmtINR(Math.round(p * hp.q * 0.88))} ఇస్తాడు (యార్డు ధర ${fmtINR(p)}లో 88%). లేదా బండిలో ఎక్కించి మార్కెట్ యార్డులో మీరే అమ్మండి.`)));
-      b.appendChild(h('div', { class: 'row' }, this.btn(L(`Sell all to trader (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`, `వ్యాపారికి అమ్మండి (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`), () => { Services.sellHeapToTrader(f); this.close(); }, 'acc')));
+      const fee = Services.lorryFee(hp.qty); const yardNet = Math.round(p * hp.q * hp.qty * 0.99 - 10 * hp.qty - fee);
+      const opts = h('div', { class: 'opts' });
+      opts.appendChild(this.btn(L(`Send to the market yard by lorry (about ${fmtINR(yardNet)})`, `లారీలో మార్కెట్ యార్డుకు పంపండి (సుమారు ${fmtINR(yardNet)})`), () => { Services.lorryHeap(f, 'yard'); this.close(); }, 'acc'));
+      const cd = CROPS[hp.crop];
+      if (cd && cd.msp && Market.procurementOpen(hp.crop) && hp.q >= 0.99) opts.appendChild(this.btn(L(`Send to the MSP centre by lorry (about ${fmtINR(Math.round(cd.msp * hp.qty - fee))}, paid in 2 days)`, `లారీలో మద్దతు ధర కేంద్రానికి (సుమారు ${fmtINR(Math.round(cd.msp * hp.qty - fee))}, 2 రోజుల్లో)`), () => { Services.lorryHeap(f, 'msp'); this.close(); }, 'alt'));
+      opts.appendChild(this.btn(L(`Sell all to trader now (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`, `ఇప్పుడే వ్యాపారికి అమ్మండి (${fmtINR(Math.round(p * hp.q * 0.88 * hp.qty))})`), () => { Services.sellHeapToTrader(f); this.close(); }, 'alt'));
+      b.appendChild(opts);
       if (Storage.cap() - Storage.used(false) > 0.1 && Math.hypot(f.heapSpot.x - YARD_PT.x, f.heapSpot.z - YARD_PT.z) < 70) b.appendChild(h('div', { class: 'row', style: { marginTop: '8px' } }, this.btn(L('Carry it home to storage', 'ఇంటి నిల్వకు తరలించండి'), () => { const m = Storage.add(hp.crop, hp.qty, hp.q); hp.qty -= m; if (hp.qty < 0.05) f.heap = null; f.heapDirty = true; this.close(); this.toast(L(`Moved ${fmt1(m)} q to storage.`, `${fmt1(m)} క్వి. నిల్వకు తరలించారు.`), 'good'); }, 'alt')));
     } });
   },
@@ -8511,6 +9436,7 @@ const UI = {
       { id: 'market', label: () => L('Market', 'మార్కెట్'), render: (b) => this.tabMarket(b) },
       { id: 'finance', label: () => L('Finance', 'ఆర్థికం'), render: (b) => this.tabFinance(b) },
       { id: 'missions', label: () => L('Missions', 'లక్ష్యాలు'), render: (b) => this.tabMissions(b) },
+      { id: 'trophies', label: () => L('Trophies', 'ట్రోఫీలు') + ` ${Trophies.count()}/${TROPHIES.length}`, render: (b) => Trophies.tab(b) },
       { id: 'profile', label: () => L('Profile', 'ప్రొఫైల్'), render: (b) => this.tabProfile(b) },
     ] });
   },
@@ -8548,7 +9474,10 @@ const UI = {
       const t = h('table', { class: 't' }, h('tr', null, h('th', null, L('Crop', 'పంట')), h('th', null, L('Quintals', 'క్వింటాళ్లు')), h('th', null, L('Grade', 'గ్రేడ్')), h('th', null, L('Trader pays', 'వ్యాపారి ధర')), h('th', null, '')));
       for (const e of S.storage) { const p = Math.round(Market.price(e.crop) * e.q * 0.88); t.appendChild(h('tr', null, h('td', null, LN(PRODUCE[e.crop]) + (e.cold ? ' ❄' : '')), h('td', { class: 'n' }, fmt1(e.qty)), h('td', null, Market.qualityLabel(e.q)), h('td', { class: 'n' }, fmtINR(p) + '/q'), h('td', null, this.btn(L('Sell 10 q', '10 క్వి. అమ్ము'), () => { const got = Storage.take(e.crop, 10); if (got.qty > 0) Market.sell(e.crop, got.qty, got.q, 'trader'); }, 'sm alt')))); }
       b.appendChild(h('div', { class: 'tw' }, t));
-      b.appendChild(h('p', { class: 'empty' }, L('Selling from storage goes to the village trader (88%). Load it into a vehicle for the full yard price.', 'నిల్వ నుంచి అమ్మితే గ్రామ వ్యాపారికి (88%). పూర్తి ధరకు వాహనంలో యార్డుకు తీసుకెళ్ళండి.')));
+      const lr = h('div', { class: 'row', style: { marginTop: '8px' } });
+      for (const c of [...new Set(S.storage.map((e) => e.crop))]) lr.appendChild(this.btn(L(`Send by lorry: ${LN(PRODUCE[c])} → market yard`, `లారీలో పంపండి: ${LN(PRODUCE[c])} → మార్కెట్ యార్డ్`), () => Services.lorryStored(c, 'yard'), 'sm acc'));
+      b.appendChild(lr);
+      b.appendChild(h('p', { class: 'empty' }, L(`A lorry gets the full market yard price for a small transport fee (₹150 + ₹30 a quintal). Selling here goes to the village trader (88%).`, `లారీలో పంపితే చిన్న రవాణా ఖర్చుతో (₹150 + క్వింటాలుకు ₹30) పూర్తి యార్డు ధర వస్తుంది. ఇక్కడ అమ్మితే గ్రామ వ్యాపారికి (88%).`)));
     }
     b.appendChild(h('div', { class: 'sec' }, L('Supplies', 'సామాగ్రి')));
     const t2 = h('table', { class: 't' });
@@ -8634,7 +9563,7 @@ const UI = {
     for (const m of S.missions.active) {
       const fr = clamp01(m.prog / m.target);
       b.appendChild(h('div', { class: 'item', style: { marginBottom: '8px' } }, h('h3', null, LN(m.title), h('span', { class: 'price' }, m.reward ? fmtINR(m.reward) : '')), h('p', null, LN(isMobile && m.descM ? m.descM : m.desc)), h('div', { class: 'prog' }, h('b', { style: { width: (fr * 100).toFixed(0) + '%' } })),
-        Missions.markerPos(m.mark) ? h('div', { class: 'row' }, this.btn(L('Show on map', 'మ్యాప్‌లో చూపు'), () => { S.waypoint = Missions.markerPos(m.mark); this.close(); }, 'sm alt')) : null));
+        h('div', { class: 'row' }, Coach.current() === m ? h('span', { class: 'chip good' }, L('Following now', 'ఇప్పుడు ఇదే')) : this.btn(L('Follow this mission', 'ఈ లక్ష్యాన్ని అనుసరించండి'), () => { Coach.follow(m); S.waypoint = null; this.close(); }, 'sm acc'))));
     }
     b.appendChild(h('div', { class: 'sec' }, L(`Completed · ${S.missions.done}`, `పూర్తయినవి · ${S.missions.done}`)));
     for (const x of S.missions.history.slice(0, 12)) b.appendChild(h('p', { style: { margin: '3px 0', color: 'var(--ink-2)' } }, `${L('Day', 'రోజు')} ${x.day} · ${LN(x.title)} · ${fmtINR(x.reward || 0)}`));
@@ -8670,15 +9599,19 @@ const UI = {
       setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
       setRow(L('Language', 'భాష'), seg([['en', 'English'], ['te', 'తెలుగు']], v.lang, (l) => { v.lang = l; Settings.save(); this.applyLang(); }));
       setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
+      if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
       const slider = (key) => h('input', { type: 'range', id: 'vol_' + key, min: 0, max: 1, step: 0.05, value: v[key], oninput: (e) => { v[key] = +e.target.value; Audio2.applyVolumes(); Settings.save(); } });
       setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
       setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
       const chk = (key, label) => h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); } }), label);
+      setRow(L('Voice guide', 'వాయిస్ గైడ్'), seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.voice, (x) => { v.voice = x; Settings.save(); if (x && Coach.step) Coach.say(Coach.step.text); else if (window.speechSynthesis) speechSynthesis.cancel(); }));
       if (isMobile) setRow(L('Frame rate', 'ఫ్రేమ్ రేట్'), seg([['auto', L('Auto', 'ఆటో')], ['60', L('60 smooth', '60 స్మూత్')], ['30', L('30 battery', '30 బ్యాటరీ')]], fpsMode(), (m) => { v.fpsMode = m; Settings.save(); }));
       setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది')), isMobile ? null : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
       if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
       b.appendChild(h('div', { class: 'row', style: { marginTop: '16px' } },
         this.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
+        this.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
+        this.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
         this.btn(L('Controls', 'నియంత్రణలు'), () => this.help(), 'alt'),
         this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); location.reload(); }, 'alt')));
       b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
@@ -8703,8 +9636,17 @@ const UI = {
     for (const id of ['hud-tl', 'hud-tc', 'hud-tr', 'missions', 'hud-bl', 'hud-bc', 'hud-br', 'news', 'savedot']) { const e = this.el(id); if (e) e.style.visibility = this.photoMode ? 'hidden' : ''; }
     this.el('touch').style.visibility = this.photoMode ? 'hidden' : '';
     this.el('letterbox').hidden = !(this.photoMode || (G.preset && G.preset.letterbox));
-    if (this.photoMode) this.toast(L('Photo mode — press P to return', 'ఫోటో మోడ్ — తిరిగి రావడానికి P నొక్కండి'), 'info');
-    if (isMobile && this.photoMode) setTimeout(() => { if (this.photoMode) { const once = () => { this.photo(); window.removeEventListener('pointerdown', once); }; window.addEventListener('pointerdown', once); } }, 400);
+    // a bar with two big buttons: take the photo, or go back to playing
+    const bar = this.el('photobar');
+    if (bar) {
+      bar.hidden = !this.photoMode;
+      if (this.photoMode) {
+        bar.innerHTML = '';
+        bar.append(h('button', { class: 'pb snap', type: 'button', onclick: () => Photo.take() }, '📸 ' + L('Take photo', 'ఫోటో తీయండి')),
+          h('button', { class: 'pb', type: 'button', onclick: () => this.photo() }, '✕ ' + L('Back', 'వెనక్కి')));
+      }
+    }
+    if (this.photoMode) this.toast(isMobile ? L('Photo mode: drag to frame your shot, then tap Take photo', 'ఫోటో మోడ్: లాగి చిత్రాన్ని సరిచేసి, ఫోటో తీయండి నొక్కండి') : L('Photo mode: frame your shot, then click Take photo (P to return)', 'ఫోటో మోడ్: చిత్రాన్ని సరిచేసి ఫోటో తీయండి నొక్కండి (తిరిగి రావడానికి P)'), 'info');
   },
   fade(fn, text = '') {
     const f = this.el('fade'); f.textContent = text; f.classList.add('on');
@@ -8761,21 +9703,36 @@ const UI = {
       const q = this.el('tqual'); q.innerHTML = '';
       for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్య'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమా') }[p]));
     };
+    // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
+    const a2 = this.el('a2hs');
+    if (a2) {
+      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches;
+      let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
+      a2.hidden = !(ios && !standalone && !framed);
+      if (!a2.hidden) { a2.innerHTML = ''; a2.append(h('b', null, L('Full screen on iPhone: ', 'ఐఫోన్‌లో ఫుల్ స్క్రీన్: ')), L('tap Share, then “Add to Home Screen”, and open the game from your home screen.', 'షేర్ నొక్కి “Add to Home Screen” ఎంచుకోండి, తర్వాత హోమ్ స్క్రీన్ నుంచి ఆట తెరవండి.')); }
+    }
     const acts = () => {
       const a = this.el('tactions'); a.innerHTML = '';
-      if (hasSave) a.appendChild(h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); onContinue(); } }, h('span', { class: 'tcont' }, L('Continue', 'కొనసాగించండి'), info ? h('small', null, typeof info === 'function' ? info() : info) : null), h('span', null, '→')));
+      if (hasSave) a.appendChild(h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onContinue(); } }, h('span', { class: 'tcont' }, L('Continue', 'కొనసాగించండి'), info ? h('small', null, typeof info === 'function' ? info() : info) : null), h('span', null, '→')));
       a.appendChild(h('button', { class: 'tbtn ' + (hasSave ? 'sec2' : 'pri'), onclick: () => { Audio2.unlock(); newForm(); } }, L('New game', 'కొత్త ఆట'), h('span', null, '+')));
       a.appendChild(h('button', { class: 'tbtn sec2', onclick: () => this.help() }, L('Controls', 'నియంత్రణలు'), h('span', null, '?')));
     };
-    let gender = 'm';
+    let gender = 'm', easy = true;
     const newForm = () => {
       const f = this.el('newgame'); f.hidden = false; f.innerHTML = '';
       const name = h('input', { id: 'pnameInput', maxlength: 18, value: gender === 'm' ? L('Raju', 'రాజు') : L('Radha', 'రాధ'), 'aria-label': L('Your name', 'మీ పేరు') });
       const av = h('div', { class: 'av' });
       const draw = () => { av.innerHTML = ''; for (const [g, lab] of [['m', L('Farmer (man)', 'రైతు (పురుషుడు)')], ['f', L('Farmer (woman)', 'రైతు (స్త్రీ)')]]) av.appendChild(h('button', { class: gender === g ? 'on' : '', onclick: () => { gender = g; name.value = g === 'm' ? L('Raju', 'రాజు') : L('Radha', 'రాధ'); draw(); } }, lab)); };
       draw();
-      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, h('button', { class: 'tbtn pri', onclick: () => { Audio2.unlock(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→')));
-      name.focus();
+      // difficulty: easy is the default, so anyone (kids too) can grow a crop without failing
+      const dif = h('div', { class: 'av dif' });
+      const drawDif = () => { dif.innerHTML = ''; for (const [e, lab, sub] of [[true, L('Easy', 'సులభం'), L('Best for kids & first time', 'పిల్లలకు, కొత్తవారికి')], [false, L('Normal', 'సాధారణం'), L('Real farming', 'నిజమైన వ్యవసాయం')]]) dif.appendChild(h('button', { class: easy === e ? 'on' : '', type: 'button', onclick: () => { easy = e; drawDif(); } }, lab, h('small', null, sub))); };
+      drawDif();
+      const go = h('button', { class: 'tbtn pri', id: 'startFarming', onclick: () => { Audio2.unlock(); Coach.prime(); Game.autoFullscreen(); onNew({ name: (name.value || 'Raju').trim().slice(0, 18), gender, easy }); } }, L('Start farming', 'వ్యవసాయం మొదలుపెట్టండి'), h('span', null, '→'));
+      f.append(h('label', { for: 'pnameInput', style: { fontWeight: 600 } }, L('Your name', 'మీ పేరు')), name, av, dif, go);
+      requestAnimationFrame(() => { try { go.scrollIntoView({ block: 'nearest' }); } catch (e) { /* old browsers */ } });   // short phone screens: keep Start in view
+      if (!isMobile) name.focus();   // phones: no keyboard popping over the screen
     };
     segs(); acts();
   },
@@ -9019,12 +9976,9 @@ const Map2 = {
   target() {
     const wp = G.S && G.S.waypoint;
     if (wp) return { x: wp.x, z: wp.z, name: wp.name || L('Waypoint', 'గమ్యం'), wp: true };
-    const pm = Missions.primaryMarker();
-    if (!pm) return null;
-    // standing on the target field already: nothing to point at
-    const mk = pm.m.mark; const f = mk === 'F1' ? Fields.byId.F1 : mk && mk.startsWith('field:') ? Fields.byId[mk.slice(6)] : null;
-    if (f) { const P = Player.pos(); if (P.x > f.x0 - 2 && P.x < f.x1 + 2 && P.z > f.z0 - 2 && P.z < f.z1 + 2) return null; }
-    return { x: pm.p.x, z: pm.p.z, name: Missions.markerName(mk) || LN(pm.m.title), m: pm.m };
+    const st = Coach.step;   // the next step of the mission you follow
+    if (st && st.target) return { x: st.target.x, z: st.target.z, name: st.target.name, m: st.m };
+    return null;
   },
   fmtDist(d) { return d >= 1000 ? (d / 1000).toFixed(1) + ' km' : Math.round(d) + ' m'; },
   // ---- minimap: north-up, zooms out with vehicle speed ----
@@ -9439,6 +10393,8 @@ function newGameState(o = {}) {
     village: { pop: 1460, biz: 22, landValue: 0 },
     houseLevel: 0,
     waypoint: null, fd: 0,
+    easy: !!o.easy,                                   // easy mode: chosen on the new-game screen, changeable in the menu
+    daily: { last: null, streak: 0 }, trophies: {},
   };
 }
 
@@ -9584,6 +10540,11 @@ const Game = {
     }
     UI.loading(1, L('Ready', 'సిద్ధం'));
   },
+  // phones that allow it (Android): go full screen and landscape when the game starts
+  autoFullscreen() {
+    if (!isMobile || document.fullscreenElement || !document.fullscreenEnabled || Settings.v.noAutoFs) return;
+    try { const r = document.documentElement.requestFullscreen({ navigationUI: 'hide' }); if (r && r.then) r.then(() => { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(() => {}); }).catch(() => {}); } catch (e) { /* not allowed here */ }
+  },
   async toggleFullscreen() {
     try {
       if (document.fullscreenElement) { await document.exitFullscreen(); return; }
@@ -9725,6 +10686,7 @@ const Game = {
     UI.applyLang(); UI.dirty = true; UI.refreshTools();
     Progress.check();
     Missions.ensure();
+    Extras.start(!!data);
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
@@ -9782,10 +10744,12 @@ function adaptFps(now, interval, work) {
   Loop.win.push(interval); Loop.work.push(work);
   if (now - Loop.winT < 2000) return;
   Loop.winT = now;
-  const q = (a) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length * 0.6)] || 0; };
-  const iv = q(Loop.win), wk = q(Loop.work); Loop.win.length = 0; Loop.work.length = 0;
+  const q = (a, f) => { const b = a.slice().sort((x, y) => x - y); return b[Math.floor(b.length * f)] || 0; };
+  const iv = q(Loop.win, 0.6), lo = q(Loop.win, 0.2), wk = q(Loop.work, 0.6); Loop.win.length = 0; Loop.work.length = 0;
   const P = G.preset;
-  if (Loop.capFps === 60 && iv > 22 && Render.pr <= P.minPr + 0.001) { Loop.capFps = 30; Loop.retryAt = now + Loop.backoff; Loop.backoff = Math.min(180000, Loop.backoff * 2); Render.frameTimes = []; Render.goodWindows = 0; }
+  // the phone itself runs the screen at 30 Hz (iPhone Low Power Mode, battery saver): just match it
+  if (Loop.capFps === 60 && lo > 29 && iv < 37 && wk < 14) { Loop.capFps = 30; Loop.retryAt = now + 60000; Render.frameTimes = []; Render.goodWindows = 0; }
+  else if (Loop.capFps === 60 && iv > 22 && Render.pr <= P.minPr + 0.001) { Loop.capFps = 30; Loop.retryAt = now + Loop.backoff; Loop.backoff = Math.min(180000, Loop.backoff * 2); Render.frameTimes = []; Render.goodWindows = 0; }
   else if (Loop.capFps === 30 && now > Loop.retryAt && wk < 9 && iv < 36 && Render.pr >= P.maxPr - 0.001) { Loop.capFps = 60; Render.frameTimes = []; Render.goodWindows = 0; }
 }
 function frame(now) {
@@ -9810,6 +10774,7 @@ function frame(now) {
     NPCs.update(dt);
     Fauna.update(dt);
     Cam.update(dt);
+    Auto.update(dt);
     Humans.update(dt, cam.position);
     Animals.update(dt, cam.position);
     Birds.update(dt);
@@ -9826,6 +10791,7 @@ function frame(now) {
     if (G.started) {
       Loop.missionT -= dt; if (Loop.missionT <= 0) { Loop.missionT = 0.5; Missions.update(); }
       UI.update(dt);
+      Extras.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -9852,9 +10818,30 @@ function showFatal(e) {
     : L('Something went wrong while loading: ', 'లోడ్ చేస్తుండగా సమస్య వచ్చింది: ') + (e && e.message ? e.message : String(e));
 }
 
+// every device: touch class for CSS, no page zoom or bounce, sound and voice start on the first tap,
+// re-layout on rotation, and recover if the phone pauses the 3D graphics
+function deviceSetup() {
+  document.documentElement.classList.toggle('touch', isMobile);
+  for (const ev of ['gesturestart', 'gesturechange', 'gestureend']) document.addEventListener(ev, (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('dblclick', (e) => e.preventDefault(), { passive: false });
+  document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
+  const first = () => { Audio2.unlock(); Coach.prime(); };
+  document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
+  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); };
+  window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
+  const cv = document.getElementById('gl');
+  cv.addEventListener('webglcontextlost', (e) => {
+    e.preventDefault(); SaveSys.quickLocal();
+    const el = document.getElementById('lost'); if (el) { el.hidden = false; el.onclick = () => location.reload(); }
+  }, false);
+  cv.addEventListener('webglcontextrestored', () => location.reload(), false);
+}
+
 async function boot(hot) {
   try {
     Settings.load(); LANG = Settings.v.lang || 'en'; Time.scale = Settings.v.timeScale || 1;
+    deviceSetup();
     UI.el = (id) => document.getElementById(id);
     UI.applyLang();
     UI.loading(0.03, L('Loading fonts…', 'అక్షరాలు లోడ్ అవుతున్నాయి…'));
@@ -9886,7 +10873,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

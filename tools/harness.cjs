@@ -8,7 +8,7 @@ const ROOT = path.resolve(__dirname, '..');
 fs.mkdirSync(path.join(ROOT, 'shots/readme'), { recursive: true });
 async function open(opts = {}) {
   const browser = await chromium.launch({ headless: true, args: ['--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--enable-webgl', '--autoplay-policy=no-user-gesture-required'] });
-  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 1280, height: 720 }, deviceScaleFactor: 1, isMobile: !!opts.mobile, hasTouch: !!opts.mobile, userAgent: opts.mobile ? 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36' : undefined });
+  const ctx = await browser.newContext({ viewport: opts.viewport || { width: 1280, height: 720 }, deviceScaleFactor: opts.dsf || 1, isMobile: !!opts.mobile, hasTouch: !!opts.mobile, userAgent: opts.ua || (opts.mobile ? 'Mozilla/5.0 (Linux; Android 13; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0 Mobile Safari/537.36' : undefined) });
   const page = await ctx.newPage();
   const logs = [];
   page.on('console', (m) => logs.push(`[${m.type()}] ${m.text()}`));
@@ -35,6 +35,8 @@ async function open(opts = {}) {
     if (url.includes('fonts.gstatic.com')) return route.abort();
     return route.abort();
   });
+  // the first-time 'How to play' card and the daily gift pop up over the game; tests opt in with { popups: true }
+  await page.addInitScript((pop) => { window.__tvsNoPopups = !pop; }, !!opts.popups);
   if (opts.preset) await page.addInitScript((p) => { try { localStorage.setItem('tvs_prefs', JSON.stringify(Object.assign(JSON.parse(localStorage.getItem('tvs_prefs') || '{}'), { preset: p }))); } catch (e) {} }, opts.preset);
   await page.goto('http://tvs.test/', { waitUntil: 'load' });
   return { browser, ctx, page, logs };
