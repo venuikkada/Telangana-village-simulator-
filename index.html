@@ -273,10 +273,6 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #title { background: linear-gradient(90deg, rgba(12, 10, 20, 0.86) 0%, rgba(12, 10, 20, 0.62) 38%, rgba(12, 10, 20, 0) 70%); color: #f6efe2; padding-inline: max(16px, 6vw); padding-block: calc(env(safe-area-inset-top, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 16px); overflow-y: auto; }
 #title .tbox { margin-block: auto; }
 @media (max-height: 620px) {
-  #newgame { gap: 7px; padding: 10px 12px; }
-  #newgame input { padding: 7px 10px; }
-  #newgame .av button { padding: 7px 8px; font-size: 14px; }
-  #newgame .dif button { display: flex; gap: 6px; justify-content: center; align-items: baseline; flex-wrap: wrap; }
   #title h1 { font-size: clamp(30px, 9vh, 56px); }
   #title .tbox { gap: 9px; }
   #title .pitch { font-size: 13.5px; }
@@ -349,8 +345,20 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
 @keyframes flash { from { opacity: .85; } to { opacity: 0; } }
 #newgame .dif button { display: grid; gap: 2px; justify-items: center; }
 #newgame .dif small { font: 600 11.5px var(--font-body); opacity: .8; }
+@media (max-height: 620px) {
+  #newgame { gap: 7px; padding: 10px 12px; }
+  #newgame input { padding: 7px 10px; }
+  #newgame .av button { padding: 7px 8px; font-size: 14px; }
+  #newgame .dif button { display: flex; gap: 6px; justify-content: center; align-items: baseline; flex-wrap: wrap; }
+}
+@media (max-width: 599px) { .gifts { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+/* short landscape phones: the gift card goes wide so all seven days fit in one row */
+@media (max-height: 430px) and (min-width: 600px) {
+  .sheet.gsheet { width: min(780px, 100%); }
+  .gift { padding: 6px 3px 7px; gap: 2px; }
+  .gift span { font-size: 10.5px; }
+}
 @media (max-width: 520px), (max-height: 430px) {
-  .gifts { grid-template-columns: repeat(4, minmax(0, 1fr)); }
   .gift b { font-size: 20px; }
   .hcard { grid-template-columns: 30px 1fr; gap: 8px; padding: 7px 9px; }
   .hcard > b { font-size: 22px; }
@@ -403,6 +411,10 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   .body { padding: 2px 14px 14px; }
   .set { grid-template-columns: 1fr; }
 }
+/* landscape phones about 400-440 px tall: the mission card drops its heading and bar so it ends above the touch buttons */
+@media (pointer: coarse) and (max-height: 440px) {
+  #missions h4, #missions .prog { display: none; }
+}
 /* phones with a short screen (small phones, iPhone Safari with its bars showing): everything a size smaller */
 @media (pointer: coarse) and (max-height: 400px) {
   #joy { width: 112px; height: 112px; left: calc(var(--sl) + 16px); bottom: calc(var(--sb) + 12px); }
@@ -418,7 +430,7 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   #hud-bl { top: calc(var(--st) + 88px); width: 172px; max-height: calc(100% - 228px); }
   #hud-bl .mini, #hud-bl h5 + small { display: none; }
   #hud-tc { padding: 3px 8px 4px; } #clock { font-size: 15px; } #wx { font-size: 10px; }
-  #coach { font-size: 13px; padding: 6px 10px; width: min(420px, calc(100vw - 380px)); min-width: 200px; }
+  #coach { font-size: 13px; padding: 6px 10px; width: min(420px, calc(100vw - 392px)); min-width: 200px; }
   #prompt { padding: 5px 10px; font-size: 12.5px; }
   .tool { width: 38px; height: 38px; }
   #toasts { top: calc(var(--st) + 62px); width: min(400px, calc(100vw - 420px)); min-width: 200px; }
@@ -7817,7 +7829,7 @@ const DailyGift = {
   },
   show() {
     const n = this.next();
-    UI.sheet({ title: L('Daily gift 🎁', 'రోజువారీ బహుమతి 🎁'), sub: L(`Day ${n} of 7 · come back every day for a bigger gift`, `7లో ${n}వ రోజు · రోజూ రండి, బహుమతి పెరుగుతుంది`), narrow: true, kind: 'gift',
+    UI.sheet({ title: L('Daily gift 🎁', 'రోజువారీ బహుమతి 🎁'), sub: L(`Day ${n} of 7 · come back every day for a bigger gift`, `7లో ${n}వ రోజు · రోజూ రండి, బహుమతి పెరుగుతుంది`), narrow: true, cls: 'gsheet', kind: 'gift',
       onClose: () => this.claim(n, true),   // closing the card still gives the gift
       render: (b) => {
         const g = h('div', { class: 'gifts' });
@@ -9112,7 +9124,7 @@ const UI = {
     const head = h('header', null, h('div', { style: { minWidth: 0 } }, h('h2', null, o.title), o.sub ? h('p', null, o.sub) : null), h('button', { class: 'x', 'aria-label': L('Close', 'మూసివేయి'), onclick: () => this.close() }, '✕'));
     const tabs = h('div', { class: 'tabs', role: 'tablist' });
     const body = h('div', { class: 'body' });
-    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : '') + (o.wide ? ' wide' : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
+    const sh = h('div', { class: 'sheet' + (o.narrow ? ' narrow' : '') + (o.wide ? ' wide' : '') + (o.cls ? ' ' + o.cls : ''), role: 'dialog', 'aria-label': o.title }, head, o.tabs && o.tabs.length > 1 ? tabs : h('div', { class: 'ikat', style: { margin: '0 18px 10px' } }), body);
     m.appendChild(sh);
     m.onclick = (e) => { if (e.target === m) this.close(); };
     const st = { kind: o.kind, onClose: o.onClose, tab: o.tab || (o.tabs ? o.tabs[0].id : null) };

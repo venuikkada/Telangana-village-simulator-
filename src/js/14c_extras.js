@@ -41,7 +41,7 @@ const DailyGift = {
   },
   show() {
     const n = this.next();
-    UI.sheet({ title: L('Daily gift 🎁', 'రోజువారీ బహుమతి 🎁'), sub: L(`Day ${n} of 7 · come back every day for a bigger gift`, `7లో ${n}వ రోజు · రోజూ రండి, బహుమతి పెరుగుతుంది`), narrow: true, kind: 'gift',
+    UI.sheet({ title: L('Daily gift 🎁', 'రోజువారీ బహుమతి 🎁'), sub: L(`Day ${n} of 7 · come back every day for a bigger gift`, `7లో ${n}వ రోజు · రోజూ రండి, బహుమతి పెరుగుతుంది`), narrow: true, cls: 'gsheet', kind: 'gift',
       onClose: () => this.claim(n, true),   // closing the card still gives the gift
       render: (b) => {
         const g = h('div', { class: 'gifts' });
