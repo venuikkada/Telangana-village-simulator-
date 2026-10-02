@@ -4337,307 +4337,307 @@
  },
  "Raise": {
   "te": "ఎత్తు",
-  "at": "17_ui.js:936"
+  "at": "17_ui.js:938"
  },
  "Lower": {
   "te": "దించు",
-  "at": "17_ui.js:936"
+  "at": "17_ui.js:938"
  },
  "Horn": {
   "te": "హారన్",
-  "at": "17_ui.js:936"
+  "at": "17_ui.js:938"
  },
  "Type": {
   "te": "రకం",
-  "at": "17_ui.js:936"
+  "at": "17_ui.js:938"
  },
  "View": {
   "te": "వ్యూ",
-  "at": "17_ui.js:937"
+  "at": "17_ui.js:939"
  },
  "Brake": {
   "te": "బ్రేక్",
-  "at": "17_ui.js:938"
+  "at": "17_ui.js:940"
  },
  "Jump": {
   "te": "దూకు",
-  "at": "17_ui.js:938"
+  "at": "17_ui.js:940"
  },
  "Full screen on iPhone: ": {
   "te": "ఐఫోన్‌లో ఫుల్ స్క్రీన్: ",
-  "at": "17_ui.js:964"
+  "at": "17_ui.js:966"
  },
  "tap Share, then “Add to Home Screen”, and open the game from your home screen.": {
   "te": "షేర్ నొక్కి “Add to Home Screen” ఎంచుకోండి, తర్వాత హోమ్ స్క్రీన్ నుంచి ఆట తెరవండి.",
-  "at": "17_ui.js:964"
+  "at": "17_ui.js:966"
  },
  "Continue": {
   "te": "కొనసాగించండి",
-  "at": "17_ui.js:968"
+  "at": "17_ui.js:970"
  },
  "New game": {
   "te": "కొత్త ఆట",
-  "at": "17_ui.js:969"
+  "at": "17_ui.js:971"
  },
  "Raju": {
   "te": "రాజు",
-  "at": "17_ui.js:975"
+  "at": "17_ui.js:977"
  },
  "Radha": {
   "te": "రాధ",
-  "at": "17_ui.js:975"
+  "at": "17_ui.js:977"
  },
  "Your name": {
   "te": "మీ పేరు",
-  "at": "17_ui.js:975"
+  "at": "17_ui.js:977"
  },
  "Farmer (man)": {
   "te": "రైతు (పురుషుడు)",
-  "at": "17_ui.js:977"
+  "at": "17_ui.js:979"
  },
  "Farmer (woman)": {
   "te": "రైతు (స్త్రీ)",
-  "at": "17_ui.js:977"
+  "at": "17_ui.js:979"
  },
  "Best for kids & first time": {
   "te": "పిల్లలకు, కొత్తవారికి",
-  "at": "17_ui.js:981"
+  "at": "17_ui.js:983"
  },
  "Real farming": {
   "te": "నిజమైన వ్యవసాయం",
-  "at": "17_ui.js:981"
+  "at": "17_ui.js:983"
  },
  "Start farming": {
   "te": "వ్యవసాయం మొదలుపెట్టండి",
-  "at": "17_ui.js:983"
+  "at": "17_ui.js:985"
  },
  "Show me seeds and fertilizer": {
   "te": "విత్తనాలు, ఎరువులు చూపించండి",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "What do you have?": {
   "te": "ఏమేమి ఉన్నాయి?",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "One chai, please": {
   "te": "ఒక చాయ్ ఇవ్వండి",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "About tractors…": {
   "te": "ట్రాక్టర్ల గురించి…",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "Today's prices?": {
   "te": "ఈ రోజు ధరలు?",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "I don't feel well": {
   "te": "నాకు ఒంట్లో బాగాలేదు",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "Village development": {
   "te": "గ్రామాభివృద్ధి",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "I need a loan": {
   "te": "నాకు అప్పు కావాలి",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "Loans and deposits": {
   "te": "రుణాలు, డిపాజిట్లు",
-  "at": "17_ui.js:1006"
+  "at": "17_ui.js:1008"
  },
  "Namaskaram, {0}! Ramapuram grows when its farmers grow. {1}": {
   "te": "నమస్కారం {0} గారూ! రైతులు ఎదిగితేనే రామాపురం ఎదుగుతుంది. {1}",
-  "at": "17_ui.js:1007"
+  "at": "17_ui.js:1009"
  },
  "Money? I always have money. Just remember — interest every single day.": {
   "te": "డబ్బా? నా దగ్గర ఎప్పుడూ ఉంటుంది. గుర్తుంచుకోండి — వడ్డీ ప్రతి రోజూ.",
-  "at": "17_ui.js:1009"
+  "at": "17_ui.js:1011"
  },
  "A tractor ploughs in an hour what bullocks plough in a day. Rent one, or buy a Bhoomi 35.": {
   "te": "ఎడ్లు రోజంతా దున్నేది ట్రాక్టర్ గంటలో దున్నుతుంది. అద్దెకు తీసుకోండి, లేదా భూమి 35 కొనండి.",
-  "at": "17_ui.js:1010"
+  "at": "17_ui.js:1012"
  },
  "Anna! Will you take us to the fields?": {
   "te": "అన్నా! మమ్మల్ని పొలానికి తీసుకెళ్తావా?",
-  "at": "17_ui.js:1011"
+  "at": "17_ui.js:1013"
  },
  "School was fun today. Ravi Sir taught us about rain!": {
   "te": "ఈ రోజు బడిలో బాగుంది. రవి సార్ వాన గురించి నేర్పారు!",
-  "at": "17_ui.js:1011"
+  "at": "17_ui.js:1013"
  },
  "Can I ride the bullock cart?": {
   "te": "నేను ఎడ్లబండి ఎక్కొచ్చా?",
-  "at": "17_ui.js:1011"
+  "at": "17_ui.js:1013"
  },
  "Any advice?": {
   "te": "ఏదైనా సలహా?",
-  "at": "17_ui.js:1013"
+  "at": "17_ui.js:1015"
  },
  "Goodbye": {
   "te": "సెలవు",
-  "at": "17_ui.js:1014"
+  "at": "17_ui.js:1016"
  },
  "Village kid": {
   "te": "ఊరి పిల్లవాడు",
-  "at": "17_ui.js:1019"
+  "at": "17_ui.js:1021"
  },
  "Villager": {
   "te": "గ్రామస్తుడు",
-  "at": "17_ui.js:1019"
+  "at": "17_ui.js:1021"
  },
  "Friendship: ": {
   "te": "స్నేహం: ",
-  "at": "17_ui.js:1024"
+  "at": "17_ui.js:1026"
  },
  "I saw {0} in your {1}. Spray today, not tomorrow.": {
   "te": "మీ {0}లో {1} చూశాను. రేపు కాదు, ఈ రోజే పిచికారీ చేయండి.",
-  "at": "17_ui.js:1032"
+  "at": "17_ui.js:1034"
  },
  "Your {0} is thirsty. {1}": {
   "te": "మీ {0}కు నీరు కావాలి. {1}",
-  "at": "17_ui.js:1033"
+  "at": "17_ui.js:1035"
  },
  "Your {0} is ready. Don't leave it standing — it loses quality every day.": {
   "te": "మీ {0} కోతకు సిద్ధం. అలాగే వదిలేయకండి — రోజురోజుకు నాణ్యత తగ్గుతుంది.",
-  "at": "17_ui.js:1034"
+  "at": "17_ui.js:1036"
  },
  "Weeds are taking over {0}. Use the hoe or herbicide.": {
   "te": "{0}లో కలుపు పెరిగిపోయింది. పార లేదా కలుపు మందు వాడండి.",
-  "at": "17_ui.js:1035"
+  "at": "17_ui.js:1037"
  },
  "{0} looks pale. It needs urea or DAP.": {
   "te": "{0} పాలిపోయినట్టుంది. యూరియా లేదా డీఏపీ వేయండి.",
-  "at": "17_ui.js:1036"
+  "at": "17_ui.js:1038"
  },
  "Your harvest is getting wet in the open! Move it into storage.": {
   "te": "మీ పంట కుప్ప వానలో తడుస్తోంది! నిల్వలోకి తరలించండి.",
-  "at": "17_ui.js:1037"
+  "at": "17_ui.js:1039"
  },
  "This season {0} does well, and its price is {1}.": {
   "te": "ఈ సీజన్‌లో {0} బాగా పండుతుంది, ధర {1}.",
-  "at": "17_ui.js:1041"
+  "at": "17_ui.js:1043"
  },
  "Kirana": {
   "te": "కిరాణం",
-  "at": "17_ui.js:1050"
+  "at": "17_ui.js:1052"
  },
  "Tractor workshop": {
   "te": "ట్రాక్టర్ వర్క్‌షాప్",
-  "at": "17_ui.js:1051"
+  "at": "17_ui.js:1053"
  },
  "Health centre": {
   "te": "ఆరోగ్య కేంద్రం",
-  "at": "17_ui.js:1052"
+  "at": "17_ui.js:1054"
  },
  "Bus stop": {
   "te": "బస్ స్టాప్",
-  "at": "17_ui.js:1053"
+  "at": "17_ui.js:1055"
  },
  "Town bus stand": {
   "te": "పట్టణ బస్ స్టాండ్",
-  "at": "17_ui.js:1054"
+  "at": "17_ui.js:1056"
  },
  "Petrol bunk": {
   "te": "పెట్రోల్ బంక్",
-  "at": "17_ui.js:1056"
+  "at": "17_ui.js:1058"
  },
  "Dhaba": {
   "te": "దాబా",
-  "at": "17_ui.js:1057"
+  "at": "17_ui.js:1059"
  },
  "Hill shrine": {
   "te": "గుట్ట గుడి",
-  "at": "17_ui.js:1058"
+  "at": "17_ui.js:1060"
  },
  "Waypoint": {
   "te": "గమ్యం",
-  "at": "17_ui.js:1229"
+  "at": "17_ui.js:1231"
  },
  "Map of the mandal": {
   "te": "మండలం మ్యాప్",
-  "at": "17_ui.js:1302"
+  "at": "17_ui.js:1304"
  },
  "Zoom in": {
   "te": "జూమ్ ఇన్",
-  "at": "17_ui.js:1305"
+  "at": "17_ui.js:1307"
  },
  "Zoom out": {
   "te": "జూమ్ అవుట్",
-  "at": "17_ui.js:1305"
+  "at": "17_ui.js:1307"
  },
  "Centre on me": {
   "te": "నా దగ్గరికి",
-  "at": "17_ui.js:1306"
+  "at": "17_ui.js:1308"
  },
  "You": {
   "te": "మీరు",
-  "at": "17_ui.js:1310"
+  "at": "17_ui.js:1312"
  },
  "Your fields": {
   "te": "మీ పొలాలు",
-  "at": "17_ui.js:1310"
+  "at": "17_ui.js:1312"
  },
  "For sale / lease": {
   "te": "అమ్మకం / కౌలు",
-  "at": "17_ui.js:1310"
+  "at": "17_ui.js:1312"
  },
  "Marked spot": {
   "te": "గుర్తు పెట్టిన చోటు",
-  "at": "17_ui.js:1357"
+  "at": "17_ui.js:1359"
  },
  "Where to?": {
   "te": "ఎక్కడికి?",
-  "at": "17_ui.js:1366"
+  "at": "17_ui.js:1368"
  },
  "Tap a place on the map. The gold arrow will lead you there, or take an auto straight there.": {
   "te": "మ్యాప్‌లో ఒక చోటు నొక్కండి. బంగారు బాణం దారి చూపిస్తుంది, లేదా ఆటోలో నేరుగా వెళ్ళండి.",
-  "at": "17_ui.js:1366"
+  "at": "17_ui.js:1368"
  },
  "Now heading to: ": {
   "te": "ఇప్పుడు వెళ్తున్నది: ",
-  "at": "17_ui.js:1367"
+  "at": "17_ui.js:1369"
  },
  " away · the gold arrow now points here": {
   "te": " దూరం · బంగారు బాణం ఇటు చూపిస్తుంది",
-  "at": "17_ui.js:1372"
+  "at": "17_ui.js:1374"
  },
  "Drive there now ({0} min)": {
   "te": "ఇప్పుడే అక్కడికి నడపండి ({0} నిమి.)",
-  "at": "17_ui.js:1374"
+  "at": "17_ui.js:1376"
  },
  "Take an auto there ({0})": {
   "te": "ఆటోలో వెళ్ళండి ({0})",
-  "at": "17_ui.js:1374"
+  "at": "17_ui.js:1376"
  },
  "Walk with the arrow": {
   "te": "బాణంతో నడవండి",
-  "at": "17_ui.js:1375"
+  "at": "17_ui.js:1377"
  },
  "Clear target": {
   "te": "గమ్యం తీసేయండి",
-  "at": "17_ui.js:1376"
+  "at": "17_ui.js:1378"
  },
  "Ramapuram": {
   "te": "రామాపురం",
-  "at": "17_ui.js:1410"
+  "at": "17_ui.js:1412"
  },
  "Seethampet": {
   "te": "సీతంపేట",
-  "at": "17_ui.js:1410"
+  "at": "17_ui.js:1412"
  },
  "Nagaram town": {
   "te": "నగరం పట్టణం",
-  "at": "17_ui.js:1410"
+  "at": "17_ui.js:1412"
  },
  "Pedda Cheruvu": {
   "te": "పెద్ద చెరువు",
-  "at": "17_ui.js:1410"
+  "at": "17_ui.js:1412"
  },
  "Highway": {
   "te": "హైవే",
-  "at": "17_ui.js:1410"
+  "at": "17_ui.js:1412"
  },
  "Shabash!": {
   "te": "శభాష్!",

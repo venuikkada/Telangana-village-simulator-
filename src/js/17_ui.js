@@ -905,12 +905,14 @@ const UI = {
     const joy = this.el('joy'), knob = this.el('knob');
     let id = null, cx = 0, cy = 0;
     const R = 50;
-    joy.addEventListener('pointerdown', (e) => { id = e.pointerId; joy.setPointerCapture(id); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; move(e); Input.joy.active = true; Audio2.unlock(); });
+    // pointer capture can fail on some phones when another finger is already down: never let that stop the control
+    const cap = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (er) { /* keep going without capture */ } };
+    joy.addEventListener('pointerdown', (e) => { id = e.pointerId; cap(joy, e); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; move(e); Input.joy.active = true; Audio2.unlock(); });
     const move = (e) => { if (e.pointerId !== id) return; let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92); };
     joy.addEventListener('pointermove', move);
     const end = (e) => { if (e.pointerId !== id) return; id = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; };
     joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
-    const hold = (el, on, off) => { el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); on(); Audio2.unlock(); }); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); };
+    const hold = (el, on, off) => { el.addEventListener('pointerdown', (e) => { e.preventDefault(); on(); cap(el, e); Audio2.unlock(); }); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); el.addEventListener('lostpointercapture', off); };
     hold(this.el('tbWork'), () => { Input.work = true; }, () => { Input.work = false; });
     // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
     for (const [id, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
