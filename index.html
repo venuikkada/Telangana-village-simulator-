@@ -416,6 +416,15 @@ html:not([lang="en"]) .cele small { letter-spacing: .02em; }
 /* Urdu reads right to left: each line of text runs RTL, the screen layout stays the same */
 html.rtl .sheet, html.rtl .toast, html.rtl #missions, html.rtl .cele, html.rtl #prompt, html.rtl .pitch { unicode-bidi: plaintext; }
 html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span, html.rtl .sheet button, html.rtl #missions span, html.rtl #missions b, html.rtl #missions li, html.rtl .toast { unicode-bidi: plaintext; text-align: start; }
+/* driving buttons (touch): steer on the left, go and brake/reverse on the right, like mobile shooters */
+#dpad { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
+#dpad .dsteer { position: absolute; left: calc(var(--sl) + 18px); bottom: calc(var(--sb) + 20px); display: flex; gap: 18px; }
+#dpad .dgas { position: absolute; right: calc(var(--sr) + 228px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
+.db { pointer-events: auto; width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20, 22, 34, .42); color: #fff; display: grid; place-items: center; padding: 0; touch-action: none; -webkit-user-select: none; user-select: none; box-shadow: 0 4px 14px rgba(0,0,0,.28); backdrop-filter: blur(2px); }
+.db svg { width: 38px; height: 38px; }
+.db.up { background: rgba(47, 125, 58, .55); } .db.dn { background: rgba(179, 50, 42, .5); }
+.db.on { background: rgba(242, 181, 45, .92); color: #1c1405; border-color: #fff; transform: scale(.94); }
+@media (pointer: coarse) and (max-height: 400px) { .db { width: 64px; height: 64px; } .db svg { width: 32px; height: 32px; } #dpad .dgas { right: calc(var(--sr) + 200px); gap: 8px; } }
 /* ---------- phones & small screens ---------- */
 @media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
   #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: calc(var(--sl) + 10px); top: calc(var(--st) + 8px); }
@@ -584,6 +593,10 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
     <div id="howtip" class="card" hidden role="note"></div>
   </div>
   <div id="touch" hidden>
+    <div id="dpad" hidden>
+      <div class="dsteer"><button class="db" id="dL" type="button" aria-label="Steer left"><svg viewBox="0 0 24 24"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db" id="dR" type="button" aria-label="Steer right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="dgas"><button class="db up" id="dU" type="button" aria-label="Accelerate"><svg viewBox="0 0 24 24"><path d="M4 15l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db dn" id="dD" type="button" aria-label="Brake and reverse"><svg viewBox="0 0 24 24"><path d="M4 9l8 8 8-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    </div>
     <div id="joy"><div id="knob"></div></div>
     <div id="tbtns">
       <button class="tb" id="tbG">Type</button>
@@ -5741,14 +5754,15 @@ class Vehicle {
     const roadsCC = G.S && G.S.village.roads;
     let smul = surf === 'asphalt' || surf === 'concrete' ? 1 : surf === 'dirt' ? (roadsCC ? 1 : 0.9 - wet * 0.25) : surf === 'field' ? 0.88 - wet * 0.2 : surf === 'water' ? 0.3 : 0.82 - wet * 0.2;
     if (this.type === 'bullock' || this.type === 'harvester') smul = Math.max(smul, 0.85);
-    let maxSp = d.maxSpeed * smul;
+    const mine = this === Player.vehicle;   // the player's own ride: quicker and snappier than traffic
+    let maxSp = d.maxSpeed * smul * (mine && this.type !== 'bullock' ? 1.35 : 1);
     if (this.lowered && this.impl && IMPLEMENTS[this.impl].op) maxSp = Math.min(maxSp, IMPLEMENTS[this.impl].maxSpeed);
     if (this.type === 'harvester' && this.lowered) maxSp = Math.min(maxSp, 4.2);
     if (this.cond < 30) maxSp *= 0.7;
     const noFuel = d.fuelCap > 0 && this.fuel <= 0;
     if (noFuel) maxSp = 0;
     const load = this.cargoQty / Math.max(1, this.cargoCap); maxSp *= 1 - load * 0.15;
-    const acc = d.accel * (1 - load * 0.3);
+    const acc = d.accel * (1 - load * 0.3) * (mine ? 1.8 : 1);
     const th = inp.throttle || 0;
     if (th > 0) { if (this.speed < -0.2) this.speed += acc * 3 * dt; else if (this.speed < maxSp) this.speed += acc * th * dt * (1 - 0.6 * this.speed / Math.max(0.1, maxSp)); }
     else if (th < 0) { if (this.speed > 0.2) this.speed -= acc * 3 * dt; else this.speed = Math.max(-(d.rev || 2), this.speed - acc * 0.7 * dt); }
@@ -5758,7 +5772,7 @@ class Vehicle {
     this.throttle = th;
     const spd = Math.abs(this.speed);
     const maxSteer = (d.two ? 0.5 : 0.62) * (1 - Math.min(0.55, spd / (d.maxSpeed * 1.6)));
-    this.steer = damp(this.steer, (inp.steer || 0) * maxSteer, 6, dt);
+    this.steer = damp(this.steer, (inp.steer || 0) * maxSteer, mine ? 11 : 6, dt);
     const yawRate = this.speed / d.wheelBase * Math.tan(this.steer) * (d.turn || 1) * (this.job ? 2.6 : 1);
     this.yaw += yawRate * dt;
     if (d.two) this.lean = damp(this.lean, -clamp(yawRate * spd * 0.06, -0.45, 0.45), 6, dt);
@@ -6143,7 +6157,7 @@ const FX = {
 // Input, player controller, cameras, interactions
 // ============================================================================
 const Input = {
-  keys: {}, pressedQ: new Set(), mdx: 0, mdy: 0, wheel: 0, dragging: false, joy: { x: 0, y: 0, active: false }, look: { dx: 0, dy: 0 }, work: false, run: false, brake: false, lastInputAt: 0, pinch: 0,
+  keys: {}, pressedQ: new Set(), mdx: 0, mdy: 0, wheel: 0, dragging: false, joy: { x: 0, y: 0, active: false }, drive: { l: 0, r: 0, u: 0, d: 0 }, look: { dx: 0, dy: 0 }, work: false, run: false, brake: false, lastInputAt: 0, pinch: 0,
   init() {
     const typing = (e) => { const t = e.target; return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); };
     window.addEventListener('keydown', (e) => {
@@ -6202,6 +6216,8 @@ const Input = {
     if (this.down('KeyD') || this.down('ArrowRight')) x += 1;
     if (this.joy.active) { x += this.joy.x; y += this.joy.y; }
     const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; }
+    // on-screen driving buttons: full throttle and full steering together (no diagonal scaling)
+    const dr = this.drive; if (dr.l || dr.r || dr.u || dr.d) { x = clamp(x + dr.r - dr.l, -1, 1); y = clamp(y + dr.u - dr.d, -1, 1); }
     return { x, y };
   },
   endFrame() { this.pressedQ.clear(); this.mdx = 0; this.mdy = 0; this.wheel = 0; this.look.dx = 0; this.look.dy = 0; },
@@ -9995,6 +10011,13 @@ const UI = {
     joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
     const hold = (el, on, off) => { el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); on(); Audio2.unlock(); }); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); };
     hold(this.el('tbWork'), () => { Input.work = true; }, () => { Input.work = false; });
+    // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
+    for (const [id, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
+      const b = this.el(id); if (!b) continue;
+      const on = (e) => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } Input.drive[k] = 1; b.classList.add('on'); Audio2.unlock(); };
+      const off = () => { Input.drive[k] = 0; b.classList.remove('on'); };
+      b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+    }
     hold(this.el('tbE'), () => { Input.interactTap = true; }, () => { });
     hold(this.el('tbG'), () => { const v = Player.vehicle; if (v) { if (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)) Input.implToggle = true; else Input.horn = true; } else Player.cycleOpt(); }, () => { });
     hold(this.el('tbV'), () => Cam.toggle(), () => { });
@@ -10004,6 +10027,8 @@ const UI = {
   updateTouchLabels() {
     if (!isMobile) return;
     const v = Player.vehicle; const inV = !!v;
+    // in a vehicle: big steer / go / brake buttons instead of the walking stick
+    const dp = this.el('dpad'); if (dp && dp.hidden === inV) { dp.hidden = !inV; this.el('joy').style.visibility = inV ? 'hidden' : ''; if (!inV) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); } }
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));
     const toolOpt = !inV && (Player.tool === 'seeds' || Player.tool === 'fert' || Player.tool === 'sprayer');

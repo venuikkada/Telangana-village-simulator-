@@ -399,6 +399,15 @@ html:not([lang="en"]) .cele small { letter-spacing: .02em; }
 /* Urdu reads right to left: each line of text runs RTL, the screen layout stays the same */
 html.rtl .sheet, html.rtl .toast, html.rtl #missions, html.rtl .cele, html.rtl #prompt, html.rtl .pitch { unicode-bidi: plaintext; }
 html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span, html.rtl .sheet button, html.rtl #missions span, html.rtl #missions b, html.rtl #missions li, html.rtl .toast { unicode-bidi: plaintext; text-align: start; }
+/* driving buttons (touch): steer on the left, go and brake/reverse on the right, like mobile shooters */
+#dpad { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
+#dpad .dsteer { position: absolute; left: calc(var(--sl) + 18px); bottom: calc(var(--sb) + 20px); display: flex; gap: 18px; }
+#dpad .dgas { position: absolute; right: calc(var(--sr) + 228px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
+.db { pointer-events: auto; width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20, 22, 34, .42); color: #fff; display: grid; place-items: center; padding: 0; touch-action: none; -webkit-user-select: none; user-select: none; box-shadow: 0 4px 14px rgba(0,0,0,.28); backdrop-filter: blur(2px); }
+.db svg { width: 38px; height: 38px; }
+.db.up { background: rgba(47, 125, 58, .55); } .db.dn { background: rgba(179, 50, 42, .5); }
+.db.on { background: rgba(242, 181, 45, .92); color: #1c1405; border-color: #fff; transform: scale(.94); }
+@media (pointer: coarse) and (max-height: 400px) { .db { width: 64px; height: 64px; } .db svg { width: 32px; height: 32px; } #dpad .dgas { right: calc(var(--sr) + 200px); gap: 8px; } }
 /* ---------- phones & small screens ---------- */
 @media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
   #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: calc(var(--sl) + 10px); top: calc(var(--st) + 8px); }
@@ -567,6 +576,10 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
     <div id="howtip" class="card" hidden role="note"></div>
   </div>
   <div id="touch" hidden>
+    <div id="dpad" hidden>
+      <div class="dsteer"><button class="db" id="dL" type="button" aria-label="Steer left"><svg viewBox="0 0 24 24"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db" id="dR" type="button" aria-label="Steer right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+      <div class="dgas"><button class="db up" id="dU" type="button" aria-label="Accelerate"><svg viewBox="0 0 24 24"><path d="M4 15l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db dn" id="dD" type="button" aria-label="Brake and reverse"><svg viewBox="0 0 24 24"><path d="M4 9l8 8 8-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
+    </div>
     <div id="joy"><div id="knob"></div></div>
     <div id="tbtns">
       <button class="tb" id="tbG">Type</button>

@@ -912,6 +912,13 @@ const UI = {
     joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
     const hold = (el, on, off) => { el.addEventListener('pointerdown', (e) => { e.preventDefault(); el.setPointerCapture(e.pointerId); on(); Audio2.unlock(); }); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); };
     hold(this.el('tbWork'), () => { Input.work = true; }, () => { Input.work = false; });
+    // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
+    for (const [id, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
+      const b = this.el(id); if (!b) continue;
+      const on = (e) => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } Input.drive[k] = 1; b.classList.add('on'); Audio2.unlock(); };
+      const off = () => { Input.drive[k] = 0; b.classList.remove('on'); };
+      b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+    }
     hold(this.el('tbE'), () => { Input.interactTap = true; }, () => { });
     hold(this.el('tbG'), () => { const v = Player.vehicle; if (v) { if (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)) Input.implToggle = true; else Input.horn = true; } else Player.cycleOpt(); }, () => { });
     hold(this.el('tbV'), () => Cam.toggle(), () => { });
@@ -921,6 +928,8 @@ const UI = {
   updateTouchLabels() {
     if (!isMobile) return;
     const v = Player.vehicle; const inV = !!v;
+    // in a vehicle: big steer / go / brake buttons instead of the walking stick
+    const dp = this.el('dpad'); if (dp && dp.hidden === inV) { dp.hidden = !inV; this.el('joy').style.visibility = inV ? 'hidden' : ''; if (!inV) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); } }
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));
     const toolOpt = !inV && (Player.tool === 'seeds' || Player.tool === 'fert' || Player.tool === 'sprayer');

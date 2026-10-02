@@ -119,14 +119,15 @@ class Vehicle {
     const roadsCC = G.S && G.S.village.roads;
     let smul = surf === 'asphalt' || surf === 'concrete' ? 1 : surf === 'dirt' ? (roadsCC ? 1 : 0.9 - wet * 0.25) : surf === 'field' ? 0.88 - wet * 0.2 : surf === 'water' ? 0.3 : 0.82 - wet * 0.2;
     if (this.type === 'bullock' || this.type === 'harvester') smul = Math.max(smul, 0.85);
-    let maxSp = d.maxSpeed * smul;
+    const mine = this === Player.vehicle;   // the player's own ride: quicker and snappier than traffic
+    let maxSp = d.maxSpeed * smul * (mine && this.type !== 'bullock' ? 1.35 : 1);
     if (this.lowered && this.impl && IMPLEMENTS[this.impl].op) maxSp = Math.min(maxSp, IMPLEMENTS[this.impl].maxSpeed);
     if (this.type === 'harvester' && this.lowered) maxSp = Math.min(maxSp, 4.2);
     if (this.cond < 30) maxSp *= 0.7;
     const noFuel = d.fuelCap > 0 && this.fuel <= 0;
     if (noFuel) maxSp = 0;
     const load = this.cargoQty / Math.max(1, this.cargoCap); maxSp *= 1 - load * 0.15;
-    const acc = d.accel * (1 - load * 0.3);
+    const acc = d.accel * (1 - load * 0.3) * (mine ? 1.8 : 1);
     const th = inp.throttle || 0;
     if (th > 0) { if (this.speed < -0.2) this.speed += acc * 3 * dt; else if (this.speed < maxSp) this.speed += acc * th * dt * (1 - 0.6 * this.speed / Math.max(0.1, maxSp)); }
     else if (th < 0) { if (this.speed > 0.2) this.speed -= acc * 3 * dt; else this.speed = Math.max(-(d.rev || 2), this.speed - acc * 0.7 * dt); }
@@ -136,7 +137,7 @@ class Vehicle {
     this.throttle = th;
     const spd = Math.abs(this.speed);
     const maxSteer = (d.two ? 0.5 : 0.62) * (1 - Math.min(0.55, spd / (d.maxSpeed * 1.6)));
-    this.steer = damp(this.steer, (inp.steer || 0) * maxSteer, 6, dt);
+    this.steer = damp(this.steer, (inp.steer || 0) * maxSteer, mine ? 11 : 6, dt);
     const yawRate = this.speed / d.wheelBase * Math.tan(this.steer) * (d.turn || 1) * (this.job ? 2.6 : 1);
     this.yaw += yawRate * dt;
     if (d.two) this.lean = damp(this.lean, -clamp(yawRate * spd * 0.06, -0.45, 0.45), 6, dt);
