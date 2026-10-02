@@ -97,6 +97,7 @@ const UI = {
       if (e.code === 'KeyM') this.map();
       else if (e.code === 'KeyB' || e.code === 'KeyI' || e.code === 'Tab') { e.preventDefault(); this.office(e.code === 'KeyI' ? 'storage' : undefined); }
       else if (e.code === 'KeyP') this.photo();
+      else if (e.code === 'Equal' && !Player.vehicle) { Input.autoRun = !Input.autoRun; Input.run = Input.autoRun; if (Input.autoRun) this.toastOnce('autorunpc', L('Auto run on: steer with the mouse. Press W or S to stop.', 'ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.'), 'info'); }
       else if (e.code === 'F1' || e.code === 'Slash') { e.preventDefault(); this.help(); }
     });
     this.beacon = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 160, 16, 1, true), new THREE.MeshBasicMaterial({ color: 0xf2b52d, transparent: true, opacity: 0.22, depthWrite: false, side: THREE.DoubleSide, blending: THREE.AdditiveBlending, fog: false }));
@@ -906,19 +907,6 @@ const UI = {
     const hasTouch = 'ontouchstart' in window;
     // pointer capture can fail on some phones when another finger is already down: never let that stop a control
     const cap = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (er) { /* keep going without capture */ } };
-    // ---- the walking stick: touch events follow each finger by its id, so stick + Work + Use all work together
-    let jid = null, pid = null, cx = 0, cy = 0;
-    const jmove = (x, y) => { let dx = x - cx, dy = y - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92); };
-    const jstart = (x, y) => { const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; jmove(x, y); Audio2.unlock(); };
-    const jend = () => { jid = null; pid = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; };
-    joy.addEventListener('touchstart', (e) => { e.preventDefault(); if (jid !== null) return; const t = e.changedTouches[0]; jid = t.identifier; jstart(t.clientX, t.clientY); }, { passive: false });
-    joy.addEventListener('touchmove', (e) => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === jid) jmove(t.clientX, t.clientY); }, { passive: false });
-    const jtend = (e) => { for (const t of e.changedTouches) if (t.identifier === jid) jend(); };
-    joy.addEventListener('touchend', jtend); joy.addEventListener('touchcancel', jtend);
-    joy.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && hasTouch) return; pid = e.pointerId; cap(joy, e); jstart(e.clientX, e.clientY); });
-    joy.addEventListener('pointermove', (e) => { if (pid !== null && e.pointerId === pid) jmove(e.clientX, e.clientY); });
-    const pend = (e) => { if (pid !== null && e.pointerId === pid) jend(); };
-    joy.addEventListener('pointerup', pend); joy.addEventListener('pointercancel', pend);
     // ---- hold buttons: on while any finger is on it, off when the last finger lifts (wherever it slid to)
     const hold = (el, on, off) => {
       if (!el) return;
@@ -930,6 +918,27 @@ const UI = {
       const pup = (e) => { if (p !== null && e.pointerId === p) { p = null; off(); } };
       el.addEventListener('pointerup', pup); el.addEventListener('pointercancel', pup);
     };
+    // ---- the walking stick: touch events follow each finger by its id, so stick + Work + Use all work together
+    let jid = null, pid = null, cx = 0, cy = 0;
+    // auto run (like PUBG): push the stick up and slide your thumb onto the runner above it, then let go
+    const ar = this.el('autorun'); let armed = false;
+    const arShow = (show, ready) => { if (!ar || Input.autoRun) return; ar.hidden = !show; ar.classList.toggle('ready', !!ready); };
+    const jmove = (x, y) => {
+      let dx = x - cx, dy = y - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; }
+      knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92);
+      if (!Player.vehicle && ar) { const r = ar.getBoundingClientRect(); armed = !ar.hidden && x > r.left - 24 && x < r.right + 24 && y < r.bottom + 14; arShow(Input.joy.y > 0.8, armed); }
+    };
+    const jstart = (x, y) => { if (Input.autoRun) this.autoRun(false); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; armed = false; jmove(x, y); Audio2.unlock(); };
+    const jend = () => { jid = null; pid = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; if (armed && !Player.vehicle) this.autoRun(true); else arShow(false); armed = false; };
+    if (ar) hold(ar, () => { if (Input.autoRun) this.autoRun(false); }, () => { });
+    joy.addEventListener('touchstart', (e) => { e.preventDefault(); if (jid !== null) return; const t = e.changedTouches[0]; jid = t.identifier; jstart(t.clientX, t.clientY); }, { passive: false });
+    joy.addEventListener('touchmove', (e) => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === jid) jmove(t.clientX, t.clientY); }, { passive: false });
+    const jtend = (e) => { for (const t of e.changedTouches) if (t.identifier === jid) jend(); };
+    joy.addEventListener('touchend', jtend); joy.addEventListener('touchcancel', jtend);
+    joy.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && hasTouch) return; pid = e.pointerId; cap(joy, e); jstart(e.clientX, e.clientY); });
+    joy.addEventListener('pointermove', (e) => { if (pid !== null && e.pointerId === pid) jmove(e.clientX, e.clientY); });
+    const pend = (e) => { if (pid !== null && e.pointerId === pid) jend(); };
+    joy.addEventListener('pointerup', pend); joy.addEventListener('pointercancel', pend);
     hold(this.el('tbWork'), () => { Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
     // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
     for (const [bid, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
@@ -942,10 +951,17 @@ const UI = {
     hold(this.el('tbJump'), () => { if (Player.vehicle) Input.brake = true; else Input.pressedQ.add('Space'); }, () => { Input.brake = false; });
     hold(this.el('tbRun'), () => { Input.runToggle = !Input.runToggle; Input.run = Input.runToggle; this.el('tbRun').classList.toggle('on', Input.runToggle); }, () => { });
   },
+  // auto run on or off: the farmer keeps running where the camera looks; touch the stick or the runner to stop
+  autoRun(on) {
+    Input.autoRun = !!on; Input.run = on ? true : Input.runToggle;
+    const ar = this.el('autorun'); if (ar) { ar.classList.toggle('on', !!on); ar.classList.remove('ready'); ar.hidden = !on; const t = ar.querySelector('span'); if (t) t.textContent = on ? L('Auto run · tap to stop', 'ఆటో పరుగు · ఆపడానికి నొక్కండి') : L('Auto run', 'ఆటో పరుగు'); }
+    if (on) { Audio2.sfx('click'); UI.toastOnce('autorun', L('Auto run on: turn the camera to steer. Touch the stick to stop.', 'ఆటో పరుగు ఆన్: దిశ మార్చడానికి కెమెరా తిప్పండి. ఆపడానికి స్టిక్ తాకండి.'), 'info'); }
+  },
   updateTouchLabels() {
     if (!isMobile) return;
     const v = Player.vehicle; const inV = !!v;
     // in a vehicle: big steer / go / brake buttons instead of the walking stick
+    if (inV && Input.autoRun) this.autoRun(false);
     const dp = this.el('dpad'); if (dp && dp.hidden === inV) { dp.hidden = !inV; this.el('joy').style.visibility = inV ? 'hidden' : ''; if (!inV) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); } }
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));

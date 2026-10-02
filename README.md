@@ -65,6 +65,7 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 | --- | --- | --- |
 | W A S D | Left stick | Walk or drive |
 | Shift | Run, or push the stick all the way | Run |
+| = | Push the stick up and slide onto the runner above it | Auto run (steer with the camera; touch the stick to stop) |
 | Mouse drag, wheel | Drag the screen, pinch | Look around, zoom |
 | E | Use, or tap the prompt | Talk, use shops, buy seeds, rest, get in and out of vehicles |
 | F (hold) | Work (hold) | Auto: does the next job on your field |

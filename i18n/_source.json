@@ -901,195 +901,195 @@
  },
  "Hoe": {
   "te": "పార",
-  "at": "12_player.js:73"
+  "at": "12_player.js:76"
  },
  "Seeds": {
   "te": "విత్తనాలు",
-  "at": "12_player.js:74"
+  "at": "12_player.js:77"
  },
  "Fertilizer": {
   "te": "ఎరువు",
-  "at": "12_player.js:75"
+  "at": "12_player.js:78"
  },
  "Sprayer": {
   "te": "స్ప్రేయర్",
-  "at": "12_player.js:76"
+  "at": "12_player.js:79"
  },
  "Sickle": {
   "te": "కొడవలి",
-  "at": "12_player.js:77"
+  "at": "12_player.js:80"
  },
  "Buy seeds": {
   "te": "విత్తనాలు కొనండి",
-  "at": "12_player.js:82"
+  "at": "12_player.js:85"
  },
  "Buy pesticide": {
   "te": "పురుగుమందు కొనండి",
-  "at": "12_player.js:82"
+  "at": "12_player.js:85"
  },
  "Buy fertilizer": {
   "te": "ఎరువు కొనండి",
-  "at": "12_player.js:82"
+  "at": "12_player.js:85"
  },
  "tap “{0}”.": {
   "te": "“{0}” నొక్కండి.",
-  "at": "12_player.js:83"
+  "at": "12_player.js:86"
  },
  "press E for “{0}”.": {
   "te": "“{0}” కోసం E నొక్కండి.",
-  "at": "12_player.js:83"
+  "at": "12_player.js:86"
  },
  "Spraying without a mask hurts your health. Buy a safety kit at Srinu's shop.": {
   "te": "మాస్క్ లేకుండా పిచికారీ చేస్తే ఆరోగ్యం పాడవుతుంది. శ్రీను దుకాణంలో రక్షణ కిట్ కొనండి.",
-  "at": "12_player.js:96"
+  "at": "12_player.js:99"
  },
  "Your health is low. Visit the doctor at the PHC or rest at home.": {
   "te": "మీ ఆరోగ్యం తగ్గింది. PHCలో డాక్టర్‌ను కలవండి లేదా ఇంట్లో విశ్రాంతి తీసుకోండి.",
-  "at": "12_player.js:97"
+  "at": "12_player.js:100"
  },
  "A worker is using this vehicle.": {
   "te": "ఒక కూలీ ఈ వాహనాన్ని వాడుతున్నారు.",
-  "at": "12_player.js:102"
+  "at": "12_player.js:105"
  },
  "Slow down before getting off.": {
   "te": "దిగే ముందు వేగం తగ్గించండి.",
-  "at": "12_player.js:111"
+  "at": "12_player.js:114"
  },
  "Heat wave! Rest in the shade or drink buttermilk at the tea stall.": {
   "te": "వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.",
-  "at": "12_player.js:179"
+  "at": "12_player.js:182"
  },
  "Pump switched on: the field needs water.": {
   "te": "పొలానికి నీరు కావాలి: మోటార్ వేశాం.",
-  "at": "12_player.js:213"
+  "at": "12_player.js:216"
  },
  "Canal gate opened: the field needs water.": {
   "te": "పొలానికి నీరు కావాలి: కాలువ తూము తెరిచాం.",
-  "at": "12_player.js:214"
+  "at": "12_player.js:217"
  },
  "No seeds: ": {
   "te": "విత్తనాలు లేవు: ",
-  "at": "12_player.js:239"
+  "at": "12_player.js:242"
  },
  "Pests on your crop! ": {
   "te": "పంటకు పురుగులు! ",
-  "at": "12_player.js:239"
+  "at": "12_player.js:242"
  },
  "Your crop is hungry: ": {
   "te": "పంటకు ఎరువు కావాలి: ",
-  "at": "12_player.js:239"
+  "at": "12_player.js:242"
  },
  "{0} is growing well ({1}%). ": {
   "te": "{0} బాగా పెరుగుతోంది ({1}%). ",
-  "at": "12_player.js:240"
+  "at": "12_player.js:243"
  },
  "Tap “Rest” to let it grow.": {
   "te": "'విశ్రాంతి' నొక్కితే పంట పెరుగుతుంది.",
-  "at": "12_player.js:240"
+  "at": "12_player.js:243"
  },
  "Press E to rest while it grows.": {
   "te": "పంట పెరిగే వరకు విశ్రాంతికి E నొక్కండి.",
-  "at": "12_player.js:240"
+  "at": "12_player.js:243"
  },
  "Field ploughed! Now ": {
   "te": "దుక్కి అయింది! ఇప్పుడు ",
-  "at": "12_player.js:279"
+  "at": "12_player.js:282"
  },
  "Want to sow? ": {
   "te": "విత్తాలా? ",
-  "at": "12_player.js:279"
+  "at": "12_player.js:282"
  },
  " Sowing ploughs the rest too.": {
   "te": " విత్తేటప్పుడు మిగతాది కూడా దున్నుతుంది.",
-  "at": "12_player.js:279"
+  "at": "12_player.js:282"
  },
  "No {0} seeds: ": {
   "te": "{0} విత్తనాలు లేవు: ",
-  "at": "12_player.js:291"
+  "at": "12_player.js:294"
  },
  "This field already has another crop.": {
   "te": "ఈ పొలంలో ఇప్పటికే వేరే పంట ఉంది.",
-  "at": "12_player.js:291"
+  "at": "12_player.js:294"
  },
  "No {0} left: ": {
   "te": "{0} లేదు: ",
-  "at": "12_player.js:291"
+  "at": "12_player.js:294"
  },
  "No {0}: ": {
   "te": "{0} లేదు: ",
-  "at": "12_player.js:291"
+  "at": "12_player.js:294"
  },
  "Header lowered — drive over ripe crop to harvest.": {
   "te": "హెడర్ దించారు — పండిన పంట మీదుగా నడిపి కోయండి.",
-  "at": "12_player.js:319"
+  "at": "12_player.js:322"
  },
  "Header raised.": {
   "te": "హెడర్ ఎత్తారు.",
-  "at": "12_player.js:319"
+  "at": "12_player.js:322"
  },
  "No working implement attached. Attach one at your farm (E near the tractor).": {
   "te": "పనిచేసే పనిముట్టు లేదు. మీ ఇంటి దగ్గర అటాచ్ చేయండి.",
-  "at": "12_player.js:320"
+  "at": "12_player.js:323"
  },
  "Load the sprayer with": {
   "te": "స్ప్రేయర్‌లో నింపండి",
-  "at": "12_player.js:324"
+  "at": "12_player.js:327"
  },
  "Load the spreader with": {
   "te": "స్ప్రెడర్‌లో నింపండి",
-  "at": "12_player.js:325"
+  "at": "12_player.js:328"
  },
  "First-person view": {
   "te": "ఫస్ట్-పర్సన్ వ్యూ",
-  "at": "12_player.js:336"
+  "at": "12_player.js:339"
  },
  "Third-person view": {
   "te": "థర్డ్-పర్సన్ వ్యూ",
-  "at": "12_player.js:336"
+  "at": "12_player.js:339"
  },
  "Rest until the crop needs you": {
   "te": "పంటకు పని వచ్చే వరకు విశ్రాంతి",
-  "at": "12_player.js:410"
+  "at": "12_player.js:413"
  },
  "Buy seeds (delivered here)": {
   "te": "విత్తనాలు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:411"
+  "at": "12_player.js:414"
  },
  "Buy pesticide (delivered here)": {
   "te": "పురుగుమందు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:411"
+  "at": "12_player.js:414"
  },
  "Buy fertilizer (delivered here)": {
   "te": "ఎరువు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:411"
+  "at": "12_player.js:414"
  },
  "Talk to ": {
   "te": "మాట్లాడండి: ",
-  "at": "12_player.js:414"
+  "at": "12_player.js:417"
  },
  "Drive bullocks": {
   "te": "ఎడ్లను తోలండి",
-  "at": "12_player.js:417"
+  "at": "12_player.js:420"
  },
  "Drive ": {
   "te": "నడపండి: ",
-  "at": "12_player.js:417"
+  "at": "12_player.js:420"
  },
  " (free ride)": {
   "te": " (ఉచితం)",
-  "at": "12_player.js:417"
+  "at": "12_player.js:420"
  },
  "Change implement": {
   "te": "పనిముట్టు మార్చండి",
-  "at": "12_player.js:418"
+  "at": "12_player.js:421"
  },
  "Pat ": {
   "te": "నిమరండి: ",
-  "at": "12_player.js:421"
+  "at": "12_player.js:424"
  },
  "Get off": {
   "te": "దిగండి",
-  "at": "12_player.js:423"
+  "at": "12_player.js:426"
  },
  "your field": {
   "te": "మీ పొలం",
@@ -2823,1833 +2823,1849 @@
   "te": "బంగారు బాణాన్ని అనుసరించి, పైన పసుపు వాక్యం చదవండి.",
   "at": "15b_coach.js:251"
  },
+ "Auto run on: steer with the mouse. Press W or S to stop.": {
+  "te": "ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.",
+  "at": "17_ui.js:100"
+ },
  "Start with ₹50,000, one acre of red soil and a pair of bullocks in Ramapuram. Grow it into an agricultural company.": {
   "te": "₹50,000, ఒక ఎకరం ఎర్ర నేల, ఒక ఎడ్ల జతతో రామాపురంలో మొదలుపెట్టండి. దాన్ని వ్యవసాయ కంపెనీగా ఎదిగించండి.",
-  "at": "17_ui.js:112"
+  "at": "17_ui.js:113"
  },
  "Prototype build · the world, sound and music are generated live in your browser.": {
   "te": "ప్రోటోటైప్ · ప్రపంచం, శబ్దాలు, సంగీతం మీ బ్రౌజర్‌లోనే తయారవుతాయి.",
-  "at": "17_ui.js:113"
+  "at": "17_ui.js:114"
  },
  "Ploughing": {
   "te": "దున్నుతున్నారు",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "Sowing": {
   "te": "విత్తుతున్నారు",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "Fertilizing": {
   "te": "ఎరువు వేస్తున్నారు",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "Spraying": {
   "te": "పిచికారీ",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "Weeding": {
   "te": "కలుపు తీస్తున్నారు",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "Harvesting": {
   "te": "కోస్తున్నారు",
-  "at": "17_ui.js:137"
+  "at": "17_ui.js:138"
  },
  "{0} delivered: {1} for {2}. Hold Work on your field.": {
   "te": "{0} అందింది: {1}, {2}. పొలంలో 'పని' పట్టుకోండి.",
-  "at": "17_ui.js:149"
+  "at": "17_ui.js:150"
  },
  "Quick delivery to your field": {
   "te": "మీ పొలానికి త్వరిత డెలివరీ",
-  "at": "17_ui.js:152"
+  "at": "17_ui.js:153"
  },
  "Srinu sends it right away · ₹{0} delivery": {
   "te": "శ్రీను వెంటనే పంపిస్తాడు · డెలివరీ ₹{0}",
-  "at": "17_ui.js:152"
+  "at": "17_ui.js:153"
  },
  "Seeds for {0} acre{1}. The top crops suit this season and soil best.": {
   "te": "{0} ఎకరాలకు విత్తనాలు. పైన ఉన్న పంటలు ఈ సీజన్‌కు, నేలకు బాగా సరిపోతాయి.",
-  "at": "17_ui.js:158"
+  "at": "17_ui.js:159"
  },
  "days": {
   "te": "రోజులు",
-  "at": "17_ui.js:159"
+  "at": "17_ui.js:160"
  },
  "nutrients": {
   "te": "పోషకాలు",
-  "at": "17_ui.js:163"
+  "at": "17_ui.js:164"
  },
  "Money: ": {
   "te": "డబ్బు: ",
-  "at": "17_ui.js:166"
+  "at": "17_ui.js:167"
  },
  "Saved": {
   "te": "సేవ్ అయింది",
-  "at": "17_ui.js:169"
+  "at": "17_ui.js:170"
  },
  " acre packs": {
   "te": " ఎకరం ప్యాకెట్లు",
-  "at": "17_ui.js:187"
+  "at": "17_ui.js:188"
  },
  " bags": {
   "te": " బస్తాలు",
-  "at": "17_ui.js:187"
+  "at": "17_ui.js:188"
  },
  "switch": {
   "te": "మార్చు",
-  "at": "17_ui.js:188"
+  "at": "17_ui.js:189"
  },
  "Hold ": {
   "te": "పట్టుకోండి ",
-  "at": "17_ui.js:190"
+  "at": "17_ui.js:191"
  },
  "Work": {
   "te": "పని",
-  "at": "17_ui.js:190"
+  "at": "17_ui.js:191"
  },
  " on your field: it ploughs, sows, feeds and harvests by itself": {
   "te": " మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది",
-  "at": "17_ui.js:190"
+  "at": "17_ui.js:191"
  },
  " on your field": {
   "te": " మీ పొలంలో",
-  "at": "17_ui.js:190"
+  "at": "17_ui.js:191"
  },
  "Tap": {
   "te": "తాకండి",
-  "at": "17_ui.js:197"
+  "at": "17_ui.js:198"
  },
  "+{0} more": {
   "te": "+{0} ఇంకా",
-  "at": "17_ui.js:198"
+  "at": "17_ui.js:199"
  },
  "Drought": {
   "te": "కరువు",
-  "at": "17_ui.js:237"
+  "at": "17_ui.js:238"
  },
  "Power cut": {
   "te": "కరెంటు లేదు",
-  "at": "17_ui.js:237"
+  "at": "17_ui.js:238"
  },
  "No active missions.": {
   "te": "ప్రస్తుతం లక్ష్యాలు లేవు.",
-  "at": "17_ui.js:258"
+  "at": "17_ui.js:259"
  },
  "Tutorial {0} of {1}": {
   "te": "శిక్షణ {0} / {1}",
-  "at": "17_ui.js:261"
+  "at": "17_ui.js:262"
  },
  "Mission": {
   "te": "లక్ష్యం",
-  "at": "17_ui.js:261"
+  "at": "17_ui.js:262"
  },
  " · {0} more": {
   "te": " · ఇంకా {0}",
-  "at": "17_ui.js:261"
+  "at": "17_ui.js:262"
  },
  "Working {0}…": {
   "te": "{0}లో పని చేస్తున్నారు…",
-  "at": "17_ui.js:266"
+  "at": "17_ui.js:267"
  },
  "Walking to {0}…": {
   "te": "{0} వైపు నడుస్తున్నారు…",
-  "at": "17_ui.js:266"
+  "at": "17_ui.js:267"
  },
  "Walking there…": {
   "te": "అక్కడికి నడుస్తున్నారు…",
-  "at": "17_ui.js:266"
+  "at": "17_ui.js:267"
  },
  "Hide tips": {
   "te": "చిట్కాలు దాచు",
-  "at": "17_ui.js:271"
+  "at": "17_ui.js:272"
  },
  "How? ❓": {
   "te": "ఎలా? ❓",
-  "at": "17_ui.js:271"
+  "at": "17_ui.js:272"
  },
  "■ Stop": {
   "te": "■ ఆపు",
-  "at": "17_ui.js:275"
+  "at": "17_ui.js:276"
  },
  "▶ Do it for me": {
   "te": "▶ నా బదులు చేయి",
-  "at": "17_ui.js:275"
+  "at": "17_ui.js:276"
  },
  "How to do it": {
   "te": "ఎలా చేయాలి",
-  "at": "17_ui.js:284"
+  "at": "17_ui.js:285"
  },
  "Close": {
   "te": "మూసివేయి",
-  "at": "17_ui.js:284"
+  "at": "17_ui.js:285"
  },
  "Diesel": {
   "te": "డీజిల్",
-  "at": "17_ui.js:304"
+  "at": "17_ui.js:305"
  },
  "Condition": {
   "te": "స్థితి",
-  "at": "17_ui.js:305"
+  "at": "17_ui.js:306"
  },
  "Implement": {
   "te": "పనిముట్టు",
-  "at": "17_ui.js:306"
+  "at": "17_ui.js:307"
  },
  " · lowered": {
   "te": " · దించారు",
-  "at": "17_ui.js:306"
+  "at": "17_ui.js:307"
  },
  " · raised": {
   "te": " · ఎత్తారు",
-  "at": "17_ui.js:306"
+  "at": "17_ui.js:307"
  },
  "Header": {
   "te": "హెడర్",
-  "at": "17_ui.js:307"
+  "at": "17_ui.js:308"
  },
  "Lowered — harvesting": {
   "te": "దించారు — కోస్తోంది",
-  "at": "17_ui.js:307"
+  "at": "17_ui.js:308"
  },
  "Raised": {
   "te": "ఎత్తారు",
-  "at": "17_ui.js:307"
+  "at": "17_ui.js:308"
  },
  "Tank": {
   "te": "ట్యాంక్",
-  "at": "17_ui.js:309"
+  "at": "17_ui.js:310"
  },
  "Hopper": {
   "te": "హాపర్",
-  "at": "17_ui.js:310"
+  "at": "17_ui.js:311"
  },
  "Water": {
   "te": "నీరు",
-  "at": "17_ui.js:311"
+  "at": "17_ui.js:312"
  },
  "Cargo": {
   "te": "సరుకు",
-  "at": "17_ui.js:312"
+  "at": "17_ui.js:313"
  },
  "Rented ": {
   "te": "అద్దె ",
-  "at": "17_ui.js:313"
+  "at": "17_ui.js:314"
  },
  " h": {
   "te": " గం.",
-  "at": "17_ui.js:313"
+  "at": "17_ui.js:314"
  },
  "G lower/raise · E get off": {
   "te": "G దించు/ఎత్తు · E దిగు",
-  "at": "17_ui.js:314"
+  "at": "17_ui.js:315"
  },
  "E get off · H horn · L lights": {
   "te": "E దిగు · H హారన్ · L లైట్లు",
-  "at": "17_ui.js:314"
+  "at": "17_ui.js:315"
  },
  "Owned": {
   "te": "సొంతం",
-  "at": "17_ui.js:328"
+  "at": "17_ui.js:329"
  },
  "Leased": {
   "te": "కౌలు",
-  "at": "17_ui.js:328"
+  "at": "17_ui.js:329"
  },
  "For lease": {
   "te": "కౌలుకు",
-  "at": "17_ui.js:328"
+  "at": "17_ui.js:329"
  },
  "For sale": {
   "te": "అమ్మకానికి",
-  "at": "17_ui.js:328"
+  "at": "17_ui.js:329"
  },
  "Neighbour's field": {
   "te": "పొరుగువారి పొలం",
-  "at": "17_ui.js:328"
+  "at": "17_ui.js:329"
  },
  "acres": {
   "te": "ఎకరాలు",
-  "at": "17_ui.js:329"
+  "at": "17_ui.js:330"
  },
  "Borewell": {
   "te": "బోరు",
-  "at": "17_ui.js:329"
+  "at": "17_ui.js:330"
  },
  "Canal": {
   "te": "కాలువ",
-  "at": "17_ui.js:329"
+  "at": "17_ui.js:330"
  },
  "Seedbed": {
   "te": "సిద్ధం",
-  "at": "17_ui.js:333"
+  "at": "17_ui.js:334"
  },
  "Nutr.": {
   "te": "పోషకం",
-  "at": "17_ui.js:334"
+  "at": "17_ui.js:335"
  },
  "Weeds": {
   "te": "కలుపు",
-  "at": "17_ui.js:334"
+  "at": "17_ui.js:335"
  },
  "Pests": {
   "te": "పురుగు",
-  "at": "17_ui.js:334"
+  "at": "17_ui.js:335"
  },
  "Health": {
   "te": "ఆరోగ్యం",
-  "at": "17_ui.js:334"
+  "at": "17_ui.js:335"
  },
  "Heap: ": {
   "te": "కుప్ప: ",
-  "at": "17_ui.js:335"
+  "at": "17_ui.js:336"
  },
  "grade": {
   "te": "గ్రేడ్",
-  "at": "17_ui.js:335"
+  "at": "17_ui.js:336"
  },
  "What would you like to do?": {
   "te": "ఏమి చేయాలనుకుంటున్నారు?",
-  "at": "17_ui.js:389"
+  "at": "17_ui.js:390"
  },
  "Which crop will you sow?": {
   "te": "ఏ పంట విత్తుతారు?",
-  "at": "17_ui.js:400"
+  "at": "17_ui.js:401"
  },
  "acre packs": {
   "te": "ఎకరం ప్యాకెట్లు",
-  "at": "17_ui.js:404"
+  "at": "17_ui.js:405"
  },
  "season": {
   "te": "సీజన్",
-  "at": "17_ui.js:404"
+  "at": "17_ui.js:405"
  },
  "soil": {
   "te": "నేల",
-  "at": "17_ui.js:404"
+  "at": "17_ui.js:405"
  },
  "Buy seeds at Srinu's shop at the village crossroads.": {
   "te": "గ్రామ కూడలిలోని శ్రీను దుకాణంలో విత్తనాలు కొనండి.",
-  "at": "17_ui.js:407"
+  "at": "17_ui.js:408"
  },
  "Unload the trailer first.": {
   "te": "ముందు ట్రాలీ ఖాళీ చేయండి.",
-  "at": "17_ui.js:416"
+  "at": "17_ui.js:417"
  },
  "Detach implement": {
   "te": "పనిముట్టు తీసేయండి",
-  "at": "17_ui.js:416"
+  "at": "17_ui.js:417"
  },
  "Unload the cargo first.": {
   "te": "ముందు సరుకు దించండి.",
-  "at": "17_ui.js:418"
+  "at": "17_ui.js:419"
  },
  "work width ": {
   "te": "పని వెడల్పు ",
-  "at": "17_ui.js:418"
+  "at": "17_ui.js:419"
  },
  "You don't own any implements yet. Buy them at Bhaskar's workshop.": {
   "te": "మీ దగ్గర పనిముట్లు లేవు. భాస్కర్ వర్క్‌షాప్‌లో కొనండి.",
-  "at": "17_ui.js:420"
+  "at": "17_ui.js:421"
  },
  "Sleep until tomorrow morning": {
   "te": "రేపు ఉదయం వరకు నిద్రపోండి",
-  "at": "17_ui.js:429"
+  "at": "17_ui.js:430"
  },
  "Rest for 2 hours": {
   "te": "2 గంటలు విశ్రాంతి",
-  "at": "17_ui.js:429"
+  "at": "17_ui.js:430"
  },
  "Open the farm office": {
   "te": "వ్యవసాయ కార్యాలయం తెరవండి",
-  "at": "17_ui.js:430"
+  "at": "17_ui.js:431"
  },
  "Storage & supplies": {
   "te": "నిల్వ & సామాగ్రి",
-  "at": "17_ui.js:431"
+  "at": "17_ui.js:432"
  },
  "Save game": {
   "te": "ఆట సేవ్ చేయండి",
-  "at": "17_ui.js:432"
+  "at": "17_ui.js:433"
  },
  "Adopt a puppy (free) 🐶": {
   "te": "కుక్కపిల్లను తెచ్చుకోండి (ఉచితం) 🐶",
-  "at": "17_ui.js:434"
+  "at": "17_ui.js:435"
  },
  "Farm storage": {
   "te": "వ్యవసాయ నిల్వ",
-  "at": "17_ui.js:439"
+  "at": "17_ui.js:440"
  },
  "In the vehicle": {
   "te": "వాహనంలో",
-  "at": "17_ui.js:440"
+  "at": "17_ui.js:441"
  },
  "Empty.": {
   "te": "ఖాళీ.",
-  "at": "17_ui.js:441"
+  "at": "17_ui.js:442"
  },
  "Unload all into storage": {
   "te": "అంతా నిల్వలో దించండి",
-  "at": "17_ui.js:443"
+  "at": "17_ui.js:444"
  },
  "Stored {0} q.": {
   "te": "{0} క్వి. నిల్వ చేశారు.",
-  "at": "17_ui.js:446"
+  "at": "17_ui.js:447"
  },
  "Storage is full. Build a warehouse.": {
   "te": "నిల్వ నిండిపోయింది. గోదాము కట్టండి.",
-  "at": "17_ui.js:446"
+  "at": "17_ui.js:447"
  },
  "In storage": {
   "te": "నిల్వలో",
-  "at": "17_ui.js:448"
+  "at": "17_ui.js:449"
  },
  "cold": {
   "te": "కోల్డ్",
-  "at": "17_ui.js:448"
+  "at": "17_ui.js:449"
  },
  "Nothing stored.": {
   "te": "నిల్వలో ఏమీ లేదు.",
-  "at": "17_ui.js:449"
+  "at": "17_ui.js:450"
  },
  "Load 10 q": {
   "te": "10 క్వి. ఎక్కించు",
-  "at": "17_ui.js:454"
+  "at": "17_ui.js:455"
  },
  "Load max": {
   "te": "పూర్తిగా ఎక్కించు",
-  "at": "17_ui.js:455"
+  "at": "17_ui.js:456"
  },
  "Vehicle is full.": {
   "te": "వాహనం నిండింది.",
-  "at": "17_ui.js:460"
+  "at": "17_ui.js:461"
  },
  "The village trader offers {0}/q right here (88% of the yard price {1}). Or load it into your cart or trailer and sell at the market yard yourself.": {
   "te": "గ్రామ వ్యాపారి ఇక్కడే క్వింటాలుకు {0} ఇస్తాడు (యార్డు ధర {1}లో 88%). లేదా బండిలో ఎక్కించి మార్కెట్ యార్డులో మీరే అమ్మండి.",
-  "at": "17_ui.js:470"
+  "at": "17_ui.js:471"
  },
  "Send to the market yard by lorry (about {0})": {
   "te": "లారీలో మార్కెట్ యార్డుకు పంపండి (సుమారు {0})",
-  "at": "17_ui.js:473"
+  "at": "17_ui.js:474"
  },
  "Send to the MSP centre by lorry (about {0}, paid in 2 days)": {
   "te": "లారీలో మద్దతు ధర కేంద్రానికి (సుమారు {0}, 2 రోజుల్లో)",
-  "at": "17_ui.js:475"
+  "at": "17_ui.js:476"
  },
  "Sell all to trader now ({0})": {
   "te": "ఇప్పుడే వ్యాపారికి అమ్మండి ({0})",
-  "at": "17_ui.js:476"
+  "at": "17_ui.js:477"
  },
  "Carry it home to storage": {
   "te": "ఇంటి నిల్వకు తరలించండి",
-  "at": "17_ui.js:478"
+  "at": "17_ui.js:479"
  },
  "Moved {0} q to storage.": {
   "te": "{0} క్వి. నిల్వకు తరలించారు.",
-  "at": "17_ui.js:478"
+  "at": "17_ui.js:479"
  },
  "canal-fed": {
   "te": "కాలువ నీరు",
-  "at": "17_ui.js:482"
+  "at": "17_ui.js:483"
  },
  "has a borewell": {
   "te": "బోరు ఉంది",
-  "at": "17_ui.js:482"
+  "at": "17_ui.js:483"
  },
  "Best crops for this soil: {0}.": {
   "te": "ఈ నేలకు మంచి పంటలు: {0}.",
-  "at": "17_ui.js:484"
+  "at": "17_ui.js:485"
  },
  "Buy for {0}": {
   "te": "{0}కు కొనండి",
-  "at": "17_ui.js:486"
+  "at": "17_ui.js:487"
  },
  "Lease 2 seasons for {0}": {
   "te": "2 సీజన్లకు కౌలు {0}",
-  "at": "17_ui.js:487"
+  "at": "17_ui.js:488"
  },
  "Need money? The cooperative bank in Nagaram gives crop loans at 7% a year.": {
   "te": "డబ్బు కావాలా? నగరంలోని సహకార బ్యాంకు 7% వార్షిక వడ్డీకి పంట రుణాలు ఇస్తుంది.",
-  "at": "17_ui.js:489"
+  "at": "17_ui.js:490"
  },
  "Energy +{0}{1}": {
   "te": "శక్తి +{0}{1}",
-  "at": "17_ui.js:496"
+  "at": "17_ui.js:497"
  },
  "Buy": {
   "te": "కొనండి",
-  "at": "17_ui.js:496"
+  "at": "17_ui.js:497"
  },
  "Energy {0} · Health {1}": {
   "te": "శక్తి {0} · ఆరోగ్యం {1}",
-  "at": "17_ui.js:498"
+  "at": "17_ui.js:499"
  },
  "You already have one.": {
   "te": "మీ దగ్గర ఇప్పటికే ఉంది.",
-  "at": "17_ui.js:503"
+  "at": "17_ui.js:504"
  },
  "Prices change with the season and the news.": {
   "te": "ధరలు సీజన్, వార్తలతో మారుతాయి.",
-  "at": "17_ui.js:512"
+  "at": "17_ui.js:513"
  },
  "Seeds (one pack sows one acre)": {
   "te": "విత్తనాలు (ఒక ప్యాకెట్ = ఒక ఎకరం)",
-  "at": "17_ui.js:514"
+  "at": "17_ui.js:515"
  },
  "{0} days · ~{1} q/acre · market {2}/q": {
   "te": "{0} రోజులు · ~{1} క్వి./ఎకరం · ధర {2}/క్వి.",
-  "at": "17_ui.js:519"
+  "at": "17_ui.js:520"
  },
  "Water {0} · pest risk {1} · {2}": {
   "te": "నీరు {0} · పురుగు {1} · {2}",
-  "at": "17_ui.js:520"
+  "at": "17_ui.js:521"
  },
  "Have ": {
   "te": "ఉన్నవి ",
-  "at": "17_ui.js:521"
+  "at": "17_ui.js:522"
  },
  "Fertilizers, pesticides & gear": {
   "te": "ఎరువులు, పురుగుమందులు & రక్షణ",
-  "at": "17_ui.js:525"
+  "at": "17_ui.js:526"
  },
  "Supplies": {
   "te": "సామాగ్రి",
-  "at": "17_ui.js:525"
+  "at": "17_ui.js:526"
  },
  "+{0} nutrients per acre{1}": {
   "te": "ఎకరానికి +{0} పోషకాలు{1}",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "Kills pests on 1 acre": {
   "te": "1 ఎకరంలో పురుగులను చంపుతుంది",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "Clears weeds on 1 acre": {
   "te": "1 ఎకరంలో కలుపు తొలగిస్తుంది",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "No health loss while spraying": {
   "te": "పిచికారీ చేసేటప్పుడు ఆరోగ్యం తగ్గదు",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "Keeps dairy buffaloes in milk": {
   "te": "పాడి గేదెలకు దాణా",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "Refuel anywhere: 20 L": {
   "te": "ఎక్కడైనా 20 లీ. నింపుకోవచ్చు",
-  "at": "17_ui.js:530"
+  "at": "17_ui.js:531"
  },
  "Pour into vehicle": {
   "te": "వాహనంలో పోయండి",
-  "at": "17_ui.js:534"
+  "at": "17_ui.js:535"
  },
  "Rent, buy, repair. Custom hiring for harvests.": {
   "te": "అద్దె, కొనుగోలు, మరమ్మతు. కోతకు హార్వెస్టర్ సేవ.",
-  "at": "17_ui.js:542"
+  "at": "17_ui.js:543"
  },
  "Rent & services": {
   "te": "అద్దె & సేవలు",
-  "at": "17_ui.js:543"
+  "at": "17_ui.js:544"
  },
  "Tractor with implement · 4 hours · {0}": {
   "te": "పనిముట్టుతో ట్రాక్టర్ · 4 గంటలు · {0}",
-  "at": "17_ui.js:544"
+  "at": "17_ui.js:545"
  },
  "Work width {0} m": {
   "te": "పని వెడల్పు {0} మీ.",
-  "at": "17_ui.js:546"
+  "at": "17_ui.js:547"
  },
  "Carries {0} quintals": {
   "te": "{0} క్వింటాళ్లు మోస్తుంది",
-  "at": "17_ui.js:546"
+  "at": "17_ui.js:547"
  },
  "Rent": {
   "te": "అద్దెకు",
-  "at": "17_ui.js:546"
+  "at": "17_ui.js:547"
  },
  "Combine harvester service · {0}/acre": {
   "te": "కంబైన్ హార్వెస్టర్ సేవ · ఎకరానికి {0}",
-  "at": "17_ui.js:548"
+  "at": "17_ui.js:549"
  },
  "None of your crops are ready to harvest yet.": {
   "te": "మీ పంటలేవీ ఇంకా కోతకు సిద్ధం కాలేదు.",
-  "at": "17_ui.js:550"
+  "at": "17_ui.js:551"
  },
  "ac": {
   "te": "ఎ.",
-  "at": "17_ui.js:551"
+  "at": "17_ui.js:552"
  },
  "Harvest for {0}": {
   "te": "{0}కు కోయించండి",
-  "at": "17_ui.js:551"
+  "at": "17_ui.js:552"
  },
  "Spare parts": {
   "te": "విడిభాగాలు",
-  "at": "17_ui.js:552"
+  "at": "17_ui.js:553"
  },
  "have": {
   "te": "ఉన్నవి",
-  "at": "17_ui.js:553"
+  "at": "17_ui.js:554"
  },
  "Tractors & harvester": {
   "te": "ట్రాక్టర్లు & హార్వెస్టర్",
-  "at": "17_ui.js:555"
+  "at": "17_ui.js:556"
  },
  "Implements": {
   "te": "పనిముట్లు",
-  "at": "17_ui.js:556"
+  "at": "17_ui.js:557"
  },
  "Work width {0} m · up to {1} km/h": {
   "te": "పని వెడల్పు {0} మీ. · గంటకు {1} కి.మీ.",
-  "at": "17_ui.js:558"
+  "at": "17_ui.js:559"
  },
  "{0} delivered to your farm.": {
   "te": "{0} మీ పొలానికి చేరింది.",
-  "at": "17_ui.js:558"
+  "at": "17_ui.js:559"
  },
  "Attach implements standing next to your tractor (E → Change implement).": {
   "te": "ట్రాక్టర్ పక్కన నిలబడి పనిముట్టు మార్చండి (E → పనిముట్టు మార్చండి).",
-  "at": "17_ui.js:560"
+  "at": "17_ui.js:561"
  },
  "Repair & fuel": {
   "te": "మరమ్మతు & ఇంధనం",
-  "at": "17_ui.js:562"
+  "at": "17_ui.js:563"
  },
  "No motor vehicles yet.": {
   "te": "ఇంకా మోటారు వాహనాలు లేవు.",
-  "at": "17_ui.js:564"
+  "at": "17_ui.js:565"
  },
  "condition": {
   "te": "స్థితి",
-  "at": "17_ui.js:567"
+  "at": "17_ui.js:568"
  },
  "diesel": {
   "te": "డీజిల్",
-  "at": "17_ui.js:567"
+  "at": "17_ui.js:568"
  },
  "Repair": {
   "te": "మరమ్మతు",
-  "at": "17_ui.js:568"
+  "at": "17_ui.js:569"
  },
  "Fill diesel": {
   "te": "డీజిల్ నింపు",
-  "at": "17_ui.js:568"
+  "at": "17_ui.js:569"
  },
  "Bring the vehicle within 30 m of the workshop (or your garage) to service it.": {
   "te": "సర్వీస్ కోసం వాహనాన్ని వర్క్‌షాప్ (లేదా మీ షెడ్) 30 మీ. లోపు తీసుకురండి.",
-  "at": "17_ui.js:570"
+  "at": "17_ui.js:571"
  },
  "Kisan Motors": {
   "te": "కిసాన్ మోటార్స్",
-  "at": "17_ui.js:574"
+  "at": "17_ui.js:575"
  },
  "Bikes, pickups and tractors. Delivered to your farm.": {
   "te": "బైకులు, పికప్‌లు, ట్రాక్టర్లు. మీ ఇంటికి డెలివరీ.",
-  "at": "17_ui.js:574"
+  "at": "17_ui.js:575"
  },
  "Top speed {0} km/h{1}{2}": {
   "te": "గరిష్ట వేగం {0} కి.మీ.{1}{2}",
-  "at": "17_ui.js:580"
+  "at": "17_ui.js:581"
  },
  "Unlocks at ": {
   "te": "అన్‌లాక్: ",
-  "at": "17_ui.js:581"
+  "at": "17_ui.js:582"
  },
  "Bank loan limit: ": {
   "te": "బ్యాంకు రుణ పరిమితి: ",
-  "at": "17_ui.js:584"
+  "at": "17_ui.js:585"
  },
  "{0} delivered to your farm!": {
   "te": "{0} మీ పొలానికి చేరింది!",
-  "at": "17_ui.js:591"
+  "at": "17_ui.js:592"
  },
  "Ramapuram Gram Panchayat": {
   "te": "రామాపురం గ్రామ పంచాయతీ",
-  "at": "17_ui.js:596"
+  "at": "17_ui.js:597"
  },
  "Sarpanch Lakshmamma · Population {0} · Land value +{1}%": {
   "te": "సర్పంచ్ లక్ష్మమ్మ · జనాభా {0} · భూమి విలువ +{1}%",
-  "at": "17_ui.js:596"
+  "at": "17_ui.js:597"
  },
  "Invest your profits in the village. Every project grows the population, business activity and land value — and the village remembers who helped.": {
   "te": "మీ లాభాలను గ్రామంలో పెట్టుబడి పెట్టండి. ప్రతి ప్రాజెక్టు జనాభా, వ్యాపారం, భూమి విలువను పెంచుతుంది — సహాయం చేసినవారిని ఊరు గుర్తుంచుకుంటుంది.",
-  "at": "17_ui.js:597"
+  "at": "17_ui.js:598"
  },
  "+{0} people · land value +{1}% · {2} h to build": {
   "te": "+{0} మంది · భూమి విలువ +{1}% · {2} గం.",
-  "at": "17_ui.js:601"
+  "at": "17_ui.js:602"
  },
  "Completed": {
   "te": "పూర్తయింది",
-  "at": "17_ui.js:602"
+  "at": "17_ui.js:603"
  },
  "Under construction": {
   "te": "నిర్మాణంలో ఉంది",
-  "at": "17_ui.js:602"
+  "at": "17_ui.js:603"
  },
  "Fund project": {
   "te": "నిధులు ఇవ్వండి",
-  "at": "17_ui.js:602"
+  "at": "17_ui.js:603"
  },
  "Hanmanthu's loans": {
   "te": "హన్మంతు అప్పులు",
-  "at": "17_ui.js:611"
+  "at": "17_ui.js:612"
  },
  "Crop loans at 7% a year. Deposits earn 6.5%.": {
   "te": "పంట రుణాలు 7% వార్షిక వడ్డీ. డిపాజిట్లకు 6.5%.",
-  "at": "17_ui.js:611"
+  "at": "17_ui.js:612"
  },
  "Instant cash, no paperwork. 1.8% interest every day.": {
   "te": "పత్రాలు లేకుండా వెంటనే డబ్బు. రోజుకు 1.8% వడ్డీ.",
-  "at": "17_ui.js:611"
+  "at": "17_ui.js:612"
  },
  "Outstanding": {
   "te": "బాకీ",
-  "at": "17_ui.js:613"
+  "at": "17_ui.js:614"
  },
  "Can borrow": {
   "te": "తీసుకోవచ్చు",
-  "at": "17_ui.js:613"
+  "at": "17_ui.js:614"
  },
  "Your money": {
   "te": "మీ డబ్బు",
-  "at": "17_ui.js:613"
+  "at": "17_ui.js:614"
  },
  "Borrow ": {
   "te": "తీసుకోండి ",
-  "at": "17_ui.js:615"
+  "at": "17_ui.js:616"
  },
  "Repay ": {
   "te": "చెల్లించండి ",
-  "at": "17_ui.js:617"
+  "at": "17_ui.js:618"
  },
  "Repay all": {
   "te": "మొత్తం చెల్లించండి",
-  "at": "17_ui.js:617"
+  "at": "17_ui.js:618"
  },
  "Fixed deposit": {
   "te": "ఫిక్స్‌డ్ డిపాజిట్",
-  "at": "17_ui.js:619"
+  "at": "17_ui.js:620"
  },
  "Deposit ₹50,000": {
   "te": "₹50,000 డిపాజిట్",
-  "at": "17_ui.js:620"
+  "at": "17_ui.js:621"
  },
  "Withdraw all": {
   "te": "మొత్తం తీసుకోండి",
-  "at": "17_ui.js:620"
+  "at": "17_ui.js:621"
  },
  "Crop insurance": {
   "te": "పంట బీమా",
-  "at": "17_ui.js:621"
+  "at": "17_ui.js:622"
  },
  "2% premium at sowing. Pays out when weather ruins a crop.": {
   "te": "విత్తేటప్పుడు 2% ప్రీమియం. వాతావరణం పంటను నాశనం చేస్తే పరిహారం.",
-  "at": "17_ui.js:622"
+  "at": "17_ui.js:623"
  },
  "Insured — turn off": {
   "te": "బీమా ఉంది — ఆపండి",
-  "at": "17_ui.js:622"
+  "at": "17_ui.js:623"
  },
  "Insure my crops": {
   "te": "నా పంటలకు బీమా",
-  "at": "17_ui.js:622"
+  "at": "17_ui.js:623"
  },
  "Agricultural Market Yard": {
   "te": "వ్యవసాయ మార్కెట్ యార్డ్",
-  "at": "17_ui.js:628"
+  "at": "17_ui.js:629"
  },
  "Venkatesh's commission: 1% + ₹10/q hamali": {
   "te": "వెంకటేష్ కమీషన్: 1% + క్వింటాలుకు ₹10 హమాలీ",
-  "at": "17_ui.js:628"
+  "at": "17_ui.js:629"
  },
  "Grade {0} · you receive about {1}": {
   "te": "గ్రేడ్ {0} · సుమారు {1} వస్తుంది",
-  "at": "17_ui.js:632"
+  "at": "17_ui.js:633"
  },
  "Sell here": {
   "te": "ఇక్కడ అమ్మండి",
-  "at": "17_ui.js:633"
+  "at": "17_ui.js:634"
  },
  "Sold {0} q for {1}.": {
   "te": "{0} క్వి. {1}కు అమ్మారు.",
-  "at": "17_ui.js:633"
+  "at": "17_ui.js:634"
  },
  "City broker (+10%, ₹150/q truck)": {
   "te": "నగర బ్రోకర్ (+10%, క్వింటాలుకు ₹150 లారీ)",
-  "at": "17_ui.js:634"
+  "at": "17_ui.js:635"
  },
  "City broker paid {0}.": {
   "te": "నగర బ్రోకర్ {0} చెల్లించాడు.",
-  "at": "17_ui.js:634"
+  "at": "17_ui.js:635"
  },
  "Bring produce in a cart, trailer or pickup to sell it here.": {
   "te": "అమ్మడానికి బండి, ట్రాలీ లేదా పికప్‌లో పంట తీసుకురండి.",
-  "at": "17_ui.js:636"
+  "at": "17_ui.js:637"
  },
  "Today's yard prices": {
   "te": "నేటి యార్డు ధరలు",
-  "at": "17_ui.js:637"
+  "at": "17_ui.js:638"
  },
  "Crop": {
   "te": "పంట",
-  "at": "17_ui.js:638"
+  "at": "17_ui.js:639"
  },
  "Govt. procurement centre": {
   "te": "ప్రభుత్వ కొనుగోలు కేంద్రం",
-  "at": "17_ui.js:645"
+  "at": "17_ui.js:646"
  },
  "Minimum Support Price. Grade A/B only. Paid in 2 days.": {
   "te": "కనీస మద్దతు ధర. A/B గ్రేడ్ మాత్రమే. 2 రోజుల్లో చెల్లింపు.",
-  "at": "17_ui.js:645"
+  "at": "17_ui.js:646"
  },
  "Bring paddy, cotton, maize or groundnut in a vehicle.": {
   "te": "వరి, పత్తి, మొక్కజొన్న లేదా వేరుశెనగను వాహనంలో తీసుకురండి.",
-  "at": "17_ui.js:647"
+  "at": "17_ui.js:648"
  },
  "Procurement is closed now. It opens at harvest time (late Vanakalam and late Yasangi).": {
   "te": "ఇప్పుడు కొనుగోళ్లు లేవు. కోత సమయంలో తెరుస్తారు (వానాకాలం, యాసంగి చివర).",
-  "at": "17_ui.js:651"
+  "at": "17_ui.js:652"
  },
  "Grade C produce is not accepted here.": {
   "te": "C గ్రేడ్ పంటను ఇక్కడ తీసుకోరు.",
-  "at": "17_ui.js:651"
+  "at": "17_ui.js:652"
  },
  "Market price today: {0}/q": {
   "te": "ఈ రోజు మార్కెట్ ధర: {0}/క్వి.",
-  "at": "17_ui.js:651"
+  "at": "17_ui.js:652"
  },
  "Sell at MSP": {
   "te": "మద్దతు ధరకు అమ్మండి",
-  "at": "17_ui.js:652"
+  "at": "17_ui.js:653"
  },
  "Accepted {0} q. {1} will be paid in 2 days.": {
   "te": "{0} క్వి. తీసుకున్నారు. {1} 2 రోజుల్లో జమ అవుతుంది.",
-  "at": "17_ui.js:657"
+  "at": "17_ui.js:658"
  },
  "Payments due": {
   "te": "రావాల్సిన చెల్లింపులు",
-  "at": "17_ui.js:661"
+  "at": "17_ui.js:662"
  },
  "in": {
   "te": "",
-  "at": "17_ui.js:661"
+  "at": "17_ui.js:662"
  },
  "Sold {0} q at the santha for {1}.": {
   "te": "సంతలో {0} క్వి. {1}కు అమ్మారు.",
-  "at": "17_ui.js:665"
+  "at": "17_ui.js:666"
  },
  "Farm office": {
   "te": "వ్యవసాయ కార్యాలయం",
-  "at": "17_ui.js:671"
+  "at": "17_ui.js:672"
  },
  "Fields": {
   "te": "పొలాలు",
-  "at": "17_ui.js:672"
+  "at": "17_ui.js:673"
  },
  "Storage": {
   "te": "నిల్వ",
-  "at": "17_ui.js:673"
+  "at": "17_ui.js:674"
  },
  "Workers": {
   "te": "కూలీలు",
-  "at": "17_ui.js:674"
+  "at": "17_ui.js:675"
  },
  "Build": {
   "te": "నిర్మాణం",
-  "at": "17_ui.js:675"
+  "at": "17_ui.js:676"
  },
  "Market": {
   "te": "మార్కెట్",
-  "at": "17_ui.js:676"
+  "at": "17_ui.js:677"
  },
  "Finance": {
   "te": "ఆర్థికం",
-  "at": "17_ui.js:677"
+  "at": "17_ui.js:678"
  },
  "Trophies": {
   "te": "ట్రోఫీలు",
-  "at": "17_ui.js:679"
+  "at": "17_ui.js:680"
  },
  "Profile": {
   "te": "ప్రొఫైల్",
-  "at": "17_ui.js:680"
+  "at": "17_ui.js:681"
  },
  "Your fields · {0} acres": {
   "te": "మీ పొలాలు · {0} ఎకరాలు",
-  "at": "17_ui.js:685"
+  "at": "17_ui.js:686"
  },
  "leased till day ": {
   "te": "కౌలు రోజు ",
-  "at": "17_ui.js:690"
+  "at": "17_ui.js:691"
  },
  "owned": {
   "te": "సొంతం",
-  "at": "17_ui.js:690"
+  "at": "17_ui.js:691"
  },
  "borewell": {
   "te": "బోరు",
-  "at": "17_ui.js:690"
+  "at": "17_ui.js:691"
  },
  " (on)": {
   "te": " (నడుస్తోంది)",
-  "at": "17_ui.js:690"
+  "at": "17_ui.js:691"
  },
  "canal": {
   "te": "కాలువ",
-  "at": "17_ui.js:690"
+  "at": "17_ui.js:691"
  },
  "health": {
   "te": "ఆరోగ్యం",
-  "at": "17_ui.js:691"
+  "at": "17_ui.js:692"
  },
  "Empty · ploughed {0}%": {
   "te": "ఖాళీ · దున్నింది {0}%",
-  "at": "17_ui.js:691"
+  "at": "17_ui.js:692"
  },
  "Plan: none": {
   "te": "ప్రణాళిక: లేదు",
-  "at": "17_ui.js:694"
+  "at": "17_ui.js:695"
  },
  "Plan: ": {
   "te": "ప్రణాళిక: ",
-  "at": "17_ui.js:694"
+  "at": "17_ui.js:695"
  },
  "Drill borewell {0}": {
   "te": "బోరు వేయించండి {0}",
-  "at": "17_ui.js:696"
+  "at": "17_ui.js:697"
  },
  "Show on map": {
   "te": "మ్యాప్‌లో చూపు",
-  "at": "17_ui.js:697"
+  "at": "17_ui.js:698"
  },
  "Waypoint set.": {
   "te": "గమ్యం గుర్తించారు.",
-  "at": "17_ui.js:697"
+  "at": "17_ui.js:698"
  },
  "Set a planned crop so your workers know what to sow.": {
   "te": "మీ కూలీలు ఏమి విత్తాలో తెలియడానికి ప్రణాళిక పంట ఎంచుకోండి.",
-  "at": "17_ui.js:701"
+  "at": "17_ui.js:702"
  },
  "Land for sale or lease": {
   "te": "అమ్మకానికి లేదా కౌలుకు భూమి",
-  "at": "17_ui.js:702"
+  "at": "17_ui.js:703"
  },
  "Field": {
   "te": "పొలం",
-  "at": "17_ui.js:705"
+  "at": "17_ui.js:706"
  },
  "Acres": {
   "te": "ఎకరాలు",
-  "at": "17_ui.js:705"
+  "at": "17_ui.js:706"
  },
  "Soil": {
   "te": "నేల",
-  "at": "17_ui.js:705"
+  "at": "17_ui.js:706"
  },
  "Lease": {
   "te": "కౌలు",
-  "at": "17_ui.js:705"
+  "at": "17_ui.js:706"
  },
  "Red": {
   "te": "ఎర్ర",
-  "at": "17_ui.js:706"
+  "at": "17_ui.js:707"
  },
  "Black": {
   "te": "నల్ల",
-  "at": "17_ui.js:706"
+  "at": "17_ui.js:707"
  },
  "Go": {
   "te": "వెళ్ళు",
-  "at": "17_ui.js:706"
+  "at": "17_ui.js:707"
  },
  "Waypoint set to the field sign.": {
   "te": "పొలం బోర్డుకు గమ్యం గుర్తించారు.",
-  "at": "17_ui.js:706"
+  "at": "17_ui.js:707"
  },
  "Produce · {0}/{1} q": {
   "te": "పంట నిల్వ · {0}/{1} క్వి.",
-  "at": "17_ui.js:711"
+  "at": "17_ui.js:712"
  },
  "cold storage": {
   "te": "కోల్డ్ స్టోరేజ్",
-  "at": "17_ui.js:711"
+  "at": "17_ui.js:712"
  },
  "Nothing in storage. Drive a loaded cart or trailer into your yard to unload.": {
   "te": "నిల్వలో ఏమీ లేదు. నిండిన బండిని ఇంటి ఆవరణలోకి తెచ్చి దించండి.",
-  "at": "17_ui.js:712"
+  "at": "17_ui.js:713"
  },
  "Quintals": {
   "te": "క్వింటాళ్లు",
-  "at": "17_ui.js:714"
+  "at": "17_ui.js:715"
  },
  "Grade": {
   "te": "గ్రేడ్",
-  "at": "17_ui.js:714"
+  "at": "17_ui.js:715"
  },
  "Trader pays": {
   "te": "వ్యాపారి ధర",
-  "at": "17_ui.js:714"
+  "at": "17_ui.js:715"
  },
  "Sell 10 q": {
   "te": "10 క్వి. అమ్ము",
-  "at": "17_ui.js:715"
+  "at": "17_ui.js:716"
  },
  "Send by lorry: {0} → market yard": {
   "te": "లారీలో పంపండి: {0} → మార్కెట్ యార్డ్",
-  "at": "17_ui.js:718"
+  "at": "17_ui.js:719"
  },
  "A lorry gets the full market yard price for a small transport fee (₹150 + ₹30 a quintal). Selling here goes to the village trader (88%).": {
   "te": "లారీలో పంపితే చిన్న రవాణా ఖర్చుతో (₹150 + క్వింటాలుకు ₹30) పూర్తి యార్డు ధర వస్తుంది. ఇక్కడ అమ్మితే గ్రామ వ్యాపారికి (88%).",
-  "at": "17_ui.js:720"
+  "at": "17_ui.js:721"
  },
  "No supplies.": {
   "te": "సామాగ్రి లేదు.",
-  "at": "17_ui.js:727"
+  "at": "17_ui.js:728"
  },
  "Vehicles": {
   "te": "వాహనాలు",
-  "at": "17_ui.js:728"
+  "at": "17_ui.js:729"
  },
  "rented": {
   "te": "అద్దె",
-  "at": "17_ui.js:729"
+  "at": "17_ui.js:730"
  },
  "Find": {
   "te": "కనుగొను",
-  "at": "17_ui.js:729"
+  "at": "17_ui.js:730"
  },
  "Dairy": {
   "te": "పాడి",
-  "at": "17_ui.js:730"
+  "at": "17_ui.js:731"
  },
  "{0} buffaloes · ~{1} L milk a day · feed {2} bags": {
   "te": "{0} గేదెలు · రోజుకు ~{1} లీ. పాలు · దాణా {2} బస్తాలు",
-  "at": "17_ui.js:730"
+  "at": "17_ui.js:731"
  },
  "Buy buffalo ₹65,000": {
   "te": "గేదె కొనండి ₹65,000",
-  "at": "17_ui.js:730"
+  "at": "17_ui.js:731"
  },
  "Workers · {0}/{1} permanent": {
   "te": "కూలీలు · {0}/{1} శాశ్వత",
-  "at": "17_ui.js:734"
+  "at": "17_ui.js:735"
  },
  "Auto-buy seeds & supplies (+5%)": {
   "te": "విత్తనాలు & సామాగ్రి ఆటో-కొనుగోలు (+5%)",
-  "at": "17_ui.js:735"
+  "at": "17_ui.js:736"
  },
  "No one works for you yet. Workers plough, sow your planned crop, weed, spray, irrigate and harvest by themselves.": {
   "te": "ఇంకా ఎవరూ పనిలో లేరు. కూలీలు దున్నడం, ప్రణాళిక పంట విత్తడం, కలుపు, పిచికారీ, నీరు, కోత స్వయంగా చేస్తారు.",
-  "at": "17_ui.js:736"
+  "at": "17_ui.js:737"
  },
  "Any field (auto)": {
   "te": "ఏ పొలమైనా (ఆటో)",
-  "at": "17_ui.js:739"
+  "at": "17_ui.js:740"
  },
  "day": {
   "te": "రోజు",
-  "at": "17_ui.js:740"
+  "at": "17_ui.js:741"
  },
  "week": {
   "te": "వారం",
-  "at": "17_ui.js:740"
+  "at": "17_ui.js:741"
  },
  "Working: ": {
   "te": "పని: ",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "harvesting": {
   "te": "కోత",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "spraying": {
   "te": "పిచికారీ",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "weeding": {
   "te": "కలుపు",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "fertilizing": {
   "te": "ఎరువు",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "sowing": {
   "te": "విత్తడం",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "ploughing": {
   "te": "దున్నడం",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "irrigating": {
   "te": "నీరు",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "Waiting for work": {
   "te": "పని కోసం ఎదురుచూస్తున్నారు",
-  "at": "17_ui.js:741"
+  "at": "17_ui.js:742"
  },
  "Dismiss": {
   "te": "పంపించండి",
-  "at": "17_ui.js:742"
+  "at": "17_ui.js:743"
  },
  "Hire": {
   "te": "పనిలో పెట్టుకోండి",
-  "at": "17_ui.js:744"
+  "at": "17_ui.js:745"
  },
  "Works today until 6 PM.": {
   "te": "ఈ రోజు సాయంత్రం 6 వరకు పని.",
-  "at": "17_ui.js:746"
+  "at": "17_ui.js:747"
  },
  "Paid weekly. Hand work now; drives your tractor in a future update.": {
   "te": "వారానికి జీతం. ప్రస్తుతం చేతి పని.",
-  "at": "17_ui.js:746"
+  "at": "17_ui.js:747"
  },
  "Paid weekly. Lives on your farm.": {
   "te": "వారానికి జీతం. మీ పొలంలోనే ఉంటారు.",
-  "at": "17_ui.js:746"
+  "at": "17_ui.js:747"
  },
  "hours left": {
   "te": "గంటలు మిగిలాయి",
-  "at": "17_ui.js:751"
+  "at": "17_ui.js:752"
  },
  "Your home": {
   "te": "మీ ఇల్లు",
-  "at": "17_ui.js:752"
+  "at": "17_ui.js:753"
  },
  "Level": {
   "te": "స్థాయి",
-  "at": "17_ui.js:754"
+  "at": "17_ui.js:755"
  },
  "Storage {0} q · rest bonus ×{1}": {
   "te": "నిల్వ {0} క్వి. · విశ్రాంతి ×{1}",
-  "at": "17_ui.js:754"
+  "at": "17_ui.js:755"
  },
  "Next: {0} · storage {1} q · {2} h to build": {
   "te": "తదుపరి: {0} · నిల్వ {1} క్వి. · {2} గం.",
-  "at": "17_ui.js:755"
+  "at": "17_ui.js:756"
  },
  "Fully upgraded.": {
   "te": "పూర్తిగా అభివృద్ధి చేశారు.",
-  "at": "17_ui.js:755"
+  "at": "17_ui.js:756"
  },
  "Upgrade": {
   "te": "అప్‌గ్రేడ్",
-  "at": "17_ui.js:756"
+  "at": "17_ui.js:757"
  },
  "Farm buildings": {
   "te": "వ్యవసాయ నిర్మాణాలు",
-  "at": "17_ui.js:757"
+  "at": "17_ui.js:758"
  },
  "Built": {
   "te": "నిర్మించారు",
-  "at": "17_ui.js:759"
+  "at": "17_ui.js:760"
  },
  "Build · {0} h": {
   "te": "నిర్మించు · {0} గం.",
-  "at": "17_ui.js:759"
+  "at": "17_ui.js:760"
  },
  "Yard ₹/q": {
   "te": "యార్డు ₹/క్వి.",
-  "at": "17_ui.js:764"
+  "at": "17_ui.js:765"
  },
  "24h": {
   "te": "24గం",
-  "at": "17_ui.js:764"
+  "at": "17_ui.js:765"
  },
  "Last 20 days": {
   "te": "గత 20 రోజులు",
-  "at": "17_ui.js:764"
+  "at": "17_ui.js:765"
  },
  "Stored": {
   "te": "నిల్వ",
-  "at": "17_ui.js:764"
+  "at": "17_ui.js:765"
  },
  "Market news": {
   "te": "మార్కెట్ వార్తలు",
-  "at": "17_ui.js:771"
+  "at": "17_ui.js:772"
  },
  "No news yet.": {
   "te": "ఇంకా వార్తలు లేవు.",
-  "at": "17_ui.js:772"
+  "at": "17_ui.js:773"
  },
  "Selling a lot at once pushes the price down. Prices recover over a couple of days.": {
   "te": "ఒకేసారి ఎక్కువ అమ్మితే ధర తగ్గుతుంది. రెండు రోజుల్లో మళ్లీ కోలుకుంటుంది.",
-  "at": "17_ui.js:774"
+  "at": "17_ui.js:775"
  },
  "Cash": {
   "te": "నగదు",
-  "at": "17_ui.js:792"
+  "at": "17_ui.js:793"
  },
  "Bank crop loan": {
   "te": "బ్యాంకు పంట రుణం",
-  "at": "17_ui.js:793"
+  "at": "17_ui.js:794"
  },
  "Hanmanthu's loan": {
   "te": "హన్మంతు అప్పు",
-  "at": "17_ui.js:793"
+  "at": "17_ui.js:794"
  },
  "Bank loan limit": {
   "te": "బ్యాంకు రుణ పరిమితి",
-  "at": "17_ui.js:794"
+  "at": "17_ui.js:795"
  },
  "Payments due to you": {
   "te": "రావాల్సిన చెల్లింపులు",
-  "at": "17_ui.js:795"
+  "at": "17_ui.js:796"
  },
  "On": {
   "te": "ఉంది",
-  "at": "17_ui.js:796"
+  "at": "17_ui.js:797"
  },
  "Off": {
   "te": "లేదు",
-  "at": "17_ui.js:796"
+  "at": "17_ui.js:797"
  },
  "Lifetime farm income": {
   "te": "మొత్తం వ్యవసాయ ఆదాయం",
-  "at": "17_ui.js:797"
+  "at": "17_ui.js:798"
  },
  "Total spent": {
   "te": "మొత్తం ఖర్చు",
-  "at": "17_ui.js:797"
+  "at": "17_ui.js:798"
  },
  "Loans and deposits: the cooperative bank in Nagaram (take the bus) or Hanmanthu in the village. Owned land earns ₹5,000/acre investment support every season.": {
   "te": "రుణాలు, డిపాజిట్లు: నగరంలోని సహకార బ్యాంకు (బస్సులో వెళ్ళండి) లేదా గ్రామంలో హన్మంతు. సొంత భూమికి ప్రతి సీజన్ ఎకరానికి ₹5,000 పెట్టుబడి సాయం.",
-  "at": "17_ui.js:799"
+  "at": "17_ui.js:800"
  },
  "Following now": {
   "te": "ఇప్పుడు ఇదే",
-  "at": "17_ui.js:806"
+  "at": "17_ui.js:807"
  },
  "Follow this mission": {
   "te": "ఈ లక్ష్యాన్ని అనుసరించండి",
-  "at": "17_ui.js:806"
+  "at": "17_ui.js:807"
  },
  "Completed · {0}": {
   "te": "పూర్తయినవి · {0}",
-  "at": "17_ui.js:808"
+  "at": "17_ui.js:809"
  },
  "Next: ": {
   "te": "తదుపరి: ",
-  "at": "17_ui.js:813"
+  "at": "17_ui.js:814"
  },
  "You lead an agricultural company!": {
   "te": "మీరు ఒక వ్యవసాయ కంపెనీని నడుపుతున్నారు!",
-  "at": "17_ui.js:813"
+  "at": "17_ui.js:814"
  },
  "Stats": {
   "te": "గణాంకాలు",
-  "at": "17_ui.js:815"
+  "at": "17_ui.js:816"
  },
  "Days farmed": {
   "te": "వ్యవసాయ రోజులు",
-  "at": "17_ui.js:818"
+  "at": "17_ui.js:819"
  },
  "Harvested": {
   "te": "కోసింది",
-  "at": "17_ui.js:818"
+  "at": "17_ui.js:819"
  },
  "Sold: ": {
   "te": "అమ్మింది: ",
-  "at": "17_ui.js:819"
+  "at": "17_ui.js:820"
  },
  "Milk sold": {
   "te": "అమ్మిన పాలు",
-  "at": "17_ui.js:820"
+  "at": "17_ui.js:821"
  },
  "Missions completed": {
   "te": "పూర్తి చేసిన లక్ష్యాలు",
-  "at": "17_ui.js:820"
+  "at": "17_ui.js:821"
  },
  "Village projects funded": {
   "te": "గ్రామ ప్రాజెక్టులు",
-  "at": "17_ui.js:821"
+  "at": "17_ui.js:822"
  },
  "Relationships": {
   "te": "సంబంధాలు",
-  "at": "17_ui.js:823"
+  "at": "17_ui.js:824"
  },
  "Map": {
   "te": "మ్యాప్",
-  "at": "17_ui.js:830"
+  "at": "17_ui.js:831"
  },
  "Menu": {
   "te": "మెనూ",
-  "at": "17_ui.js:835"
+  "at": "17_ui.js:836"
  },
  "Graphics": {
   "te": "గ్రాఫిక్స్",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "Low": {
   "te": "తక్కువ",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "Medium": {
   "te": "మధ్యస్థం",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "High": {
   "te": "ఎక్కువ",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "Ultra": {
   "te": "అల్ట్రా",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "Cinematic": {
   "te": "సినిమాటిక్",
-  "at": "17_ui.js:839"
+  "at": "17_ui.js:840"
  },
  "Language": {
   "te": "భాష",
-  "at": "17_ui.js:840"
+  "at": "17_ui.js:841"
  },
  "Game speed": {
   "te": "ఆట వేగం",
-  "at": "17_ui.js:841"
+  "at": "17_ui.js:842"
  },
  "Difficulty": {
   "te": "కష్టం",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Easy": {
   "te": "సులభం",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Normal": {
   "te": "సాధారణం",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Easy mode: crops forgive mistakes and you tire slowly.": {
   "te": "సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Normal mode: real farming.": {
   "te": "సాధారణ మోడ్: నిజమైన వ్యవసాయం.",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Master volume": {
   "te": "మొత్తం శబ్దం",
-  "at": "17_ui.js:844"
+  "at": "17_ui.js:845"
  },
  "Music": {
   "te": "సంగీతం",
-  "at": "17_ui.js:844"
+  "at": "17_ui.js:845"
  },
  "Ambience": {
   "te": "పరిసర శబ్దాలు",
-  "at": "17_ui.js:844"
+  "at": "17_ui.js:845"
  },
  "Effects": {
   "te": "ఎఫెక్ట్స్",
-  "at": "17_ui.js:844"
+  "at": "17_ui.js:845"
  },
  "Camera speed": {
   "te": "కెమెరా వేగం",
-  "at": "17_ui.js:845"
+  "at": "17_ui.js:846"
  },
  "Voice guide": {
   "te": "వాయిస్ గైడ్",
-  "at": "17_ui.js:847"
+  "at": "17_ui.js:848"
  },
  "Frame rate": {
   "te": "ఫ్రేమ్ రేట్",
-  "at": "17_ui.js:848"
+  "at": "17_ui.js:849"
  },
  "60 smooth": {
   "te": "60 స్మూత్",
-  "at": "17_ui.js:848"
+  "at": "17_ui.js:849"
  },
  "30 battery": {
   "te": "30 బ్యాటరీ",
-  "at": "17_ui.js:848"
+  "at": "17_ui.js:849"
  },
  "Options": {
   "te": "ఎంపికలు",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Invert camera Y": {
   "te": "కెమెరా Y తిప్పు",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Camera follows you": {
   "te": "కెమెరా మిమ్మల్ని అనుసరిస్తుంది",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Hold left mouse to work": {
   "te": "ఎడమ మౌస్‌తో పని",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Show FPS": {
   "te": "FPS చూపు",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Helpers": {
   "te": "సహాయకాలు",
-  "at": "17_ui.js:851"
+  "at": "17_ui.js:852"
  },
  "“Do it for me” button": {
   "te": "“నా బదులు చేయి” బటన్",
-  "at": "17_ui.js:851"
+  "at": "17_ui.js:852"
  },
  "Tap the ground to walk": {
   "te": "నేలపై నొక్కితే నడక",
-  "at": "17_ui.js:851"
+  "at": "17_ui.js:852"
  },
  "Screen": {
   "te": "స్క్రీన్",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "Exit full screen": {
   "te": "ఫుల్ స్క్రీన్ ఆపు",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "Full screen": {
   "te": "ఫుల్ స్క్రీన్",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "Invite friends": {
   "te": "స్నేహితులను ఆహ్వానించండి",
-  "at": "17_ui.js:856"
+  "at": "17_ui.js:857"
  },
  "Controls": {
   "te": "నియంత్రణలు",
-  "at": "17_ui.js:857"
+  "at": "17_ui.js:858"
  },
  "Main menu": {
   "te": "ముఖ్య మెనూ",
-  "at": "17_ui.js:858"
+  "at": "17_ui.js:859"
  },
  "Turn on cloud save": {
   "te": "క్లౌడ్ సేవ్ ఆన్ చేయండి",
-  "at": "17_ui.js:860"
+  "at": "17_ui.js:861"
  },
  "Left stick": {
   "te": "ఎడమ స్టిక్",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Walk; push it all the way to run": {
   "te": "నడవండి; పూర్తిగా నెడితే పరుగు",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Drag right side": {
   "te": "కుడివైపు లాగండి",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Look around, pinch to zoom": {
   "te": "చుట్టూ చూడండి, జూమ్ కోసం పించ్",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests": {
   "te": "పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Use": {
   "te": "వాడు",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Talk, shop, drive, buy seeds, rest, get off": {
   "te": "మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Gold arrow": {
   "te": "బంగారు బాణం",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Always points to your next goal": {
   "te": "మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Tap a place, then take an auto straight there": {
   "te": "ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Lower or raise implement": {
   "te": "పనిముట్టు దించు/ఎత్తు",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Switch camera view": {
   "te": "కెమెరా మార్చు",
-  "at": "17_ui.js:866"
+  "at": "17_ui.js:867"
  },
  "Walk / drive": {
   "te": "నడవండి / నడపండి",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Run": {
   "te": "పరుగు",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Jump / brake": {
   "te": "దూకు / బ్రేక్",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Mouse drag, wheel": {
   "te": "మౌస్ లాగడం, వీల్",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Look around, zoom": {
   "te": "చూడండి, జూమ్",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Hold on your field: Auto does the next job": {
   "te": "పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది",
-  "at": "17_ui.js:868"
+  "at": "17_ui.js:869"
  },
  "Auto, hoe, seeds, fertilizer, sprayer, sickle": {
   "te": "ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Switch seed / fertilizer / chemical": {
   "te": "విత్తనం / ఎరువు / మందు మార్చు",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Horn / headlights": {
   "te": "హారన్ / లైట్లు",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "First / third person": {
   "te": "ఫస్ట్ / థర్డ్ పర్సన్",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Farm office / storage": {
   "te": "వ్యవసాయ కార్యాలయం / నిల్వ",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Photo mode": {
   "te": "ఫోటో మోడ్",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Menu & settings": {
   "te": "మెనూ & సెట్టింగ్‌లు",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Tip: follow the gold arrow. When the crop is growing and there is nothing to do, use “Rest” on your field to jump ahead.": {
   "te": "చిట్కా: బంగారు బాణాన్ని అనుసరించండి. పంట పెరుగుతూ పని లేనప్పుడు పొలంలో 'విశ్రాంతి' వాడి సమయం ముందుకు జరపండి.",
-  "at": "17_ui.js:873"
+  "at": "17_ui.js:874"
  },
  "Take photo": {
   "te": "ఫోటో తీయండి",
-  "at": "17_ui.js:887"
+  "at": "17_ui.js:888"
  },
  "Back": {
   "te": "వెనక్కి",
-  "at": "17_ui.js:888"
+  "at": "17_ui.js:889"
  },
  "Photo mode: drag to frame your shot, then tap Take photo": {
   "te": "ఫోటో మోడ్: లాగి చిత్రాన్ని సరిచేసి, ఫోటో తీయండి నొక్కండి",
-  "at": "17_ui.js:891"
+  "at": "17_ui.js:892"
  },
  "Photo mode: frame your shot, then click Take photo (P to return)": {
   "te": "ఫోటో మోడ్: చిత్రాన్ని సరిచేసి ఫోటో తీయండి నొక్కండి (తిరిగి రావడానికి P)",
-  "at": "17_ui.js:891"
+  "at": "17_ui.js:892"
+ },
+ "Auto run · tap to stop": {
+  "te": "ఆటో పరుగు · ఆపడానికి నొక్కండి",
+  "at": "17_ui.js:957"
+ },
+ "Auto run": {
+  "te": "ఆటో పరుగు",
+  "at": "17_ui.js:957"
+ },
+ "Auto run on: turn the camera to steer. Touch the stick to stop.": {
+  "te": "ఆటో పరుగు ఆన్: దిశ మార్చడానికి కెమెరా తిప్పండి. ఆపడానికి స్టిక్ తాకండి.",
+  "at": "17_ui.js:958"
  },
  "Raise": {
   "te": "ఎత్తు",
-  "at": "17_ui.js:953"
+  "at": "17_ui.js:969"
  },
  "Lower": {
   "te": "దించు",
-  "at": "17_ui.js:953"
+  "at": "17_ui.js:969"
  },
  "Horn": {
   "te": "హారన్",
-  "at": "17_ui.js:953"
+  "at": "17_ui.js:969"
  },
  "Type": {
   "te": "రకం",
-  "at": "17_ui.js:953"
+  "at": "17_ui.js:969"
  },
  "View": {
   "te": "వ్యూ",
-  "at": "17_ui.js:954"
+  "at": "17_ui.js:970"
  },
  "Brake": {
   "te": "బ్రేక్",
-  "at": "17_ui.js:955"
+  "at": "17_ui.js:971"
  },
  "Jump": {
   "te": "దూకు",
-  "at": "17_ui.js:955"
+  "at": "17_ui.js:971"
  },
  "Full screen on iPhone: ": {
   "te": "ఐఫోన్‌లో ఫుల్ స్క్రీన్: ",
-  "at": "17_ui.js:981"
+  "at": "17_ui.js:997"
  },
  "tap Share, then “Add to Home Screen”, and open the game from your home screen.": {
   "te": "షేర్ నొక్కి “Add to Home Screen” ఎంచుకోండి, తర్వాత హోమ్ స్క్రీన్ నుంచి ఆట తెరవండి.",
-  "at": "17_ui.js:981"
+  "at": "17_ui.js:997"
  },
  "Continue": {
   "te": "కొనసాగించండి",
-  "at": "17_ui.js:985"
+  "at": "17_ui.js:1001"
  },
  "New game": {
   "te": "కొత్త ఆట",
-  "at": "17_ui.js:986"
+  "at": "17_ui.js:1002"
  },
  "Raju": {
   "te": "రాజు",
-  "at": "17_ui.js:992"
+  "at": "17_ui.js:1008"
  },
  "Radha": {
   "te": "రాధ",
-  "at": "17_ui.js:992"
+  "at": "17_ui.js:1008"
  },
  "Your name": {
   "te": "మీ పేరు",
-  "at": "17_ui.js:992"
+  "at": "17_ui.js:1008"
  },
  "Farmer (man)": {
   "te": "రైతు (పురుషుడు)",
-  "at": "17_ui.js:994"
+  "at": "17_ui.js:1010"
  },
  "Farmer (woman)": {
   "te": "రైతు (స్త్రీ)",
-  "at": "17_ui.js:994"
+  "at": "17_ui.js:1010"
  },
  "Best for kids & first time": {
   "te": "పిల్లలకు, కొత్తవారికి",
-  "at": "17_ui.js:998"
+  "at": "17_ui.js:1014"
  },
  "Real farming": {
   "te": "నిజమైన వ్యవసాయం",
-  "at": "17_ui.js:998"
+  "at": "17_ui.js:1014"
  },
  "Start farming": {
   "te": "వ్యవసాయం మొదలుపెట్టండి",
-  "at": "17_ui.js:1000"
+  "at": "17_ui.js:1016"
  },
  "Show me seeds and fertilizer": {
   "te": "విత్తనాలు, ఎరువులు చూపించండి",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "What do you have?": {
   "te": "ఏమేమి ఉన్నాయి?",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "One chai, please": {
   "te": "ఒక చాయ్ ఇవ్వండి",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "About tractors…": {
   "te": "ట్రాక్టర్ల గురించి…",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "Today's prices?": {
   "te": "ఈ రోజు ధరలు?",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "I don't feel well": {
   "te": "నాకు ఒంట్లో బాగాలేదు",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "Village development": {
   "te": "గ్రామాభివృద్ధి",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "I need a loan": {
   "te": "నాకు అప్పు కావాలి",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "Loans and deposits": {
   "te": "రుణాలు, డిపాజిట్లు",
-  "at": "17_ui.js:1023"
+  "at": "17_ui.js:1039"
  },
  "Namaskaram, {0}! Ramapuram grows when its farmers grow. {1}": {
   "te": "నమస్కారం {0} గారూ! రైతులు ఎదిగితేనే రామాపురం ఎదుగుతుంది. {1}",
-  "at": "17_ui.js:1024"
+  "at": "17_ui.js:1040"
  },
  "Money? I always have money. Just remember — interest every single day.": {
   "te": "డబ్బా? నా దగ్గర ఎప్పుడూ ఉంటుంది. గుర్తుంచుకోండి — వడ్డీ ప్రతి రోజూ.",
-  "at": "17_ui.js:1026"
+  "at": "17_ui.js:1042"
  },
  "A tractor ploughs in an hour what bullocks plough in a day. Rent one, or buy a Bhoomi 35.": {
   "te": "ఎడ్లు రోజంతా దున్నేది ట్రాక్టర్ గంటలో దున్నుతుంది. అద్దెకు తీసుకోండి, లేదా భూమి 35 కొనండి.",
-  "at": "17_ui.js:1027"
+  "at": "17_ui.js:1043"
  },
  "Anna! Will you take us to the fields?": {
   "te": "అన్నా! మమ్మల్ని పొలానికి తీసుకెళ్తావా?",
-  "at": "17_ui.js:1028"
+  "at": "17_ui.js:1044"
  },
  "School was fun today. Ravi Sir taught us about rain!": {
   "te": "ఈ రోజు బడిలో బాగుంది. రవి సార్ వాన గురించి నేర్పారు!",
-  "at": "17_ui.js:1028"
+  "at": "17_ui.js:1044"
  },
  "Can I ride the bullock cart?": {
   "te": "నేను ఎడ్లబండి ఎక్కొచ్చా?",
-  "at": "17_ui.js:1028"
+  "at": "17_ui.js:1044"
  },
  "Any advice?": {
   "te": "ఏదైనా సలహా?",
-  "at": "17_ui.js:1030"
+  "at": "17_ui.js:1046"
  },
  "Goodbye": {
   "te": "సెలవు",
-  "at": "17_ui.js:1031"
+  "at": "17_ui.js:1047"
  },
  "Village kid": {
   "te": "ఊరి పిల్లవాడు",
-  "at": "17_ui.js:1036"
+  "at": "17_ui.js:1052"
  },
  "Villager": {
   "te": "గ్రామస్తుడు",
-  "at": "17_ui.js:1036"
+  "at": "17_ui.js:1052"
  },
  "Friendship: ": {
   "te": "స్నేహం: ",
-  "at": "17_ui.js:1041"
+  "at": "17_ui.js:1057"
  },
  "I saw {0} in your {1}. Spray today, not tomorrow.": {
   "te": "మీ {0}లో {1} చూశాను. రేపు కాదు, ఈ రోజే పిచికారీ చేయండి.",
-  "at": "17_ui.js:1049"
+  "at": "17_ui.js:1065"
  },
  "Your {0} is thirsty. {1}": {
   "te": "మీ {0}కు నీరు కావాలి. {1}",
-  "at": "17_ui.js:1050"
+  "at": "17_ui.js:1066"
  },
  "Your {0} is ready. Don't leave it standing — it loses quality every day.": {
   "te": "మీ {0} కోతకు సిద్ధం. అలాగే వదిలేయకండి — రోజురోజుకు నాణ్యత తగ్గుతుంది.",
-  "at": "17_ui.js:1051"
+  "at": "17_ui.js:1067"
  },
  "Weeds are taking over {0}. Use the hoe or herbicide.": {
   "te": "{0}లో కలుపు పెరిగిపోయింది. పార లేదా కలుపు మందు వాడండి.",
-  "at": "17_ui.js:1052"
+  "at": "17_ui.js:1068"
  },
  "{0} looks pale. It needs urea or DAP.": {
   "te": "{0} పాలిపోయినట్టుంది. యూరియా లేదా డీఏపీ వేయండి.",
-  "at": "17_ui.js:1053"
+  "at": "17_ui.js:1069"
  },
  "Your harvest is getting wet in the open! Move it into storage.": {
   "te": "మీ పంట కుప్ప వానలో తడుస్తోంది! నిల్వలోకి తరలించండి.",
-  "at": "17_ui.js:1054"
+  "at": "17_ui.js:1070"
  },
  "This season {0} does well, and its price is {1}.": {
   "te": "ఈ సీజన్‌లో {0} బాగా పండుతుంది, ధర {1}.",
-  "at": "17_ui.js:1058"
+  "at": "17_ui.js:1074"
  },
  "Kirana": {
   "te": "కిరాణం",
-  "at": "17_ui.js:1067"
+  "at": "17_ui.js:1083"
  },
  "Tractor workshop": {
   "te": "ట్రాక్టర్ వర్క్‌షాప్",
-  "at": "17_ui.js:1068"
+  "at": "17_ui.js:1084"
  },
  "Health centre": {
   "te": "ఆరోగ్య కేంద్రం",
-  "at": "17_ui.js:1069"
+  "at": "17_ui.js:1085"
  },
  "Bus stop": {
   "te": "బస్ స్టాప్",
-  "at": "17_ui.js:1070"
+  "at": "17_ui.js:1086"
  },
  "Town bus stand": {
   "te": "పట్టణ బస్ స్టాండ్",
-  "at": "17_ui.js:1071"
+  "at": "17_ui.js:1087"
  },
  "Petrol bunk": {
   "te": "పెట్రోల్ బంక్",
-  "at": "17_ui.js:1073"
+  "at": "17_ui.js:1089"
  },
  "Dhaba": {
   "te": "దాబా",
-  "at": "17_ui.js:1074"
+  "at": "17_ui.js:1090"
  },
  "Hill shrine": {
   "te": "గుట్ట గుడి",
-  "at": "17_ui.js:1075"
+  "at": "17_ui.js:1091"
  },
  "Waypoint": {
   "te": "గమ్యం",
-  "at": "17_ui.js:1246"
+  "at": "17_ui.js:1262"
  },
  "Map of the mandal": {
   "te": "మండలం మ్యాప్",
-  "at": "17_ui.js:1319"
+  "at": "17_ui.js:1335"
  },
  "Zoom in": {
   "te": "జూమ్ ఇన్",
-  "at": "17_ui.js:1322"
+  "at": "17_ui.js:1338"
  },
  "Zoom out": {
   "te": "జూమ్ అవుట్",
-  "at": "17_ui.js:1322"
+  "at": "17_ui.js:1338"
  },
  "Centre on me": {
   "te": "నా దగ్గరికి",
-  "at": "17_ui.js:1323"
+  "at": "17_ui.js:1339"
  },
  "You": {
   "te": "మీరు",
-  "at": "17_ui.js:1327"
+  "at": "17_ui.js:1343"
  },
  "Your fields": {
   "te": "మీ పొలాలు",
-  "at": "17_ui.js:1327"
+  "at": "17_ui.js:1343"
  },
  "For sale / lease": {
   "te": "అమ్మకం / కౌలు",
-  "at": "17_ui.js:1327"
+  "at": "17_ui.js:1343"
  },
  "Marked spot": {
   "te": "గుర్తు పెట్టిన చోటు",
-  "at": "17_ui.js:1374"
+  "at": "17_ui.js:1390"
  },
  "Where to?": {
   "te": "ఎక్కడికి?",
-  "at": "17_ui.js:1383"
+  "at": "17_ui.js:1399"
  },
  "Tap a place on the map. The gold arrow will lead you there, or take an auto straight there.": {
   "te": "మ్యాప్‌లో ఒక చోటు నొక్కండి. బంగారు బాణం దారి చూపిస్తుంది, లేదా ఆటోలో నేరుగా వెళ్ళండి.",
-  "at": "17_ui.js:1383"
+  "at": "17_ui.js:1399"
  },
  "Now heading to: ": {
   "te": "ఇప్పుడు వెళ్తున్నది: ",
-  "at": "17_ui.js:1384"
+  "at": "17_ui.js:1400"
  },
  " away · the gold arrow now points here": {
   "te": " దూరం · బంగారు బాణం ఇటు చూపిస్తుంది",
-  "at": "17_ui.js:1389"
+  "at": "17_ui.js:1405"
  },
  "Drive there now ({0} min)": {
   "te": "ఇప్పుడే అక్కడికి నడపండి ({0} నిమి.)",
-  "at": "17_ui.js:1391"
+  "at": "17_ui.js:1407"
  },
  "Take an auto there ({0})": {
   "te": "ఆటోలో వెళ్ళండి ({0})",
-  "at": "17_ui.js:1391"
+  "at": "17_ui.js:1407"
  },
  "Walk with the arrow": {
   "te": "బాణంతో నడవండి",
-  "at": "17_ui.js:1392"
+  "at": "17_ui.js:1408"
  },
  "Clear target": {
   "te": "గమ్యం తీసేయండి",
-  "at": "17_ui.js:1393"
+  "at": "17_ui.js:1409"
  },
  "Ramapuram": {
   "te": "రామాపురం",
-  "at": "17_ui.js:1427"
+  "at": "17_ui.js:1443"
  },
  "Seethampet": {
   "te": "సీతంపేట",
-  "at": "17_ui.js:1427"
+  "at": "17_ui.js:1443"
  },
  "Nagaram town": {
   "te": "నగరం పట్టణం",
-  "at": "17_ui.js:1427"
+  "at": "17_ui.js:1443"
  },
  "Pedda Cheruvu": {
   "te": "పెద్ద చెరువు",
-  "at": "17_ui.js:1427"
+  "at": "17_ui.js:1443"
  },
  "Highway": {
   "te": "హైవే",
-  "at": "17_ui.js:1427"
+  "at": "17_ui.js:1443"
  },
  "Shabash!": {
   "te": "శభాష్!",

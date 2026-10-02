@@ -2,7 +2,7 @@
 // Input, player controller, cameras, interactions
 // ============================================================================
 const Input = {
-  keys: {}, pressedQ: new Set(), mdx: 0, mdy: 0, wheel: 0, dragging: false, joy: { x: 0, y: 0, active: false }, drive: { l: 0, r: 0, u: 0, d: 0 }, look: { dx: 0, dy: 0 }, work: false, run: false, brake: false, lastInputAt: 0, pinch: 0,
+  keys: {}, pressedQ: new Set(), mdx: 0, mdy: 0, wheel: 0, dragging: false, joy: { x: 0, y: 0, active: false }, autoRun: false, drive: { l: 0, r: 0, u: 0, d: 0 }, look: { dx: 0, dy: 0 }, work: false, run: false, brake: false, lastInputAt: 0, pinch: 0,
   init() {
     const typing = (e) => { const t = e.target; return t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable); };
     window.addEventListener('keydown', (e) => {
@@ -62,6 +62,9 @@ const Input = {
     if (this.joy.active) { x += this.joy.x; y += this.joy.y; }
     const l = Math.hypot(x, y); if (l > 1) { x /= l; y /= l; }
     // on-screen driving buttons: full throttle and full steering together (no diagonal scaling)
+    // auto run: keep going forward (where the camera looks) until the stick is touched again
+    if (this.autoRun && !this.joy.active) { y = 1; x = 0; }
+    if (this.autoRun && (this.down('KeyW') || this.down('KeyS') || this.down('ArrowUp') || this.down('ArrowDown'))) { this.autoRun = false; this.run = false; }
     const dr = this.drive; if (dr.l || dr.r || dr.u || dr.d) { x = clamp(x + dr.r - dr.l, -1, 1); y = clamp(y + dr.u - dr.d, -1, 1); }
     return { x, y };
   },

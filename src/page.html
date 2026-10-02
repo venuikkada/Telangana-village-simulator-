@@ -566,6 +566,14 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   #tbtns #tbRun { right: 262px; bottom: 24px; width: 90px; height: 90px; font-size: 17px; }
   #tbtns #tbWork { right: 248px; bottom: 128px; width: 118px; height: 118px; font-size: 22px; }
 }
+/* auto run (sprint lock) above the stick */
+#autorun { position: absolute; left: calc(var(--sl) + 40px); bottom: calc(var(--sb) + 172px); display: flex; align-items: center; gap: 6px; padding: 7px 12px 7px 8px; border-radius: 99px; background: rgba(20, 22, 34, .5); color: #fff; border: 2px solid rgba(255,255,255,.55); font: 800 13px/1 var(--font-body); pointer-events: auto; touch-action: none; transition: transform .12s, background .12s; }
+#autorun svg { width: 26px; height: 26px; }
+#autorun.ready { background: rgba(242, 181, 45, .95); color: #1c1405; transform: scale(1.12); }
+#autorun.on { background: rgba(47, 125, 58, .9); border-color: #fff; animation: arpulse 1.2s ease-in-out infinite; }
+@keyframes arpulse { 50% { box-shadow: 0 0 0 6px rgba(47, 125, 58, .25); } }
+@media (pointer: coarse) and (max-height: 400px) { #autorun { bottom: calc(var(--sb) + 132px); left: calc(var(--sl) + 24px); } }
+@media (pointer: coarse) and (min-width: 761px) and (min-height: 521px) { #autorun { bottom: calc(var(--sb) + 200px); left: calc(var(--sl) + 50px); } }
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
@@ -613,6 +621,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
       <div class="dsteer"><button class="db" id="dL" type="button" aria-label="Steer left"><svg viewBox="0 0 24 24"><path d="M15 4L7 12l8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db" id="dR" type="button" aria-label="Steer right"><svg viewBox="0 0 24 24"><path d="M9 4l8 8-8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
       <div class="dgas"><button class="db up" id="dU" type="button" aria-label="Accelerate"><svg viewBox="0 0 24 24"><path d="M4 15l8-8 8 8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="db dn" id="dD" type="button" aria-label="Brake and reverse"><svg viewBox="0 0 24 24"><path d="M4 9l8 8 8-8" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>
     </div>
+    <div id="autorun" hidden role="button" aria-label="Auto run"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="14" cy="4" r="2.2" fill="currentColor"/><path d="M9 21l2.5-6 3 2.5V22M6 12l3.5-4h4.5l3 4.5M11.5 8L10 14.5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span>Auto run</span></div>
     <div id="joy"><div id="knob"></div></div>
     <div id="tbtns">
       <button class="tb" id="tbG">Type</button>
