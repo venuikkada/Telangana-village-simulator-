@@ -51,7 +51,7 @@ const ALL = {
           if (ox > 2 && oy > 2) bad.push(`${keys[i]}×${keys[j]} ${ox}x${oy}`);
         }
         for (const k of keys) { const a = box[k]; if (a[0] < -1 || a[1] < -1 || a[2] > W + 1 || a[3] > H + 1) bad.push(`${k} off-screen ${a}`); }
-        const coach = document.getElementById('coach');
+        const coach = document.getElementById('missions');
         return { W, H, touch: document.documentElement.classList.contains('touch'), a2hs: !document.getElementById('a2hs').hidden, coach: coach.hidden ? '(hidden)' : coach.textContent, card: document.getElementById('missions').textContent.slice(0, 120), bad, box };
       });
       console.log(`\n[${name}] ${r.W}x${r.H} touch=${r.touch} coach="${r.coach}"`);

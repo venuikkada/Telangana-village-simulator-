@@ -1,7 +1,7 @@
 {
   "name": "Indian Village Simulator",
   "short_name": "Indian Village",
-  "description": "Free 3D farming game set in an Indian village. English and 12 Indian languages.",
+  "description": "Free 3D farming game set in an Indian village. English, Hindi, Bengali, Marathi, Telugu, Tamil and Kannada.",
   "start_url": "./",
   "scope": "./",
   "display": "fullscreen",

@@ -94,13 +94,7 @@ const LANGS = [
   { id: 'mr', name: 'मराठी', en: 'Marathi', disp: 'Baloo 2', body: 'Hind' },
   { id: 'te', name: 'తెలుగు', en: 'Telugu' },
   { id: 'ta', name: 'தமிழ்', en: 'Tamil', disp: 'Baloo Thambi 2', body: 'Hind Madurai' },
-  { id: 'gu', name: 'ગુજરાતી', en: 'Gujarati', disp: 'Baloo Bhai 2', body: 'Hind Vadodara' },
   { id: 'kn', name: 'ಕನ್ನಡ', en: 'Kannada', disp: 'Baloo Tamma 2', body: 'Hind Mysuru' },
-  { id: 'ml', name: 'മലയാളം', en: 'Malayalam', disp: 'Baloo Chettan 2', body: 'Noto Sans Malayalam' },
-  { id: 'pa', name: 'ਪੰਜਾਬੀ', en: 'Punjabi', disp: 'Baloo Paaji 2', body: 'Noto Sans Gurmukhi' },
-  { id: 'or', name: 'ଓଡ଼ିଆ', en: 'Odia', disp: 'Baloo Bhaina 2', body: 'Noto Sans Oriya' },
-  { id: 'as', name: 'অসমীয়া', en: 'Assamese', disp: 'Baloo Da 2', body: 'Hind Siliguri' },
-  { id: 'ur', name: 'اردو', en: 'Urdu', disp: 'Baloo Bhaijaan 2', body: 'Noto Sans Arabic', rtl: true },
 ];
 const I18N = { dict: null, lang: 'en', cache: {} };
 const TR = (en) => { const d = I18N.dict; const t = d && d[en]; return t || en; };

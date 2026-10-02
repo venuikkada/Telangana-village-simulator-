@@ -1,10 +1,10 @@
-# Telangana Village Simulator · తెలంగాణ గ్రామ సిమ్యులేటర్
+# Indian Village Simulator · भारतीय गाँव सिम्युलेटर
 
 A 3D open-world farming game set in a Telangana village. You start in Ramapuram with ₹50,000, one acre of red soil, a pair of bullocks and a small house. Grow paddy, cotton and chilli, sell at the market yard, and build your farm into an agricultural company.
 
 ₹50,000, ఒక ఎకరం ఎర్ర నేల, ఒక ఎడ్ల జతతో రామాపురంలో మొదలుపెట్టండి. దాన్ని వ్యవసాయ కంపెనీగా ఎదిగించండి.
 
-It runs in the browser on PC and on phones, in English and Telugu. There is nothing to install.
+It runs in the browser on PC and on phones, in English, हिन्दी, বাংলা, मराठी, తెలుగు, தமிழ் and ಕನ್ನಡ (pick on the title screen or in the Menu). There is nothing to install.
 
 ![Title screen](docs/screenshots/title.png)
 
@@ -24,7 +24,7 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Android:** the game goes full screen when you tap Start. You can also use Chrome's **Install app / Add to Home screen**.
 - **Turn the phone sideways** for the best view. Phones start on the Low quality setting so the game stays smooth.
 - **Just follow the coach:** the yellow strip at the bottom and the mission card always say the next step ("Go to your field", "Hold Work", "Tap Buy seeds"), and the gold arrow shows the way. The steps can also be read aloud (Menu → Voice guide).
-- **Stuck? Tap "▶ Do it for me":** your farmer walks to the next place along the roads, works the whole field row by row, taps the right button or rests until the crop needs you. Touch the stick to take control back. On a touch screen you can also tap the ground to walk there.
+- **Helpers (optional):** in Menu → Helpers you can turn on a "▶ Do it for me" button and tap-the-ground-to-walk. They are off by default so you farm yourself.
 
 - **Online:** once GitHub Pages is turned on for this repository (Settings → Pages → Deploy from branch → `main`, folder `/root`), the game is at `https://venuikkada.github.io/Telangana-village-simulator-/`.
 - **On your computer:** open `index.html` in Chrome, Edge or Firefox. An internet connection is needed the first time, for three.js and the fonts. If your browser blocks it, run `npx serve .` in this folder and open the address it prints.
@@ -47,6 +47,10 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Easy to play:** one Auto button does the next job on your field: plough, sow, water, feed, weed, spray or harvest. Missing seeds or fertilizer? One tap gets them delivered to the field. When the crop is growing, "Rest" jumps ahead to the next thing it needs.
 - **Never lost:** a gold arrow and an on-screen marker always point to your next goal. The minimap faces north and shows shops, roads and your fields. On the full map, tap any place and take an auto straight there.
 - **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Phones start on Low and run at a steady 60 or 30 FPS ("Auto" picks what the phone can hold). Far trees and fields switch to lighter models, and resolution adjusts automatically to keep the game smooth.
+- **Your mission in the corner:** the card at the top right always says the next step. Tap "How?" for simple tips; if you are stuck for a while it gently reminds you. Nothing covers the middle of the screen.
+- **Daytime only:** play runs from 6:30 in the morning to 6 in the evening; then the night passes by itself and a sunny new morning begins.
+- **Celebrations:** every finished mission gets confetti, three stars, a cheer and coins flying into your wallet. Trophies and new ranks too.
+- **Flowers and butterflies** around the village and the fields.
 - **Easy mode:** new games start in Easy mode, made for kids and first-time players: crops dry out, get weedy and catch pests about half as fast, a neglected crop still gives a fair harvest, and the farmer tires more slowly. Switch between Easy and Normal any time in the Menu.
 - **How to play:** four picture cards the first time you play (Move, Follow the gold arrow, Do it for me, Gifts & trophies). Open them again from the Menu.
 - **Daily gift:** come back every day for a gift that grows over a 7-day streak, from ₹1,000 and fertilizer to seeds and ₹10,000 on day 7.

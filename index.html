@@ -16,7 +16,7 @@
 </head>
 <body>
 <title>Indian Village Simulator</title>
-<meta name="description" content="Indian Village Simulator: a free 3D farming game. Grow crops, raise a farm and enjoy village life in English, Hindi, Bengali, Marathi, Telugu, Tamil, Gujarati, Kannada, Malayalam, Punjabi, Odia, Assamese and Urdu.">
+<meta name="description" content="Indian Village Simulator: a free 3D farming game. Grow crops, raise a farm and enjoy village life in English, Hindi, Bengali, Marathi, Telugu, Tamil and Kannada.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@500;600;700;800&family=Hind+Guntur:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -633,7 +633,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="flash"></div>
 </div>
 <script type="module">
-const I18N_VER = '358584e12e';
+const I18N_VER = '093d70c1a6';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -731,13 +731,7 @@ const LANGS = [
   { id: 'mr', name: 'मराठी', en: 'Marathi', disp: 'Baloo 2', body: 'Hind' },
   { id: 'te', name: 'తెలుగు', en: 'Telugu' },
   { id: 'ta', name: 'தமிழ்', en: 'Tamil', disp: 'Baloo Thambi 2', body: 'Hind Madurai' },
-  { id: 'gu', name: 'ગુજરાતી', en: 'Gujarati', disp: 'Baloo Bhai 2', body: 'Hind Vadodara' },
   { id: 'kn', name: 'ಕನ್ನಡ', en: 'Kannada', disp: 'Baloo Tamma 2', body: 'Hind Mysuru' },
-  { id: 'ml', name: 'മലയാളം', en: 'Malayalam', disp: 'Baloo Chettan 2', body: 'Noto Sans Malayalam' },
-  { id: 'pa', name: 'ਪੰਜਾਬੀ', en: 'Punjabi', disp: 'Baloo Paaji 2', body: 'Noto Sans Gurmukhi' },
-  { id: 'or', name: 'ଓଡ଼ିଆ', en: 'Odia', disp: 'Baloo Bhaina 2', body: 'Noto Sans Oriya' },
-  { id: 'as', name: 'অসমীয়া', en: 'Assamese', disp: 'Baloo Da 2', body: 'Hind Siliguri' },
-  { id: 'ur', name: 'اردو', en: 'Urdu', disp: 'Baloo Bhaijaan 2', body: 'Noto Sans Arabic', rtl: true },
 ];
 const I18N = { dict: null, lang: 'en', cache: {} };
 const TR = (en) => { const d = I18N.dict; const t = d && d[en]; return t || en; };
