@@ -15,6 +15,8 @@ async function open(opts = {}) {
   page.on('pageerror', (e) => logs.push(`[pageerror] ${e.message}\n${e.stack || ''}`));
   await page.route('**/*', async (route) => {
     const url = route.request().url();
+    const i18n = /^http:\/\/tvs\.test\/i18n\/([a-z]{2})\.json/.exec(url);
+    if (i18n) { const f = path.join(ROOT, 'i18n', i18n[1] + '.json'); return fs.existsSync(f) ? route.fulfill({ status: 200, contentType: 'application/json', body: fs.readFileSync(f, 'utf8') }) : route.fulfill({ status: 404, body: '' }); }
     if (url.startsWith('http://tvs.test/') && !url.startsWith('http://tvs.test/fonts/')) {
       const html = fs.readFileSync(path.join(ROOT, 'dist/artifact.html'), 'utf8');
       const doc = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom)}body{margin:0;font:14px system-ui;background:#fafaf7}img{max-width:100%}[hidden]{display:none!important}</style></head><body>' + html + '</body></html>';

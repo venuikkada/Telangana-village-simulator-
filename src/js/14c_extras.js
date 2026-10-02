@@ -56,9 +56,11 @@ const DailyGift = {
   claim(n, fromClose) {
     if (!this.due()) return;
     const D = this.state(); const r = this.REWARDS[n - 1];
+    const btn = document.querySelector('#modal .btn.acc.big'); const br = btn ? btn.getBoundingClientRect() : null;
     D.last = this.today(); D.streak = n; D.total = (D.total || 0) + 1;
     this.give(r);
     if (!fromClose) UI.close();
+    Celebrate.gift(br && br.width ? br.left + br.width / 2 : innerWidth / 2, br && br.width ? br.top : innerHeight / 2, r);
     Audio2.sfx('cash');
     UI.toast(L(`Gift collected: ${this.short(r)}. Come back tomorrow for the Day ${n % 7 + 1} gift!`, `బహుమతి వచ్చింది: ${this.short(r)}. రేపు రండి, ${n % 7 + 1}వ రోజు బహుమతి మీకోసం!`), 'good');
     SaveSys.save(false);
@@ -114,9 +116,7 @@ const Trophies = {
   unlock(t) {
     const S = G.S; S.trophies[t.id] = Time.day();
     Money.add(t.reward, 'trophy');
-    UI.banner(L('Trophy unlocked!', 'ట్రోఫీ వచ్చింది!'), `${t.icon} ${LN(t)}`, '+' + fmtINR(t.reward), 3800);
-    UI.toast(L(`Trophy: ${t.en} · +${fmtINR(t.reward)}`, `ట్రోఫీ: ${t.te} · +${fmtINR(t.reward)}`), 'mission');
-    Audio2.sfx('fanfare');
+    Celebrate.trophy(t);
     if (Settings.v.voice) Coach.say(L(`Trophy unlocked: ${t.en}!`, `ట్రోఫీ వచ్చింది: ${t.te}!`));
   },
   tab(b) {
@@ -137,7 +137,7 @@ const Trophies = {
 const Pet = {
   a: null, idle: 0, barkT: 12, jumpT: 0, patAt: -1e9,
   KINDS: [{ en: 'Moti', te: 'మోతీ', col: '#b58352' }, { en: 'Kalu', te: 'కాలు', col: '#2a2420' }, { en: 'Tommy', te: 'టామీ', col: '#e6d9bf' }],
-  name() { const p = G.S && G.S.pet; return p ? (LANG === 'te' ? p.te : p.en) : ''; },
+  name() { const p = G.S && G.S.pet; return p ? LN(p) : ''; },
   spawn() {
     if (!G.S.pet || this.a) return;
     const P = Player.pos();
@@ -211,14 +211,14 @@ const Photo = {
     if (/^https:\/\//.test(o) && !/claude|localhost|127\.0\.0\.1/.test(o)) return (o + location.pathname).replace(/index\.html$/, '').replace(/^https:\/\//, '').replace(/\/$/, '');
     return 'peru-dove-641366.hostingersite.com';
   },
-  shareText() { return L(`My farm in Telangana Village Simulator 🌾 Play free: https://${this.url()}`, `తెలంగాణ గ్రామ సిమ్యులేటర్‌లో నా పొలం 🌾 ఉచితంగా ఆడండి: https://${this.url()}`); },
+  shareText() { return L(`My farm in Indian Village Simulator 🌾 Play free: https://${this.url()}`, `భారతీయ గ్రామ సిమ్యులేటర్‌లో నా పొలం 🌾 ఉచితంగా ఆడండి: https://${this.url()}`); },
   // share the game link: the phone's share sheet when there is one, else WhatsApp
   invite() {
-    const text = L('Come farm with me in Telangana Village Simulator! Free in your browser, phone or PC 🌾', 'తెలంగాణ గ్రామ సిమ్యులేటర్‌లో నాతో వ్యవసాయం చేయండి! ఫోన్, కంప్యూటర్ బ్రౌజర్‌లో ఉచితం 🌾');
+    const text = L('Come farm with me in Indian Village Simulator! Free in your browser, phone or PC 🌾', 'భారతీయ గ్రామ సిమ్యులేటర్‌లో నాతో వ్యవసాయం చేయండి! ఫోన్, కంప్యూటర్ బ్రౌజర్‌లో ఉచితం 🌾');
     const url = 'https://' + this.url();
     const wa = () => window.open('https://wa.me/?text=' + encodeURIComponent(text + ' ' + url), '_blank', 'noopener');
     // inside an embedded page the share sheet can be blocked: fall back to WhatsApp (but not if the player just cancelled)
-    if (navigator.share) { navigator.share({ title: 'Telangana Village Simulator', text, url }).catch((e) => { if (!e || e.name !== 'AbortError') wa(); }); return; }
+    if (navigator.share) { navigator.share({ title: 'Indian Village Simulator', text, url }).catch((e) => { if (!e || e.name !== 'AbortError') wa(); }); return; }
     wa();
   },
   take() {
@@ -249,7 +249,7 @@ const Photo = {
     const x = 22 * s;
     c.textBaseline = 'alphabetic'; c.shadowColor = 'rgba(0,0,0,0.5)'; c.shadowBlur = 6 * s;
     c.fillStyle = '#f4b62e'; c.font = `800 ${Math.round(30 * s)}px "Baloo Tammudu 2", system-ui, sans-serif`;
-    c.fillText(LANG === 'te' ? 'తెలంగాణ గ్రామ సిమ్యులేటర్' : 'Telangana Village Simulator', x, H - 44 * s);
+    c.fillText(L('Indian Village Simulator', 'భారతీయ గ్రామ సిమ్యులేటర్'), x, H - 44 * s);
     c.fillStyle = '#ffffff'; c.font = `600 ${Math.round(18 * s)}px "Hind Guntur", system-ui, sans-serif`;
     c.fillText(`${S.player.name} · ${L('Day', 'రోజు')} ${Time.day()} · ${L('Play free', 'ఉచితంగా ఆడండి')}: ${this.url()}`, x, H - 16 * s);
     c.shadowBlur = 0;
@@ -257,7 +257,7 @@ const Photo = {
   preview(blob, canvas) {
     let src = '';
     try { src = blob ? URL.createObjectURL(blob) : canvas.toDataURL('image/jpeg', 0.88); } catch (e) { src = ''; }
-    const name = `telangana-farm-day-${Time.day()}.jpg`;
+    const name = `indian-village-day-${Time.day()}.jpg`;
     let file = null; try { if (blob) file = new File([blob], name, { type: 'image/jpeg' }); } catch (e) { file = null; }
     let canShareFile = false; try { canShareFile = !!(file && navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) { canShareFile = false; }
     if (UI.photoMode) UI.photo();
@@ -266,7 +266,7 @@ const Photo = {
       render: (b) => {
         if (src) b.appendChild(h('img', { class: 'shot', src, alt: L('Photo of your farm', 'మీ పొలం ఫోటో') }));
         const row = h('div', { class: 'row', style: { justifyContent: 'center', marginTop: '10px', flexWrap: 'wrap' } });
-        if (canShareFile) row.appendChild(h('button', { class: 'btn acc', type: 'button', onclick: () => { navigator.share({ files: [file], title: 'Telangana Village Simulator', text: this.shareText() }).catch((e) => { if (!e || e.name !== 'AbortError') UI.toast(L('Sharing is blocked here. Use Save photo, then share it from your gallery.', 'ఇక్కడ షేర్ కుదరదు. ఫోటో సేవ్ చేసి గ్యాలరీ నుంచి షేర్ చేయండి.'), 'warn'); }); } }, L('Share photo', 'ఫోటో షేర్ చేయండి')));
+        if (canShareFile) row.appendChild(h('button', { class: 'btn acc', type: 'button', onclick: () => { navigator.share({ files: [file], title: 'Indian Village Simulator', text: this.shareText() }).catch((e) => { if (!e || e.name !== 'AbortError') UI.toast(L('Sharing is blocked here. Use Save photo, then share it from your gallery.', 'ఇక్కడ షేర్ కుదరదు. ఫోటో సేవ్ చేసి గ్యాలరీ నుంచి షేర్ చేయండి.'), 'warn'); }); } }, L('Share photo', 'ఫోటో షేర్ చేయండి')));
         if (src) row.appendChild(h('a', { class: 'btn ' + (canShareFile ? 'alt' : 'acc'), href: src, download: name }, L('Save photo', 'ఫోటో సేవ్ చేయండి')));
         row.appendChild(h('a', { class: 'btn alt wa', href: 'https://wa.me/?text=' + encodeURIComponent(this.shareText()), target: '_blank', rel: 'noopener' }, L('Invite on WhatsApp', 'వాట్సాప్‌లో ఆహ్వానించండి')));
         b.appendChild(row);
@@ -279,9 +279,9 @@ const Photo = {
 const HowTo = {
   show() {
     const cards = [
-      ['🕹️', L('Move', 'కదలండి'), isMobile ? L('Drag the left stick to walk; push it all the way to run. Or just tap the ground to walk there.', 'ఎడమ స్టిక్ లాగి నడవండి; పూర్తిగా నెడితే పరుగు. లేదా నేలపై నొక్కితే అక్కడికి నడుస్తారు.') : L('W A S D to walk, hold Shift to run. Drag the mouse to look around.', 'W A S D తో నడవండి, Shift పట్టుకుంటే పరుగు. మౌస్ లాగి చుట్టూ చూడండి.')],
-      ['🟡', L('Follow the gold arrow', 'బంగారు బాణాన్ని అనుసరించండి'), L('The gold arrow and the message at the bottom always show your next job, one step at a time.', 'బంగారు బాణం, కింద వచ్చే సందేశం మీ తదుపరి పనిని ఒక్కొక్కటిగా చూపిస్తాయి.')],
-      ['▶', L('Do it for me', 'నా బదులు చేయి'), L('Not sure what to do? Tap “▶ Do it for me” and the game does the next job for you.', 'ఏం చేయాలో తెలియదా? “▶ నా బదులు చేయి” నొక్కండి, తదుపరి పని ఆటే మీ కోసం చేస్తుంది.')],
+      ['🕹️', L('Move', 'కదలండి'), isMobile ? L('Drag the left stick to walk; push it all the way to run. Drag the right side of the screen to look around.', 'ఎడమ స్టిక్ లాగి నడవండి; పూర్తిగా నెడితే పరుగు. చుట్టూ చూడటానికి తెర కుడివైపు లాగండి.') : L('W A S D to walk, hold Shift to run. Drag the mouse to look around.', 'W A S D తో నడవండి, Shift పట్టుకుంటే పరుగు. మౌస్ లాగి చుట్టూ చూడండి.')],
+      ['🟡', L('Follow the gold arrow', 'బంగారు బాణాన్ని అనుసరించండి'), L('The gold arrow on the screen and the line on the map show you the way to the next place.', 'తెరపై బంగారు బాణం, మ్యాప్‌లో గీత తదుపరి చోటికి దారి చూపిస్తాయి.')],
+      ['📋', L('Your mission is in the corner', 'మీ లక్ష్యం మూలలో ఉంటుంది'), L('The card at the top right always says what to do next. Tap “How?” on it for easy tips.', 'పై కుడి మూలలోని కార్డు తదుపరి పని ఏమిటో ఎప్పుడూ చెబుతుంది. సులభమైన చిట్కాల కోసం దానిపై “ఎలా?” నొక్కండి.')],
       ['🎁', L('Gifts & trophies', 'బహుమతులు & ట్రోఫీలు'), L('Come back every day for a gift, win trophies, and adopt a puppy at your house.', 'రోజూ వచ్చి బహుమతి తీసుకోండి, ట్రోఫీలు గెలవండి, ఇంటి దగ్గర కుక్కపిల్లను తెచ్చుకోండి.')],
     ];
     UI.sheet({ title: L('How to play', 'ఎలా ఆడాలి'), narrow: true, kind: 'howto', onClose: () => { Settings.v.seenHowTo = true; Settings.save(); }, render: (b) => {

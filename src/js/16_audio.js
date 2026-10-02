@@ -105,6 +105,11 @@ const Audio2 = {
       case 'bell': this.bell(d, 700, 0.25); break;
       case 'hydraulic': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 3; f.frequency.setValueAtTime(400, c.currentTime); f.frequency.exponentialRampToValueAtTime(1800, c.currentTime + 0.6); const g = c.createGain(); this.env(g, c.currentTime, 0.05, 0.15, 0.6); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 0.8); break; }
       case 'jump': this.burst(0.08, 0.12, 'lowpass', 300, d); break;
+      case 'step': this.tone('sine', 880, 880, 0.12, 0.07, d); this.tone('sine', 1320, 1320, 0.18, 0.06, d, 0.07); break;
+      case 'hint': this.tone('triangle', 660, 660, 0.16, 0.08, d); this.tone('triangle', 990, 990, 0.22, 0.07, d, 0.12); break;
+      case 'coin': this.tone('square', 1568, 1568, 0.05, 0.05, d); this.tone('triangle', 2093, 2093, 0.18, 0.08, d, 0.05); break;
+      case 'tada': [523, 659, 784, 1047].forEach((f, i) => this.tone('triangle', f, f, 0.22, 0.13, d, i * 0.08)); [523, 659, 784, 1047, 1319].forEach((f) => this.tone('sine', f, f, 1.3, 0.06, d, 0.36)); this.burst(0.5, 0.06, 'highpass', 6000, d, 0.36); break;
+      case 'whoosh': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(500, c.currentTime); f.frequency.exponentialRampToValueAtTime(3200, c.currentTime + 0.35); const g = c.createGain(); this.env(g, c.currentTime, 0.04, 0.12, 0.35); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 0.45); break; }
       case 'shutter': this.burst(0.04, 0.35, 'highpass', 2500, d); this.burst(0.06, 0.25, 'bandpass', 1200, d, 0.07, 2); break;
       case 'bump': this.burst(0.3, 0.5, 'lowpass', 160, d); this.tone('sine', 80, 40, 0.3, 0.3, d); break;
     }

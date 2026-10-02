@@ -608,7 +608,7 @@ const Workers = {
       if (t.op === 'spray') tractor.chem = t.item; if (t.op === 'fertilize') tractor.fert = t.item;
       n.job = new FieldJob(tractor, f, IMPLEMENTS[impl].op, {});
       n.h.visible = false;
-      UI.toastOnce('driver' + f.id, L(`${n.w.name.en} is taking the tractor to ${f.label()} with the ${IMPLEMENTS[impl].en.toLowerCase()}.`, `${n.w.name.te} ${IMPLEMENTS[impl].te}తో ట్రాక్టర్‌ను ${f.label()}కు తీసుకెళ్తున్నారు.`), 'info');
+      UI.toastOnce('driver' + f.id, L(`${n.w.name.en} is taking the tractor to ${f.label()} with the ${LN(IMPLEMENTS[impl]).toLowerCase()}.`, `${n.w.name.te} ${IMPLEMENTS[impl].te}తో ట్రాక్టర్‌ను ${f.label()}కు తీసుకెళ్తున్నారు.`), 'info');
       return true;
     }
     return false;

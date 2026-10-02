@@ -1,5 +1,5 @@
-<title>Telangana Village Simulator</title>
-<meta name="description" content="Open-world Telangana farming simulator">
+<title>Indian Village Simulator</title>
+<meta name="description" content="Indian Village Simulator: a free 3D farming game. Grow crops, raise a farm and enjoy village life in English, Hindi, Bengali, Marathi, Telugu, Tamil and Kannada.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Baloo+Tammudu+2:wght@500;600;700;800&family=Hind+Guntur:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -88,15 +88,6 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .ms { display: grid; gap: 3px; }
 .ms b { font: 700 13.5px/1.25 var(--font-display); }
 .ms small { color: var(--ink-2); font-size: 11.5px; }
-#coach { width: min(560px, calc(100vw - 32px)); box-sizing: border-box; display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: 14px; background: rgba(28, 22, 14, .9); color: #fff8e6; font: 700 16px/1.3 var(--font-body); box-shadow: var(--shadow); border: 2px solid #f2b52d; pointer-events: none; }
-#coach .ci { width: 30px; height: 30px; flex: none; color: #ffc61a; }
-#coach .ci svg { width: 100%; height: 100%; display: block; }
-#coach.go { animation: cin .35s ease-out; }
-#coach .ct { flex: 1 1 auto; min-width: 0; }
-#coach .cdo { pointer-events: auto; flex: none; border: 0; border-radius: 10px; padding: 8px 12px; background: #f2b52d; color: #1f1606; font: 800 14px/1 var(--font-body); cursor: pointer; white-space: nowrap; box-shadow: 0 2px 0 #a8770c; }
-#coach .cdo:active { transform: translateY(1px); box-shadow: none; }
-#coach.auto { border-color: #43b6ff; }
-#coach.auto .cdo { background: #e9eef3; color: #1b1b1f; box-shadow: 0 2px 0 #98a2ad; }
 #missions .do { border: 0; border-radius: 9px; padding: 6px 10px; background: #f2b52d; color: #1f1606; font: 800 12.5px/1.1 var(--font-body); cursor: pointer; justify-self: start; box-shadow: 0 2px 0 #a8770c; }
 #missions .do.stop { background: #e9eef3; box-shadow: 0 2px 0 #98a2ad; }
 #missions .do .kbd { margin-left: 6px; font-size: 10px; padding: 1px 5px; background: rgba(0,0,0,.12); color: inherit; }
@@ -104,6 +95,24 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #missions .mt { font: 700 14px/1.25 var(--font-display); }
 #missions .step { display: flex; gap: 6px; align-items: flex-start; font: 700 13px/1.3 var(--font-body); color: #1f1606; background: rgba(242, 181, 45, .62); border-radius: 8px; padding: 4px 7px; }
 #missions .step svg { width: 17px; height: 17px; flex: none; margin-top: 1px; }
+#missions .step.auto { background: rgba(67, 182, 255, .35); color: var(--ink); }
+#missions .mhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+#missions .mhead h4 { margin: 0; }
+#missions .rw { font: 800 12px/1 var(--font-display); color: #1f1606; background: linear-gradient(180deg, #ffd65c, #f2b52d); border-radius: 99px; padding: 3px 8px 2px; white-space: nowrap; box-shadow: 0 1px 0 #a8770c; }
+#missions .mrow { display: flex; align-items: center; gap: 8px; }
+#missions .mrow .prog { flex: 1 1 auto; }
+#missions .how { flex: none; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); border-radius: 99px; padding: 4px 10px; font: 700 12px/1.1 var(--font-body); cursor: pointer; }
+#missions .how.on { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+#howtip { box-sizing: border-box; padding: 9px 12px 10px; pointer-events: auto; animation: cin .3s ease-out; border: 2px solid var(--accent); z-index: 2; }
+#howtip .hth { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+#howtip .hth b { font: 800 14px/1.2 var(--font-display); }
+#howtip .x { border: 0; background: var(--panel-2); color: var(--ink); border-radius: 50%; width: 26px; height: 26px; cursor: pointer; font-size: 12px; flex: none; }
+#howtip ul { margin: 6px 0 0; padding: 0 0 0 18px; display: grid; gap: 5px; font: 600 12.5px/1.35 var(--font-body); }
+#howtip li::marker { color: var(--accent); }
+#missions.flash { animation: mflash 1.4s ease-out; }
+#missions.remind { animation: mremind 1.6s ease-in-out; }
+@keyframes mflash { 0% { box-shadow: 0 0 0 0 rgba(242, 181, 45, .95), var(--shadow); transform: scale(1.04); } 35% { transform: scale(1); } 100% { box-shadow: 0 0 0 14px rgba(242, 181, 45, 0), var(--shadow); } }
+@keyframes mremind { 0%, 100% { transform: translateX(0); } 10%, 30%, 50% { transform: translateX(-5px); } 20%, 40% { transform: translateX(5px); } 60% { box-shadow: 0 0 0 4px rgba(242, 181, 45, .9), var(--shadow); } }
 #missions .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
@@ -352,6 +361,44 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   #photobar .pb { padding: 11px 18px; font-size: 15px; }
 }
 @media (prefers-reduced-motion: reduce) { .gift.now { animation: none; } #flash.on { animation: none; } }
+/* ---------- celebrations: confetti, flying coins, the star card ---------- */
+#confetti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 30; }
+.coinfx { position: absolute; left: 0; top: 0; z-index: 31; pointer-events: none; width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; font: 800 15px/1 var(--font-display); font-style: normal; color: #7a4b00; background: radial-gradient(circle at 35% 30%, #fff6c2 0 18%, #ffd34d 40%, #f0a90f 75%, #c98204 100%); box-shadow: 0 0 0 2px #b97709 inset, 0 3px 8px rgba(0,0,0,.35); will-change: transform; }
+#money.bump { animation: mbump .32s ease-out; }
+@keyframes mbump { 40% { transform: scale(1.18); color: #f2b52d; } }
+.cele { position: absolute; z-index: 32; left: 50%; top: calc(var(--st) + 74px); transform: translateX(-50%); pointer-events: none; min-width: min(300px, 82vw); max-width: min(460px, 92vw); box-sizing: border-box; padding: 12px 22px 13px; border-radius: 18px; text-align: center; color: #2a1a02; background: linear-gradient(180deg, #fff8dc 0%, #ffe9a6 55%, #ffd56b 100%); border: 2px solid #f2b52d; box-shadow: 0 0 0 4px rgba(255, 214, 107, .35), 0 14px 34px rgba(60, 30, 0, .35); animation: celein .5s cubic-bezier(.2, 1.4, .4, 1) both; overflow: hidden; }
+.cele::after { content: ""; position: absolute; top: 0; bottom: 0; width: 40%; left: -60%; background: linear-gradient(100deg, transparent, rgba(255,255,255,.75), transparent); animation: shine 1.4s .35s ease-out both; }
+.cele.out { animation: celeout .4s ease-in both; }
+.cele small { display: block; font: 800 12px/1.2 var(--font-body); letter-spacing: .14em; text-transform: uppercase; color: #a3600a; }
+.cele strong { display: block; font: 800 24px/1.2 var(--font-display); margin-top: 2px; text-wrap: balance; }
+.cele span { display: block; font: 800 16px/1.25 var(--font-display); color: #2f7d3a; margin-top: 3px; }
+.cele .stars { display: flex; justify-content: center; gap: 6px; height: 34px; margin-top: -2px; }
+.cele .stars i { font: 900 32px/1 system-ui, sans-serif; font-style: normal; color: #ffb300; text-shadow: 0 2px 0 #c77800, 0 0 12px rgba(255, 196, 0, .8); animation: starpop .45s cubic-bezier(.2, 1.8, .4, 1) both; }
+.cele .stars i:nth-child(2) { font-size: 38px; margin-top: -6px; }
+.cele .cic { display: block; font-size: 34px; line-height: 1.1; animation: starpop .5s .2s cubic-bezier(.2, 1.8, .4, 1) both; }
+.cele.big { background: linear-gradient(180deg, #fffbe8, #ffe08a 60%, #ffc94d); }
+.cele.sun { background: linear-gradient(180deg, #fff9ec, #ffe7c2); border-color: #ffb35c; box-shadow: 0 10px 28px rgba(80, 40, 0, .25); }
+.cele.sun span { color: #a3600a; }
+@keyframes celein { from { opacity: 0; transform: translate(-50%, -24px) scale(.7); } }
+@keyframes celeout { to { opacity: 0; transform: translate(-50%, -18px) scale(.92); } }
+@keyframes starpop { from { opacity: 0; transform: scale(.2) rotate(-40deg); } }
+@keyframes shine { to { left: 120%; } }
+@media (max-height: 430px) {
+  .cele { top: calc(var(--st) + 54px); padding: 8px 16px 9px; }
+  .cele strong { font-size: 19px; } .cele span { font-size: 14px; }
+  .cele .stars { height: 26px; } .cele .stars i { font-size: 25px; } .cele .stars i:nth-child(2) { font-size: 30px; }
+  .cele .cic { font-size: 26px; }
+}
+@media (prefers-reduced-motion: reduce) { .cele, .cele.out, .cele .stars i, .cele .cic, #money.bump { animation: none; } .cele::after { display: none; } }
+/* language picker (title screen and menu) */
+select.langsel { font: 700 14px var(--font-body); padding: 6px 30px 6px 10px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-solid) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' fill='none' stroke='%23888' stroke-width='1.8'/%3E%3C/svg%3E") no-repeat right 10px center / 12px 8px; color: var(--ink); -webkit-appearance: none; appearance: none; cursor: pointer; max-width: 100%; }
+#title select.langsel { background-color: rgba(246, 239, 226, 0.12); color: #f6efe2; border-color: rgba(246, 239, 226, .3); }
+#title select.langsel option { color: #1b1b1f; background: #fff; }
+html:not([lang="en"]) #title .en, html:not([lang="en"]) #loading .en { letter-spacing: .04em; }
+html:not([lang="en"]) .cele small { letter-spacing: .02em; }
+/* Urdu reads right to left: each line of text runs RTL, the screen layout stays the same */
+html.rtl .sheet, html.rtl .toast, html.rtl #missions, html.rtl .cele, html.rtl #prompt, html.rtl .pitch { unicode-bidi: plaintext; }
+html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span, html.rtl .sheet button, html.rtl #missions span, html.rtl #missions b, html.rtl #missions li, html.rtl .toast { unicode-bidi: plaintext; text-align: start; }
 /* ---------- phones & small screens ---------- */
 @media (max-width: 760px), (pointer: coarse) and (max-height: 520px) {
   #hud-tl { width: 188px; padding: 7px 9px 8px; gap: 3px; left: calc(var(--sl) + 10px); top: calc(var(--st) + 8px); }
@@ -377,8 +424,6 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   .tool { width: 42px; height: 42px; } .tool span { display: none; } .tool svg { width: 20px; height: 20px; }
   #toolopt { font-size: 11px; padding: 3px 9px; }
   #prompt { padding: 7px 12px; font-size: 13.5px; }
-  #coach { font-size: 14px; padding: 7px 11px; width: min(470px, calc(100vw - 380px)); min-width: 220px; }
-  #coach .ci { width: 24px; height: 24px; }
   #hud-br { top: calc(var(--st) + 8px); bottom: auto; right: calc(var(--sr) + 152px); }
   .mapx { height: calc(100vh - 92px); height: calc(100dvh - 92px); gap: 8px; } .mapside { width: 210px; } .mapsel b { font-size: 15px; }
   #nav .tx { font-size: 11.5px; max-width: 170px; }
@@ -413,7 +458,6 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   #hud-bl { top: calc(var(--st) + 88px); width: 172px; max-height: calc(100% - 228px); }
   #hud-bl .mini, #hud-bl h5 + small { display: none; }
   #hud-tc { padding: 3px 8px 4px; } #clock { font-size: 15px; } #wx { font-size: 10px; }
-  #coach { font-size: 13px; padding: 6px 10px; width: min(420px, calc(100vw - 392px)); min-width: 200px; }
   #prompt { padding: 5px 10px; font-size: 12.5px; }
   .tool { width: 38px; height: 38px; }
   #toasts { top: calc(var(--st) + 62px); width: min(400px, calc(100vw - 420px)); min-width: 200px; }
@@ -435,7 +479,6 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   #missions { position: fixed; left: calc(var(--sl) + 10px); top: calc(var(--st) + 152px); width: calc(50vw - 15px); box-sizing: border-box; }
   #hud-bl { display: none; }
   #hud-bc { bottom: calc(var(--sb) + 172px); }
-  #coach { width: calc(100vw - 24px); min-width: 0; }
   #toasts { top: auto; bottom: calc(var(--sb) + 330px); width: calc(100vw - 24px); min-width: 0; }
   #toasts .toast:nth-last-child(n+3) { display: none; }
   #workpulse { top: 42%; }
@@ -505,7 +548,6 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
     </div>
     <div id="hud-bl" class="card" hidden></div>
     <div id="hud-bc">
-      <div id="coach" hidden role="status" aria-live="polite"><span class="ci"></span><span class="ct"></span><button class="cdo" type="button">Do it</button></div>
       <div id="prompt" class="card" hidden></div>
       <div id="toolopt" class="card" hidden></div>
       <div id="tools" class="card"></div>
@@ -522,6 +564,7 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
     <div id="news"><div id="newsbar" class="card" hidden><b data-en="News" data-te="వార్తలు">News</b><span id="newstext"></span></div></div>
     <div id="fps" hidden></div>
     <div id="photobar" hidden></div>
+    <div id="howtip" class="card" hidden role="note"></div>
   </div>
   <div id="touch" hidden>
     <div id="joy"><div id="knob"></div></div>
@@ -536,8 +579,8 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   </div>
   <div id="loading">
     <div class="lbox">
-      <div class="en">TELANGANA VILLAGE SIMULATOR</div>
-      <h1>తెలంగాణ గ్రామ సిమ్యులేటర్</h1>
+      <div class="en" data-en="Farm · Grow · Celebrate" data-te="సాగు · ఎదుగు · సంబరం">Farm · Grow · Celebrate</div>
+      <h1 data-en="Indian Village Simulator" data-te="భారతీయ గ్రామ సిమ్యులేటర్">Indian Village Simulator</h1>
       <div class="ikat"></div>
       <div id="lbar"><b></b></div>
       <div id="lmsg">Preparing the village…</div>
@@ -545,14 +588,14 @@ a.btn { text-decoration: none; display: inline-flex; align-items: center; }
   </div>
   <div id="title" hidden>
     <div class="tbox">
-      <div class="en">TELANGANA VILLAGE SIMULATOR</div>
-      <h1>తెలంగాణ గ్రామ సిమ్యులేటర్</h1>
+      <div class="en" data-en="Farm · Grow · Celebrate" data-te="సాగు · ఎదుగు · సంబరం">Farm · Grow · Celebrate</div>
+      <h1 data-en="Indian Village Simulator" data-te="భారతీయ గ్రామ సిమ్యులేటర్">Indian Village Simulator</h1>
       <div class="ikat"></div>
       <p class="pitch" id="tpitch">Start with ₹50,000, one acre of red soil and a pair of bullocks in Ramapuram. Grow it into an agricultural company.</p>
       <div class="actions" id="tactions"></div>
       <div id="newgame" hidden></div>
       <div class="opts2">
-        <span data-en="Language" data-te="భాష">Language</span><div class="seg" id="tlang"></div>
+        <span data-en="Language" data-te="భాష">Language</span><span id="tlang"></span>
         <span data-en="Quality" data-te="నాణ్యత">Quality</span><div class="seg" id="tqual"></div>
       </div>
       <div id="a2hs" hidden></div>

@@ -78,7 +78,7 @@ const Missions = {
   add(m) {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
-    UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');
+    if (G.started && !m.tpl.startsWith('t_')) UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');   // the tutorial shows up in the corner card
     UI.dirty = true;
     return m;
   },
@@ -95,10 +95,9 @@ const Missions = {
     S.missions.done++;
     if (m.reward) Money.add(m.reward, 'mission');
     if (m.rel) Rel.add(m.rel, 10);
-    if (m.tpl.startsWith('t_')) { S.missions.tut++; if (S.missions.tut >= TUTORIAL.length) UI.toast(L('Tutorial complete! The village is yours to grow.', 'శిక్షణ పూర్తయింది! ఇక గ్రామాన్ని అభివృద్ధి చేయడం మీ చేతుల్లో.'), 'good'); }
+    if (m.tpl.startsWith('t_')) S.missions.tut++;
     S.missions.history.unshift({ title: m.title, reward: m.reward, day: Time.day() }); if (S.missions.history.length > 30) S.missions.history.pop();
-    UI.missionDone(m);
-    Audio2.sfx('mission');
+    UI.missionDone(m);   // confetti, coins into the wallet, stars and a fanfare
     Bus.emit('missionDone', { m });
     this.ensure();
   },

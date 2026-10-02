@@ -121,7 +121,7 @@ const Auto = {
   },
   // ---- tap the ground (touch screens): walk there ----
   tapWalk(cx, cy) {
-    if (!G.started || UI.modalOpen() || Player.vehicle || Settings.v.tapWalk === false) return;
+    if (!G.started || UI.modalOpen() || Player.vehicle || !Settings.v.tapWalk) return;   // a helper: only when turned on in the menu
     const cam = G.camera; const r = G.renderer.domElement.getBoundingClientRect();
     _v1.set(((cx - r.left) / r.width) * 2 - 1, -((cy - r.top) / r.height) * 2 + 1, 0.5).unproject(cam);
     const dir = _v1.sub(cam.position).normalize(); const o = cam.position;

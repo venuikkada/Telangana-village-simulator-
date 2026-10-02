@@ -15,16 +15,17 @@ const CH = {
     return { text: L(`Go to ${name}`, `${name} దగ్గరికి వెళ్ళండి`) + (far ? L(' — or tap Map and take an auto', ' — లేదా మ్యాప్ నొక్కి ఆటోలో వెళ్ళండి') : ''), target: { x: t.x, z: t.z, name }, icon: Player.vehicle ? 'drive' : 'walk' };
   },
   tap(label) { return isMobile ? L(`Tap “${label}”`, `“${label}” నొక్కండి`) : L(`Press E for “${label}”`, `“${label}” కోసం E నొక్కండి`); },
-  hold(en, te) { return isMobile ? L(`Hold Work ${en}`, `'పని' పట్టుకుని ${te}`) : L(`Hold F ${en}`, `F పట్టుకుని ${te}`); },
-  office(en, te) { return isMobile ? L(`Open the Farm office (top button) → ${en}`, `వ్యవసాయ కార్యాలయం (పై బటన్) తెరవండి → ${te}`) : L(`Press B (Farm office) → ${en}`, `B నొక్కండి (వ్యవసాయ కార్యాలయం) → ${te}`); },
+  // `what`/`where` arrive already in the player's language: CH.hold(L('and walk…', 'నడిచి…'))
+  hold(what) { return isMobile ? L(`Hold Work ${what}`, `'పని' పట్టుకుని ${what}`) : L(`Hold F ${what}`, `F పట్టుకుని ${what}`); },
+  office(where) { return isMobile ? L(`Open the Farm office (top button) → ${where}`, `వ్యవసాయ కార్యాలయం (పై బటన్) తెరవండి → ${where}`) : L(`Press B (Farm office) → ${where}`, `B నొక్కండి (వ్యవసాయ కార్యాలయం) → ${where}`); },
   yourField(f) { return f.id === 'F1' ? L('your field', 'మీ పొలం') : f.label(); },
   goField(f) { return this.go({ x: f.x, z: f.z }, this.yourField(f)); },
   goPlace(id, name) { const p = this.ip(id); return p ? this.go(p, name) : null; },
   // at a shop or service: walk there, then use it
-  visit(id, name, en, te) {
+  visit(id, name, what) {
     const p = this.ip(id); if (!p) return null;
     if (!this.near(p, p.r + 1.5)) return this.go(p, name);
-    return { text: (isMobile ? L('Tap the prompt, then ', 'పక్కన వచ్చే బటన్ నొక్కి, ') : L('Press E, then ', 'E నొక్కి, ')) + L(en, te), target: null, icon: 'tap' };
+    return { text: (isMobile ? L('Tap the prompt, then ', 'పక్కన వచ్చే బటన్ నొక్కి, ') : L('Press E, then ', 'E నొక్కి, ')) + what, target: null, icon: 'tap' };
   },
   money(n) { return G.S.money + 1e-6 >= n; },
   needMoney(n) { return { text: L(`Save ${fmtINR(Math.ceil(n - G.S.money))} more: sell crops, or take a crop loan at the bank`, `ఇంకా ${fmtINR(Math.ceil(n - G.S.money))} కావాలి: పంట అమ్మండి, లేదా బ్యాంకులో పంట రుణం తీసుకోండి`), icon: 'coin' }; },
@@ -49,7 +50,7 @@ function coachSow(crop) {
   const nd = Player.need;
   if (nd && nd.item === 'seed' && nd.field === f && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy seeds (delivered here)', 'విత్తనాలు కొనండి (ఇక్కడికే)')) + (crop ? L(` and pick ${LN(CROPS[crop])}`, `, ${LN(CROPS[crop])} ఎంచుకోండి`) : ''), icon: 'tap' };
   const nm = crop ? LN(CROPS[crop]) : L('the crop', 'పంట');
-  return { text: CH.hold(`and walk on the field to sow ${nm}`, `పొలంలో నడిచి ${nm} విత్తండి`), icon: 'work', progress: f.countMin(3) / f.n };
+  return { text: CH.hold(L(`and walk on the field to sow ${nm}`, `పొలంలో నడిచి ${nm} విత్తండి`)), icon: 'work', progress: f.countMin(3) / f.n };
 }
 // look after a growing crop until harvest
 function coachGrow(f) {
@@ -60,13 +61,13 @@ function coachGrow(f) {
     if (nd.item === 'pesticide') return { text: CH.tap(L('Buy pesticide (delivered here)', 'పురుగుమందు కొనండి (ఇక్కడికే)')), icon: 'tap' };
     if (nd.item === 'urea') return { text: CH.tap(L('Buy fertilizer (delivered here)', 'ఎరువు కొనండి (ఇక్కడికే)')), icon: 'tap' };
   }
-  if (f.growth >= 0.97) return { text: CH.hold('and walk on the field to harvest', 'పొలంలో నడిచి కోయండి'), icon: 'work' };
-  if (f.outbreak || f.pests > 10) return { text: CH.hold('on the crop: Auto sprays the pests', 'పంటపై నిలబడండి: ఆటో పురుగుమందు చల్లుతుంది'), icon: 'work' };
-  if (f.weeds > 16) return { text: CH.hold('on the crop to pull the weeds', 'పంటపై నిలబడి కలుపు తీయండి'), icon: 'work' };
-  if (f.nut < 40) return { text: CH.hold('on the crop to feed it', 'పంటపై నిలబడి ఎరువు వేయండి'), icon: 'work' };
-  if (cd && cd.wLo && f.water < cd.wLo && !f.pump && !f.gate) return { text: CH.hold('on the crop to water it', 'పంటపై నిలబడి నీరు పెట్టండి'), icon: 'work' };
+  if (f.growth >= 0.97) return { text: CH.hold(L('and walk on the field to harvest', 'పొలంలో నడిచి కోయండి')), icon: 'work' };
+  if (f.outbreak || f.pests > 10) return { text: CH.hold(L('on the crop: Auto sprays the pests', 'పంటపై నిలబడండి: ఆటో పురుగుమందు చల్లుతుంది')), icon: 'work' };
+  if (f.weeds > 16) return { text: CH.hold(L('on the crop to pull the weeds', 'పంటపై నిలబడి కలుపు తీయండి')), icon: 'work' };
+  if (f.nut < 40) return { text: CH.hold(L('on the crop to feed it', 'పంటపై నిలబడి ఎరువు వేయండి')), icon: 'work' };
+  if (cd && cd.wLo && f.water < cd.wLo && !f.pump && !f.gate) return { text: CH.hold(L('on the crop to water it', 'పంటపై నిలబడి నీరు పెట్టండి')), icon: 'work' };
   if (nd && nd.item === 'wait' && nd.field === f && performance.now() - nd.t < 25000) return { text: L(`${LN(cd)} is ${pct}% grown. `, `${LN(cd)} ${pct}% పెరిగింది. `) + CH.tap(L('Rest until the crop needs you', 'పంటకు పని వచ్చే వరకు విశ్రాంతి')), icon: 'wait' };
-  return { text: L(`${LN(cd)} is ${pct}% grown. `, `${LN(cd)} ${pct}% పెరిగింది. `) + CH.hold('for a moment, then tap “Rest”', 'కొద్దిసేపు ఉంచి, తర్వాత “విశ్రాంతి” నొక్కండి'), icon: 'wait' };
+  return { text: L(`${LN(cd)} is ${pct}% grown. `, `${LN(cd)} ${pct}% పెరిగింది. `) + CH.hold(L('for a moment, then tap “Rest”', 'కొద్దిసేపు ఉంచి, తర్వాత “విశ్రాంతి” నొక్కండి')), icon: 'wait' };
 }
 // sell what you have: heap by the field, home storage, or grow some first
 function coachSell(crop, where) {
@@ -76,7 +77,7 @@ function coachSell(crop, where) {
     const opt = where === 'trader' ? L('“Sell all to trader”', '“వ్యాపారికి అమ్మండి”') : where === 'msp' ? L('“Send to the MSP centre by lorry”', '“లారీలో మద్దతు ధర కేంద్రానికి”') : L('“Send to the market yard by lorry”', '“లారీలో మార్కెట్ యార్డుకు”');
     return { text: (isMobile ? L('Tap the heap, then ', 'కుప్పను నొక్కి ') : L('Press E at the heap, then ', 'కుప్ప దగ్గర E నొక్కి ')) + opt, icon: 'tap' };
   }
-  if (CH.stored(crop) > 0.05) return { text: CH.office('Storage → “Send by lorry”', 'నిల్వ → “లారీలో పంపండి”'), icon: 'office', tab: 'storage' };
+  if (CH.stored(crop) > 0.05) return { text: CH.office(L('Storage → “Send by lorry”', 'నిల్వ → “లారీలో పంపండి”')), icon: 'office', tab: 'storage' };
   const g = CH.growing(crop);
   if (g) return coachGrow(g);
   return coachSow(crop || CH.bestCrop());
@@ -94,24 +95,24 @@ function coachLand() {
 // ---- one step function per mission type ----
 const COACH_STEPS = {
   t_walk: () => CH.goField(F1()),
-  t_plough: () => { const f = F1(); if (!CH.onField(f)) return CH.goField(f); return { text: CH.hold('and walk around the field to plough it', 'పొలమంతా నడిచి దున్నండి'), icon: 'work', progress: f.countMin(2) / f.n / 0.8 }; },
+  t_plough: () => { const f = F1(); if (!CH.onField(f)) return CH.goField(f); return { text: CH.hold(L('and walk around the field to plough it', 'పొలమంతా నడిచి దున్నండి')), icon: 'work', progress: f.countMin(2) / f.n / 0.8 }; },
   t_seeds: () => {
     const f = F1(); if (!CH.onField(f)) return CH.goField(f);
     const nd = Player.need;
     if (nd && nd.item === 'seed' && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy seeds (delivered here)', 'విత్తనాలు కొనండి (ఇక్కడికే)')) + L(', then pick the top crop', ', పైన ఉన్న పంట ఎంచుకోండి'), icon: 'tap' };
-    return { text: CH.hold('on the field until it asks for seeds', 'విత్తనాలు అడిగే వరకు పొలంలో ఉంచండి'), icon: 'work' };
+    return { text: CH.hold(L('on the field until it asks for seeds', 'విత్తనాలు అడిగే వరకు పొలంలో ఉంచండి')), icon: 'work' };
   },
   t_sow: () => coachSow(F1().crop || F1().plannedCrop || null),
   t_water: () => {
     const f = F1(); if (!CH.onField(f)) return CH.goField(f);
     if (f.pump) return { text: L(`The pump is filling the field (${Math.round(f.water)}%). Keep holding Work or wait a little`, `మోటార్ పొలం నింపుతోంది (${Math.round(f.water)}%). 'పని' పట్టుకోండి లేదా కొద్దిసేపు ఆగండి`), icon: 'wait', progress: f.water / 60 };
-    return { text: CH.hold('on the crop: the pump starts by itself', 'పంటపై నిలబడండి: మోటార్ తానే మొదలవుతుంది'), icon: 'work', progress: f.water / 60 };
+    return { text: CH.hold(L('on the crop: the pump starts by itself', 'పంటపై నిలబడండి: మోటార్ తానే మొదలవుతుంది')), icon: 'work', progress: f.water / 60 };
   },
   t_fert: () => {
     const f = F1(); const nd = Player.need;
     if (nd && nd.item === 'urea' && performance.now() - nd.t < 25000) return { text: CH.tap(L('Buy fertilizer (delivered here)', 'ఎరువు కొనండి (ఇక్కడికే)')), icon: 'tap' };
     if (!CH.onField(f)) return CH.goField(f);
-    return { text: CH.hold('and walk on the crop to spread fertilizer', 'పంటపై నడిచి ఎరువు చల్లండి'), icon: 'work' };
+    return { text: CH.hold(L('and walk on the crop to spread fertilizer', 'పంటపై నడిచి ఎరువు చల్లండి')), icon: 'work' };
   },
   t_harvest: () => { const f = F1(); if (f.crop && f.sownTiles > 0) return coachGrow(f); return coachSell(null, 'trader'); },
   t_sell: () => coachSell(null, 'trader'),
@@ -133,33 +134,33 @@ const COACH_STEPS = {
     if (!v || !v.cargo.some((c) => c.crop === 'tomato' || c.crop === 'mango')) return { text: L('Load tomatoes into your bullock cart, then drive to the santha ground', 'ఎడ్లబండిలో టమాటాలు ఎక్కించి సంత మైదానానికి నడపండి'), icon: 'drive' };
     return CH.near(p, 18) ? { text: CH.tap(L('Sell at the Sunday santha (+5%)', 'ఆదివారం సంతలో అమ్మండి (+5%)')), icon: 'tap' } : CH.go(p, L('the santha ground', 'సంత మైదానం'));
   },
-  buyTractor: () => { const pr = VEHICLES.tractor35.price; if (!CH.money(pr)) return CH.needMoney(pr); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'buy the Bhoomi 35 tractor', 'భూమి 35 ట్రాక్టర్ కొనండి'); },
-  buyImpl: (m) => { const I = IMPLEMENTS[m.impl]; if (I && !CH.money(I.price)) return CH.needMoney(I.price); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), `buy the ${I ? I.en : 'implement'}`, `${I ? I.te : 'పనిముట్టు'} కొనండి`); },
-  rentT: () => CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'rent a tractor', 'ట్రాక్టర్ అద్దెకు తీసుకోండి'),
+  buyTractor: () => { const pr = VEHICLES.tractor35.price; if (!CH.money(pr)) return CH.needMoney(pr); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), L('buy the Bhoomi 35 tractor', 'భూమి 35 ట్రాక్టర్ కొనండి')); },
+  buyImpl: (m) => { const I = IMPLEMENTS[m.impl]; if (I && !CH.money(I.price)) return CH.needMoney(I.price); return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), L(`buy the ${I ? LN(I) : L('implement', 'పనిముట్టు')}`, `${I ? I.te : 'పనిముట్టు'} కొనండి`)); },
+  rentT: () => CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), L('rent a tractor', 'ట్రాక్టర్ అద్దెకు తీసుకోండి')),
   expand: () => coachLand(),
   ownLand: () => coachLand(),
   leaseLand: () => coachLand(),
-  build: (m) => { const U2 = FARM_UPGRADES[m.up]; if (U2 && !CH.money(U2.cost)) return CH.needMoney(U2.cost); return { text: CH.office(`Build → ${U2 ? U2.en : ''}`, `నిర్మాణం → ${U2 ? U2.te : ''}`), icon: 'office', tab: 'build' }; },
-  house: () => { const H = HOUSE_LEVELS[Math.min(4, G.S.houseLevel + 1)]; if (H && !CH.money(H.cost)) return CH.needMoney(H.cost); return { text: CH.office('Build → upgrade your house', 'నిర్మాణం → ఇల్లు పెంచండి'), icon: 'office', tab: 'build' }; },
-  village: (m) => { const P2 = VILLAGE_PROJECTS[m.proj]; if (P2 && !CH.money(P2.cost)) return CH.needMoney(P2.cost); return CH.visit('panchayat', L('the panchayat office', 'పంచాయతీ కార్యాలయం'), `fund ${P2 ? P2.en : 'the project'}`, `${P2 ? P2.te : 'ప్రాజెక్టు'}కు నిధులు ఇవ్వండి`); },
+  build: (m) => { const U2 = FARM_UPGRADES[m.up]; if (U2 && !CH.money(U2.cost)) return CH.needMoney(U2.cost); return { text: CH.office(L(`Build → ${U2 ? U2.en : ''}`, `నిర్మాణం → ${U2 ? U2.te : ''}`)), icon: 'office', tab: 'build' }; },
+  house: () => { const H = HOUSE_LEVELS[Math.min(4, G.S.houseLevel + 1)]; if (H && !CH.money(H.cost)) return CH.needMoney(H.cost); return { text: CH.office(L('Build → upgrade your house', 'నిర్మాణం → ఇల్లు పెంచండి')), icon: 'office', tab: 'build' }; },
+  village: (m) => { const P2 = VILLAGE_PROJECTS[m.proj]; if (P2 && !CH.money(P2.cost)) return CH.needMoney(P2.cost); return CH.visit('panchayat', L('the panchayat office', 'పంచాయతీ కార్యాలయం'), L(`fund ${P2 ? P2.en : 'the project'}`, `${P2 ? P2.te : 'ప్రాజెక్టు'}కు నిధులు ఇవ్వండి`)); },
   repairBore: () => {
-    if (Inv.count('pumppart') < 1) return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), 'buy a pump spare part', 'పంపు విడిభాగం కొనండి');
-    return CH.visit('vbore', L('the village borewell', 'గ్రామ బోరు'), 'repair the borewell', 'బోరు బాగుచేయండి');
+    if (Inv.count('pumppart') < 1) return CH.visit('workshop', L("Bhaskar's workshop", 'భాస్కర్ వర్క్‌షాప్'), L('buy a pump spare part', 'పంపు విడిభాగం కొనండి'));
+    return CH.visit('vbore', L('the village borewell', 'గ్రామ బోరు'), L('repair the borewell', 'బోరు బాగుచేయండి'));
   },
-  hire: () => ({ text: CH.office('Workers → Hire', 'కూలీలు → పెట్టుకోండి'), icon: 'office', tab: 'workers' }),
-  rankUp: () => ({ text: CH.office('Profile: see what you need', 'ప్రొఫైల్: ఏం కావాలో చూడండి'), icon: 'office', tab: 'profile' }),
+  hire: () => ({ text: CH.office(L('Workers → Hire', 'కూలీలు → పెట్టుకోండి')), icon: 'office', tab: 'workers' }),
+  rankUp: () => ({ text: CH.office(L('Profile: see what you need', 'ప్రొఫైల్: ఏం కావాలో చూడండి')), icon: 'office', tab: 'profile' }),
   talk: (m) => { const n = NPCs.byId[m.npc]; if (!n) return null; const p = { x: n.h.x, z: n.h.z }; if (!CH.near(p, 3)) return CH.go(p, LN(n.name)); return { text: CH.tap(L('Talk to ', 'మాట్లాడండి: ') + LN(n.name)), icon: 'tap' }; },
-  milk: () => (Inv.count('feed') < 1 ? CH.visit('kirana', L('the kirana shop', 'కిరాణం'), 'buy cattle feed', 'పశువుల దాణా కొనండి') : { text: L('Milk is sold every morning and evening. Keep the buffaloes fed', 'పాలు ప్రతి ఉదయం, సాయంత్రం అమ్ముతారు. గేదెలకు దాణా పెట్టండి'), icon: 'wait' }),
-  repay: () => { const bank = G.S.loans.some((l) => l.kind === 'bank'); return bank ? CH.visit('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు'), 'repay the loan', 'రుణం తీర్చండి') : CH.visit('lender', L("Hanmanthu's house", 'హన్మంతు'), 'repay the loan', 'అప్పు తీర్చండి'); },
-  pray: () => CH.visit('temple', L('the temple', 'గుడి'), 'pray (₹51)', 'దండం పెట్టండి (₹51)'),
+  milk: () => (Inv.count('feed') < 1 ? CH.visit('kirana', L('the kirana shop', 'కిరాణం'), L('buy cattle feed', 'పశువుల దాణా కొనండి')) : { text: L('Milk is sold every morning and evening. Keep the buffaloes fed', 'పాలు ప్రతి ఉదయం, సాయంత్రం అమ్ముతారు. గేదెలకు దాణా పెట్టండి'), icon: 'wait' }),
+  repay: () => { const bank = G.S.loans.some((l) => l.kind === 'bank'); return bank ? CH.visit('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు'), L('repay the loan', 'రుణం తీర్చండి')) : CH.visit('lender', L("Hanmanthu's house", 'హన్మంతు'), L('repay the loan', 'అప్పు తీర్చండి')); },
+  pray: () => CH.visit('temple', L('the temple', 'గుడి'), L('pray (₹51)', 'దండం పెట్టండి (₹51)')),
   visitBank: () => CH.goPlace('bank', L('the bank in Nagaram', 'నగరం బ్యాంకు')),
   organic: () => {
-    if (Inv.count('organic') < 0.05) return CH.visit('seed', L("Srinu's shop", 'శ్రీను దుకాణం'), 'buy farmyard manure', 'పశువుల ఎరువు కొనండి');
+    if (Inv.count('organic') < 0.05) return CH.visit('seed', L("Srinu's shop", 'శ్రీను దుకాణం'), L('buy farmyard manure', 'పశువుల ఎరువు కొనండి'));
     Player.opt.fert = 'organic';
     const g = CH.growing(); if (!g) return coachSow(CH.bestCrop());
     if (!CH.onField(g)) return CH.goField(g);
     g.autoMode = 'fert';
-    return { text: CH.hold('and walk on the crop to spread the manure', 'పంటపై నడిచి పశువుల ఎరువు చల్లండి'), icon: 'work' };
+    return { text: CH.hold(L('and walk on the crop to spread the manure', 'పంటపై నడిచి పశువుల ఎరువు చల్లండి')), icon: 'work' };
   },
   savePest: (m) => { const f = Fields.byId[m.field]; return f ? coachGrow(f) : null; },
   drought: () => { const f = Fields.playerFields().filter((q) => q.crop).sort((a, b) => a.health - b.health)[0]; return f ? coachGrow(f) : { text: L('Keep every crop healthy until the season ends', 'సీజన్ ముగిసే వరకు పంటలన్నీ ఆరోగ్యంగా ఉంచండి'), icon: 'wait' }; },
@@ -169,7 +170,7 @@ const COACH_STEPS = {
     if (Time.hour() < 16.5) return { text: L(`The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM`, `వేడుక సాయంత్రం 4:30 నుంచి`), target: { x: t.x, z: t.z, name: nm }, icon: 'wait' };
     return CH.go(t, nm);
   },
-  _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office('Missions', 'లక్ష్యాలు'), icon: 'office', tab: 'missions' }; },
+  _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office(L('Missions', 'లక్ష్యాలు')), icon: 'office', tab: 'missions' }; },
 };
 
 const Coach = {
@@ -195,26 +196,67 @@ const Coach = {
     // numbers (water %, growth %) update the card but do not count as a new step
     const k = st ? st.m.uid + '|' + st.text.replace(/[\d,.%₹]+/g, '#') : '';
     const now = performance.now();
-    if (k !== this.key) { this.key = k; this.changedAt = now; if (st) this.show(st, false); }
-    else if (st && now - this.changedAt > 35000 && !UI.modalOpen()) { this.changedAt = now; this.show(st, true); }   // gentle reminder when stuck
+    if (k !== this.key) { this.key = k; this.changedAt = now; this.activeAt = now; if (st) this.show(st, false); return; }
+    if (!st || Auto.on) return;
+    // still making progress (closer to the place, field getting done)? then no reminder needed
+    const tg = st.target; const mark = Math.round(clamp01(st.m.prog / st.m.target) * 40) + '|' + (tg ? Math.round(CH.dist(tg) / 12) : '') + '|' + (st.progress !== undefined ? Math.round(st.progress * 20) : '');
+    if (mark !== this.mark) { this.mark = mark; this.activeAt = now; }
+    // stuck on the same step for a while: a gentle reminder in the corner, at most once a minute
+    if (now - this.activeAt > 40000 && now - (this.remindAt || 0) > 60000 && !UI.modalOpen() && !UI.photoMode) { this.remindAt = now; this.activeAt = now; this.show(st, true); }
   },
-  // big instruction strip above the controls; spoken aloud if the player wants
+  // a new step (or a reminder): the corner card glows, the tips open for a reminder, and it can be read aloud
   show(st, reminder) {
-    const el = UI.el('coach'); if (!el || UI.photoMode || Auto.on) return;
-    el.classList.remove('auto');
-    el.querySelector('.ci').innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk;
-    el.querySelector('.ct').textContent = st.text;
-    const b = el.querySelector('.cdo'); b.textContent = L('Do it ▶', 'చేయి ▶'); b.onclick = () => Auto.doStep();
-    el.hidden = false; el.classList.remove('go'); void el.offsetWidth; el.classList.add('go');
-    clearTimeout(this._hide); this._hide = setTimeout(() => { if (!Auto.on) el.hidden = true; }, reminder ? 5000 : 8000);
+    const mb = UI.el('missions'); if (!mb || UI.photoMode) return;
+    mb.classList.remove('flash', 'remind'); void mb.offsetWidth; mb.classList.add(reminder ? 'remind' : 'flash');
+    if (reminder) { UI.howUntil = performance.now() + 14000; Audio2.sfx('hint'); }
+    else { UI.howOpen = false; UI.howUntil = 0; if (G.t > 2) Audio2.sfx('step'); }   // a new step: close old tips
+    UI._mKey = ''; UI.dirty = true;
     if (!reminder || Settings.v.voice === 'always') this.say(st.text);
+    else if (Settings.v.voice) this.say(L('Reminder: ', 'గుర్తుందా: ') + st.text);
+  },
+  // two or three short lines on HOW to do the current step, in the player's words
+  howTo(st) {
+    if (!st) return [];
+    const m = isMobile;
+    switch (st.icon) {
+      case 'walk': return [
+        L('Follow the gold arrow on the screen. The map shows a dotted line to it.', 'తెరపై బంగారు బాణాన్ని అనుసరించండి. మ్యాప్‌లో దానికి చుక్కల గీత ఉంటుంది.'),
+        m ? L('Push the left stick all the way to run.', 'పరుగెత్తడానికి ఎడమ స్టిక్‌ను పూర్తిగా నెట్టండి.') : L('W A S D to walk, hold Shift to run.', 'W A S D తో నడవండి, Shift పట్టుకుంటే పరుగు.'),
+        L('Far away? Open the Map, tap the place and take an auto.', 'దూరంగా ఉందా? మ్యాప్ తెరిచి, ఆ చోటు నొక్కి ఆటోలో వెళ్ళండి.')];
+      case 'drive': return [
+        m ? L('Walk next to your vehicle and tap Use to get in.', 'మీ వాహనం దగ్గరికి వెళ్ళి ఎక్కడానికి \'వాడు\' నొక్కండి.') : L('Walk next to your vehicle and press E to get in.', 'మీ వాహనం దగ్గరికి వెళ్ళి ఎక్కడానికి E నొక్కండి.'),
+        m ? L('Push the stick up to go, left or right to turn.', 'ముందుకు వెళ్ళడానికి స్టిక్ పైకి, తిరగడానికి ఎడమ/కుడికి నెట్టండి.') : L('W to go, A and D to turn, Space to brake.', 'W తో ముందుకు, A/D తో తిరగండి, Space తో బ్రేక్.'),
+        L('Follow the gold arrow.', 'బంగారు బాణాన్ని అనుసరించండి.')];
+      case 'work': return [
+        L('Stand on your field: it has a gold border on the map.', 'మీ పొలంలో నిలబడండి: మ్యాప్‌లో దానికి బంగారు అంచు ఉంటుంది.'),
+        m ? L('Press and HOLD the yellow Work button.', 'పసుపు \'పని\' బటన్‌ను నొక్కి పట్టుకోండి.') : L('Press and HOLD the F key.', 'F కీని నొక్కి పట్టుకోండి.'),
+        L('Keep holding it and walk up and down the field until the bar is full.', 'పట్టుకునే ఉండి, బార్ నిండే వరకు పొలంలో అటూ ఇటూ నడవండి.')];
+      case 'tap': return [
+        L('Walk close: a button with the name pops up at the bottom.', 'దగ్గరికి వెళ్ళండి: కింద పేరుతో ఒక బటన్ వస్తుంది.'),
+        m ? L('Tap Use (or tap that button).', '\'వాడు\' నొక్కండి (లేదా ఆ బటన్ నొక్కండి).') : L('Press E (or click that button).', 'E నొక్కండి (లేదా ఆ బటన్ క్లిక్ చేయండి).'),
+        L('In the list that opens, the top choice is usually the right one.', 'తెరుచుకునే జాబితాలో పైది సాధారణంగా సరైనది.')];
+      case 'wait': return [
+        L('Your crop is growing. Nothing to do right now.', 'మీ పంట పెరుగుతోంది. ఇప్పుడు చేయాల్సింది ఏమీ లేదు.'),
+        m ? L('Stand on the field and tap Use → Rest to skip ahead.', 'పొలంలో నిలబడి \'వాడు\' → విశ్రాంతి నొక్కి సమయం ముందుకు జరపండి.') : L('Stand on the field and press E → Rest to skip ahead.', 'పొలంలో నిలబడి E → విశ్రాంతి నొక్కి సమయం ముందుకు జరపండి.'),
+        L('Or explore the village and come back later.', 'లేదా గ్రామం చుట్టి వచ్చి తర్వాత రండి.')];
+      case 'office': return [
+        m ? L('Tap the clipboard button at the top of the screen.', 'తెర పైన ఉన్న క్లిప్‌బోర్డ్ బటన్ నొక్కండి.') : L('Press B, or click the clipboard button at the top.', 'B నొక్కండి, లేదా పైన క్లిప్‌బోర్డ్ బటన్ క్లిక్ చేయండి.'),
+        L('Then pick the tab named in the mission.', 'తర్వాత లక్ష్యంలో చెప్పిన ట్యాబ్ ఎంచుకోండి.')];
+      case 'map': return [
+        m ? L('Tap the map button at the top (or the round mini map).', 'పైన మ్యాప్ బటన్ (లేదా గుండ్రటి చిన్న మ్యాప్) నొక్కండి.') : L('Press M, or click the round mini map.', 'M నొక్కండి, లేదా గుండ్రటి చిన్న మ్యాప్ క్లిక్ చేయండి.'),
+        L('Tap a place on the map to see it and take an auto there.', 'మ్యాప్‌లో ఒక చోటు నొక్కి చూడండి, ఆటోలో అక్కడికి వెళ్ళండి.')];
+      case 'coin': return [
+        L('Harvest and sell crops at the market yard to earn money.', 'పంట కోసి మార్కెట్ యార్డులో అమ్మి డబ్బు సంపాదించండి.'),
+        L('Short of money? The bank in Nagaram gives crop loans.', 'డబ్బు తక్కువగా ఉందా? నగరం బ్యాంకు పంట రుణాలు ఇస్తుంది.')];
+      default: return [L('Follow the gold arrow and read the yellow line above.', 'బంగారు బాణాన్ని అనుసరించి, పైన పసుపు వాక్యం చదవండి.')];
+    }
   },
   say(text) {
     if (!Settings.v.voice || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return;
     try {
-      const vs = speechSynthesis.getVoices(); const want = LANG === 'te' ? 'te' : 'en';
-      const v = vs.find((x) => x.lang && x.lang.toLowerCase().startsWith(want + '-in')) || vs.find((x) => x.lang && x.lang.toLowerCase().startsWith(want));
-      if (!v && LANG === 'te') return;   // no Telugu voice on this device: stay quiet rather than mispronounce
+      const vs = speechSynthesis.getVoices(); const want = LANG;
+      const v = vs.find((x) => x.lang && x.lang.toLowerCase().replace('_', '-').startsWith(want + '-in')) || vs.find((x) => x.lang && x.lang.toLowerCase().startsWith(want));
+      if (!v && LANG !== 'en') return;   // no voice for this language on the device: stay quiet rather than mispronounce
       speechSynthesis.cancel();
       const u = new SpeechSynthesisUtterance(text.replace(/[“”"]/g, '').replace(/→/g, ', ').replace(/₹/g, 'rupees '));
       if (v) { u.voice = v; u.lang = v.lang; } else u.lang = 'en-IN';

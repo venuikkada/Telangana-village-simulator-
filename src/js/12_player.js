@@ -123,7 +123,7 @@ const Player = {
     const ax = Input.axis();
     // any stick or key movement takes control back from "Do it"
     if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
-    if (Input.pressed('Enter') || Input.pressed('NumpadEnter')) Auto.doStep();
+    if (Settings.v.helper && (Input.pressed('Enter') || Input.pressed('NumpadEnter'))) Auto.doStep();
     if (this.vehicle) { this.updateVehicle(dt, ax); return; }
     // tools
     for (const t of TOOLS) if (Input.pressed('Digit' + t.key)) this.setTool(t.id);

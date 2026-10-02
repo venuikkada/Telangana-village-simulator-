@@ -1,14 +1,15 @@
 {
-  "name": "telangana-village-simulator",
+  "name": "indian-village-simulator",
   "version": "1.0.0",
   "private": true,
-  "description": "3D open-world farming game set in a Telangana village. English and Telugu, phone and PC.",
+  "description": "3D open-world farming game set in an Indian village. English, Hindi, Bengali, Marathi, Telugu, Tamil and Kannada; phone and PC.",
   "scripts": {
     "build": "node tools/build.mjs",
     "lint": "eslint --no-eslintrc --env browser,es2022 --parser-options ecmaVersion:2022,sourceType:module --rule \"no-undef:error\" --rule \"no-dupe-keys:error\" dist/game.mjs",
     "check": "npm run build && node --check dist/game.mjs && npm run lint",
     "test": "node tools/t2_play.cjs",
-    "test:mobile": "node tools/t3_mobile.cjs"
+    "test:mobile": "node tools/t3_mobile.cjs",
+    "i18n": "node tools/i18n.mjs"
   },
   "dependencies": {
     "three": "0.170.0"
@@ -16,6 +17,7 @@
   "devDependencies": {
     "@fontsource/baloo-tammudu-2": "^5.3.0",
     "@fontsource/hind-guntur": "^5.3.0",
+    "acorn": "^8.12.0",
     "eslint": "^8.57.0",
     "playwright": "^1.56.0"
   }

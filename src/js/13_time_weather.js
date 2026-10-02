@@ -21,7 +21,7 @@ const Time = {
     const hr = this.hour(); let h = Math.floor(hr); const m = Math.floor((hr % 1) * 60);
     const mm = String(m).padStart(2, '0');
     if (LANG === 'te') { const p = h < 12 ? (h < 4 ? 'రా.' : 'ఉ.') : h < 16 ? 'మ.' : h < 19 ? 'సా.' : 'రా.'; const h12 = h % 12 === 0 ? 12 : h % 12; return `${p} ${h12}:${mm}`; }
-    const ap = h < 12 ? 'AM' : 'PM'; const h12 = h % 12 === 0 ? 12 : h % 12; return `${h12}:${mm} ${ap}`;
+    const ap = h < 12 ? L('AM', 'ఉ.') : L('PM', 'మ.'); const h12 = h % 12 === 0 ? 12 : h % 12; return `${h12}:${mm} ${ap}`;
   },
   fmtDate() {
     const s = SEASONS[this.season()];
@@ -146,7 +146,7 @@ const Weather = {
     const t = Time.yearFrac();
     // green peaks late monsoon, dries through summer
     const s = Time.season(), d = Time.dayInSeason() / DAYS_PER_SEASON;
-    let g = s === 0 ? 0.55 + d * 0.45 : s === 1 ? 1 - d * 0.55 : 0.4 - d * 0.35;
+    let g = s === 0 ? 0.66 + d * 0.34 : s === 1 ? 1 - d * 0.4 : 0.55 - d * 0.22;   // never parched: the land stays pleasant
     if (G.S.weather.drought) g *= 0.6;
     void t;
     return clamp01(g + G.S.world.wet * 0.15);

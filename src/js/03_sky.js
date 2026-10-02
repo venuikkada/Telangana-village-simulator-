@@ -8,10 +8,10 @@ const SKY_KEYS = [
   [-4, '#18305c', '#5b4468', '#ff6a30', 0.0, '#3e4f7c', '#241a18', 0.22, 0.45, 1.25],
   [0, '#2a4c86', '#d9794c', '#ff7a3a', 0.35, '#6c7ca6', '#4a3024', 0.34, 0.6, 1.12],
   [5, '#3a66a8', '#f0a26a', '#ff9d58', 1.5, '#95a8cf', '#654532', 0.45, 0.75, 1.02],
-  [12, '#3d6db3', '#f1c79c', '#ffc890', 2.3, '#a9bcdd', '#6d5038', 0.5, 0.85, 0.98],
-  [25, '#3772c2', '#bcd4ec', '#ffeedb', 2.9, '#b9cce8', '#72604a', 0.55, 0.95, 0.96],
-  [50, '#2b67c1', '#c3dbf0', '#fff7ec', 3.25, '#c3d6ee', '#7a6652', 0.6, 1.0, 0.94],
-  [90, '#255fbc', '#c9dff2', '#ffffff', 3.4, '#c8daef', '#7a6652', 0.6, 1.0, 0.94],
+  [12, '#3a74c4', '#f1c79c', '#ffc890', 2.3, '#a9bcdd', '#6d5038', 0.5, 0.85, 0.98],
+  [25, '#2f78d6', '#a8d0f0', '#ffeedb', 2.9, '#b9cce8', '#806546', 0.55, 0.95, 1.0],
+  [50, '#2470d8', '#b0d6f3', '#fff7ec', 3.25, '#c3d6ee', '#8a6c4c', 0.6, 1.0, 0.98],
+  [90, '#1f69d2', '#b6daf4', '#ffffff', 3.4, '#c8daef', '#8a6c4c', 0.6, 1.0, 0.98],
 ].map((k) => ({ e: k[0], top: col(k[1]), hor: col(k[2]), sun: col(k[3]), si: k[4], hs: col(k[5]), hg: col(k[6]), hi: k[7], ei: k[8], ex: k[9] }));
 
 const SKY_VS = /* glsl */`varying vec3 vDir; void main(){ vec4 wp = modelMatrix * vec4(position,1.0); vDir = wp.xyz - cameraPosition; gl_Position = projectionMatrix * viewMatrix * wp; gl_Position.z = gl_Position.w; }`;
@@ -233,7 +233,7 @@ const Sky = {
       const tint = Render.post.comp.uniforms.uTint.value;
       const golden = smoothstep(18, 4, this.sunElev) * smoothstep(-4, 2, this.sunElev);
       tint.set(1 + golden * 0.05 + haze * 0.04, 1 + golden * 0.01, 1 - golden * 0.05 - haze * 0.05 + this.night * 0.06);
-      Render.post.comp.uniforms.uSat.value = 1.08 - oc * 0.18 - this.night * 0.15;
+      Render.post.comp.uniforms.uSat.value = 1.14 - oc * 0.18 - this.night * 0.15;
       Render.post.comp.uniforms.uFlash.value = this.flash * 0.35;
     }
     // environment map refresh

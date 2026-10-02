@@ -43,11 +43,34 @@ function snapWeather() {
 // ---------------------------------------------------------------------------
 // Simulation clock (game minutes)
 // ---------------------------------------------------------------------------
+// Daytime only: play runs from 6:30 in the morning to 6 in the evening; then the night passes
+// by itself (crops grow, cattle are milked) and the next sunny morning begins.
+const DAY_START = 6.5, DAY_END = 18;
 const Sim = {
-  acc: 0, STEP: 5, skipping: false,
+  acc: 0, STEP: 5, skipping: false, ending: false,
   tick(dt) {
     const dm = dt * (60 / GAME_SEC_PER_HOUR) * Time.scale;
     this.clock(dm, false);
+    if (!this.ending && Time.hour() >= DAY_END) this.endDay();
+  },
+  // minutes from game time `min` to the next morning, or 0 during the day
+  nightMins(min = G.S.time.min) { const h = (min % 1440) / 60; if (h >= DAY_START && h < DAY_END) return 0; return Math.round(((DAY_START - h + 24) % 24) * 60); },
+  // evening: a short fade, the night goes by, and a fresh morning
+  endDay() {
+    this.ending = true;
+    const d0 = Time.day();
+    UI.fade(() => {
+      try {
+        this.advance(this.nightMins());
+        const P = G.S.player; const rest = HOUSE_LEVELS[G.S.houseLevel].rest;
+        P.energy = 100; P.health = Math.min(100, P.health + 20 * rest);
+        if (Player.vehicle) Player.vehicle.speed = 0;
+        Celebrate.morning(Time.day() !== d0);
+        Audio2.sfx('rooster');
+        SaveSys.save(false);
+        Bus.emit('sleep', { night: true });
+      } finally { this.ending = false; }
+    }, L('The sun sets… a new day begins', 'సూర్యుడు అస్తమిస్తున్నాడు… కొత్త రోజు మొదలవుతోంది'));
   },
   clock(dm, force) {
     const S = G.S;
@@ -91,6 +114,7 @@ const Sim = {
   // jump forward in big steps (sleep, bus rides)
   advance(min) {
     if (!G.S || min <= 0) return;
+    min += this.nightMins(G.S.time.min + min);   // never stop in the night: carry on to the morning
     this.skipping = true;
     try {
       let left = min;
@@ -112,14 +136,15 @@ const Sim = {
     if (Player.vehicle) return;
     const cur = G.S.time.min % 1440;
     let mins = night ? (6.5 * 60 - cur + 1440) % 1440 : 120;
-    if (night && mins < 30) mins += 0;
     if (mins <= 0) mins = 120;
+    const d0 = Time.day();
     UI.fade(() => {
       this.advance(mins);
+      if (Time.day() !== d0) night = true;   // rested past the evening: it is a new morning
       const P = G.S.player; const rest = HOUSE_LEVELS[G.S.houseLevel].rest;
       if (night) { P.energy = 100; P.health = Math.min(100, P.health + 25 * rest); }
       else { P.energy = Math.min(100, P.energy + 30 * rest); P.health = Math.min(100, P.health + 6 * rest); }
-      UI.toast(night ? L(`Good morning! ${Time.fmtDate()}`, `శుభోదయం! ${Time.fmtDate()}`) : L('You feel rested.', 'విశ్రాంతి తీసుకున్నారు.'), 'good');
+      if (night) Celebrate.morning(true); else UI.toast(L('You feel rested.', 'విశ్రాంతి తీసుకున్నారు.'), 'good');
       Audio2.sfx(night ? 'rooster' : 'click');
       SaveSys.save(false);
       Bus.emit('sleep', { night });
@@ -153,14 +178,14 @@ const Game = {
     step(1, 'Laying roads and canals', 'రోడ్లు, కాలువలు వేస్తున్నాం', () => { World.buildRoads(); World.buildWater(); Atlas.init(); });
     step(3, 'Building Ramapuram', 'రామాపురం నిర్మిస్తున్నాం', () => { World.buildVillage(); Village.reserveSpots(); });
     step(2, 'Marking out the fields', 'పొలాల గట్లు వేస్తున్నాం', () => { Fields.init(); this.setupFields(); });
-    step(2, 'Planting trees', 'చెట్లు నాటుతున్నాం', () => { RNG = mulberry32(777); Veg.scatter(); scatterBoulders(); Veg.build(); });
+    step(2, 'Planting trees', 'చెట్లు నాటుతున్నాం', () => { RNG = mulberry32(777); Veg.scatter(); scatterBoulders(); Veg.build(); Nature.init(); });
     step(1, 'Finishing the skyline', 'ఆకాశరేఖ పూర్తి చేస్తున్నాం', () => { buildSkyline(); Chunks.finalize(); });
     step(1, 'Lighting the sky', 'ఆకాశం వెలిగిస్తున్నాం', () => { Weather.init(); Market.init(); PLights.init(); });
     step(2, 'Waking up the village', 'గ్రామం నిద్ర లేస్తోంది', () => { Humans.init(); Animals.init(); Birds.init(); FX.init(); Graph.build(); NPCs.spawn(); Fauna.spawn(); Traffic.spawn(); });
     step(1, 'Drawing the map', 'మ్యాప్ గీస్తున్నాం', () => { Map2.build(); UI.init(); Services.registerInteractions(); });
     const total = steps.reduce((s, x) => s + x.w, 0); let done = 0;
     for (const s of steps) {
-      UI.loading(0.08 + 0.9 * done / total, L(s.en + '…', s.te + '…'));
+      UI.loading(0.08 + 0.9 * done / total, L(s.en, s.te) + '…');
       await nextFrame(); await nextFrame();
       s.fn();
       done += s.w;
@@ -313,6 +338,7 @@ const Game = {
     UI.applyLang(); UI.dirty = true; UI.refreshTools();
     Progress.check();
     Missions.ensure();
+    if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
@@ -412,6 +438,7 @@ function frame(now) {
     Fields.updateVisuals(cam.position);
     Veg.updateVisibility(cam.position);
     Veg.updateGrass(cam.position);
+    Nature.update(dt, cam.position);
     Chunks.updateVisibility(cam.position);
     Village.update();
     PLights.update();
@@ -467,7 +494,10 @@ function deviceSetup() {
 
 async function boot(hot) {
   try {
-    Settings.load(); LANG = Settings.v.lang || 'en'; Time.scale = Settings.v.timeScale || 1;
+    Settings.load();
+    if (!LANGS.some((x) => x.id === Settings.v.lang)) Settings.v.lang = 'en';
+    if (!(await Lang.load(Settings.v.lang))) Settings.v.lang = 'en';   // offline or file missing: English
+    LANG = Settings.v.lang; Lang.fonts(LANG); Time.scale = Settings.v.timeScale || 1;
     deviceSetup();
     UI.el = (id) => document.getElementById(id);
     UI.applyLang();
@@ -500,7 +530,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));
