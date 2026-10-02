@@ -902,24 +902,39 @@ const UI = {
   missionDone(m) { Celebrate.mission(m); },
   // ---------- touch controls ----------
   initTouch() {
-    const joy = this.el('joy'), knob = this.el('knob');
-    let id = null, cx = 0, cy = 0;
-    const R = 50;
-    // pointer capture can fail on some phones when another finger is already down: never let that stop the control
+    const joy = this.el('joy'), knob = this.el('knob'); const R = 50;
+    const hasTouch = 'ontouchstart' in window;
+    // pointer capture can fail on some phones when another finger is already down: never let that stop a control
     const cap = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (er) { /* keep going without capture */ } };
-    joy.addEventListener('pointerdown', (e) => { id = e.pointerId; cap(joy, e); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; move(e); Input.joy.active = true; Audio2.unlock(); });
-    const move = (e) => { if (e.pointerId !== id) return; let dx = e.clientX - cx, dy = e.clientY - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92); };
-    joy.addEventListener('pointermove', move);
-    const end = (e) => { if (e.pointerId !== id) return; id = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; };
-    joy.addEventListener('pointerup', end); joy.addEventListener('pointercancel', end);
-    const hold = (el, on, off) => { el.addEventListener('pointerdown', (e) => { e.preventDefault(); on(); cap(el, e); Audio2.unlock(); }); el.addEventListener('pointerup', off); el.addEventListener('pointercancel', off); el.addEventListener('lostpointercapture', off); };
-    hold(this.el('tbWork'), () => { Input.work = true; }, () => { Input.work = false; });
+    // ---- the walking stick: touch events follow each finger by its id, so stick + Work + Use all work together
+    let jid = null, pid = null, cx = 0, cy = 0;
+    const jmove = (x, y) => { let dx = x - cx, dy = y - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; } knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92); };
+    const jstart = (x, y) => { const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; jmove(x, y); Audio2.unlock(); };
+    const jend = () => { jid = null; pid = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; };
+    joy.addEventListener('touchstart', (e) => { e.preventDefault(); if (jid !== null) return; const t = e.changedTouches[0]; jid = t.identifier; jstart(t.clientX, t.clientY); }, { passive: false });
+    joy.addEventListener('touchmove', (e) => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === jid) jmove(t.clientX, t.clientY); }, { passive: false });
+    const jtend = (e) => { for (const t of e.changedTouches) if (t.identifier === jid) jend(); };
+    joy.addEventListener('touchend', jtend); joy.addEventListener('touchcancel', jtend);
+    joy.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && hasTouch) return; pid = e.pointerId; cap(joy, e); jstart(e.clientX, e.clientY); });
+    joy.addEventListener('pointermove', (e) => { if (pid !== null && e.pointerId === pid) jmove(e.clientX, e.clientY); });
+    const pend = (e) => { if (pid !== null && e.pointerId === pid) jend(); };
+    joy.addEventListener('pointerup', pend); joy.addEventListener('pointercancel', pend);
+    // ---- hold buttons: on while any finger is on it, off when the last finger lifts (wherever it slid to)
+    const hold = (el, on, off) => {
+      if (!el) return;
+      const ids = new Set(); let p = null;
+      el.addEventListener('touchstart', (e) => { e.preventDefault(); const was = ids.size; for (const t of e.changedTouches) ids.add(t.identifier); if (!was) { on(); Audio2.unlock(); } }, { passive: false });
+      const tend = (e) => { for (const t of e.changedTouches) ids.delete(t.identifier); if (!ids.size) off(); };
+      el.addEventListener('touchend', tend); el.addEventListener('touchcancel', tend);
+      el.addEventListener('pointerdown', (e) => { if (e.pointerType === 'touch' && hasTouch) return; e.preventDefault(); p = e.pointerId; cap(el, e); on(); Audio2.unlock(); });
+      const pup = (e) => { if (p !== null && e.pointerId === p) { p = null; off(); } };
+      el.addEventListener('pointerup', pup); el.addEventListener('pointercancel', pup);
+    };
+    hold(this.el('tbWork'), () => { Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
     // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
-    for (const [id, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
-      const b = this.el(id); if (!b) continue;
-      const on = (e) => { e.preventDefault(); try { b.setPointerCapture(e.pointerId); } catch (er) { /* fine */ } Input.drive[k] = 1; b.classList.add('on'); Audio2.unlock(); };
-      const off = () => { Input.drive[k] = 0; b.classList.remove('on'); };
-      b.addEventListener('pointerdown', on); b.addEventListener('pointerup', off); b.addEventListener('pointercancel', off); b.addEventListener('lostpointercapture', off);
+    for (const [bid, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
+      const b = this.el(bid); if (!b) continue;
+      hold(b, () => { Input.drive[k] = 1; b.classList.add('on'); }, () => { Input.drive[k] = 0; b.classList.remove('on'); });
     }
     hold(this.el('tbE'), () => { Input.interactTap = true; }, () => { });
     hold(this.el('tbG'), () => { const v = Player.vehicle; if (v) { if (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)) Input.implToggle = true; else Input.horn = true; } else Player.cycleOpt(); }, () => { });

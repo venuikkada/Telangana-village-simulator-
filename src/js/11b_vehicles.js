@@ -138,7 +138,9 @@ class Vehicle {
     const spd = Math.abs(this.speed);
     const maxSteer = (d.two ? 0.5 : 0.62) * (1 - Math.min(0.55, spd / (d.maxSpeed * 1.6)));
     this.steer = damp(this.steer, (inp.steer || 0) * maxSteer, mine ? 11 : 6, dt);
-    const yawRate = this.speed / d.wheelBase * Math.tan(this.steer) * (d.turn || 1) * (this.job ? 2.6 : 1);
+    let yawRate = this.speed / d.wheelBase * Math.tan(this.steer) * (d.turn || 1) * (this.job ? 2.6 : 1);
+    // your own ride turns like an arcade racer: sharp at low speed, steady and controllable when fast
+    if (mine) { const maxYaw = (d.two ? 2.5 : 1.9) / (1 + spd * 0.055); yawRate = clamp(yawRate, -maxYaw, maxYaw); }
     this.yaw += yawRate * dt;
     if (d.two) this.lean = damp(this.lean, -clamp(yawRate * spd * 0.06, -0.45, 0.45), 6, dt);
     // move with collision

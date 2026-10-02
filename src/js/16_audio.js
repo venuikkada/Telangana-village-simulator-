@@ -41,9 +41,10 @@ const Audio2 = {
     const wn = this.noiseSrc(); const wf = c.createBiquadFilter(); wf.type = 'bandpass'; wf.frequency.value = 420; wf.Q.value = 0.5; const wg = c.createGain(); wg.gain.value = 0;
     wn.connect(wf); wf.connect(wg); wg.connect(this.ambBus); wn.start(); this.windG = wg; this.windF = wf;
     // rain hiss + roof rumble
-    const rn = this.noiseSrc(); const rh = c.createBiquadFilter(); rh.type = 'highpass'; rh.frequency.value = 900; const rl = c.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 7000; const rg = c.createGain(); rg.gain.value = 0;
+    // soft, warm "shhh" (no harsh top end) + gentle patter of drops scheduled in update()
+    const rn = this.noiseSrc(); const rh = c.createBiquadFilter(); rh.type = 'highpass'; rh.frequency.value = 380; const rl = c.createBiquadFilter(); rl.type = 'lowpass'; rl.frequency.value = 2300; rl.Q.value = 0.4; const rg = c.createGain(); rg.gain.value = 0;
     rn.connect(rh); rh.connect(rl); rl.connect(rg); rg.connect(this.ambBus); rn.start(); this.rainG = rg;
-    const rr = this.noiseSrc(); const rrl = c.createBiquadFilter(); rrl.type = 'lowpass'; rrl.frequency.value = 380; const rrg = c.createGain(); rrg.gain.value = 0;
+    const rr = this.noiseSrc(); const rrl = c.createBiquadFilter(); rrl.type = 'lowpass'; rrl.frequency.value = 220; const rrg = c.createGain(); rrg.gain.value = 0;
     rr.connect(rrl); rrl.connect(rrg); rrg.connect(this.ambBus); rr.start(); this.rumbleG = rrg;
     // crickets: AM-modulated high sines
     const cg = c.createGain(); cg.gain.value = 0; cg.connect(this.ambBus); this.crickG = cg;
@@ -163,7 +164,9 @@ const Audio2 = {
     const W = Weather.cur; const night = Sky.night; const hr = Time.hour();
     const set = (param, v) => param.setTargetAtTime(v, now, 0.4);
     set(this.windG.gain, W.wind * 0.18 + 0.01); set(this.windF.frequency, 300 + W.wind * 500 + Math.sin(G.t * 0.7) * 80);
-    set(this.rainG.gain, W.rain * 0.22); set(this.rumbleG.gain, W.rain * 0.25);
+    set(this.rainG.gain, W.rain * 0.07); set(this.rumbleG.gain, W.rain * 0.05);
+    // pitter-patter: a few soft drops a second, more when it pours
+    if (W.rain > 0.05) { this.dripT = (this.dripT || 0) - dt; let n = 0; while (this.dripT < 0 && n++ < 4) { this.dripT += 1 / (4 + 18 * W.rain) * (0.5 + Math.random()); this.burst(0.012 + Math.random() * 0.02, 0.025 + Math.random() * 0.03, 'bandpass', 1800 + Math.random() * 2600, this.ambBus, Math.random() * 0.05, 3 + Math.random() * 4); } }
     set(this.crickG.gain, night * (1 - W.rain) * (Time.season() === 2 ? 0.4 : 1) * 0.6);
     // murmur near gatherings
     const P = Player.pos(); let mp = null, md = 1e9;
