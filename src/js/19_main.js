@@ -269,6 +269,26 @@ const Game = {
       Cam.focus.set(cx + Math.cos(a + 1.1) * 40, 2, cz + Math.sin(a + 1.1) * 40);
     };
   },
+  // free rides (auto rickshaw, racing bike, village bus, lorry) parked by roads near your house
+  spawnFreeRides() {
+    const want = [['racer', HOME.x + 22, HOME.z - 14], ['autorick', HOME.x + 40, HOME.z - 12], ['lorry', HOME.x + 70, HOME.z - 20], ['citybus', HOME.x + 105, HOME.z - 24]];
+    const used = [];
+    for (const [type, x0, z0] of want) {
+      const nd = Graph.nodes[Graph.nearest(x0, z0)]; if (!nd) continue;
+      let spot = null;
+      // beside the road, on open ground, not on top of another ride
+      for (let r = 4; r <= 10 && !spot; r += 2) for (let k = 0; k < 8 && !spot; k++) {
+        const a = (k / 8) * TAU, x = nd.x + Math.cos(a) * r, z = nd.z + Math.sin(a) * r; const o = World.occGet(x, z);
+        if (o !== OCC.FREE && o !== OCC.VILLAGE && o !== OCC.KEEP) continue;
+        if (used.some((u) => Math.hypot(u.x - x, u.z - z) < 9)) continue;
+        const q = { x, z }; if (World.collideCircle(q, 2.4)) continue;
+        spot = { x, z };
+      }
+      if (!spot) continue;
+      used.push(spot);
+      Vehicles.spawnOwned({ type, x: spot.x, z: spot.z, yaw: Math.atan2(nd.x - spot.x, nd.z - spot.z) + Math.PI / 2 });
+    }
+  },
   saveInfo(d) {
     if (!d) return '';
     const day = d.day || 1; const s = SEASONS[Math.floor(((day - 1) % DAYS_PER_YEAR) / DAYS_PER_SEASON)];
@@ -310,6 +330,7 @@ const Game = {
       Vehicles.spawnOwned({ type: 'bullock', x: -110, z: 66, yaw: Math.PI, impl: 'bcart' });
       Vehicles.spawnOwned({ type: 'moped', x: -114.5, z: 47.5, yaw: Math.PI / 2 });
     }
+    if (!Vehicles.player.some((v) => v.def.free)) this.spawnFreeRides();
     // player
     Player.init(playerAppearance(S.player.gender));
     Player.x = S.player.x; Player.z = S.player.z; Player.yaw = S.player.yaw || 0;

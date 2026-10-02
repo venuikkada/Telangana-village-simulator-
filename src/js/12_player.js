@@ -414,7 +414,7 @@ const Interact = {
       if (n && !n.worker) out.push({ d: 1, o: { id: 'npc', label: () => L('Talk to ', 'మాట్లాడండి: ') + LN(n.name), act: () => Dialog.open(n), prio: 2 } });
       const v = Vehicles.nearestOwned(P.x, P.z, 4.2);
       if (v) {
-        out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label()), act: () => Player.enterVehicle(v), prio: 3 } });
+        out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label() + (v.def.free ? L(' (free ride)', ' (ఉచితం)') : '')), act: () => Player.enterVehicle(v), prio: 3 } });
         if (v.type === 'tractor35' || v.type === 'tractor50' || v.type === 'bullock') out.push({ d: 0.6, o: { id: 'implement', label: () => L('Change implement', 'పనిముట్టు మార్చండి'), act: () => UI.implementMenu(v), prio: 1 } });
       }
       // your dog: only when there is nothing else to do here, so it never gets in the way

@@ -117,6 +117,11 @@ const VEHICLES = {
   tractor35: { en: 'Bhoomi 35 tractor', te: 'భూమి 35 ట్రాక్టర్', maxSpeed: 11, rev: 3.5, accel: 3.6, turn: 1.15, wheelBase: 2.1, fuelCap: 50, fuelUse: 3.2, price: 540000, cam: 9, power: 35, shop: 'workshop' },
   tractor50: { en: 'Bhoomi 50 Power tractor', te: 'భూమి 50 పవర్ ట్రాక్టర్', maxSpeed: 12.5, rev: 3.5, accel: 4.2, turn: 1.15, wheelBase: 2.35, fuelCap: 65, fuelUse: 4.4, price: 820000, cam: 9.5, power: 50, rank: 1, shop: 'workshop' },
   harvester: { en: 'Combine harvester', te: 'కంబైన్ హార్వెస్టర్', maxSpeed: 7.5, rev: 2, accel: 2.4, turn: 0.9, wheelBase: 3.4, fuelCap: 120, fuelUse: 9, price: 2100000, cam: 15, rank: 2, header: 4.6, shop: 'workshop' },
+  // free rides parked around the village: no fuel, no price, just for getting around and fun
+  autorick:  { en: 'Auto rickshaw', te: 'ఆటో రిక్షా', maxSpeed: 15, rev: 3, accel: 5, turn: 1.4, wheelBase: 1.7, fuelCap: 0, fuelUse: 0, price: 0, cam: 6.5, model: 'auto', free: true },
+  racer:     { en: 'Racing bike', te: 'రేసింగ్ బైక్', maxSpeed: 28, rev: 3, accel: 8, turn: 2.0, wheelBase: 1.35, fuelCap: 0, fuelUse: 0, price: 0, cam: 5.8, two: true, model: 'bike', free: true },
+  citybus:   { en: 'Village bus', te: 'పల్లె బస్సు', maxSpeed: 16, rev: 2.5, accel: 2.6, turn: 0.85, wheelBase: 6.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 14, model: 'bus', free: true },
+  lorry:     { en: 'Lorry', te: 'లారీ', maxSpeed: 20, rev: 3, accel: 2.8, turn: 0.85, wheelBase: 4.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 12, model: 'truck', free: true },
   pickup:    { en: 'Pickup van', te: 'పికప్ వ్యాన్', maxSpeed: 25, rev: 4, accel: 5.5, turn: 1.25, wheelBase: 2.8, fuelCap: 45, fuelUse: 2.6, cargo: 20, price: 780000, cam: 9, shop: 'dealer' },
 };
 const TRACTOR_RENT_PER_HOUR = 900;

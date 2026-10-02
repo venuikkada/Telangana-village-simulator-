@@ -22,7 +22,7 @@ class Vehicle {
     this.type = type;
     this.def = VEHICLES[type] || TRAFFIC_DEFS[type];
     this.id = st.id || ('v' + (Vehicles.nextId++));
-    const modelType = (TRAFFIC_DEFS[type] && TRAFFIC_DEFS[type].model) || type;
+    const modelType = this.def.model || type;
     if (type === 'bullock') this.group = this.buildBullock(); else this.group = buildVehicleModel(modelType, st);
     this.ud = this.group.userData;
     this.x = st.x || 0; this.z = st.z || 0; this.yaw = st.yaw || 0; this.y = World.groundHeight(this.x, this.z);

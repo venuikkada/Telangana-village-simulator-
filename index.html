@@ -419,7 +419,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 /* driving buttons (touch): steer on the left, go and brake/reverse on the right, like mobile shooters */
 #dpad { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
 #dpad .dsteer { position: absolute; left: calc(var(--sl) + 18px); bottom: calc(var(--sb) + 20px); display: flex; gap: 18px; }
-#dpad .dgas { position: absolute; right: calc(var(--sr) + 228px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
+#dpad .dgas { position: absolute; right: calc(var(--sr) + 240px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
 .db { pointer-events: auto; width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20, 22, 34, .42); color: #fff; display: grid; place-items: center; padding: 0; touch-action: none; -webkit-user-select: none; user-select: none; box-shadow: 0 4px 14px rgba(0,0,0,.28); backdrop-filter: blur(2px); }
 .db svg { width: 38px; height: 38px; }
 .db.up { background: rgba(47, 125, 58, .55); } .db.dn { background: rgba(179, 50, 42, .5); }
@@ -550,6 +550,39 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   #newgame { padding: 10px; gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .toast, .big-banner { animation: none; } #fade { transition: none; } #workpulse.go { animation: none; opacity: 1; } }
+/* touch buttons: bigger, Work right above Run, Use the big one in the corner (placed last so it wins) */
+#tbtns { display: block; position: absolute; right: var(--sr); bottom: var(--sb); width: 1px; height: 1px; pointer-events: none; gap: 0; }
+#tbtns .tb { position: absolute; pointer-events: auto; font-size: 13px; font-weight: 800; }
+#tbtns #tbE { right: 12px; bottom: 12px; width: 84px; height: 84px; font-size: 16px; }
+#tbtns #tbJump { right: 104px; bottom: 14px; width: 58px; height: 58px; }
+#tbtns #tbV { right: 105px; bottom: 78px; width: 56px; height: 56px; }
+#tbtns #tbG { right: 168px; bottom: 14px; width: 58px; height: 58px; }
+#tbtns #tbRun { right: 244px; bottom: 12px; width: 76px; height: 76px; font-size: 15px; }
+#tbtns #tbWork { right: 232px; bottom: 96px; width: 100px; height: 100px; font-size: 19px; box-shadow: 0 0 0 4px rgba(242, 181, 45, .35), var(--shadow); }
+@media (pointer: coarse) and (max-height: 400px) {
+  #tbtns #tbE { right: 10px; bottom: 10px; width: 76px; height: 76px; }
+  #tbtns #tbJump { right: 94px; bottom: 12px; width: 54px; height: 54px; }
+  #tbtns #tbV { right: 94px; bottom: 74px; width: 54px; height: 54px; }
+  #tbtns #tbG { right: 154px; bottom: 12px; width: 54px; height: 54px; }
+  #tbtns #tbRun { right: 214px; bottom: 10px; width: 68px; height: 68px; }
+  #tbtns #tbWork { right: 202px; bottom: 86px; width: 92px; height: 92px; font-size: 17px; }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+  #tbtns #tbE { right: 12px; bottom: 14px; width: 82px; height: 82px; }
+  #tbtns #tbRun { right: 106px; bottom: 14px; width: 72px; height: 72px; }
+  #tbtns #tbWork { right: 96px; bottom: 96px; width: 92px; height: 92px; }
+  #tbtns #tbJump { right: 22px; bottom: 108px; width: 58px; height: 58px; }
+  #tbtns #tbV { right: 22px; bottom: 176px; width: 58px; height: 58px; }
+  #tbtns #tbG { right: 112px; bottom: 198px; width: 56px; height: 56px; }
+}
+@media (pointer: coarse) and (min-width: 761px) and (min-height: 521px) {
+  #tbtns #tbE { right: 24px; bottom: 24px; width: 100px; height: 100px; font-size: 18px; }
+  #tbtns #tbJump { right: 40px; bottom: 138px; width: 66px; height: 66px; }
+  #tbtns #tbV { right: 124px; bottom: 144px; width: 66px; height: 66px; }
+  #tbtns #tbG { right: 134px; bottom: 32px; width: 72px; height: 72px; }
+  #tbtns #tbRun { right: 262px; bottom: 24px; width: 90px; height: 90px; font-size: 17px; }
+  #tbtns #tbWork { right: 248px; bottom: 128px; width: 118px; height: 118px; font-size: 22px; }
+}
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
@@ -646,7 +679,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="flash"></div>
 </div>
 <script type="module">
-const I18N_VER = '093d70c1a6';
+const I18N_VER = '251dc3cb64';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -961,6 +994,11 @@ const VEHICLES = {
   tractor35: { en: 'Bhoomi 35 tractor', te: 'భూమి 35 ట్రాక్టర్', maxSpeed: 11, rev: 3.5, accel: 3.6, turn: 1.15, wheelBase: 2.1, fuelCap: 50, fuelUse: 3.2, price: 540000, cam: 9, power: 35, shop: 'workshop' },
   tractor50: { en: 'Bhoomi 50 Power tractor', te: 'భూమి 50 పవర్ ట్రాక్టర్', maxSpeed: 12.5, rev: 3.5, accel: 4.2, turn: 1.15, wheelBase: 2.35, fuelCap: 65, fuelUse: 4.4, price: 820000, cam: 9.5, power: 50, rank: 1, shop: 'workshop' },
   harvester: { en: 'Combine harvester', te: 'కంబైన్ హార్వెస్టర్', maxSpeed: 7.5, rev: 2, accel: 2.4, turn: 0.9, wheelBase: 3.4, fuelCap: 120, fuelUse: 9, price: 2100000, cam: 15, rank: 2, header: 4.6, shop: 'workshop' },
+  // free rides parked around the village: no fuel, no price, just for getting around and fun
+  autorick:  { en: 'Auto rickshaw', te: 'ఆటో రిక్షా', maxSpeed: 15, rev: 3, accel: 5, turn: 1.4, wheelBase: 1.7, fuelCap: 0, fuelUse: 0, price: 0, cam: 6.5, model: 'auto', free: true },
+  racer:     { en: 'Racing bike', te: 'రేసింగ్ బైక్', maxSpeed: 28, rev: 3, accel: 8, turn: 2.0, wheelBase: 1.35, fuelCap: 0, fuelUse: 0, price: 0, cam: 5.8, two: true, model: 'bike', free: true },
+  citybus:   { en: 'Village bus', te: 'పల్లె బస్సు', maxSpeed: 16, rev: 2.5, accel: 2.6, turn: 0.85, wheelBase: 6.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 14, model: 'bus', free: true },
+  lorry:     { en: 'Lorry', te: 'లారీ', maxSpeed: 20, rev: 3, accel: 2.8, turn: 0.85, wheelBase: 4.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 12, model: 'truck', free: true },
   pickup:    { en: 'Pickup van', te: 'పికప్ వ్యాన్', maxSpeed: 25, rev: 4, accel: 5.5, turn: 1.25, wheelBase: 2.8, fuelCap: 45, fuelUse: 2.6, cargo: 20, price: 780000, cam: 9, shop: 'dealer' },
 };
 const TRACTOR_RENT_PER_HOUR = 900;
@@ -5657,7 +5695,7 @@ class Vehicle {
     this.type = type;
     this.def = VEHICLES[type] || TRAFFIC_DEFS[type];
     this.id = st.id || ('v' + (Vehicles.nextId++));
-    const modelType = (TRAFFIC_DEFS[type] && TRAFFIC_DEFS[type].model) || type;
+    const modelType = this.def.model || type;
     if (type === 'bullock') this.group = this.buildBullock(); else this.group = buildVehicleModel(modelType, st);
     this.ud = this.group.userData;
     this.x = st.x || 0; this.z = st.z || 0; this.yaw = st.yaw || 0; this.y = World.groundHeight(this.x, this.z);
@@ -6569,7 +6607,7 @@ const Interact = {
       if (n && !n.worker) out.push({ d: 1, o: { id: 'npc', label: () => L('Talk to ', 'మాట్లాడండి: ') + LN(n.name), act: () => Dialog.open(n), prio: 2 } });
       const v = Vehicles.nearestOwned(P.x, P.z, 4.2);
       if (v) {
-        out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label()), act: () => Player.enterVehicle(v), prio: 3 } });
+        out.push({ d: 0.5, o: { id: 'drive', label: () => (v.type === 'bullock' ? L('Drive bullocks', 'ఎడ్లను తోలండి') : L('Drive ', 'నడపండి: ') + v.label() + (v.def.free ? L(' (free ride)', ' (ఉచితం)') : '')), act: () => Player.enterVehicle(v), prio: 3 } });
         if (v.type === 'tractor35' || v.type === 'tractor50' || v.type === 'bullock') out.push({ d: 0.6, o: { id: 'implement', label: () => L('Change implement', 'పనిముట్టు మార్చండి'), act: () => UI.implementMenu(v), prio: 1 } });
       }
       // your dog: only when there is nothing else to do here, so it never gets in the way
@@ -11141,6 +11179,26 @@ const Game = {
       Cam.focus.set(cx + Math.cos(a + 1.1) * 40, 2, cz + Math.sin(a + 1.1) * 40);
     };
   },
+  // free rides (auto rickshaw, racing bike, village bus, lorry) parked by roads near your house
+  spawnFreeRides() {
+    const want = [['racer', HOME.x + 22, HOME.z - 14], ['autorick', HOME.x + 40, HOME.z - 12], ['lorry', HOME.x + 70, HOME.z - 20], ['citybus', HOME.x + 105, HOME.z - 24]];
+    const used = [];
+    for (const [type, x0, z0] of want) {
+      const nd = Graph.nodes[Graph.nearest(x0, z0)]; if (!nd) continue;
+      let spot = null;
+      // beside the road, on open ground, not on top of another ride
+      for (let r = 4; r <= 10 && !spot; r += 2) for (let k = 0; k < 8 && !spot; k++) {
+        const a = (k / 8) * TAU, x = nd.x + Math.cos(a) * r, z = nd.z + Math.sin(a) * r; const o = World.occGet(x, z);
+        if (o !== OCC.FREE && o !== OCC.VILLAGE && o !== OCC.KEEP) continue;
+        if (used.some((u) => Math.hypot(u.x - x, u.z - z) < 9)) continue;
+        const q = { x, z }; if (World.collideCircle(q, 2.4)) continue;
+        spot = { x, z };
+      }
+      if (!spot) continue;
+      used.push(spot);
+      Vehicles.spawnOwned({ type, x: spot.x, z: spot.z, yaw: Math.atan2(nd.x - spot.x, nd.z - spot.z) + Math.PI / 2 });
+    }
+  },
   saveInfo(d) {
     if (!d) return '';
     const day = d.day || 1; const s = SEASONS[Math.floor(((day - 1) % DAYS_PER_YEAR) / DAYS_PER_SEASON)];
@@ -11182,6 +11240,7 @@ const Game = {
       Vehicles.spawnOwned({ type: 'bullock', x: -110, z: 66, yaw: Math.PI, impl: 'bcart' });
       Vehicles.spawnOwned({ type: 'moped', x: -114.5, z: 47.5, yaw: Math.PI / 2 });
     }
+    if (!Vehicles.player.some((v) => v.def.free)) this.spawnFreeRides();
     // player
     Player.init(playerAppearance(S.player.gender));
     Player.x = S.player.x; Player.z = S.player.z; Player.yaw = S.player.yaw || 0;

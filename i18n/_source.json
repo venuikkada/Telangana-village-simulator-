@@ -395,249 +395,265 @@
   "te": "కంబైన్ హార్వెస్టర్",
   "at": "01_data.js:119"
  },
+ "Auto rickshaw": {
+  "te": "ఆటో రిక్షా",
+  "at": "01_data.js:121"
+ },
+ "Racing bike": {
+  "te": "రేసింగ్ బైక్",
+  "at": "01_data.js:122"
+ },
+ "Village bus": {
+  "te": "పల్లె బస్సు",
+  "at": "01_data.js:123"
+ },
+ "Lorry": {
+  "te": "లారీ",
+  "at": "01_data.js:124"
+ },
  "Pickup van": {
   "te": "పికప్ వ్యాన్",
-  "at": "01_data.js:120"
+  "at": "01_data.js:125"
  },
  "Farm water tank": {
   "te": "వ్యవసాయ నీటి ట్యాంకు",
-  "at": "01_data.js:127"
+  "at": "01_data.js:132"
  },
  "Stores pumped water. Pumps on your fields run 25% stronger.": {
   "te": "పంపిన నీటిని నిల్వ చేస్తుంది. మీ పొలాల మోటార్లు 25% ఎక్కువ నీరు ఇస్తాయి.",
-  "at": "01_data.js:127"
+  "at": "01_data.js:132"
  },
  "Farm pond (panta kunta)": {
   "te": "పంట కుంట",
-  "at": "01_data.js:128"
+  "at": "01_data.js:133"
  },
  "Harvests rain. Keeps pumps running during drought.": {
   "te": "వాన నీటిని ఒడిసి పడుతుంది. కరువులో కూడా మోటార్లు నడుస్తాయి.",
-  "at": "01_data.js:128"
+  "at": "01_data.js:133"
  },
  "Solar pump": {
   "te": "సోలార్ పంపు",
-  "at": "01_data.js:129"
+  "at": "01_data.js:134"
  },
  "Daytime pumping that ignores power cuts, +20% water flow.": {
   "te": "కరెంటు కోతలతో సంబంధం లేకుండా పగటిపూట నీరు, 20% ఎక్కువ ప్రవాహం.",
-  "at": "01_data.js:129"
+  "at": "01_data.js:134"
  },
  "Warehouse (godown)": {
   "te": "గోదాము",
-  "at": "01_data.js:130"
+  "at": "01_data.js:135"
  },
  "+400 quintals of storage; grain spoils 60% slower.": {
   "te": "+400 క్వింటాళ్ల నిల్వ; ధాన్యం 60% నెమ్మదిగా పాడవుతుంది.",
-  "at": "01_data.js:130"
+  "at": "01_data.js:135"
  },
  "Cold storage": {
   "te": "కోల్డ్ స్టోరేజ్",
-  "at": "01_data.js:131"
+  "at": "01_data.js:136"
  },
  "+150 quintals for tomato, chilli and mango with almost no spoilage.": {
   "te": "టమాటా, మిర్చి, మామిడికి +150 క్వింటాళ్లు; దాదాపు పాడవదు.",
-  "at": "01_data.js:131"
+  "at": "01_data.js:136"
  },
  "Polyhouse": {
   "te": "పాలీహౌస్",
-  "at": "01_data.js:132"
+  "at": "01_data.js:137"
  },
  "Adds a weather-proof 1-acre plot. Tomato yields +40%.": {
   "te": "వాతావరణ రక్షిత 1 ఎకరం పొలం. టమాటా దిగుబడి +40%.",
-  "at": "01_data.js:132"
+  "at": "01_data.js:137"
  },
  "Dairy shed + 2 buffaloes": {
   "te": "పాడి షెడ్ + 2 గేదెలు",
-  "at": "01_data.js:133"
+  "at": "01_data.js:138"
  },
  "Milk twice a day. Needs cattle feed.": {
   "te": "రోజుకు రెండుసార్లు పాలు. దాణా అవసరం.",
-  "at": "01_data.js:133"
+  "at": "01_data.js:138"
  },
  "Machinery garage": {
   "te": "యంత్రాల షెడ్",
-  "at": "01_data.js:134"
+  "at": "01_data.js:139"
  },
  "Repair at home. Machines wear 50% slower.": {
   "te": "ఇంటి దగ్గరే మరమ్మతు. యంత్రాలు 50% నెమ్మదిగా అరుగుతాయి.",
-  "at": "01_data.js:134"
+  "at": "01_data.js:139"
  },
  "Worker quarters": {
   "te": "కూలీల నివాసాలు",
-  "at": "01_data.js:135"
+  "at": "01_data.js:140"
  },
  "Hire up to 6 more permanent workers.": {
   "te": "మరో 6 మంది శాశ్వత కూలీలను పెట్టుకోవచ్చు.",
-  "at": "01_data.js:135"
+  "at": "01_data.js:140"
  },
  "Small village house": {
   "te": "చిన్న పల్లె ఇల్లు",
-  "at": "01_data.js:139"
+  "at": "01_data.js:144"
  },
  "Improved house": {
   "te": "మెరుగైన ఇల్లు",
-  "at": "01_data.js:140"
+  "at": "01_data.js:145"
  },
  "Large farmhouse": {
   "te": "పెద్ద ఫామ్‌హౌస్",
-  "at": "01_data.js:141"
+  "at": "01_data.js:146"
  },
  "Modern farmhouse": {
   "te": "ఆధునిక ఫామ్‌హౌస్",
-  "at": "01_data.js:142"
+  "at": "01_data.js:147"
  },
  "Luxury agricultural estate": {
   "te": "విలాసవంతమైన వ్యవసాయ ఎస్టేట్",
-  "at": "01_data.js:143"
+  "at": "01_data.js:148"
  },
  "CC roads": {
   "te": "సీసీ రోడ్లు",
-  "at": "01_data.js:146"
+  "at": "01_data.js:151"
  },
  "Concrete village roads. Faster, mud-free travel.": {
   "te": "గ్రామంలో కాంక్రీట్ రోడ్లు. బురద లేని వేగమైన ప్రయాణం.",
-  "at": "01_data.js:146"
+  "at": "01_data.js:151"
  },
  "Street lights": {
   "te": "వీధి దీపాలు",
-  "at": "01_data.js:147"
+  "at": "01_data.js:152"
  },
  "LED lights along village roads. Evenings stay busy.": {
   "te": "గ్రామ రోడ్ల వెంబడి ఎల్ఈడీ దీపాలు. సాయంత్రాలు సందడిగా ఉంటాయి.",
-  "at": "01_data.js:147"
+  "at": "01_data.js:152"
  },
  "Drinking water tank": {
   "te": "మంచినీటి ట్యాంకు",
-  "at": "01_data.js:148"
+  "at": "01_data.js:153"
  },
  "A new overhead tank with taps for every street.": {
   "te": "ప్రతి వీధికి నల్లాలతో కొత్త ఓవర్‌హెడ్ ట్యాంకు.",
-  "at": "01_data.js:148"
+  "at": "01_data.js:153"
  },
  "Shopping complex": {
   "te": "షాపింగ్ కాంప్లెక్స్",
-  "at": "01_data.js:149"
+  "at": "01_data.js:154"
  },
  "Six new shops. Supplies 4% cheaper.": {
   "te": "ఆరు కొత్త దుకాణాలు. సామాన్లు 4% చౌక.",
-  "at": "01_data.js:149"
+  "at": "01_data.js:154"
  },
  "School upgrade": {
   "te": "పాఠశాల అభివృద్ధి",
-  "at": "01_data.js:150"
+  "at": "01_data.js:155"
  },
  "New classrooms and a playground.": {
   "te": "కొత్త తరగతి గదులు, ఆట స్థలం.",
-  "at": "01_data.js:150"
+  "at": "01_data.js:155"
  },
  "Health centre upgrade": {
   "te": "ఆరోగ్య కేంద్రం అభివృద్ధి",
-  "at": "01_data.js:151"
+  "at": "01_data.js:156"
  },
  "A new ward and ambulance. Treatment is cheaper.": {
   "te": "కొత్త వార్డు, అంబులెన్సు. వైద్యం చౌక.",
-  "at": "01_data.js:151"
+  "at": "01_data.js:156"
  },
  "Canal lining & check dam": {
   "te": "కాలువ లైనింగ్ & చెక్ డ్యామ్",
-  "at": "01_data.js:152"
+  "at": "01_data.js:157"
  },
  "The lake holds more water and the canal flows all year.": {
   "te": "చెరువులో ఎక్కువ నీరు నిలుస్తుంది, కాలువ ఏడాది పొడవునా పారుతుంది.",
-  "at": "01_data.js:152"
+  "at": "01_data.js:157"
  },
  "Village godown": {
   "te": "గ్రామ గోదాము",
-  "at": "01_data.js:153"
+  "at": "01_data.js:158"
  },
  "Shared storage steadies local prices.": {
   "te": "ఉమ్మడి నిల్వతో స్థానిక ధరలు స్థిరంగా ఉంటాయి.",
-  "at": "01_data.js:153"
+  "at": "01_data.js:158"
  },
  "Market expansion": {
   "te": "మార్కెట్ విస్తరణ",
-  "at": "01_data.js:154"
+  "at": "01_data.js:159"
  },
  "More traders at the yard. Sale prices +3%.": {
   "te": "యార్డులో ఎక్కువ వ్యాపారులు. అమ్మకం ధర +3%.",
-  "at": "01_data.js:154"
+  "at": "01_data.js:159"
  },
  "Small Farmer": {
   "te": "చిన్న రైతు",
-  "at": "01_data.js:158"
+  "at": "01_data.js:163"
  },
  "Successful Farmer": {
   "te": "విజయవంతమైన రైతు",
-  "at": "01_data.js:159"
+  "at": "01_data.js:164"
  },
  "Large Farmer": {
   "te": "పెద్ద రైతు",
-  "at": "01_data.js:160"
+  "at": "01_data.js:165"
  },
  "Agricultural Business Owner": {
   "te": "వ్యవసాయ వ్యాపారవేత్త",
-  "at": "01_data.js:161"
+  "at": "01_data.js:166"
  },
  "Village Agribusiness": {
   "te": "గ్రామ వ్యవసాయ సంస్థ",
-  "at": "01_data.js:162"
+  "at": "01_data.js:167"
  },
  "Agricultural Company": {
   "te": "వ్యవసాయ కంపెనీ",
-  "at": "01_data.js:163"
+  "at": "01_data.js:168"
  },
  "Daily labourer": {
   "te": "రోజు కూలీ",
-  "at": "01_data.js:167"
+  "at": "01_data.js:172"
  },
  "Permanent farmhand": {
   "te": "శాశ్వత పాలేరు",
-  "at": "01_data.js:168"
+  "at": "01_data.js:173"
  },
  "Tractor driver": {
   "te": "ట్రాక్టర్ డ్రైవర్",
-  "at": "01_data.js:169"
+  "at": "01_data.js:174"
  },
  "Chinnu": {
   "te": "చిన్ను",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Bunny": {
   "te": "బన్నీ",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Pinky": {
   "te": "పింకీ",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Sai": {
   "te": "సాయి",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Honey": {
   "te": "హనీ",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Tinku": {
   "te": "టింకు",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Chitti": {
   "te": "చిట్టి",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Bablu": {
   "te": "బబ్లూ",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Lucky": {
   "te": "లక్కీ",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Munni": {
   "te": "మున్ని",
-  "at": "01_data.js:177"
+  "at": "01_data.js:182"
  },
  "Clear the old heap at this field first.": {
   "te": "ముందు ఈ పొలం దగ్గర ఉన్న పాత కుప్పను తరలించండి.",
@@ -855,14 +871,6 @@
   "te": "పక్కింటి రైతు",
   "at": "10_npc.js:131"
  },
- "Village bus": {
-  "te": "పల్లె బస్సు",
-  "at": "11b_vehicles.js:5"
- },
- "Lorry": {
-  "te": "లారీ",
-  "at": "11b_vehicles.js:6"
- },
  "Auto": {
   "te": "ఆటో",
   "at": "11b_vehicles.js:7"
@@ -1065,6 +1073,10 @@
  },
  "Drive ": {
   "te": "నడపండి: ",
+  "at": "12_player.js:417"
+ },
+ " (free ride)": {
+  "te": " (ఉచితం)",
   "at": "12_player.js:417"
  },
  "Change implement": {
@@ -4805,47 +4817,47 @@
  },
  "{0} · Day {1} of {2} · {3}": {
   "te": "{0} · {1} {2}వ రోజు · {3}",
-  "at": "19_main.js:275"
+  "at": "19_main.js:295"
  },
  "Opening your farm…": {
   "te": "మీ పొలానికి వెళ్తున్నాం…",
-  "at": "19_main.js:287"
+  "at": "19_main.js:307"
  },
  "A new season begins…": {
   "te": "కొత్త సీజన్ మొదలవుతోంది…",
-  "at": "19_main.js:287"
+  "at": "19_main.js:307"
  },
  "Welcome back, {0}. {1}": {
   "te": "మళ్లీ స్వాగతం, {0}. {1}",
-  "at": "19_main.js:344"
+  "at": "19_main.js:365"
  },
  "Ramapuram · Vanakalam": {
   "te": "రామాపురం · వానాకాలం",
-  "at": "19_main.js:346"
+  "at": "19_main.js:367"
  },
  "Welcome, {0}": {
   "te": "స్వాగతం, {0}",
-  "at": "19_main.js:346"
+  "at": "19_main.js:367"
  },
  "₹50,000, one acre of red soil and a pair of bullocks. Let's grow.": {
   "te": "₹50,000, ఒక ఎకరం ఎర్ర నేల, ఒక ఎడ్ల జత. ఎదుగుదాం.",
-  "at": "19_main.js:346"
+  "at": "19_main.js:367"
  },
  "This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.": {
   "te": "ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.",
-  "at": "19_main.js:471"
+  "at": "19_main.js:492"
  },
  "Something went wrong while loading: ": {
   "te": "లోడ్ చేస్తుండగా సమస్య వచ్చింది: ",
-  "at": "19_main.js:472"
+  "at": "19_main.js:493"
  },
  "Loading fonts…": {
   "te": "అక్షరాలు లోడ్ అవుతున్నాయి…",
-  "at": "19_main.js:504"
+  "at": "19_main.js:525"
  },
  "Preparing graphics…": {
   "te": "గ్రాఫిక్స్ సిద్ధం చేస్తున్నాం…",
-  "at": "19_main.js:515"
+  "at": "19_main.js:536"
  },
  "Energy": {
   "te": "శక్తి",

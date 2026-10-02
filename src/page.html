@@ -402,7 +402,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 /* driving buttons (touch): steer on the left, go and brake/reverse on the right, like mobile shooters */
 #dpad { position: absolute; top: 0; right: 0; bottom: 0; left: 0; pointer-events: none; }
 #dpad .dsteer { position: absolute; left: calc(var(--sl) + 18px); bottom: calc(var(--sb) + 20px); display: flex; gap: 18px; }
-#dpad .dgas { position: absolute; right: calc(var(--sr) + 228px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
+#dpad .dgas { position: absolute; right: calc(var(--sr) + 240px); bottom: calc(var(--sb) + 14px); display: flex; flex-direction: column; gap: 10px; }
 .db { pointer-events: auto; width: 76px; height: 76px; border-radius: 50%; border: 2px solid rgba(255,255,255,.6); background: rgba(20, 22, 34, .42); color: #fff; display: grid; place-items: center; padding: 0; touch-action: none; -webkit-user-select: none; user-select: none; box-shadow: 0 4px 14px rgba(0,0,0,.28); backdrop-filter: blur(2px); }
 .db svg { width: 38px; height: 38px; }
 .db.up { background: rgba(47, 125, 58, .55); } .db.dn { background: rgba(179, 50, 42, .5); }
@@ -533,6 +533,39 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   #newgame { padding: 10px; gap: 8px; }
 }
 @media (prefers-reduced-motion: reduce) { .toast, .big-banner { animation: none; } #fade { transition: none; } #workpulse.go { animation: none; opacity: 1; } }
+/* touch buttons: bigger, Work right above Run, Use the big one in the corner (placed last so it wins) */
+#tbtns { display: block; position: absolute; right: var(--sr); bottom: var(--sb); width: 1px; height: 1px; pointer-events: none; gap: 0; }
+#tbtns .tb { position: absolute; pointer-events: auto; font-size: 13px; font-weight: 800; }
+#tbtns #tbE { right: 12px; bottom: 12px; width: 84px; height: 84px; font-size: 16px; }
+#tbtns #tbJump { right: 104px; bottom: 14px; width: 58px; height: 58px; }
+#tbtns #tbV { right: 105px; bottom: 78px; width: 56px; height: 56px; }
+#tbtns #tbG { right: 168px; bottom: 14px; width: 58px; height: 58px; }
+#tbtns #tbRun { right: 244px; bottom: 12px; width: 76px; height: 76px; font-size: 15px; }
+#tbtns #tbWork { right: 232px; bottom: 96px; width: 100px; height: 100px; font-size: 19px; box-shadow: 0 0 0 4px rgba(242, 181, 45, .35), var(--shadow); }
+@media (pointer: coarse) and (max-height: 400px) {
+  #tbtns #tbE { right: 10px; bottom: 10px; width: 76px; height: 76px; }
+  #tbtns #tbJump { right: 94px; bottom: 12px; width: 54px; height: 54px; }
+  #tbtns #tbV { right: 94px; bottom: 74px; width: 54px; height: 54px; }
+  #tbtns #tbG { right: 154px; bottom: 12px; width: 54px; height: 54px; }
+  #tbtns #tbRun { right: 214px; bottom: 10px; width: 68px; height: 68px; }
+  #tbtns #tbWork { right: 202px; bottom: 86px; width: 92px; height: 92px; font-size: 17px; }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+  #tbtns #tbE { right: 12px; bottom: 14px; width: 82px; height: 82px; }
+  #tbtns #tbRun { right: 106px; bottom: 14px; width: 72px; height: 72px; }
+  #tbtns #tbWork { right: 96px; bottom: 96px; width: 92px; height: 92px; }
+  #tbtns #tbJump { right: 22px; bottom: 108px; width: 58px; height: 58px; }
+  #tbtns #tbV { right: 22px; bottom: 176px; width: 58px; height: 58px; }
+  #tbtns #tbG { right: 112px; bottom: 198px; width: 56px; height: 56px; }
+}
+@media (pointer: coarse) and (min-width: 761px) and (min-height: 521px) {
+  #tbtns #tbE { right: 24px; bottom: 24px; width: 100px; height: 100px; font-size: 18px; }
+  #tbtns #tbJump { right: 40px; bottom: 138px; width: 66px; height: 66px; }
+  #tbtns #tbV { right: 124px; bottom: 144px; width: 66px; height: 66px; }
+  #tbtns #tbG { right: 134px; bottom: 32px; width: 72px; height: 72px; }
+  #tbtns #tbRun { right: 262px; bottom: 24px; width: 90px; height: 90px; font-size: 17px; }
+  #tbtns #tbWork { right: 248px; bottom: 128px; width: 118px; height: 118px; font-size: 22px; }
+}
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
