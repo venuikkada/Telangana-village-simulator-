@@ -104,12 +104,12 @@ function patchMaterial(mat, kind, extra = {}) {
 
 // Terrain colour (vColor = vec4 weights: r grass, g redness, b rock, a dirt/village ground)
 const TERRAIN_U = {
-  cRed1: { value: col('#8e4527') }, cRed2: { value: col('#a95a33') },
+  cRed1: { value: col('#9a4a28') }, cRed2: { value: col('#b8653a') },
   cBlk1: { value: col('#2e2823') }, cBlk2: { value: col('#453b33') },
-  cLush1: { value: col('#3f6b22') }, cLush2: { value: col('#5d8a2e') },
-  cDry1: { value: col('#9a8651') }, cDry2: { value: col('#b9a46a') },
+  cLush1: { value: col('#3f7d24') }, cLush2: { value: col('#73a83a') },
+  cDry1: { value: col('#a99257') }, cDry2: { value: col('#c9b170') },
   cRock1: { value: col('#6f6a64') }, cRock2: { value: col('#9a948b') },
-  cDirt1: { value: col('#9b7a58') }, cDirt2: { value: col('#b89770') },
+  cDirt1: { value: col('#ad7f52') }, cDirt2: { value: col('#c99d6c') },
 };
 const TERRAIN_HEAD = `
 uniform vec3 cRed1, cRed2, cBlk1, cBlk2, cLush1, cLush2, cDry1, cDry2, cRock1, cRock2, cDirt1, cDirt2;
@@ -130,7 +130,8 @@ float greenLocal = clamp(uGreen + (n4-0.5)*0.5, 0.0, 1.0);
 vec3 grass = mix(dry, lush, greenLocal);
 float gAmt = clamp(tw.r + (n2-0.5)*0.55 + (n3-0.5)*0.25, 0.0, 1.0);
 vec3 tcol = mix(soil, grass, smoothstep(0.25, 0.75, gAmt));
-tcol = mix(tcol, mix(cDirt1, cDirt2, n2), clamp(tw.a*1.2 - (n3-0.5)*0.3, 0.0, 1.0));
+// village ground: dusty paths, with grassy patches between them in the green months
+tcol = mix(tcol, mix(cDirt1, cDirt2, n2), clamp(tw.a*1.2 - (n3-0.5)*0.3 - smoothstep(0.5, 0.8, n1) * 0.75 * uGreen, 0.0, 1.0));
 tcol = mix(tcol, mix(cRock1, cRock2, n3), clamp(tw.b, 0.0, 1.0));
 tcol *= 0.86 + 0.28*n3;
 float wet = uWet * (1.0 - tw.b*0.5);
@@ -157,6 +158,15 @@ function buildMaterials() {
   MAT.glow = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.2, metalness: 0, emissive: 0xffffff }), 'glow');
   MAT.glass = new THREE.MeshStandardMaterial({ color: 0x1e2a33, roughness: 0.08, metalness: 0.3, transparent: true, opacity: 0.55 });
   MAT.foliage = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.82, metalness: 0 }), 'foliage');
+  // wild flowers: white petals take each plant's colour, the green stem and yellow eye keep theirs
+  MAT.flower = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.7, metalness: 0, side: THREE.DoubleSide }), 'grass', { key: 'flower', noWet: true, onShader: (sh) => {
+    sh.vertexShader = sh.vertexShader.replace('#include <color_vertex>', `
+      vColor = vec3(1.0);
+      vColor *= color;
+      #ifdef USE_INSTANCING_COLOR
+        vColor = mix(vColor, vColor * instanceColor.xyz, step(0.9, min(color.r, min(color.g, color.b))));
+      #endif`);
+  } });
   MAT.foliageDS = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8, metalness: 0, side: THREE.DoubleSide }), 'foliage', { key: 'ds' });
   MAT.grass = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, side: THREE.DoubleSide }), 'grass', {
     color: 'diffuseColor.rgb *= mix(vec3(1.35,1.05,0.55), vec3(1.0), uGreen);',

@@ -1,0 +1,1242 @@
+## 00_core.js — number units
+1|␣Cr   ⟪te: కోట్లు⟫
+2|␣L   ⟪te: లక్షలు⟫
+## 01_data.js — names: crops, items, seasons, weather, buildings, ranks, festivals
+3|Vanakalam (Kharif)
+4|Kharif
+5|Jun–Oct
+6|Yasangi (Rabi)
+7|Rabi
+8|Nov–Feb
+9|Endakalam (Summer)
+10|Summer
+11|Mar–May
+12|Mon
+13|Tue
+14|Wed
+15|Thu
+16|Fri
+17|Sat
+18|Sun
+19|Bonalu
+20|Women carry decorated pots to the village goddess. Drums in the evening at the temple.
+21|Bathukamma
+22|Flower festival. Women stack flowers into Bathukammas and dance in circles by the lake at dusk.
+23|Sankranti
+24|Harvest festival. Muggulu at every door, kites in the sky, cattle decorated.
+25|Ugadi
+26|Telugu New Year. Mango-leaf thoranams on doors and Ugadi pachadi at the temple.
+27|Sunny
+28|Partly cloudy
+29|Cloudy
+30|Gusty winds
+31|Heat wave
+32|Morning mist
+33|Light rain
+34|Heavy rain
+35|Thunderstorm
+36|Paddy
+37|Brown planthopper
+38|Cotton
+39|Pink bollworm
+40|Maize
+41|Fall armyworm
+42|Chilli
+43|Thrips
+44|Turmeric
+45|Rhizome rot
+46|Groundnut
+47|Leaf miner
+48|Tomato
+49|Fruit borer
+50|Mango
+51|Milk
+52|Seedling
+53|Growing
+54|Flowering
+55|Maturing
+56|Ready to harvest
+57|Unploughed
+58|Ploughed
+59|Seedbed ready
+60|Sown
+61|Red soil (chalka)
+62|Black cotton soil
+63|Urea
+64|45 kg bag
+65|DAP
+66|50 kg bag
+67|NPK complex
+68|Farmyard manure
+69|trolley
+70|Pesticide
+71|1 litre
+72|Herbicide
+73|Spraying safety kit
+74|mask + gloves
+75|Cattle feed
+76|Diesel can
+77|20 litres
+78|Pump spare part
+79|set
+80|Chai
+81|Samosa & chai
+82|Jonna rotte meal
+83|Buttermilk (majjiga)
+84|Wooden plough
+85|Bullock cart
+86|MB plough
+87|Cultivator
+88|Rotavator
+89|Seed drill
+90|Fertilizer spreader
+91|Boom sprayer
+92|Trailer
+93|Water tanker
+94|Bullock pair
+95|Old moped
+96|Motorcycle
+97|Bhoomi 35 tractor
+98|Bhoomi 50 Power tractor
+99|Combine harvester
+100|Pickup van
+101|Farm water tank
+102|Stores pumped water. Pumps on your fields run 25% stronger.
+103|Farm pond (panta kunta)
+104|Harvests rain. Keeps pumps running during drought.
+105|Solar pump
+106|Daytime pumping that ignores power cuts, +20% water flow.
+107|Warehouse (godown)
+108|+400 quintals of storage; grain spoils 60% slower.
+109|Cold storage
+110|+150 quintals for tomato, chilli and mango with almost no spoilage.
+111|Polyhouse
+112|Adds a weather-proof 1-acre plot. Tomato yields +40%.
+113|Dairy shed + 2 buffaloes
+114|Milk twice a day. Needs cattle feed.
+115|Machinery garage
+116|Repair at home. Machines wear 50% slower.
+117|Worker quarters
+118|Hire up to 6 more permanent workers.
+119|Small village house
+120|Improved house
+121|Large farmhouse
+122|Modern farmhouse
+123|Luxury agricultural estate
+124|CC roads
+125|Concrete village roads. Faster, mud-free travel.
+126|Street lights
+127|LED lights along village roads. Evenings stay busy.
+128|Drinking water tank
+129|A new overhead tank with taps for every street.
+130|Shopping complex
+131|Six new shops. Supplies 4% cheaper.
+132|School upgrade
+133|New classrooms and a playground.
+134|Health centre upgrade
+135|A new ward and ambulance. Treatment is cheaper.
+136|Canal lining & check dam
+137|The lake holds more water and the canal flows all year.
+138|Village godown
+139|Shared storage steadies local prices.
+140|Market expansion
+141|More traders at the yard. Sale prices +3%.
+142|Small Farmer
+143|Successful Farmer
+144|Large Farmer
+145|Agricultural Business Owner
+146|Village Agribusiness
+147|Agricultural Company
+148|Daily labourer
+149|Permanent farmhand
+150|Tractor driver
+151|Chinnu
+152|Bunny
+153|Pinky
+154|Sai
+155|Honey
+156|Tinku
+157|Chitti
+158|Bablu
+159|Lucky
+160|Munni
+## 08_fields.js — fields and crop stages
+161|Clear the old heap at this field first.
+162|{0}: pump switched off, field is full.
+163|{0} attack in {1}! Spray pesticide soon.
+164|{0}: {1} is ready to harvest!
+165|Polyhouse plot
+166|Seethampet␣   ⟪te: సీతంపేట⟫
+167|Field␣   ⟪te: పొలం⟫
+## 10_npc.js — villagers: names, jobs, what they say
+168|Black soil holds water — cotton loves it. Red soil suits groundnut and chilli.
+169|Do not leave paddy dry. Keep the field flooded until the grain fills.
+170|Prices dip when everyone harvests together. Store your crop and wait if you can.
+171|Spray pesticide early. A pest attack left for two days eats half the crop.
+172|Never stand in an open field when lightning comes. Go under a roof.
+173|Moneylender loans look easy. The interest is not.
+174|Leasing land (koulu) is cheaper than buying. Start with that.
+175|Sell paddy and cotton to the government centre at MSP when market prices are low.
+176|Tomato pays well but spoils in days. A cold storage changes everything.
+177|A farm pond keeps your motor running in a drought year.
+178|Weeds drink your fertilizer. Weed before you spread urea.
+179|The weekly santha is on Sunday. More buyers come for vegetables that day.
+180|Namaskaram! Early start today?
+181|Good morning. The fields look fresh after the dew.
+182|Hot sun today. Drink some water.
+183|Bagunnara? How is the crop?
+184|Come, sit for a chai at Yadamma's.
+185|Another day done. Rest well.
+186|Good rain! The lake will fill up.
+187|Stay under a roof, the lightning is close.
+188|Vadagalulu! Stay in the shade till four.
+189|Lakshmamma
+190|Sarpanch
+191|Ramulu
+192|Senior farmer
+193|Yadamma
+194|Tea stall
+195|Srinu
+196|Seeds & fertilizers
+197|Mallesh
+198|Kirana shop
+199|Bhaskar
+200|Tractor mechanic
+201|Venkatesh
+202|Commission agent
+203|Dr. Sujatha
+204|Doctor, PHC
+205|Ravi Sir
+206|Teacher
+207|Hanmanthu
+208|Moneylender
+209|Anjali
+210|Bank officer
+211|Kistaiah
+212|Shepherd
+213|Pochamma
+214|Neighbour farmer
+## 11b_vehicles.js — vehicles
+215|Village bus
+216|Lorry
+217|Auto
+218|Tractor
+219|Careful! The vehicle was damaged.
+220|Out of diesel! Buy a diesel can at the kirana or refuel at the petrol bunk.
+221|This field is not yours. Buy or lease it first.
+222|Tanker is empty. Fill it at the lake, canal or a borewell.
+223|Out of {0}. Buy more at Srinu's shop.
+## 12_player.js — player actions and prompts
+224|Hoe
+225|Seeds
+226|Fertilizer
+227|Sprayer
+228|Sickle
+229|Buy seeds
+230|Buy pesticide
+231|Buy fertilizer
+232|tap “{0}”.
+233|press E for “{0}”.
+234|Spraying without a mask hurts your health. Buy a safety kit at Srinu's shop.
+235|Your health is low. Visit the doctor at the PHC or rest at home.
+236|A worker is using this vehicle.
+237|Slow down before getting off.
+238|Heat wave! Rest in the shade or drink buttermilk at the tea stall.
+239|Pump switched on: the field needs water.
+240|Canal gate opened: the field needs water.
+241|No seeds:␣   ⟪te: విత్తనాలు లేవు:⟫
+242|Pests on your crop!␣   ⟪te: పంటకు పురుగులు!⟫
+243|Your crop is hungry:␣   ⟪te: పంటకు ఎరువు కావాలి:⟫
+244|{0} is growing well ({1}%).␣   ⟪te: {0} బాగా పెరుగుతోంది ({1}%).⟫
+245|Tap “Rest” to let it grow.
+246|Press E to rest while it grows.
+247|Field ploughed! Now␣   ⟪te: దుక్కి అయింది! ఇప్పుడు⟫
+248|Want to sow?␣   ⟪te: విత్తాలా?⟫
+249|␣Sowing ploughs the rest too.   ⟪te: విత్తేటప్పుడు మిగతాది కూడా దున్నుతుంది.⟫
+250|No {0} seeds:␣   ⟪te: {0} విత్తనాలు లేవు:⟫
+251|This field already has another crop.
+252|No {0} left:␣   ⟪te: {0} లేదు:⟫
+253|No {0}:␣   ⟪te: {0} లేదు:⟫
+254|Header lowered — drive over ripe crop to harvest.
+255|Header raised.
+256|No working implement attached. Attach one at your farm (E near the tractor).
+257|Load the sprayer with
+258|Load the spreader with
+259|First-person view
+260|Third-person view
+261|Rest until the crop needs you
+262|Buy seeds (delivered here)
+263|Buy pesticide (delivered here)
+264|Buy fertilizer (delivered here)
+265|Talk to␣   ⟪te: మాట్లాడండి:⟫
+266|Drive bullocks
+267|Drive␣   ⟪te: నడపండి:⟫
+268|Change implement
+269|Pat␣   ⟪te: నిమరండి:⟫
+270|Get off
+## 12b_auto.js — helper autopilot
+271|your field
+272|You are tired. Eat something at the tea stall or rest at home.
+273|Here: {0}
+## 13_time_weather.js — clock, calendar, weather
+274|AM
+275|PM
+276|Day {0} · {1} · {2} · Year {3}
+277|Thunderstorm coming! Take shelter and protect your harvest.
+278|Heat wave warning: crops will need extra water today.
+279|Heavy rain has started.
+280|{0} begins.
+281|Monsoon fails in the region — drought declared. Water will be scarce.
+282|Monsoon arrives! Good time to sow paddy, cotton and maize.
+283|Yasangi season begins. Chilli, groundnut and vegetables do well in the cool months.
+284|Severe summer: groundwater falling fast. Farm ponds will help.
+285|Summer is here. Irrigate early mornings; heat waves are likely.
+286|Power cut in the village. Electric pumps have stopped.
+287|Lightning struck right next to you! Get off the open field.
+## 14_economy.js — market, prices, news, storage, loans
+288|{0} seeds
+289|Not enough money. You need {0}.
+290|Heavy rains damage cotton in northern districts — cotton prices up.
+291|Export orders for Teja chilli surge.
+292|Bumper tomato arrivals at city markets — prices crash.
+293|Tomato shortage in the city — traders pay a premium.
+294|Poultry feed mills are buying maize aggressively.
+295|Government raises paddy procurement targets.
+296|Rice mills report full godowns; paddy bids soften.
+297|Festival demand lifts turmeric prices at Nizamabad.
+298|Oil mills stock up on groundnut.
+299|Cheaper cotton imports; mills cut bids.
+300|Cold storages release old chilli stock; prices dip.
+301|Diesel price hiked by ₹4 a litre.
+302|Urea shortage at cooperatives — dealers charging more.
+303|Pink bollworm alert issued for cotton farmers.
+304|Fall armyworm spotted in nearby mandals.
+305|Banganapalli mango demand strong in city markets.
+306|That is above your loan limit.
+307|Crop loan of {0} credited at 7% a year.
+308|Hanmanthu lends {0} at 1.8% interest per day.
+309|Loan fully repaid!
+310|Hanmanthu is asking about his money...
+311|Farmer investment support: {0} credited for {1} acres.
+312|MSP payment received: {0} for {1}.
+## 14b_farm.js — land, house, buildings, dairy, workers, village projects, services
+313|Already under construction.
+314|Construction started: {0}. Ready in about {1} hours.
+315|Construction finished: {0}!
+316|You bought {0} ({1} acres)!
+317|{0} leased for two seasons.
+318|Lease on {0} ends after this harvest.
+319|Lease on {0} has ended. You can lease it again.
+320|Borewell for {0}
+321|Milk collection: {0} L sold for {1}{2}
+322|The dairy shed is full.
+323|A Murrah buffalo joins your dairy.
+324|Fill water tanker
+325|Switch off pump ({0})
+326|Switch on pump ({0})
+327|Power cut! The pump will start when power returns.
+328|Pump on — water is flowing into the field.
+329|Pump off.
+330|Your house
+331|Farm storage: load / unload
+332|Load {0} heap ({1} q)
+333|Harvest heap: {0} q {1}
+334|{0} — {1} acres {2}
+335|Close canal gate ({0})
+336|Open canal gate to {0}
+337|The canal is dry right now. It flows in Vanakalam or when the lake is full.
+338|Canal water is flowing into your field.
+339|Gate closed.
+340|Fill water tanker from the lake
+341|Ramapuram completes {0}. Villagers celebrate!
+342|No room for more permanent workers. Build worker quarters.
+343|{0} joins as {1}.
+344|{0} left — wages unpaid.
+345|{0} is taking the tractor to {1} with the {2}.
+346|You already have a rented tractor.
+347|Tractor with {0} rented for {1} hours. It's parked outside the workshop.
+348|Your tractor rental ends in 30 minutes.
+349|Bhaskar collected the rented tractor.
+350|That crop is not ready yet.
+351|Harvest of {0} complete. The produce is in the heap at the field edge.
+352|A combine harvester is coming to {0}.
+353|It is in perfect condition.
+354|{0} repaired for {1}.
+355|The tank is already full.
+356|Filled {0} L of diesel for {1}.
+357|You have no diesel cans.
+358|Poured 20 L of diesel.
+359|Water tanker filled.
+360|This vehicle cannot carry produce. Attach a trailer or use the bullock cart.
+361|The vehicle is full.
+362|Unload the other crop first.
+363|Loaded {0} quintals.
+364|The lorry took {0} q to the MSP centre. {1} arrives in 2 days (after {2} transport).
+365|The lorry sold {0} q at the market yard for {1} (transport {2}).
+366|Village trader paid {0} for {1} q.
+367|You are already here.
+368|No diesel left. Refuel first, or get off and take an auto.
+369|You reached {0}.
+370|Driving…
+371|Riding an auto…
+372|It is ready: hold Work to harvest!
+373|Pests! Hold Work to spray.
+374|Weeds came up: hold Work to weed.
+375|The crop is hungry: hold Work to feed it.
+376|The field is dry: hold Work to water it.
+377|{0} hours passed.␣   ⟪te: {0} గంటలు గడిచాయి.⟫
+378|Resting while the crop grows…
+379|{0}: energy +{1}
+380|Dr. Sujatha checked you and gave medicine. Health +60.
+381|You offered ₹51 at the temple. You feel calm.
+382|You need a pump spare part from Bhaskar's workshop.
+383|The village borewell works again! Women no longer walk to Seethampet for water.
+384|Yadamma's tea stall
+385|Srinu's seeds & fertilizers
+386|Mallesh kirana
+387|Bhaskar's tractor workshop
+388|Take the bus to Nagaram town (₹20)
+389|Take the bus to Ramapuram (₹20)
+390|See the doctor
+391|Village development (Sarpanch)
+392|Hanmanthu's house (loans)
+393|Cooperative bank
+394|Kisan Motors showroom
+395|Tiffin centre
+396|Telangana Dhaba
+397|Refuel diesel (₹{0}/L)
+398|Weighbridge: sell your load
+399|Market yard prices
+400|Govt. procurement centre (MSP)
+401|Pray at the temple (₹51)
+402|Sell at the Sunday santha (+5%)
+403|Repair the village borewell
+404|Farm income ₹2.5 lakh
+405|Farm 2 acres (own or lease)
+406|Farm income ₹10 lakh
+407|Farm 10 acres
+408|Farm income ₹30 lakh
+409|Build a warehouse
+410|Employ 3 permanent workers
+411|Farm income ₹80 lakh
+412|Cold storage or dairy
+413|Fund 3 village projects
+414|Farm income ₹2 crore
+415|Own 25 acres
+416|Own land in 2 villages
+## 14c_extras.js — daily gift, trophies, pet dog, photos, how-to-play
+417|Daily gift 🎁
+418|Day {0} of 7 · come back every day for a bigger gift
+419|Day␣   ⟪te: రోజు⟫
+420|Collect␣   ⟪te: తీసుకోండి⟫
+421|Gift collected: {0}. Come back tomorrow for the Day {1} gift!
+422|First seeds
+423|Sow your first crop
+424|First harvest
+425|Harvest a crop
+426|First sale
+427|Sell your crop
+428|The boss
+429|Hire a worker
+430|Blessed
+431|Pray at the temple
+432|Best friend
+433|Adopt a puppy at your house
+434|Photographer
+435|Take a photo in photo mode
+436|Lakhpati
+437|Have ₹1 lakh
+438|Village friend
+439|Make 3 good friends in the village
+440|New home
+441|Upgrade your house
+442|Milkman
+443|Sell 100 litres of milk
+444|Go-getter
+445|Complete 10 missions
+446|Tractor owner
+447|Buy a tractor
+448|Big farmer
+449|Farm 5 acres
+450|Crop expert
+451|Sell 4 different crops
+452|Bumper harvest
+453|Harvest 50 quintals in all
+454|Rising farmer
+455|Reach the third rank
+456|Village hero
+457|Fund a village project
+458|Loyal farmer
+459|Collect the daily gift 7 days in a row
+460|Ten lakh club
+461|Have ₹10 lakh
+462|Crorepati
+463|Have ₹1 crore
+464|You already earned {0} trophies! +{1}. See them in Farm office → Trophies.
+465|Trophy unlocked: {0}!
+466|Trophies · {0} of {1}
+467|Won on day {0}
+468|Moti
+469|Kalu
+470|Tommy
+471|Adopt a puppy 🐶
+472|Free! Your dog follows you everywhere and cheers you up.
+473|{0} is your dog now! It follows you everywhere. Stand still next to it to pat it.
+474|{0} wags its tail.
+475|{0} is happy! +10 energy
+476|My farm in Indian Village Simulator 🌾 Play free: https://{0}
+477|Come farm with me in Indian Village Simulator! Free in your browser, phone or PC 🌾
+478|Could not take the photo on this device.
+479|Indian Village Simulator
+480|Day
+481|Play free
+482|Your photo 📸
+483|Show your farm to friends and family!
+484|Photo of your farm
+485|Sharing is blocked here. Use Save photo, then share it from your gallery.
+486|Share photo
+487|Save photo
+488|Invite on WhatsApp
+489|Tip: press and hold the photo to save it to your gallery.
+490|Tip: right-click the photo to copy it.
+491|Move
+492|Drag the left stick to walk; push it all the way to run. Drag the right side of the screen to look around.
+493|W A S D to walk, hold Shift to run. Drag the mouse to look around.
+494|Follow the gold arrow
+495|The gold arrow on the screen and the line on the map show you the way to the next place.
+496|Your mission is in the corner
+497|The card at the top right always says what to do next. Tap “How?” on it for easy tips.
+498|Gifts & trophies
+499|Come back every day for a gift, win trophies, and adopt a puppy at your house.
+500|How to play
+501|Let's play! ▶
+## 15_missions.js — mission titles and descriptions
+502|Walk to your field
+503|Follow the gold arrow to your field. Hold Shift to run.
+504|Push the left stick all the way to run. Follow the gold arrow to your field.
+505|Plough your field
+506|Stand on your field, hold F and walk around. You plough as you walk.
+507|Stand on your field, hold the yellow Work button and walk around. You plough as you walk.
+508|Hold Work and walk on the field
+509|Get seeds
+510|When Work asks for seeds, press E on “Buy seeds”. They are delivered to your field.
+511|When Work asks for seeds, tap “Buy seeds”. They are delivered to your field.
+512|Tap “Buy seeds”, pick the top crop
+513|Sow your field
+514|Hold F and walk across your field. The seeds go in as you walk.
+515|Hold Work and walk across your field. The seeds go in as you walk.
+516|Water your crop
+517|Hold F on your crop. The pump switches on by itself. Fill the field above 60% water.
+518|Hold Work on your crop. The pump switches on by itself. Fill the field above 60% water.
+519|Hold Work on the crop
+520|Feed your crop
+521|When the crop is hungry, hold F on it to spread fertilizer. Out of fertilizer? Press E on “Buy fertilizer”.
+522|When the crop is hungry, hold Work on it to spread fertilizer. Out of fertilizer? Tap “Buy fertilizer”.
+523|Harvest your crop
+524|When the crop turns golden, hold F on it to harvest. Sleep at home to make nights pass quickly.
+525|When the crop turns golden, hold Work on it to harvest. Sleep at home to make nights pass quickly.
+526|Golden crop? Hold Work on it
+527|Sell your harvest
+528|Press E at the harvest heap by your field and sell to the trader. For a better price, take it to the market yard.
+529|Tap the harvest heap by your field and sell to the trader. For a better price, take it to the market yard.
+530|Use the heap by your field
+531|Your field
+532|Pump house
+533|Seed shop
+534|Market yard
+535|Workshop
+536|Panchayat
+537|Temple
+538|Lake ghat
+539|Santha ground
+540|Bank
+541|Village borewell
+542|Harvest heap
+543|New mission:␣   ⟪te: కొత్త లక్ష్యం:⟫
+544|Mission failed:␣   ⟪te: లక్ష్యం విఫలమైంది:⟫
+545|Save {0} from {1}
+546|Spray pesticide over the whole crop within 12 hours (sprayer, key 5).
+547|Survive the drought
+548|Keep every crop you grow this season above 50% health until the season ends. Borewells, a farm pond and the canal will help.
+549|the pests spread
+550|{0} wilted
+551|time ran out
+552|Join the {0} celebration
+553|Plant {0} acre{1} of {2}
+554|{0} suits {1}. Sow it on your own or leased land.
+555|Harvest {0} quintals of {1}
+556|Bring the crop to harvest in good health for a bigger yield.
+557|Deliver {0} quintals of {1} to the market yard
+558|Sell at the weighbridge in Nagaram, or at the MSP centre.
+559|Earn {0} from crop sales
+560|Any sale counts — yard, MSP centre, santha or trader.
+561|Reach {0} farming income
+562|Your lifetime earnings from crops and milk.
+563|Buy your first tractor
+564|Bhaskar sells the Bhoomi 35 at his workshop. A bank crop loan can help.
+565|Buy a {0}
+566|More implements, faster work.
+567|Expand your farm to {0} acres
+568|Lease (koulu) or buy fields — look for the For Sale / For Lease boards.
+569|Own {0} acres of land
+570|Owned land raises your loan limit and earns the seasonal investment support.
+571|Build a {0}
+572|Upgrade your home to a {0}
+573|A bigger home stores more produce and restores more energy.
+574|Fund {0} for Ramapuram
+575|The hand-pump borewell under the water tank is broken. Buy a pump spare part at Bhaskar's workshop and fix it.
+576|Workers plough, sow, weed, spray and harvest on their own. Hire from the farm office at your house.
+577|Visit {0}
+578|{0} ({1}) wants a word with you.
+579|Sell {0} quintals at the MSP centre
+580|The government centre buys {0} at ₹{1}/q. Payment arrives after 2 days.
+581|Sell {0} above ₹{1}/q
+582|Store it and watch the ticker. Prices move with supply, weather and news.
+583|Sell {0} litres of milk
+584|Keep the buffaloes fed with cattle feed from the kirana.
+585|Clear a loan
+586|Interest keeps growing every day. Pay it off at the bank or with Hanmanthu.
+587|Offer prayers at the Anjaneya temple
+588|Farmers here start a season with a visit to the temple.
+589|Spread farmyard manure on 1 acre
+590|Organic manure feeds the crop and improves soil health for future seasons.
+591|Rent a tractor from Bhaskar
+592|Four hours of a tractor ploughs far faster than bullocks.
+593|Lease or buy another field
+594|Fields with a board say "For lease" or "For sale". Leasing costs about ₹12,000 an acre for two seasons.
+595|Sell tomatoes at the Sunday santha
+596|Load tomatoes into a vehicle and drive to the santha ground on Sunday.
+597|Become a {0}
+598|Check the Profile tab in the farm office for what is needed.
+599|Visit the cooperative bank in Nagaram
+600|Take the bus from the village stop. Ask Anjali about crop loans and deposits.
+## 15b_coach.js — step-by-step instructions and How? tips
+601|Go to {0}
+602|␣— or tap Map and take an auto   ⟪te: — లేదా మ్యాప్ నొక్కి ఆటోలో వెళ్ళండి⟫
+603|Tap “{0}”
+604|Press E for “{0}”
+605|Hold Work {0}
+606|Hold F {0}
+607|Open the Farm office (top button) → {0}
+608|Press B (Farm office) → {0}
+609|Tap the prompt, then␣   ⟪te: పక్కన వచ్చే బటన్ నొక్కి,⟫
+610|Press E, then␣   ⟪te: E నొక్కి,⟫
+611|Save {0} more: sell crops, or take a crop loan at the bank
+612|␣and pick {0}   ⟪te: , {0} ఎంచుకోండి⟫
+613|the crop
+614|and walk on the field to sow {0}
+615|and walk on the field to harvest
+616|on the crop: Auto sprays the pests
+617|on the crop to pull the weeds
+618|on the crop to feed it
+619|on the crop to water it
+620|{0} is {1}% grown.␣   ⟪te: {0} {1}% పెరిగింది.⟫
+621|for a moment, then tap “Rest”
+622|the harvest heap
+623|“Sell all to trader”
+624|“Send to the MSP centre by lorry”
+625|“Send to the market yard by lorry”
+626|Tap the heap, then␣   ⟪te: కుప్పను నొక్కి⟫
+627|Press E at the heap, then␣   ⟪te: కుప్ప దగ్గర E నొక్కి⟫
+628|Storage → “Send by lorry”
+629|Look for an orange “For sale / lease” field on the map
+630|the “For lease” board
+631|Tap the board, then␣   ⟪te: బోర్డు నొక్కి,⟫
+632|Press E at the board, then␣   ⟪te: బోర్డు దగ్గర E నొక్కి,⟫
+633|lease or buy the field
+634|and walk around the field to plough it
+635|, then pick the top crop
+636|on the field until it asks for seeds
+637|The pump is filling the field ({0}%). Keep holding Work or wait a little
+638|on the crop: the pump starts by itself
+639|and walk on the crop to spread fertilizer
+640|Wait for a better price: {0} is {1} now, you need {2}. Keep farming meanwhile
+641|The santha is on Sunday. Keep your tomatoes until then
+642|Load tomatoes into your bullock cart, then drive to the santha ground
+643|the santha ground
+644|Bhaskar's workshop
+645|buy the Bhoomi 35 tractor
+646|buy the {0}
+647|implement
+648|rent a tractor
+649|Build → {0}
+650|Build → upgrade your house
+651|the panchayat office
+652|fund {0}
+653|buy a pump spare part
+654|the village borewell
+655|repair the borewell
+656|Workers → Hire
+657|Profile: see what you need
+658|the kirana shop
+659|buy cattle feed
+660|Milk is sold every morning and evening. Keep the buffaloes fed
+661|the bank in Nagaram
+662|repay the loan
+663|Hanmanthu's house
+664|the temple
+665|pray (₹51)
+666|Srinu's shop
+667|buy farmyard manure
+668|and walk on the crop to spread the manure
+669|Keep every crop healthy until the season ends
+670|the lake ghat
+671|The celebration is at {0} from 4:30 PM
+672|Missions
+673|Reminder:␣   ⟪te: గుర్తుందా:⟫
+674|Follow the gold arrow on the screen. The map shows a dotted line to it.
+675|Push the left stick all the way to run.
+676|W A S D to walk, hold Shift to run.
+677|Far away? Open the Map, tap the place and take an auto.
+678|Walk next to your vehicle and tap Use to get in.
+679|Walk next to your vehicle and press E to get in.
+680|Push the stick up to go, left or right to turn.
+681|W to go, A and D to turn, Space to brake.
+682|Follow the gold arrow.
+683|Stand on your field: it has a gold border on the map.
+684|Press and HOLD the yellow Work button.
+685|Press and HOLD the F key.
+686|Keep holding it and walk up and down the field until the bar is full.
+687|Walk close: a button with the name pops up at the bottom.
+688|Tap Use (or tap that button).
+689|Press E (or click that button).
+690|In the list that opens, the top choice is usually the right one.
+691|Your crop is growing. Nothing to do right now.
+692|Stand on the field and tap Use → Rest to skip ahead.
+693|Stand on the field and press E → Rest to skip ahead.
+694|Or explore the village and come back later.
+695|Tap the clipboard button at the top of the screen.
+696|Press B, or click the clipboard button at the top.
+697|Then pick the tab named in the mission.
+698|Tap the map button at the top (or the round mini map).
+699|Press M, or click the round mini map.
+700|Tap a place on the map to see it and take an auto there.
+701|Harvest and sell crops at the market yard to earn money.
+702|Short of money? The bank in Nagaram gives crop loans.
+703|Follow the gold arrow and read the yellow line above.
+## 17_ui.js — menus, buttons, shops, settings, map
+704|Start with ₹50,000, one acre of red soil and a pair of bullocks in Ramapuram. Grow it into an agricultural company.
+705|Prototype build · the world, sound and music are generated live in your browser.
+706|Ploughing
+707|Sowing
+708|Fertilizing
+709|Spraying
+710|Weeding
+711|Harvesting
+712|{0} delivered: {1} for {2}. Hold Work on your field.
+713|Quick delivery to your field
+714|Srinu sends it right away · ₹{0} delivery
+715|Seeds for {0} acre{1}. The top crops suit this season and soil best.
+716|days
+717|nutrients
+718|Money:␣   ⟪te: డబ్బు:⟫
+719|Saved
+720|␣acre packs   ⟪te: ఎకరం ప్యాకెట్లు⟫
+721|␣bags   ⟪te: బస్తాలు⟫
+722|switch
+723|Hold␣   ⟪te: పట్టుకోండి⟫
+724|Work
+725|␣on your field: it ploughs, sows, feeds and harvests by itself   ⟪te: మీ పొలంలో: దున్నడం, విత్తడం, ఎరువు, కోత అన్నీ తానే చేస్తుంది⟫
+726|␣on your field   ⟪te: మీ పొలంలో⟫
+727|Tap
+728|+{0} more
+729|Drought
+730|Power cut
+731|No active missions.
+732|Tutorial {0} of {1}
+733|Mission
+734|␣· {0} more   ⟪te: · ఇంకా {0}⟫
+735|Working {0}…
+736|Walking to {0}…
+737|Walking there…
+738|Hide tips
+739|How? ❓
+740|■ Stop
+741|▶ Do it for me
+742|How to do it
+743|Close
+744|Diesel
+745|Condition
+746|Implement
+747|␣· lowered   ⟪te: · దించారు⟫
+748|␣· raised   ⟪te: · ఎత్తారు⟫
+749|Header
+750|Lowered — harvesting
+751|Raised
+752|Tank
+753|Hopper
+754|Water
+755|Cargo
+756|Rented␣   ⟪te: అద్దె⟫
+757|␣h   ⟪te: గం.⟫
+758|G lower/raise · E get off
+759|E get off · H horn · L lights
+760|Owned
+761|Leased
+762|For lease
+763|For sale
+764|Neighbour's field
+765|acres
+766|Borewell
+767|Canal
+768|Seedbed
+769|Nutr.
+770|Weeds
+771|Pests
+772|Health
+773|Heap:␣   ⟪te: కుప్ప:⟫
+774|grade
+775|What would you like to do?
+776|Which crop will you sow?
+777|acre packs
+778|season
+779|soil
+780|Buy seeds at Srinu's shop at the village crossroads.
+781|Unload the trailer first.
+782|Detach implement
+783|Unload the cargo first.
+784|work width␣   ⟪te: పని వెడల్పు⟫
+785|You don't own any implements yet. Buy them at Bhaskar's workshop.
+786|Sleep until tomorrow morning
+787|Rest for 2 hours
+788|Open the farm office
+789|Storage & supplies
+790|Save game
+791|Adopt a puppy (free) 🐶
+792|Farm storage
+793|In the vehicle
+794|Empty.
+795|Unload all into storage
+796|Stored {0} q.
+797|Storage is full. Build a warehouse.
+798|In storage
+799|cold
+800|Nothing stored.
+801|Load 10 q
+802|Load max
+803|Vehicle is full.
+804|The village trader offers {0}/q right here (88% of the yard price {1}). Or load it into your cart or trailer and sell at the market yard yourself.
+805|Send to the market yard by lorry (about {0})
+806|Send to the MSP centre by lorry (about {0}, paid in 2 days)
+807|Sell all to trader now ({0})
+808|Carry it home to storage
+809|Moved {0} q to storage.
+810|canal-fed
+811|has a borewell
+812|Best crops for this soil: {0}.
+813|Buy for {0}
+814|Lease 2 seasons for {0}
+815|Need money? The cooperative bank in Nagaram gives crop loans at 7% a year.
+816|Energy +{0}{1}
+817|Buy
+818|Energy {0} · Health {1}
+819|You already have one.
+820|Prices change with the season and the news.
+821|Seeds (one pack sows one acre)
+822|{0} days · ~{1} q/acre · market {2}/q
+823|Water {0} · pest risk {1} · {2}
+824|Have␣   ⟪te: ఉన్నవి⟫
+825|Fertilizers, pesticides & gear
+826|Supplies
+827|+{0} nutrients per acre{1}
+828|Kills pests on 1 acre
+829|Clears weeds on 1 acre
+830|No health loss while spraying
+831|Keeps dairy buffaloes in milk
+832|Refuel anywhere: 20 L
+833|Pour into vehicle
+834|Rent, buy, repair. Custom hiring for harvests.
+835|Rent & services
+836|Tractor with implement · 4 hours · {0}
+837|Work width {0} m
+838|Carries {0} quintals
+839|Rent
+840|Combine harvester service · {0}/acre
+841|None of your crops are ready to harvest yet.
+842|ac
+843|Harvest for {0}
+844|Spare parts
+845|have
+846|Tractors & harvester
+847|Implements
+848|Work width {0} m · up to {1} km/h
+849|{0} delivered to your farm.
+850|Attach implements standing next to your tractor (E → Change implement).
+851|Repair & fuel
+852|No motor vehicles yet.
+853|condition
+854|diesel
+855|Repair
+856|Fill diesel
+857|Bring the vehicle within 30 m of the workshop (or your garage) to service it.
+858|Kisan Motors
+859|Bikes, pickups and tractors. Delivered to your farm.
+860|Top speed {0} km/h{1}{2}
+861|Unlocks at␣   ⟪te: అన్‌లాక్:⟫
+862|Bank loan limit:␣   ⟪te: బ్యాంకు రుణ పరిమితి:⟫
+863|{0} delivered to your farm!
+864|Ramapuram Gram Panchayat
+865|Sarpanch Lakshmamma · Population {0} · Land value +{1}%
+866|Invest your profits in the village. Every project grows the population, business activity and land value — and the village remembers who helped.
+867|+{0} people · land value +{1}% · {2} h to build
+868|Completed
+869|Under construction
+870|Fund project
+871|Hanmanthu's loans
+872|Crop loans at 7% a year. Deposits earn 6.5%.
+873|Instant cash, no paperwork. 1.8% interest every day.
+874|Outstanding
+875|Can borrow
+876|Your money
+877|Borrow␣   ⟪te: తీసుకోండి⟫
+878|Repay␣   ⟪te: చెల్లించండి⟫
+879|Repay all
+880|Fixed deposit
+881|Deposit ₹50,000
+882|Withdraw all
+883|Crop insurance
+884|2% premium at sowing. Pays out when weather ruins a crop.
+885|Insured — turn off
+886|Insure my crops
+887|Agricultural Market Yard
+888|Venkatesh's commission: 1% + ₹10/q hamali
+889|Grade {0} · you receive about {1}
+890|Sell here
+891|Sold {0} q for {1}.
+892|City broker (+10%, ₹150/q truck)
+893|City broker paid {0}.
+894|Bring produce in a cart, trailer or pickup to sell it here.
+895|Today's yard prices
+896|Crop
+897|Govt. procurement centre
+898|Minimum Support Price. Grade A/B only. Paid in 2 days.
+899|Bring paddy, cotton, maize or groundnut in a vehicle.
+900|Procurement is closed now. It opens at harvest time (late Vanakalam and late Yasangi).
+901|Grade C produce is not accepted here.
+902|Market price today: {0}/q
+903|Sell at MSP
+904|Accepted {0} q. {1} will be paid in 2 days.
+905|Payments due
+906|in
+907|Sold {0} q at the santha for {1}.
+908|Farm office
+909|Fields
+910|Storage
+911|Workers
+912|Build
+913|Market
+914|Finance
+915|Trophies
+916|Profile
+917|Your fields · {0} acres
+918|leased till day␣   ⟪te: కౌలు రోజు⟫
+919|owned
+920|borewell
+921|␣(on)   ⟪te: (నడుస్తోంది)⟫
+922|canal
+923|health
+924|Empty · ploughed {0}%
+925|Plan: none
+926|Plan:␣   ⟪te: ప్రణాళిక:⟫
+927|Drill borewell {0}
+928|Show on map
+929|Waypoint set.
+930|Set a planned crop so your workers know what to sow.
+931|Land for sale or lease
+932|Field
+933|Acres
+934|Soil
+935|Lease
+936|Red
+937|Black
+938|Go
+939|Waypoint set to the field sign.
+940|Produce · {0}/{1} q
+941|cold storage
+942|Nothing in storage. Drive a loaded cart or trailer into your yard to unload.
+943|Quintals
+944|Grade
+945|Trader pays
+946|Sell 10 q
+947|Send by lorry: {0} → market yard
+948|A lorry gets the full market yard price for a small transport fee (₹150 + ₹30 a quintal). Selling here goes to the village trader (88%).
+949|No supplies.
+950|Vehicles
+951|rented
+952|Find
+953|Dairy
+954|{0} buffaloes · ~{1} L milk a day · feed {2} bags
+955|Buy buffalo ₹65,000
+956|Workers · {0}/{1} permanent
+957|Auto-buy seeds & supplies (+5%)
+958|No one works for you yet. Workers plough, sow your planned crop, weed, spray, irrigate and harvest by themselves.
+959|Any field (auto)
+960|day
+961|week
+962|Working:␣   ⟪te: పని:⟫
+963|harvesting
+964|spraying
+965|weeding
+966|fertilizing
+967|sowing
+968|ploughing
+969|irrigating
+970|Waiting for work
+971|Dismiss
+972|Hire
+973|Works today until 6 PM.
+974|Paid weekly. Hand work now; drives your tractor in a future update.
+975|Paid weekly. Lives on your farm.
+976|hours left
+977|Your home
+978|Level
+979|Storage {0} q · rest bonus ×{1}
+980|Next: {0} · storage {1} q · {2} h to build
+981|Fully upgraded.
+982|Upgrade
+983|Farm buildings
+984|Built
+985|Build · {0} h
+986|Yard ₹/q
+987|24h
+988|Last 20 days
+989|Stored
+990|Market news
+991|No news yet.
+992|Selling a lot at once pushes the price down. Prices recover over a couple of days.
+993|Cash
+994|Bank crop loan
+995|Hanmanthu's loan
+996|Bank loan limit
+997|Payments due to you
+998|On
+999|Off
+1000|Lifetime farm income
+1001|Total spent
+1002|Loans and deposits: the cooperative bank in Nagaram (take the bus) or Hanmanthu in the village. Owned land earns ₹5,000/acre investment support every season.
+1003|Following now
+1004|Follow this mission
+1005|Completed · {0}
+1006|Next:␣   ⟪te: తదుపరి:⟫
+1007|You lead an agricultural company!
+1008|Stats
+1009|Days farmed
+1010|Harvested
+1011|Sold:␣   ⟪te: అమ్మింది:⟫
+1012|Milk sold
+1013|Missions completed
+1014|Village projects funded
+1015|Relationships
+1016|Map
+1017|Menu
+1018|Graphics
+1019|Low
+1020|Medium
+1021|High
+1022|Ultra
+1023|Cinematic
+1024|Language
+1025|Game speed
+1026|Difficulty
+1027|Easy
+1028|Normal
+1029|Easy mode: crops forgive mistakes and you tire slowly.
+1030|Normal mode: real farming.
+1031|Master volume
+1032|Music
+1033|Ambience
+1034|Effects
+1035|Camera speed
+1036|Voice guide
+1037|Frame rate
+1038|60 smooth
+1039|30 battery
+1040|Options
+1041|Invert camera Y
+1042|Camera follows you
+1043|Hold left mouse to work
+1044|Show FPS
+1045|Helpers
+1046|“Do it for me” button
+1047|Tap the ground to walk
+1048|Screen
+1049|Exit full screen
+1050|Full screen
+1051|Invite friends
+1052|Controls
+1053|Main menu
+1054|Turn on cloud save
+1055|Left stick
+1056|Walk; push it all the way to run
+1057|Drag right side
+1058|Look around, pinch to zoom
+1059|Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests
+1060|Use
+1061|Talk, shop, drive, buy seeds, rest, get off
+1062|Gold arrow
+1063|Always points to your next goal
+1064|Tap a place, then take an auto straight there
+1065|Lower or raise implement
+1066|Switch camera view
+1067|Walk / drive
+1068|Run
+1069|Jump / brake
+1070|Mouse drag, wheel
+1071|Look around, zoom
+1072|Hold on your field: Auto does the next job
+1073|Auto, hoe, seeds, fertilizer, sprayer, sickle
+1074|Switch seed / fertilizer / chemical
+1075|Horn / headlights
+1076|First / third person
+1077|Farm office / storage
+1078|Photo mode
+1079|Menu & settings
+1080|Tip: follow the gold arrow. When the crop is growing and there is nothing to do, use “Rest” on your field to jump ahead.
+1081|Take photo
+1082|Back
+1083|Photo mode: drag to frame your shot, then tap Take photo
+1084|Photo mode: frame your shot, then click Take photo (P to return)
+1085|Raise
+1086|Lower
+1087|Horn
+1088|Type
+1089|View
+1090|Brake
+1091|Jump
+1092|Full screen on iPhone:␣   ⟪te: ఐఫోన్‌లో ఫుల్ స్క్రీన్:⟫
+1093|tap Share, then “Add to Home Screen”, and open the game from your home screen.
+1094|Continue
+1095|New game
+1096|Raju
+1097|Radha
+1098|Your name
+1099|Farmer (man)
+1100|Farmer (woman)
+1101|Best for kids & first time
+1102|Real farming
+1103|Start farming
+1104|Show me seeds and fertilizer
+1105|What do you have?
+1106|One chai, please
+1107|About tractors…
+1108|Today's prices?
+1109|I don't feel well
+1110|Village development
+1111|I need a loan
+1112|Loans and deposits
+1113|Namaskaram, {0}! Ramapuram grows when its farmers grow. {1}
+1114|Money? I always have money. Just remember — interest every single day.
+1115|A tractor ploughs in an hour what bullocks plough in a day. Rent one, or buy a Bhoomi 35.
+1116|Anna! Will you take us to the fields?
+1117|School was fun today. Ravi Sir taught us about rain!
+1118|Can I ride the bullock cart?
+1119|Any advice?
+1120|Goodbye
+1121|Village kid
+1122|Villager
+1123|Friendship:␣   ⟪te: స్నేహం:⟫
+1124|I saw {0} in your {1}. Spray today, not tomorrow.
+1125|Your {0} is thirsty. {1}
+1126|Your {0} is ready. Don't leave it standing — it loses quality every day.
+1127|Weeds are taking over {0}. Use the hoe or herbicide.
+1128|{0} looks pale. It needs urea or DAP.
+1129|Your harvest is getting wet in the open! Move it into storage.
+1130|This season {0} does well, and its price is {1}.
+1131|Kirana
+1132|Tractor workshop
+1133|Health centre
+1134|Bus stop
+1135|Town bus stand
+1136|Petrol bunk
+1137|Dhaba
+1138|Hill shrine
+1139|Waypoint
+1140|Map of the mandal
+1141|Zoom in
+1142|Zoom out
+1143|Centre on me
+1144|You
+1145|Your fields
+1146|For sale / lease
+1147|Marked spot
+1148|Where to?
+1149|Tap a place on the map. The gold arrow will lead you there, or take an auto straight there.
+1150|Now heading to:␣   ⟪te: ఇప్పుడు వెళ్తున్నది:⟫
+1151|␣away · the gold arrow now points here   ⟪te: దూరం · బంగారు బాణం ఇటు చూపిస్తుంది⟫
+1152|Drive there now ({0} min)
+1153|Take an auto there ({0})
+1154|Walk with the arrow
+1155|Clear target
+1156|Ramapuram
+1157|Seethampet
+1158|Nagaram town
+1159|Pedda Cheruvu
+1160|Highway
+## 17b_celebrate.js — celebrations
+1161|Shabash!
+1162|Excellent!
+1163|Super!
+1164|Well done!
+1165|Amazing!
+1166|Mission complete
+1167|Tutorial complete
+1168|You are a real farmer now!
+1169|Missions, trophies and a daily gift are waiting.
+1170|Trophy unlocked!
+1171|New rank
+1172|Good morning!
+1173|A fresh day on the farm
+## 18_save.js — saving
+1174|Could not save the game.
+1175|Game saved.
+1176|This browser blocked saving. Turn on site storage, or keep this tab open.
+1177|Cloud save is full. Your game is still saved in this browser.
+1178|Cloud save is on.
+1179|Cloud save is not available here. Your game still saves in this browser.
+1180|Saved in this browser at {0}.
+1181|Not saved yet in this session.
+1182|␣Cloud save is on, so you can continue on another device.   ⟪te: క్లౌడ్ సేవ్ ఆన్‌లో ఉంది, వేరే పరికరంలో కూడా కొనసాగించవచ్చు.⟫
+1183|␣Cloud save is read-only for your account.   ⟪te: మీ ఖాతాకు క్లౌడ్ సేవ్ చదవడానికి మాత్రమే.⟫
+1184|␣The game also saves every morning and after you sleep.   ⟪te: ప్రతి ఉదయం, మీరు నిద్రపోయిన తర్వాత కూడా ఆట సేవ్ అవుతుంది.⟫
+## 19_main.js — loading screen, day end
+1185|The sun sets… a new day begins
+1186|Today is {0}! {1}
+1187|Sunday santha today: the weekly market is on at the village ground until 2 PM.
+1188|You feel rested.
+1189|Sleeping…
+1190|Resting…
+1191|Shaping the land
+1192|Laying roads and canals
+1193|Building Ramapuram
+1194|Marking out the fields
+1195|Planting trees
+1196|Finishing the skyline
+1197|Lighting the sky
+1198|Waking up the village
+1199|Drawing the map
+1200|Ready
+1201|Full screen is not available here.
+1202|{0} · Day {1} of {2} · {3}
+1203|Opening your farm…
+1204|A new season begins…
+1205|Welcome back, {0}. {1}
+1206|Ramapuram · Vanakalam
+1207|Welcome, {0}
+1208|₹50,000, one acre of red soil and a pair of bullocks. Let's grow.
+1209|This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.
+1210|Something went wrong while loading:␣   ⟪te: లోడ్ చేస్తుండగా సమస్య వచ్చింది:⟫
+1211|Loading fonts…
+1212|Preparing graphics…
+## page.html — fixed screen labels
+1213|Energy
+1214|Crops
+1215|Market yard ₹/quintal
+1216|Photo
+1217|News
+1218|Farm · Grow · Celebrate
+1219|Quality
+1220|Turn your phone sideways
+1221|Fields, roads and the controls fit much better in landscape.
+1222|Keep playing upright
+1223|Tap to continue
+1224|The phone paused the 3D graphics. Your farm is saved.

@@ -83,9 +83,44 @@ const NZ = new Noise2(7);
 const NZ2 = new Noise2(911);
 
 // ---------- language ----------
+// Every sentence is written L('English', 'Telugu'). Other languages come from i18n/<code>.json,
+// loaded when picked: a sentence with values, L(`Day ${n}`...), is turned by the build into
+// L(en, te, 'Day {0}', [n]) so the translation can put the values where its grammar wants them.
 let LANG = 'en';
-const L = (en, te) => (LANG === 'te' && te ? te : en);
-const LN = (o) => (o ? (LANG === 'te' && o.te ? o.te : o.en) : '');
+const LANGS = [
+  { id: 'en', name: 'English', en: 'English' },
+  { id: 'hi', name: 'हिन्दी', en: 'Hindi', disp: 'Baloo 2', body: 'Hind' },
+  { id: 'bn', name: 'বাংলা', en: 'Bengali', disp: 'Baloo Da 2', body: 'Hind Siliguri' },
+  { id: 'mr', name: 'मराठी', en: 'Marathi', disp: 'Baloo 2', body: 'Hind' },
+  { id: 'te', name: 'తెలుగు', en: 'Telugu' },
+  { id: 'ta', name: 'தமிழ்', en: 'Tamil', disp: 'Baloo Thambi 2', body: 'Hind Madurai' },
+  { id: 'gu', name: 'ગુજરાતી', en: 'Gujarati', disp: 'Baloo Bhai 2', body: 'Hind Vadodara' },
+  { id: 'kn', name: 'ಕನ್ನಡ', en: 'Kannada', disp: 'Baloo Tamma 2', body: 'Hind Mysuru' },
+  { id: 'ml', name: 'മലയാളം', en: 'Malayalam', disp: 'Baloo Chettan 2', body: 'Noto Sans Malayalam' },
+  { id: 'pa', name: 'ਪੰਜਾਬੀ', en: 'Punjabi', disp: 'Baloo Paaji 2', body: 'Noto Sans Gurmukhi' },
+  { id: 'or', name: 'ଓଡ଼ିଆ', en: 'Odia', disp: 'Baloo Bhaina 2', body: 'Noto Sans Oriya' },
+  { id: 'as', name: 'অসমীয়া', en: 'Assamese', disp: 'Baloo Da 2', body: 'Hind Siliguri' },
+  { id: 'ur', name: 'اردو', en: 'Urdu', disp: 'Baloo Bhaijaan 2', body: 'Noto Sans Arabic', rtl: true },
+];
+const I18N = { dict: null, lang: 'en', cache: {} };
+const TR = (en) => { const d = I18N.dict; const t = d && d[en]; return t || en; };
+const LT = (key, args, en) => {
+  const d = I18N.dict; const t = d && d[key]; if (!t) return en;
+  return t.replace(/\{(\d+)\}/g, (m, i) => { const v = args[+i]; return v && typeof v === 'object' ? LN(v) : v === undefined || v === null ? '' : String(v); });
+};
+const L = (en, te, key, args) => (LANG === 'en' ? en : LANG === 'te' ? (te || en) : key !== undefined ? LT(key, args, en) : TR(en));
+const LN = (o) => {
+  if (!o) return '';
+  if (LANG === 'en') return o.en;
+  if (LANG === 'te') return o.te || o.en;
+  return o[LANG] || (o._k !== undefined ? LT(o._k, o._a, o.en) : TR(o.en));
+};
+// first letter of a name, whole (Indic letters are often two or three code points)
+function firstGrapheme(s) {
+  s = String(s || '');
+  try { if (typeof Intl !== 'undefined' && Intl.Segmenter) { const it = new Intl.Segmenter(undefined, { granularity: 'grapheme' }).segment(s)[Symbol.iterator]().next(); if (!it.done) return it.value.segment; } } catch (e) { /* old browsers */ }
+  return Array.from(s).slice(0, LANG === 'en' ? 1 : 2).join('');
+}
 
 // ---------- money / number formatting (Indian system) ----------
 function fmtINR(n, sym = true) {
