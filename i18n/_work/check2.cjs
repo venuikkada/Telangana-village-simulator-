@@ -3,10 +3,11 @@
 const fs = require('fs'), path = require('path');
 const dir = __dirname, code = process.argv[2], write = process.argv.includes('--write');
 const keys = JSON.parse(fs.readFileSync(path.join(dir, 'keys.json'), 'utf8'));
-const f = path.join(dir, 'out', code + '.txt');
-if (!fs.existsSync(f)) { console.log('MISSING ' + f); process.exit(1); }
+// the translation may be one file out/<code>.txt or several parts out/<code>.p01.txt, .p02.txt ...
+const files = fs.readdirSync(path.join(dir, 'out')).filter((x) => x === code + '.txt' || (x.startsWith(code + '.p') && x.endsWith('.txt'))).sort();
+if (!files.length) { console.log('MISSING out/' + code + '.txt'); process.exit(1); }
 const tr = new Map();
-for (const line of fs.readFileSync(f, 'utf8').split(/\r?\n/)) { const m = /^\s*(\d+)\s*\|(.*)$/.exec(line); if (m) tr.set(+m[1], m[2]); }
+for (const fn of files) for (const line of fs.readFileSync(path.join(dir, 'out', fn), 'utf8').split(/\r?\n/)) { const m = /^\s*(\d+)\s*\|(.*)$/.exec(line); if (m && m[2].replace(/␣/g, '').trim()) tr.set(+m[1], m[2]); }
 const ph = (s) => (String(s).match(/\{\d+\}/g) || []).sort().join(',');
 const missing = [], badPh = [], dict = {};
 keys.forEach((k, i) => {

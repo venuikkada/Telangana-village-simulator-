@@ -11,12 +11,14 @@ Folder: `/tmp/claude-0/-home-claude-telangana-village-simulator-/dd28a9d7-aa98-5
 - Every other line is `N|English text`. A few fragment lines end with `⟪te: …⟫`, the Telugu version, only as a hint for meaning.
 - `␣` at the very start or end of a text marks a space there (the piece is joined to other text, e.g. `␣L` = " lakh" after an amount, `Field␣` before a number).
 
-## Output: out/<code>.txt
-Plain text, one line per input line: `N|translation` for EVERY N from 1 to 1224, same numbers, same order. No `##` lines needed, no JSON, no quotes, no notes. Write it in two or three parts so no single write is huge: Write the file with lines 1–600, then append the rest (Edit: add after the last line, or Write again with the whole content). Then run:
+## Output: part files in out/
+Write the translation as several small files in `out/`: `<code>.p01.txt`, `<code>.p02.txt`, `<code>.p03.txt`, … Each holds about 200 lines in the form `N|translation` (p01 = lines 1–200, p02 = 201–400, and so on), same numbers as the input. One Write call per part file, never more than ~220 lines in one Write. No `##` lines, no JSON, no quotes, no notes.
+
+When all parts are written, run:
 
 `node /tmp/claude-0/-home-claude-telangana-village-simulator-/dd28a9d7-aa98-540c-8a92-6ab09e03210f/scratchpad/i18n/check2.cjs <code>`
 
-and fix whatever it reports until it prints ALL GOOD.
+If it reports missing or mismatched lines, write ONE more small file `out/<code>.p99.txt` containing only those lines (corrected), and run the check again. Finish when it prints ALL GOOD.
 
 ## Rules
 1. `{0}`, `{1}` … are values (numbers, ₹ amounts, names, places, crops, days). Keep exactly the same set in each line; move them where your grammar needs; never translate or renumber them.
