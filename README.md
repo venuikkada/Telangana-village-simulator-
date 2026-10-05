@@ -59,6 +59,13 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Photos and sharing:** photo mode has a Take photo button. The picture gets the game's name and link and can be saved, shared or sent on WhatsApp. "Invite friends" in the Menu shares the game link.
 - **Saving:** the game saves every morning, after you sleep and every few minutes, in your browser.
 - **Sign in with email:** tap **👤 Sign in** on the title screen (or Menu → Account) and create a free account with your email and a password. Your farm is then also saved online, so you can continue on any phone or computer: sign in there and tap Continue. If two devices both played, the game asks which farm to keep. Forgot your password? Get a 6-digit code by email and set a new one. You can sign out or delete your account any time.
+- **Settings like the big mobile games:** the Menu has six tabs.
+  - **Basic:** language, difficulty, game speed, minimap on or off, helpers and full screen.
+  - **Graphics:** quality (Smooth, Balanced, HD, Ultra HD, Cinematic), frame rate (Auto, 30, 40, 60, 90, 120), five colour styles (Classic, Colorful, Realistic, Soft, Movie), brightness and an FPS counter.
+  - **Controls:** **Customize layout** lets you drag every touch button (and the walking stick) anywhere and make each one bigger, smaller or more see-through, separately for walking and for driving. There are also overall button size and transparency, a fixed or floating joystick (put your thumb anywhere on the left side), buttons or the stick for vehicles, auto run on or off, and vibration.
+  - **Sensitivity:** camera speed on foot and in vehicles, invert camera, camera follow, and a **gyroscope**: turn and tilt the phone to look around, with its own sensitivity.
+  - **Audio:** master, music, ambience and effects volume, plus the voice guide.
+  - **Account:** login, sign up and your online farm.
 - **How accounts are kept safe:** passwords and reset codes are stored only as bcrypt hashes, sign-ins use random tokens stored only as hashes, wrong-password and reset attempts are rate-limited, and the account data lives outside the website folder (`api/account.php`, SQLite). The claude.ai version links to the website for signing in.
 
 ## Controls
@@ -121,6 +128,7 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/15b_coach.js` | Step-by-step coach, gold guide arrow, spoken instructions |
 | `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
+| `src/js/17c_menu.js` | The Menu tabs, graphics styles, button layout editor, floating joystick, gyroscope |
 | `src/js/18_save.js` | Browser and cloud saves |
 | `src/js/18b_account.js` | Sign in / sign up with email, password reset, keeping the farm in step with the account |
 | `api/account.php` | The account server (PHP + SQLite) that runs on the website |

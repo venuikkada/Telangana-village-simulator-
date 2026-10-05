@@ -630,6 +630,30 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   #tacct { top: calc(var(--st) + 8px); padding: 4px 12px 4px 4px; }
   #tacct i { width: 30px; height: 30px; font-size: 16px; }
 }
+/* ---- menu tabs (Basic, Graphics, Controls, Sensitivity, Audio, Account) and the button layout editor ---- */
+.sheet.menu .set { grid-template-columns: minmax(104px, 160px) minmax(0, 1fr); }
+.sheet.menu .tabs button { font-size: 13.5px; }
+.mhint { grid-column: 2; margin: -4px 0 2px; color: var(--ink-2); font-size: 12px; line-height: 1.35; }
+.mfoot { margin-top: 16px; flex-wrap: wrap; }
+.mbig { display: grid; gap: 6px; margin-bottom: 14px; }
+.mbig .btn.big { width: 100%; }
+.mbig .mhint { grid-column: auto; margin: 0; }
+#joy, #tbtns .tb, .db { opacity: var(--ho, 1); }
+#tbtns .tb.dim { opacity: calc(var(--ho, 1) * .6); }
+#hudedit { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; touch-action: none; background: rgba(8, 10, 20, .3); pointer-events: auto; }
+#hudedit .hepanel { position: absolute; top: calc(var(--st) + 8px); left: 50%; transform: translateX(-50%); width: min(600px, calc(100vw - 24px)); box-sizing: border-box; display: grid; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel-solid); color: var(--ink); box-shadow: var(--shadow); border: 1px solid var(--line); }
+.hehead { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hehead b { font: 800 16px var(--font-display); }
+.herow { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px 14px; align-items: center; }
+.hes { display: grid; gap: 2px; font-size: 12px; font-weight: 700; }
+.hehint { margin: 0; font-size: 13px; color: var(--ink-2); }
+.hepanel .row { justify-content: flex-end; }
+.hudedit .heitem { outline: 2px dashed rgba(255, 255, 255, .9); outline-offset: 3px; }
+.hudedit .hesel { outline: 3px solid #f2b52d; outline-offset: 4px; }
+.hudedit #tbtns .tb, .hudedit #joy { visibility: visible !important; }
+.hudedit.he-veh #joy, .hudedit.he-veh #tbWork, .hudedit.he-veh #tbRun { visibility: hidden !important; }
+.hudedit #autorun, .hudedit #howtip { display: none !important; }
+@media (max-height: 420px) { #hudedit .hepanel { padding: 7px 10px; gap: 5px; top: calc(var(--st) + 4px); } }
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>

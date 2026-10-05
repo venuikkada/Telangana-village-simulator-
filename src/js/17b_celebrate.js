@@ -54,7 +54,7 @@ const Celebrate = {
     if (alive.length) this.raf = requestAnimationFrame((tt) => this.step(tt));
     else { this.raf = 0; c.clearRect(0, 0, this.cv.width, this.cv.height); }
   },
-  buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not on this phone */ } },
+  buzz(p) { if (Settings.v.vibrate === false) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not on this phone */ } },
   // coins fly from (x, y) into the money counter, which then counts up to the new amount
   coins(x, y, amount, n = 10) {
     const money = UI.el('money'); if (!money || !G.S) return;

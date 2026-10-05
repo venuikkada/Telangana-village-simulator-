@@ -647,6 +647,30 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   #tacct { top: calc(var(--st) + 8px); padding: 4px 12px 4px 4px; }
   #tacct i { width: 30px; height: 30px; font-size: 16px; }
 }
+/* ---- menu tabs (Basic, Graphics, Controls, Sensitivity, Audio, Account) and the button layout editor ---- */
+.sheet.menu .set { grid-template-columns: minmax(104px, 160px) minmax(0, 1fr); }
+.sheet.menu .tabs button { font-size: 13.5px; }
+.mhint { grid-column: 2; margin: -4px 0 2px; color: var(--ink-2); font-size: 12px; line-height: 1.35; }
+.mfoot { margin-top: 16px; flex-wrap: wrap; }
+.mbig { display: grid; gap: 6px; margin-bottom: 14px; }
+.mbig .btn.big { width: 100%; }
+.mbig .mhint { grid-column: auto; margin: 0; }
+#joy, #tbtns .tb, .db { opacity: var(--ho, 1); }
+#tbtns .tb.dim { opacity: calc(var(--ho, 1) * .6); }
+#hudedit { position: absolute; top: 0; right: 0; bottom: 0; left: 0; z-index: 40; touch-action: none; background: rgba(8, 10, 20, .3); pointer-events: auto; }
+#hudedit .hepanel { position: absolute; top: calc(var(--st) + 8px); left: 50%; transform: translateX(-50%); width: min(600px, calc(100vw - 24px)); box-sizing: border-box; display: grid; gap: 8px; padding: 10px 12px; border-radius: 14px; background: var(--panel-solid); color: var(--ink); box-shadow: var(--shadow); border: 1px solid var(--line); }
+.hehead { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.hehead b { font: 800 16px var(--font-display); }
+.herow { display: grid; grid-template-columns: auto 1fr 1fr; gap: 6px 14px; align-items: center; }
+.hes { display: grid; gap: 2px; font-size: 12px; font-weight: 700; }
+.hehint { margin: 0; font-size: 13px; color: var(--ink-2); }
+.hepanel .row { justify-content: flex-end; }
+.hudedit .heitem { outline: 2px dashed rgba(255, 255, 255, .9); outline-offset: 3px; }
+.hudedit .hesel { outline: 3px solid #f2b52d; outline-offset: 4px; }
+.hudedit #tbtns .tb, .hudedit #joy { visibility: visible !important; }
+.hudedit.he-veh #joy, .hudedit.he-veh #tbWork, .hudedit.he-veh #tbRun { visibility: hidden !important; }
+.hudedit #autorun, .hudedit #howtip { display: none !important; }
+@media (max-height: 420px) { #hudedit .hepanel { padding: 7px 10px; gap: 5px; top: calc(var(--st) + 4px); } }
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
@@ -744,7 +768,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="flash"></div>
 </div>
 <script type="module">
-const I18N_VER = '3b57693b34';
+const I18N_VER = '41f9634d47';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -1464,10 +1488,11 @@ const Render = {
     if (this.frameTimes.length < 20) return;
     const arr = this.frameTimes; this.frameTimes = [];
     arr.sort((a, b) => a - b);
-    const med = arr[Math.floor(arr.length * 0.6)];
+    // average without the slowest tenth: steady even when 40 or 90 FPS alternate short and long frames
+    const keep = arr.slice(0, Math.max(1, Math.floor(arr.length * 0.9))); const med = keep.reduce((s, x) => s + x, 0) / keep.length;
     // steady ~33 ms frames on a 60 FPS target: the screen is running at 30 Hz, not the GPU struggling
     if (Loop.capFps === 60 && arr[Math.floor(arr.length * 0.2)] > 29 && med < 37) { this.lastAdjust = now; return; }
-    const target = 1000 / (Loop.capFps || P.fps);
+    const target = 1000 / Math.min(Loop.capFps || P.fps, Math.max(30, Loop.hz || 60));
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
     else if (med < target * 1.02) { this.goodWindows++; if (this.goodWindows >= 3 && this.pr < P.maxPr - 0.001) { this.pr = Math.min(P.maxPr, this.pr + 0.05); this.goodWindows = 0; this.resize(); } }
@@ -1713,7 +1738,7 @@ const Sky = {
     if (!G.preset.env) hi *= 2.1;
     this.hemi.intensity = hi + this.flash * 3;
     G.scene.environmentIntensity = lerp(a.ei, b.ei, t) * (1 - rain * 0.3) + this.flash * 2;
-    G.renderer.toneMappingExposure = lerp(a.ex, b.ex, t) * (1 + rain * 0.12 + oc * 0.06);
+    G.renderer.toneMappingExposure = lerp(a.ex, b.ex, t) * (1 + rain * 0.12 + oc * 0.06) * (Settings.v.bright || 1);
     // fog
     const f = G.scene.fog;
     f.color.copy(hor);
@@ -6294,13 +6319,15 @@ const Input = {
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     // touch look on the canvas (right side), pinch zoom
     const touches = new Map(); let multi = false;
-    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
+    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) { if (UI.joyApi && UI.joyApi.take(t)) continue; touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); } if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
     cv.addEventListener('touchmove', (e) => {
       e.preventDefault();
+      if (UI.joyApi) for (const t of e.changedTouches) UI.joyApi.move(t);
       if (touches.size >= 2) { for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (p) { p.x = t.clientX; p.y = t.clientY; } } const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
       for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; const dx = t.clientX - p.x, dy = t.clientY - p.y; this.look.dx += dx; this.look.dy += dy; p.moved += Math.abs(dx) + Math.abs(dy); p.x = t.clientX; p.y = t.clientY; }
     }, { passive: false });
     const tend = (e) => {
+      if (UI.joyApi) for (const t of e.changedTouches) UI.joyApi.end(t);
       for (const t of e.changedTouches) {
         const p = touches.get(t.identifier); touches.delete(t.identifier);
         // a quick single tap without dragging: walk there
@@ -6600,9 +6627,13 @@ const Cam = {
   update(dt) {
     const cam = G.camera;
     if (this.intro) { this.intro(dt, cam); return; }
-    const sens = Settings.v.sens;
+    const sens = Player.vehicle ? (Settings.v.sensVeh || 1) : Settings.v.sens;
     const dx = Input.mdx + Input.look.dx * 1.3, dy = Input.mdy + Input.look.dy * 1.3;
     if (dx || dy) { this.yaw -= dx * 0.0042 * sens; this.pitch += dy * 0.0035 * sens * (Settings.v.invertY ? -1 : 1); this.lastManual = performance.now(); }
+    if (Gyro.on) {
+      const [gy, gp] = Gyro.take(), k = Settings.v.gyroSens || 1;
+      if ((gy || gp) && G.started && !UI.modalOpen()) { this.yaw += gy * k; this.pitch += gp * k * (Settings.v.invertY ? -1 : 1); this.lastManual = performance.now(); }
+    }
     if (Input.wheel) { this.tDist = clamp(this.tDist + Input.wheel * 0.9, 2.2, Player.vehicle ? 26 : 16); }
     if (Input.pressed('KeyV')) this.toggle();
     this.dist = damp(this.dist, this.tDist, 6, dt);
@@ -9212,7 +9243,8 @@ const Audio2 = {
 // UI: settings, HUD, minimap & map, menus, shops, dialogs, title, touch
 // ============================================================================
 const Settings = {
-  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true },
+  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true,
+    style: 'classic', bright: 1, minimap: true, btnSize: 1, btnAlpha: 1, joyMode: 'fixed', vehCtl: 'buttons', autoRunOn: true, vibrate: true, sensVeh: 1, gyro: false, gyroSens: 1, hud: {} },
   load() { const s = Store.get('tvs_prefs', null); if (s) Object.assign(this.v, s); },
   save() { Store.set('tvs_prefs', this.v); },
 };
@@ -9295,6 +9327,7 @@ const UI = {
     this.el('mapwrap').onclick = () => this.map();
     this.el('prompt').onclick = () => Interact.trigger();
     this.initTouch();
+    Menu.boot();
     window.addEventListener('keydown', (e) => {
       if (!G.started) return;
       const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
@@ -9424,7 +9457,7 @@ const UI = {
   setText(el, txt) { if (el && el._t !== txt) { el._t = txt; el.textContent = txt; } },
   update(dt) {
     this.uiT -= dt; this.mapT -= dt; this.tickT = (this.tickT || 0) - dt;
-    if (this.mapT <= 0) { this.mapT = isMobile ? 0.15 : 0.1; Map2.drawMini(); }
+    if (this.mapT <= 0) { this.mapT = isMobile ? 0.15 : 0.1; if (Settings.v.minimap !== false) Map2.drawMini(); }
     Guide.update();
     // light pillar over the target, seen from far away
     const t = Map2.target(); const P = Player.pos();
@@ -9563,7 +9596,7 @@ const UI = {
     box.hidden = true; this._blKey = '';
   },
   // ---------- modal sheets ----------
-  modalOpen() { return !this.el('modal').hidden; },
+  modalOpen() { return !this.el('modal').hidden || HudEdit.on; },
   close() {
     const m = this.el('modal'); m.hidden = true; m.innerHTML = '';
     const st = this.sheetState; this.sheetState = null; this.actionList = null;
@@ -10040,38 +10073,8 @@ const UI = {
   map() {
     this.sheet({ title: L('Map', 'మ్యాప్'), kind: 'map', wide: true, onClose: () => Map2.close(), render: (b) => Map2.open(b) });
   },
-  // ---------- settings ----------
-  settings() {
-    const v = Settings.v;
-    this.sheet({ title: L('Menu', 'మెనూ'), kind: 'settings', narrow: true, render: (b) => {
-      const setRow = (label, ctrl) => b.querySelector('.set').append(h('label', null, label), ctrl);
-      b.appendChild(h('div', { class: 'set' }));
-      const seg = (opts, cur, fn) => { const s = h('div', { class: 'seg' }); for (const [id, lab] of opts) s.appendChild(h('button', { class: id === cur ? 'on' : '', onclick: () => { fn(id); this.rerender(); } }, lab)); return s; };
-      setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
-      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Login / Sign up', 'లాగిన్ / సైన్ అప్'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
-      setRow(L('Language', 'భాష'), Lang.picker('', () => this.rerender()));
-      setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
-      if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
-      const slider = (key) => h('input', { type: 'range', id: 'vol_' + key, min: 0, max: 1, step: 0.05, value: v[key], oninput: (e) => { v[key] = +e.target.value; Audio2.applyVolumes(); Settings.save(); } });
-      setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
-      setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
-      const chk = (key, label) => h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); this._mKey = ''; this.dirty = true; if (key === 'helper' && !v.helper) Auto.stop(false); } }), label);
-      setRow(L('Voice guide', 'వాయిస్ గైడ్'), seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.voice, (x) => { v.voice = x; Settings.save(); if (x && Coach.step) Coach.say(Coach.step.text); else if (window.speechSynthesis) speechSynthesis.cancel(); }));
-      if (isMobile) setRow(L('Frame rate', 'ఫ్రేమ్ రేట్'), seg([['auto', L('Auto', 'ఆటో')], ['60', L('60 smooth', '60 స్మూత్')], ['30', L('30 battery', '30 బ్యాటరీ')]], fpsMode(), (m) => { v.fpsMode = m; Settings.save(); }));
-      setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది')), isMobile ? null : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
-      // helpers that play for you: off by default, so the player does the farming
-      setRow(L('Helpers', 'సహాయకాలు'), h('div', { class: 'row' }, chk('helper', L('“Do it for me” button', '“నా బదులు చేయి” బటన్')), isMobile ? chk('tapWalk', L('Tap the ground to walk', 'నేలపై నొక్కితే నడక')) : null));
-      if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
-      b.appendChild(h('div', { class: 'row', style: { marginTop: '16px' } },
-        this.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
-        this.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
-        this.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
-        this.btn(L('Controls', 'నియంత్రణలు'), () => this.help(), 'alt'),
-        this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); Account.settle(4000).then(() => location.reload()); }, 'alt')));
-      b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
-      if (SaveSys.cloudState === 'askable') b.appendChild(this.btn(L('Turn on cloud save', 'క్లౌడ్ సేవ్ ఆన్ చేయండి'), () => SaveSys.enableCloud(), 'alt sm'));
-    } });
-  },
+  // ---------- settings: tabs in 17c_menu.js ----------
+  settings(tab) { Menu.open(tab); },
   help() {
     this.sheet({ title: L('Controls', 'నియంత్రణలు'), narrow: true, render: (b) => {
       const rows = isMobile ? [
@@ -10114,7 +10117,7 @@ const UI = {
   missionDone(m) { Celebrate.mission(m); },
   // ---------- touch controls ----------
   initTouch() {
-    const joy = this.el('joy'), knob = this.el('knob'); const R = 50;
+    const joy = this.el('joy'), knob = this.el('knob'); let R = 50;
     const hasTouch = 'ontouchstart' in window;
     // pointer capture can fail on some phones when another finger is already down: never let that stop a control
     const cap = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (er) { /* keep going without capture */ } };
@@ -10137,11 +10140,24 @@ const UI = {
     const jmove = (x, y) => {
       let dx = x - cx, dy = y - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; }
       knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92);
-      if (!Player.vehicle && ar) { const r = ar.getBoundingClientRect(); armed = !ar.hidden && x > r.left - 24 && x < r.right + 24 && y < r.bottom + 14; arShow(Input.joy.y > 0.8, armed); }
+      if (!Player.vehicle && ar && Settings.v.autoRunOn !== false) { const r = ar.getBoundingClientRect(); armed = !ar.hidden && x > r.left - 24 && x < r.right + 24 && y < r.bottom + 14; arShow(Input.joy.y > 0.8, armed); }
     };
-    const jstart = (x, y) => { if (Input.autoRun) this.autoRun(false); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; armed = false; jmove(x, y); Audio2.unlock(); };
-    const jend = () => { jid = null; pid = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; if (armed && !Player.vehicle) this.autoRun(true); else arShow(false); armed = false; };
+    const jstart = (x, y) => { if (Input.autoRun) this.autoRun(false); R = 50 * (parseFloat(joy.dataset.s) || 1); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; armed = false; jmove(x, y); Audio2.unlock(); };
+    const jend = () => { jid = null; pid = null; knob.style.transform = ''; if (Hud.fx || Hud.fy) { Hud.fx = 0; Hud.fy = 0; Hud.apply(); } Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; if (armed && !Player.vehicle) this.autoRun(true); else arShow(false); armed = false; };
     if (ar) hold(ar, () => { if (Input.autoRun) this.autoRun(false); }, () => { });
+    // floating stick (Menu > Controls): a thumb anywhere on the lower left of the 3D view becomes the stick
+    this.joyApi = {
+      take: (t) => {
+        if (Settings.v.joyMode !== 'float' || !G.started || jid !== null || pid !== null || HudEdit.on || this.modalOpen()) return false;
+        if (Player.vehicle && Settings.v.vehCtl !== 'stick') return false;
+        if (t.clientX > innerWidth * 0.45 || t.clientY < innerHeight * 0.3) return false;
+        jid = t.identifier; Hud.fx = 0; Hud.fy = 0; Hud.apply();
+        const r = joy.getBoundingClientRect(); Hud.fx = t.clientX - (r.left + r.width / 2); Hud.fy = t.clientY - (r.top + r.height / 2); Hud.apply();
+        jstart(t.clientX, t.clientY); return true;
+      },
+      move: (t) => { if (t.identifier === jid) jmove(t.clientX, t.clientY); },
+      end: (t) => { if (t.identifier === jid) jend(); },
+    };
     joy.addEventListener('touchstart', (e) => { e.preventDefault(); if (jid !== null) return; const t = e.changedTouches[0]; jid = t.identifier; jstart(t.clientX, t.clientY); }, { passive: false });
     joy.addEventListener('touchmove', (e) => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === jid) jmove(t.clientX, t.clientY); }, { passive: false });
     const jtend = (e) => { for (const t of e.changedTouches) if (t.identifier === jid) jend(); };
@@ -10168,12 +10184,20 @@ const UI = {
     const ar = this.el('autorun'); if (ar) { ar.classList.toggle('on', !!on); ar.classList.remove('ready'); ar.hidden = !on; const t = ar.querySelector('span'); if (t) t.textContent = on ? L('Auto run · tap to stop', 'ఆటో పరుగు · ఆపడానికి నొక్కండి') : L('Auto run', 'ఆటో పరుగు'); }
     if (on) { Audio2.sfx('click'); UI.toastOnce('autorun', L('Auto run on: turn the camera to steer. Touch the stick to stop.', 'ఆటో పరుగు ఆన్: దిశ మార్చడానికి కెమెరా తిప్పండి. ఆపడానికి స్టిక్ తాకండి.'), 'info'); }
   },
+  // vehicles: the big steer / go / brake buttons, or the same stick as walking (Menu > Controls)
+  touchMode(force) {
+    if (HudEdit.on) return;
+    const pad = !!Player.vehicle && Settings.v.vehCtl !== 'stick';
+    const dp = this.el('dpad'); if (!dp || (!force && dp.hidden !== pad)) return;
+    dp.hidden = !pad; this.el('joy').style.visibility = pad ? 'hidden' : '';
+    if (!pad) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); }
+  },
   updateTouchLabels() {
     if (!isMobile) return;
     const v = Player.vehicle; const inV = !!v;
     // in a vehicle: big steer / go / brake buttons instead of the walking stick
     if (inV && Input.autoRun) this.autoRun(false);
-    const dp = this.el('dpad'); if (dp && dp.hidden === inV) { dp.hidden = !inV; this.el('joy').style.visibility = inV ? 'hidden' : ''; if (!inV) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); } }
+    this.touchMode(false);
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));
     const toolOpt = !inV && (Player.tool === 'seeds' || Player.tool === 'fert' || Player.tool === 'sprayer');
@@ -10196,7 +10220,7 @@ const UI = {
       const lang = this.el('tlang'); lang.innerHTML = '';
       lang.appendChild(Lang.picker('', () => { segs(); acts(); if (!this.el('newgame').hidden) newForm(); }));
       const q = this.el('tqual'); q.innerHTML = '';
-      for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్య'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమా') }[p]));
+      for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, PRESET_NAMES()[p]));
     };
     // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
     const a2 = this.el('a2hs');
@@ -10784,7 +10808,7 @@ const Celebrate = {
     if (alive.length) this.raf = requestAnimationFrame((tt) => this.step(tt));
     else { this.raf = 0; c.clearRect(0, 0, this.cv.width, this.cv.height); }
   },
-  buzz(p) { try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not on this phone */ } },
+  buzz(p) { if (Settings.v.vibrate === false) return; try { if (navigator.vibrate) navigator.vibrate(p); } catch (e) { /* not on this phone */ } },
   // coins fly from (x, y) into the money counter, which then counts up to the new amount
   coins(x, y, amount, n = 10) {
     const money = UI.el('money'); if (!money || !G.S) return;
@@ -10871,6 +10895,301 @@ const Celebrate = {
     if (!G.started) return;
     const fest = Time.festivalToday();
     this.ribbon({ kind: 'sun', icon: '☀️', top: L('Good morning!', 'శుభోదయం!'), title: Time.fmtDate(), sub: fest ? LN(fest) + ' 🎉' : (newDay ? L('A fresh day on the farm', 'పొలంలో కొత్త రోజు') : ''), ms: 2600 });
+  },
+};
+
+// ---- 17c_menu.js ----
+// ============================================================================
+// Menu: settings in tabs like the big mobile games — Basic, Graphics, Controls,
+// Sensitivity, Audio, Account. Plus what those tabs switch: graphics styles and
+// brightness, a button layout editor (drag, resize and fade every button),
+// a floating joystick, buttons or stick for vehicles, a gyroscope camera,
+// vibration and the minimap.
+// ============================================================================
+
+// ---------- graphics style (a colour filter on the 3D view) ----------
+const STYLES = {
+  classic: '',
+  colorful: 'saturate(1.35) contrast(1.06)',
+  realistic: 'saturate(0.86) contrast(1.1) brightness(0.97)',
+  soft: 'saturate(0.9) contrast(0.9) brightness(1.05)',
+  movie: 'sepia(0.2) saturate(1.15) contrast(1.12) brightness(0.96)',
+};
+const Look = {
+  apply() {
+    const cv = document.getElementById('gl'); if (cv) cv.style.filter = STYLES[Settings.v.style] || '';
+    const mm = document.getElementById('mapwrap'); if (mm) mm.style.display = Settings.v.minimap === false ? 'none' : '';
+  },
+};
+
+// ---------- the touch buttons: where each one sits, how big and how solid ----------
+const HUD_ITEMS = [
+  { id: 'joy', foot: 1, en: 'Walk stick', te: 'నడక స్టిక్' },
+  { id: 'tbWork', foot: 1, en: 'Work', te: 'పని' },
+  { id: 'tbRun', foot: 1, en: 'Run', te: 'పరుగు' },
+  { id: 'tbE', foot: 1, veh: 1, en: 'Use', te: 'వాడు' },
+  { id: 'tbJump', foot: 1, veh: 1, en: 'Jump / Brake', te: 'దూకు / బ్రేక్' },
+  { id: 'tbV', foot: 1, veh: 1, en: 'View', te: 'వ్యూ' },
+  { id: 'tbG', foot: 1, veh: 1, en: 'Type / Horn', te: 'రకం / హారన్' },
+  { id: 'dL', veh: 1, en: 'Steer left', te: 'ఎడమకు తిప్పు' },
+  { id: 'dR', veh: 1, en: 'Steer right', te: 'కుడికి తిప్పు' },
+  { id: 'dU', veh: 1, en: 'Accelerate', te: 'వేగం పెంచు' },
+  { id: 'dD', veh: 1, en: 'Brake / reverse', te: 'బ్రేక్ / వెనక్కి' },
+];
+const Hud = {
+  fx: 0, fy: 0,   // floating joystick: how far the thumb landed from the stick's home
+  split: typeof CSS !== 'undefined' && !!CSS.supports && CSS.supports('translate', '1px 1px'),
+  orient() { return innerWidth >= innerHeight ? 'land' : 'port'; },
+  layout() { const a = Settings.v.hud; return (a && a[this.orient()]) || {}; },
+  place(el, x, y, s) {
+    if (this.split) { el.style.translate = x || y ? x + 'px ' + y + 'px' : ''; el.style.scale = s !== 1 ? String(s) : ''; }
+    else el.style.transform = x || y || s !== 1 ? `translate(${x}px, ${y}px) scale(${s})` : '';
+  },
+  apply(lay) {
+    lay = lay || this.layout();
+    const gs = Settings.v.btnSize || 1, ga = Settings.v.btnAlpha == null ? 1 : Settings.v.btnAlpha;
+    for (const it of HUD_ITEMS) {
+      const el = document.getElementById(it.id); if (!el) continue;
+      const c = lay[it.id] || {}, joy = it.id === 'joy';
+      const x = (c.x || 0) + (joy ? this.fx : 0), y = (c.y || 0) + (joy ? this.fy : 0), s = clamp((c.s || 1) * gs, 0.4, 2.2);
+      this.place(el, x, y, s);
+      el.style.setProperty('--ho', String(clamp((c.o == null ? 1 : c.o) * ga, 0.15, 1)));
+      el.dataset.s = String(s);
+      // the auto-run runner rides above the stick
+      if (joy) { const ar = document.getElementById('autorun'); if (ar) this.place(ar, x, y - (s - 1) * 66, 1); }
+    }
+  },
+};
+
+// ---------- layout editor: drag a button, tap it to size or fade it ----------
+const HudEdit = {
+  on: false, lay: null, sel: null, mode: 'foot', drag: null, el: null,
+  items() { return HUD_ITEMS.filter((i) => (this.mode === 'veh' ? i.veh : i.foot)); },
+  open() {
+    if (this.on) return;
+    UI.close();
+    this.on = true; this.sel = null; this.drag = null;
+    this.lay = JSON.parse(JSON.stringify(Hud.layout()));
+    this.mode = Player.vehicle ? 'veh' : 'foot';
+    document.documentElement.classList.add('hudedit');
+    const ov = h('div', { id: 'hudedit', role: 'dialog', 'aria-label': L('Customize controls', 'నియంత్రణలు మార్చండి') });
+    ov.addEventListener('pointerdown', (e) => this.down(e));
+    ov.addEventListener('pointermove', (e) => this.move(e));
+    const up = (e) => { if (this.drag && e.pointerId === this.drag.pid) this.drag = null; };
+    ov.addEventListener('pointerup', up); ov.addEventListener('pointercancel', up);
+    (document.getElementById('app') || document.body).appendChild(ov);
+    this.el = ov;
+    this.show(); this.panel();
+  },
+  show() {
+    const root = document.documentElement;
+    root.classList.toggle('he-veh', this.mode === 'veh'); root.classList.toggle('he-foot', this.mode !== 'veh');
+    const dp = document.getElementById('dpad'); if (dp) dp.hidden = this.mode !== 'veh';
+    this.mark();
+  },
+  mark() {
+    const set = new Set(this.items().map((i) => i.id));
+    for (const it of HUD_ITEMS) { const el = document.getElementById(it.id); if (!el) continue; el.classList.toggle('heitem', set.has(it.id)); el.classList.toggle('hesel', it.id === this.sel); }
+  },
+  hit(x, y) {
+    const list = this.items().slice().reverse();   // buttons sit above the stick
+    for (const it of list) { const el = document.getElementById(it.id); if (!el) continue; const r = el.getBoundingClientRect(); if (r.width && x >= r.left - 8 && x <= r.right + 8 && y >= r.top - 8 && y <= r.bottom + 8) return it.id; }
+    return null;
+  },
+  down(e) {
+    if (e.target.closest && e.target.closest('.hepanel')) return;
+    e.preventDefault();
+    const id = this.hit(e.clientX, e.clientY);
+    if (!id) { if (this.sel) { this.sel = null; this.mark(); this.panel(); } return; }
+    const c = this.lay[id] || (this.lay[id] = {});
+    this.drag = { id, pid: e.pointerId, sx: e.clientX, sy: e.clientY, x0: c.x || 0, y0: c.y || 0 };
+    try { this.el.setPointerCapture(e.pointerId); } catch (er) { /* fine without */ }
+    if (this.sel !== id) { this.sel = id; this.mark(); this.panel(); Audio2.sfx('click'); }
+  },
+  move(e) {
+    const d = this.drag; if (!d || e.pointerId !== d.pid) return;
+    const c = this.lay[d.id];
+    c.x = Math.round(d.x0 + e.clientX - d.sx); c.y = Math.round(d.y0 + e.clientY - d.sy);
+    Hud.apply(this.lay);
+    // never off the screen
+    const r = document.getElementById(d.id).getBoundingClientRect();
+    const fx = r.left < 0 ? -r.left : r.right > innerWidth ? innerWidth - r.right : 0;
+    const fy = r.top < 0 ? -r.top : r.bottom > innerHeight ? innerHeight - r.bottom : 0;
+    if (fx || fy) { c.x += Math.round(fx); c.y += Math.round(fy); Hud.apply(this.lay); }
+  },
+  set(key, v) { const c = this.lay[this.sel] || (this.lay[this.sel] = {}); c[key] = v; Hud.apply(this.lay); },
+  panel() {
+    let p = this.el.querySelector('.hepanel');
+    if (!p) { p = h('div', { class: 'hepanel' }); this.el.appendChild(p); }
+    p.innerHTML = '';
+    const it = HUD_ITEMS.find((x) => x.id === this.sel), c = it ? this.lay[it.id] || {} : null;
+    const btn = (label, fn, cls) => h('button', { type: 'button', class: 'btn sm ' + cls, onclick: () => { Audio2.sfx('click'); fn(); } }, label);
+    const slider = (label, key, min, max) => h('label', { class: 'hes' }, h('span', null, label), h('input', { type: 'range', min, max, step: 0.05, value: c[key] == null ? 1 : c[key], oninput: (e) => this.set(key, +e.target.value) }));
+    p.append(
+      h('div', { class: 'hehead' }, h('b', null, L('Customize controls', 'నియంత్రణలు మార్చండి')),
+        h('div', { class: 'seg' }, ...[['foot', L('On foot', 'నడకలో')], ['veh', L('Vehicle', 'వాహనం')]].map(([m, lab]) => h('button', { type: 'button', class: this.mode === m ? 'on' : '', onclick: () => { this.mode = m; this.sel = null; this.show(); this.panel(); } }, lab)))),
+      it ? h('div', { class: 'herow' }, h('b', null, LN(it)), slider(L('Size', 'పరిమాణం'), 's', 0.6, 1.6), slider(L('Transparency', 'పారదర్శకత'), 'o', 0.2, 1))
+        : h('p', { class: 'hehint' }, L('Drag a button to move it. Tap a button to change its size.', 'బటన్‌ను కదపడానికి లాగండి. పరిమాణం మార్చడానికి బటన్‌ను నొక్కండి.')),
+      h('div', { class: 'row' },
+        btn(L('Reset', 'రీసెట్'), () => { this.lay = {}; this.sel = null; Hud.apply(this.lay); this.mark(); this.panel(); }, 'alt'),
+        btn(L('Cancel', 'రద్దు'), () => this.close(false), 'alt'),
+        btn(L('Save', 'సేవ్'), () => this.close(true), 'acc')));
+  },
+  close(save) {
+    if (save) {
+      const all = Object.assign({}, Settings.v.hud); all[Hud.orient()] = this.lay; Settings.v.hud = all; Settings.save();
+      UI.toast(L('Button layout saved', 'బటన్ల అమరిక సేవ్ అయింది'), 'good');
+    }
+    this.on = false; this.drag = null; this.sel = null;
+    if (this.el) this.el.remove(); this.el = null;
+    document.documentElement.classList.remove('hudedit', 'he-veh', 'he-foot');
+    for (const it of HUD_ITEMS) { const el = document.getElementById(it.id); if (el) el.classList.remove('heitem', 'hesel'); }
+    Hud.apply(); UI.touchMode(true);
+  },
+};
+
+// ---------- gyroscope: turn and tilt the phone to look around ----------
+const Gyro = {
+  on: false, yaw: 0, pitch: 0,
+  has() { return isMobile && typeof DeviceMotionEvent !== 'undefined'; },
+  asks() { return typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function'; },
+  // iPhones ask the player first, and only from a tap
+  async enable(fromTap) {
+    if (!this.has()) return false;
+    if (this.asks()) {
+      if (!fromTap) return false;
+      try { if ((await DeviceMotionEvent.requestPermission()) !== 'granted') return false; } catch (e) { return false; }
+    }
+    if (!this.on) { window.addEventListener('devicemotion', Gyro.onMotion); this.on = true; }
+    return true;
+  },
+  disable() { window.removeEventListener('devicemotion', Gyro.onMotion); this.on = false; this.yaw = 0; this.pitch = 0; },
+  onMotion(e) { Gyro.feed(e); },
+  feed(e) {
+    const r = e.rotationRate; if (!r) return;
+    let dt = e.interval || 16; if (dt > 1) dt /= 1000;   // milliseconds (seconds on old iPhones)
+    dt = Math.min(0.1, dt);
+    const ang = screen.orientation && typeof screen.orientation.angle === 'number' ? screen.orientation.angle : (window.orientation || 0);
+    const dz = (v) => (Math.abs(v || 0) < 1.2 ? 0 : v);   // ignore the hand's tiny shake (degrees a second)
+    const b = dz(r.beta), g = dz(r.gamma);
+    let yaw, pitch;
+    if (ang === 90) { yaw = b; pitch = g; } else if (ang === 270 || ang === -90) { yaw = -b; pitch = -g; } else if (ang === 180) { yaw = -g; pitch = b; } else { yaw = g; pitch = -b; }
+    const k = (Math.PI / 180) * dt;
+    this.yaw += yaw * k; this.pitch += pitch * k;
+  },
+  take() { const y = this.yaw, p = this.pitch; this.yaw = 0; this.pitch = 0; return [y, p]; },
+};
+
+// ---------- the menu ----------
+const PRESET_NAMES = () => ({ LOW: L('Smooth', 'స్మూత్'), MEDIUM: L('Balanced', 'బ్యాలెన్స్‌డ్'), HIGH: L('HD', 'HD'), ULTRA: L('Ultra HD', 'అల్ట్రా HD'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') });
+const Menu = {
+  tab: 'basic',
+  boot() {
+    Hud.apply(); Look.apply();
+    if (Settings.v.gyro) {
+      Gyro.enable(false);
+      // iPhones: ask again on the first tap of this visit
+      document.addEventListener('touchend', () => { if (Settings.v.gyro && !Gyro.on) Gyro.enable(true); }, { once: true, passive: true });
+    }
+  },
+  open(tab) {
+    if (typeof tab === 'string') this.tab = tab;
+    const tabs = [
+      { id: 'basic', label: () => L('Basic', 'ప్రాథమికం'), render: (b) => this.basic(b) },
+      { id: 'graphics', label: () => L('Graphics', 'గ్రాఫిక్స్'), render: (b) => this.graphics(b) },
+      { id: 'controls', label: () => L('Controls', 'నియంత్రణలు'), render: (b) => this.controls(b) },
+      { id: 'sens', label: () => L('Sensitivity', 'సెన్సిటివిటీ'), render: (b) => this.sens(b) },
+      { id: 'audio', label: () => L('Audio', 'ఆడియో'), render: (b) => this.audio(b) },
+      { id: 'account', label: () => L('Account', 'ఖాతా'), render: (b) => this.account(b) },
+    ];
+    UI.sheet({ title: L('Menu', 'మెనూ'), kind: 'settings', narrow: true, cls: 'menu', tabs, tab: this.tab });
+  },
+  // a grid of label + control rows
+  grid(b) { const g = h('div', { class: 'set' }); b.appendChild(g); return (label, ctrl, hint) => { g.append(h('label', null, label), ctrl); if (hint) g.append(h('p', { class: 'mhint' }, hint)); }; },
+  seg(opts, cur, fn) {
+    const s = h('div', { class: 'seg' });
+    for (const [id, lab] of opts) s.appendChild(h('button', { type: 'button', class: id === cur ? 'on' : '', onclick: () => { Audio2.sfx('click'); fn(id); UI.rerender(); } }, lab));
+    return s;
+  },
+  slider(key, min, max, step, after) {
+    const v = Settings.v;
+    return h('input', { type: 'range', id: 'set_' + key, min, max, step, value: v[key] == null ? 1 : v[key], oninput: (e) => { v[key] = +e.target.value; Settings.save(); if (after) after(); } });
+  },
+  chk(key, label, after) {
+    const v = Settings.v;
+    return h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); UI._mKey = ''; UI.dirty = true; if (after) after(); } }), label);
+  },
+  onOff(key, after, def = true) { const v = Settings.v; const cur = v[key] == null ? def : !!v[key]; return this.seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], cur, (x) => { v[key] = x; Settings.save(); if (after) after(x); }); },
+
+  basic(b) {
+    this.tab = 'basic';
+    const v = Settings.v, row = this.grid(b);
+    row(L('Language', 'భాష'), Lang.picker('', () => UI.rerender()));
+    if (G.started) row(L('Difficulty', 'కష్టం'), this.seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; UI.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
+    row(L('Game speed', 'ఆట వేగం'), this.seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
+    row(L('Minimap', 'చిన్న మ్యాప్'), this.onOff('minimap', () => Look.apply()));
+    row(L('Helpers', 'సహాయకాలు'), h('div', { class: 'row' }, this.chk('helper', L('“Do it for me” button', '“నా బదులు చేయి” బటన్'), () => { if (!v.helper) Auto.stop(false); }), isMobile ? this.chk('tapWalk', L('Tap the ground to walk', 'నేలపై నొక్కితే నడక')) : null));
+    if (document.fullscreenEnabled) row(L('Screen', 'స్క్రీన్'), UI.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm'));
+    b.appendChild(h('div', { class: 'row mfoot' },
+      UI.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
+      UI.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
+      UI.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
+      UI.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); Account.settle(4000).then(() => location.reload()); }, 'alt')));
+    b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
+    if (SaveSys.cloudState === 'askable') b.appendChild(UI.btn(L('Turn on cloud save', 'క్లౌడ్ సేవ్ ఆన్ చేయండి'), () => SaveSys.enableCloud(), 'alt sm'));
+  },
+  graphics(b) {
+    this.tab = 'graphics';
+    const v = Settings.v, row = this.grid(b), names = PRESET_NAMES();
+    row(L('Graphics quality', 'గ్రాఫిక్స్ నాణ్యత'), this.seg(PRESET_ORDER.map((p) => [p, names[p]]), v.preset || G.preset.id, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
+    const fr = isMobile ? [['auto', L('Auto', 'ఆటో')], ['30', '30'], ['40', '40'], ['60', '60'], ['90', '90'], ['120', '120']] : [['auto', L('Max', 'గరిష్ఠం')], ['30', '30'], ['60', '60'], ['120', '120']];
+    row(L('Frame rate', 'ఫ్రేమ్ రేట్'), this.seg(fr, fpsMode(), (m) => { v.fpsMode = m; Loop.capFps = 0; Settings.save(); }), L('90 and 120 need a phone with a fast screen. Higher frame rates use more battery.', '90, 120 కోసం వేగవంతమైన స్క్రీన్ ఉన్న ఫోన్ కావాలి. ఎక్కువ ఫ్రేమ్ రేట్ ఎక్కువ బ్యాటరీ వాడుతుంది.'));
+    row(L('Style', 'శైలి'), this.seg([['classic', L('Classic', 'క్లాసిక్')], ['colorful', L('Colorful', 'రంగులమయం')], ['realistic', L('Realistic', 'సహజం')], ['soft', L('Soft', 'మృదువు')], ['movie', L('Movie', 'సినిమా')]], v.style || 'classic', (s) => { v.style = s; Settings.save(); Look.apply(); }));
+    row(L('Brightness', 'ప్రకాశం'), this.slider('bright', 0.7, 1.4, 0.05));
+    row(L('Show FPS', 'FPS చూపు'), this.onOff('fps', null, false));
+  },
+  controls(b) {
+    this.tab = 'controls';
+    const v = Settings.v, row = this.grid(b);
+    if (isMobile) {
+      b.insertBefore(h('div', { class: 'mbig' }, h('button', { type: 'button', class: 'btn acc big', onclick: () => { Audio2.sfx('click'); if (G.started) HudEdit.open(); } , disabled: !G.started }, '✥ ' + L('Customize layout', 'బటన్ల అమరిక మార్చండి')),
+        h('p', { class: 'mhint' }, G.started ? L('Drag every button to where your thumbs like it, and make it bigger or smaller.', 'ప్రతి బటన్‌ను మీ బొటనవేళ్లకు అనువైన చోటికి లాగండి, పెద్దగా లేదా చిన్నగా చేయండి.') : L('Start or continue a game to arrange the buttons.', 'బటన్లు అమర్చడానికి ఆట మొదలుపెట్టండి లేదా కొనసాగించండి.'))), b.firstChild);
+      row(L('Button size', 'బటన్ పరిమాణం'), this.slider('btnSize', 0.7, 1.4, 0.05, () => Hud.apply()));
+      row(L('Button transparency', 'బటన్ పారదర్శకత'), this.slider('btnAlpha', 0.3, 1, 0.05, () => Hud.apply()));
+      row(L('Joystick', 'జాయ్‌స్టిక్'), this.seg([['fixed', L('Fixed', 'స్థిరం')], ['float', L('Floating', 'కదిలే')]], v.joyMode || 'fixed', (m) => { v.joyMode = m; Settings.save(); }), L('Floating: put your thumb anywhere on the left side to walk.', 'కదిలే: నడవడానికి బొటనవేలిని ఎడమవైపు ఎక్కడైనా పెట్టండి.'));
+      row(L('Vehicle controls', 'వాహన నియంత్రణ'), this.seg([['buttons', L('Buttons', 'బటన్లు')], ['stick', L('Joystick', 'జాయ్‌స్టిక్')]], v.vehCtl || 'buttons', (m) => { v.vehCtl = m; Settings.save(); UI.touchMode(true); }));
+      row(L('Auto run', 'ఆటో పరుగు'), this.onOff('autoRunOn', (x) => { if (!x && Input.autoRun) UI.autoRun(false); }));
+      if (navigator.vibrate) row(L('Vibration', 'వైబ్రేషన్'), this.onOff('vibrate'));
+    } else {
+      row(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, this.chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని'))));
+    }
+    b.appendChild(h('div', { class: 'row mfoot' }, UI.btn(L('All controls', 'అన్ని నియంత్రణలు'), () => UI.help(), 'alt')));
+  },
+  sens(b) {
+    this.tab = 'sens';
+    const v = Settings.v, row = this.grid(b);
+    row(L('Camera (on foot)', 'కెమెరా (నడకలో)'), this.slider('sens', 0.3, 2.5, 0.1));
+    row(L('Camera (vehicle)', 'కెమెరా (వాహనంలో)'), this.slider('sensVeh', 0.3, 2.5, 0.1));
+    row(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, this.chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), this.chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది'))));
+    if (Gyro.has()) {
+      row(L('Gyroscope', 'గైరోస్కోప్'), this.seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.gyro, (x) => {
+        if (!x) { v.gyro = false; Settings.save(); Gyro.disable(); return; }
+        Gyro.enable(true).then((ok) => { v.gyro = ok; Settings.save(); if (!ok) UI.toast(L('This phone has no gyroscope, or it is blocked.', 'ఈ ఫోన్‌లో గైరోస్కోప్ లేదు, లేదా అది ఆపివేయబడింది.'), 'warn'); UI.rerender(); });
+      }), L('Turn and tilt your phone to look around.', 'చుట్టూ చూడటానికి ఫోన్‌ను తిప్పండి, వంచండి.'));
+      if (v.gyro) row(L('Gyroscope sensitivity', 'గైరోస్కోప్ సెన్సిటివిటీ'), this.slider('gyroSens', 0.3, 3, 0.1));
+    }
+  },
+  audio(b) {
+    this.tab = 'audio';
+    const v = Settings.v, row = this.grid(b);
+    const vol = (key) => this.slider(key, 0, 1, 0.05, () => Audio2.applyVolumes());
+    row(L('Master volume', 'మొత్తం శబ్దం'), vol('vol')); row(L('Music', 'సంగీతం'), vol('music')); row(L('Ambience', 'పరిసర శబ్దాలు'), vol('amb')); row(L('Effects', 'ఎఫెక్ట్స్'), vol('sfx'));
+    row(L('Voice guide', 'వాయిస్ గైడ్'), this.seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.voice, (x) => { v.voice = x; Settings.save(); if (x && Coach.step) Coach.say(Coach.step.text); else if (window.speechSynthesis) speechSynthesis.cancel(); }));
+  },
+  account(b) {
+    this.tab = 'account';
+    Account.check();
+    Account.render(b);
   },
 };
 
@@ -11271,7 +11590,7 @@ const Account = {
   // redraw the account sheet, unless the player is typing in it (keeps the keyboard up)
   paint(force) {
     const st = UI.sheetState;
-    if (st && st.kind === 'account' && st.rerender) {
+    if (st && (st.kind === 'account' || (st.kind === 'settings' && st.tab === 'account')) && st.rerender) {
       const a = document.activeElement;
       if (force || !(a && a.tagName === 'INPUT' && a.closest && a.closest('#modal'))) st.rerender();
     }
@@ -11293,9 +11612,13 @@ const Account = {
     this.view = view || (this.st ? 'me' : this.view === 'up' ? 'up' : 'in');
     if (!this.f.email) { const last = Store.get('tvs_acct_last', null); this.f.email = this.st ? this.st.email : last && last.email ? last.email : ''; }
     UI.sheet({ title: L('Your account', 'మీ ఖాతా'), narrow: true, kind: 'account', cls: 'acct', render: (b) => this.render(b) });
-    if (this.avail === null && !this.sandboxed()) {
-      this.call('ping').then(() => this.paint(), (e) => { if (e.error === 'unavailable') { this.avail = false; this.paint(true); } });
-    }
+    this.check();
+  },
+  // can this page reach the account server? asked once, when an account screen opens
+  check() {
+    if (this.avail !== null || this.sandboxed() || this.checking) return;
+    this.checking = true;
+    this.call('ping').then(() => { this.checking = false; this.paint(); }, (e) => { this.checking = false; if (e.error === 'unavailable') { this.avail = false; this.paint(true); } });
   },
   input(key, type, label, extra) {
     const id = 'acct_' + key;
@@ -11776,13 +12099,15 @@ const PLights = {
 // ---------------------------------------------------------------------------
 // Main loop
 // ---------------------------------------------------------------------------
-const Loop = { last: 0, next: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0, capFps: 0, win: [], work: [], winT: 0, retryAt: 0, backoff: 20000 };
-function fpsMode() { const m = Settings.v.fpsMode; return m === '30' || m === '60' || m === 'auto' ? m : Settings.v.fps60 ? '60' : 'auto'; }
-// phones: run at a steady 60 or 30 FPS. "Auto" starts at 60 and settles on 30 if the phone cannot keep up.
+const Loop = { raw: [], rawLast: 0, hz: 60, last: 0, next: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0, capFps: 0, win: [], work: [], winT: 0, retryAt: 0, backoff: 20000 };
+const FPS_MODES = ['auto', '30', '40', '60', '90', '120'];
+function fpsMode() { const m = Settings.v.fpsMode; return FPS_MODES.includes(m) ? m : Settings.v.fps60 ? '60' : 'auto'; }
+// frame rate (Menu > Graphics). Phones on "Auto" run a steady 60 and settle on 30 if the phone cannot keep up;
+// computers on "Max" are not held back. 90 and 120 only help on screens that fast.
 function skipFrame(now) {
-  if (!isMobile) { Loop.capFps = 0; return false; }
   const mode = fpsMode();
-  if (mode === '30') Loop.capFps = 30; else if (mode === '60' || !Loop.capFps) Loop.capFps = 60;
+  if (mode !== 'auto') Loop.capFps = +mode;
+  else if (!isMobile) { Loop.capFps = 0; return false; } else if (Loop.capFps !== 30) Loop.capFps = 60;
   const iv = 1000 / Loop.capFps;
   if (Loop.next && now < Loop.next - 2) return true;
   Loop.next = Loop.next && now - Loop.next < iv ? Loop.next + iv : now + iv;
@@ -11803,6 +12128,9 @@ function adaptFps(now, interval, work) {
 }
 function frame(now) {
   requestAnimationFrame(frame);
+  // how fast the screen itself refreshes (60, 90, 120 Hz), for the frame-rate choice
+  const raw = now - (Loop.rawLast || now); Loop.rawLast = now;
+  if (raw > 3 && raw < 100) { Loop.raw.push(raw); if (Loop.raw.length >= 120) { const s = Loop.raw.sort((a, b) => a - b); Loop.hz = Math.round(1000 / s[Math.floor(s.length * 0.25)]); Loop.raw = []; } }
   if (!G.ready) return;
   if (skipFrame(now)) return;
   const t0 = performance.now();
@@ -11877,7 +12205,7 @@ function deviceSetup() {
   document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
   const first = () => { Audio2.unlock(); Coach.prime(); };
   document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
-  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); };
+  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
   window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
   if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
   const cv = document.getElementById('gl');
@@ -11928,7 +12256,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Account, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

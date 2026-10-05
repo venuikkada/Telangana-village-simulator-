@@ -326,10 +326,11 @@ const Render = {
     if (this.frameTimes.length < 20) return;
     const arr = this.frameTimes; this.frameTimes = [];
     arr.sort((a, b) => a - b);
-    const med = arr[Math.floor(arr.length * 0.6)];
+    // average without the slowest tenth: steady even when 40 or 90 FPS alternate short and long frames
+    const keep = arr.slice(0, Math.max(1, Math.floor(arr.length * 0.9))); const med = keep.reduce((s, x) => s + x, 0) / keep.length;
     // steady ~33 ms frames on a 60 FPS target: the screen is running at 30 Hz, not the GPU struggling
     if (Loop.capFps === 60 && arr[Math.floor(arr.length * 0.2)] > 29 && med < 37) { this.lastAdjust = now; return; }
-    const target = 1000 / (Loop.capFps || P.fps);
+    const target = 1000 / Math.min(Loop.capFps || P.fps, Math.max(30, Loop.hz || 60));
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
     else if (med < target * 1.02) { this.goodWindows++; if (this.goodWindows >= 3 && this.pr < P.maxPr - 0.001) { this.pr = Math.min(P.maxPr, this.pr + 0.05); this.goodWindows = 0; this.resize(); } }

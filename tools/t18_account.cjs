@@ -30,7 +30,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     // ---- computer: create an account from the title screen ----
     const A = await mk({ viewport: { width: 1280, height: 720 } });
     let t = await A.ev(() => document.getElementById('tacct').textContent);
-    ok(/Sign in/.test(t), 'title corner offers Sign in: ' + t);
+    ok(/Login \/ Sign up/.test(t), 'title corner offers Login / Sign up: ' + t);
     await A.page.click('#tacct');
     await A.page.waitForSelector('#modal .aseg');
     await shot(A.page, 'acct_signin');
@@ -57,7 +57,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     ok(await A.waitFor(() => window.__tvs.sys.Account.state === 'saved', 20000), 'computer: farm saved to the account');
     const size = await A.ev(() => JSON.stringify(window.__tvs.sys.SaveSys.serialize()).length);
     console.log('save size', (size / 1024).toFixed(1) + ' KB');
-    await A.ev(() => window.__tvs.sys.UI.settings());
+    await A.ev(() => window.__tvs.sys.UI.settings('account'));
     t = await A.ev(() => document.getElementById('modal').textContent);
     ok(/farmer\.venu@example\.com/.test(t), 'menu shows the account');
     await A.ev(() => window.__tvs.sys.UI.close());

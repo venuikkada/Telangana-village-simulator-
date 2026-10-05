@@ -2,7 +2,8 @@
 // UI: settings, HUD, minimap & map, menus, shops, dialogs, title, touch
 // ============================================================================
 const Settings = {
-  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true },
+  v: { lang: 'en', preset: null, vol: 0.8, music: 0.55, amb: 0.8, sfx: 0.8, sens: 1, invertY: false, clickWork: false, fps: false, fps60: false, fpsMode: 'auto', camFollow: true, portraitOk: false, timeScale: 1, voice: true,
+    style: 'classic', bright: 1, minimap: true, btnSize: 1, btnAlpha: 1, joyMode: 'fixed', vehCtl: 'buttons', autoRunOn: true, vibrate: true, sensVeh: 1, gyro: false, gyroSens: 1, hud: {} },
   load() { const s = Store.get('tvs_prefs', null); if (s) Object.assign(this.v, s); },
   save() { Store.set('tvs_prefs', this.v); },
 };
@@ -85,6 +86,7 @@ const UI = {
     this.el('mapwrap').onclick = () => this.map();
     this.el('prompt').onclick = () => Interact.trigger();
     this.initTouch();
+    Menu.boot();
     window.addEventListener('keydown', (e) => {
       if (!G.started) return;
       const t = e.target; if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA')) return;
@@ -214,7 +216,7 @@ const UI = {
   setText(el, txt) { if (el && el._t !== txt) { el._t = txt; el.textContent = txt; } },
   update(dt) {
     this.uiT -= dt; this.mapT -= dt; this.tickT = (this.tickT || 0) - dt;
-    if (this.mapT <= 0) { this.mapT = isMobile ? 0.15 : 0.1; Map2.drawMini(); }
+    if (this.mapT <= 0) { this.mapT = isMobile ? 0.15 : 0.1; if (Settings.v.minimap !== false) Map2.drawMini(); }
     Guide.update();
     // light pillar over the target, seen from far away
     const t = Map2.target(); const P = Player.pos();
@@ -353,7 +355,7 @@ const UI = {
     box.hidden = true; this._blKey = '';
   },
   // ---------- modal sheets ----------
-  modalOpen() { return !this.el('modal').hidden; },
+  modalOpen() { return !this.el('modal').hidden || HudEdit.on; },
   close() {
     const m = this.el('modal'); m.hidden = true; m.innerHTML = '';
     const st = this.sheetState; this.sheetState = null; this.actionList = null;
@@ -830,38 +832,8 @@ const UI = {
   map() {
     this.sheet({ title: L('Map', 'మ్యాప్'), kind: 'map', wide: true, onClose: () => Map2.close(), render: (b) => Map2.open(b) });
   },
-  // ---------- settings ----------
-  settings() {
-    const v = Settings.v;
-    this.sheet({ title: L('Menu', 'మెనూ'), kind: 'settings', narrow: true, render: (b) => {
-      const setRow = (label, ctrl) => b.querySelector('.set').append(h('label', null, label), ctrl);
-      b.appendChild(h('div', { class: 'set' }));
-      const seg = (opts, cur, fn) => { const s = h('div', { class: 'seg' }); for (const [id, lab] of opts) s.appendChild(h('button', { class: id === cur ? 'on' : '', onclick: () => { fn(id); this.rerender(); } }, lab)); return s; };
-      setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
-      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Login / Sign up', 'లాగిన్ / సైన్ అప్'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
-      setRow(L('Language', 'భాష'), Lang.picker('', () => this.rerender()));
-      setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
-      if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
-      const slider = (key) => h('input', { type: 'range', id: 'vol_' + key, min: 0, max: 1, step: 0.05, value: v[key], oninput: (e) => { v[key] = +e.target.value; Audio2.applyVolumes(); Settings.save(); } });
-      setRow(L('Master volume', 'మొత్తం శబ్దం'), slider('vol')); setRow(L('Music', 'సంగీతం'), slider('music')); setRow(L('Ambience', 'పరిసర శబ్దాలు'), slider('amb')); setRow(L('Effects', 'ఎఫెక్ట్స్'), slider('sfx'));
-      setRow(L('Camera speed', 'కెమెరా వేగం'), h('input', { type: 'range', id: 'sens', min: 0.3, max: 2.5, step: 0.1, value: v.sens, oninput: (e) => { v.sens = +e.target.value; Settings.save(); } }));
-      const chk = (key, label) => h('label', { class: 'row' }, h('input', { type: 'checkbox', id: 'chk_' + key, checked: v[key] ? true : null, onchange: (e) => { v[key] = e.target.checked; Settings.save(); this._mKey = ''; this.dirty = true; if (key === 'helper' && !v.helper) Auto.stop(false); } }), label);
-      setRow(L('Voice guide', 'వాయిస్ గైడ్'), seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!v.voice, (x) => { v.voice = x; Settings.save(); if (x && Coach.step) Coach.say(Coach.step.text); else if (window.speechSynthesis) speechSynthesis.cancel(); }));
-      if (isMobile) setRow(L('Frame rate', 'ఫ్రేమ్ రేట్'), seg([['auto', L('Auto', 'ఆటో')], ['60', L('60 smooth', '60 స్మూత్')], ['30', L('30 battery', '30 బ్యాటరీ')]], fpsMode(), (m) => { v.fpsMode = m; Settings.save(); }));
-      setRow(L('Options', 'ఎంపికలు'), h('div', { class: 'row' }, chk('invertY', L('Invert camera Y', 'కెమెరా Y తిప్పు')), chk('camFollow', L('Camera follows you', 'కెమెరా మిమ్మల్ని అనుసరిస్తుంది')), isMobile ? null : chk('clickWork', L('Hold left mouse to work', 'ఎడమ మౌస్‌తో పని')), chk('fps', L('Show FPS', 'FPS చూపు'))));
-      // helpers that play for you: off by default, so the player does the farming
-      setRow(L('Helpers', 'సహాయకాలు'), h('div', { class: 'row' }, chk('helper', L('“Do it for me” button', '“నా బదులు చేయి” బటన్')), isMobile ? chk('tapWalk', L('Tap the ground to walk', 'నేలపై నొక్కితే నడక')) : null));
-      if (document.fullscreenEnabled) setRow(L('Screen', 'స్క్రీన్'), h('div', { class: 'row' }, this.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm')));
-      b.appendChild(h('div', { class: 'row', style: { marginTop: '16px' } },
-        this.btn(L('Save game', 'ఆట సేవ్'), () => SaveSys.save(true), 'acc'),
-        this.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
-        this.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
-        this.btn(L('Controls', 'నియంత్రణలు'), () => this.help(), 'alt'),
-        this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); Account.settle(4000).then(() => location.reload()); }, 'alt')));
-      b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
-      if (SaveSys.cloudState === 'askable') b.appendChild(this.btn(L('Turn on cloud save', 'క్లౌడ్ సేవ్ ఆన్ చేయండి'), () => SaveSys.enableCloud(), 'alt sm'));
-    } });
-  },
+  // ---------- settings: tabs in 17c_menu.js ----------
+  settings(tab) { Menu.open(tab); },
   help() {
     this.sheet({ title: L('Controls', 'నియంత్రణలు'), narrow: true, render: (b) => {
       const rows = isMobile ? [
@@ -904,7 +876,7 @@ const UI = {
   missionDone(m) { Celebrate.mission(m); },
   // ---------- touch controls ----------
   initTouch() {
-    const joy = this.el('joy'), knob = this.el('knob'); const R = 50;
+    const joy = this.el('joy'), knob = this.el('knob'); let R = 50;
     const hasTouch = 'ontouchstart' in window;
     // pointer capture can fail on some phones when another finger is already down: never let that stop a control
     const cap = (el, e) => { try { el.setPointerCapture(e.pointerId); } catch (er) { /* keep going without capture */ } };
@@ -927,11 +899,24 @@ const UI = {
     const jmove = (x, y) => {
       let dx = x - cx, dy = y - cy; const d = Math.hypot(dx, dy); if (d > R) { dx = dx / d * R; dy = dy / d * R; }
       knob.style.transform = `translate(${dx}px, ${dy}px)`; Input.joy.x = dx / R; Input.joy.y = -dy / R; Input.run = !Player.vehicle && (Input.runToggle || d > R * 0.92);
-      if (!Player.vehicle && ar) { const r = ar.getBoundingClientRect(); armed = !ar.hidden && x > r.left - 24 && x < r.right + 24 && y < r.bottom + 14; arShow(Input.joy.y > 0.8, armed); }
+      if (!Player.vehicle && ar && Settings.v.autoRunOn !== false) { const r = ar.getBoundingClientRect(); armed = !ar.hidden && x > r.left - 24 && x < r.right + 24 && y < r.bottom + 14; arShow(Input.joy.y > 0.8, armed); }
     };
-    const jstart = (x, y) => { if (Input.autoRun) this.autoRun(false); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; armed = false; jmove(x, y); Audio2.unlock(); };
-    const jend = () => { jid = null; pid = null; knob.style.transform = ''; Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; if (armed && !Player.vehicle) this.autoRun(true); else arShow(false); armed = false; };
+    const jstart = (x, y) => { if (Input.autoRun) this.autoRun(false); R = 50 * (parseFloat(joy.dataset.s) || 1); const r = joy.getBoundingClientRect(); cx = r.left + r.width / 2; cy = r.top + r.height / 2; Input.joy.active = true; armed = false; jmove(x, y); Audio2.unlock(); };
+    const jend = () => { jid = null; pid = null; knob.style.transform = ''; if (Hud.fx || Hud.fy) { Hud.fx = 0; Hud.fy = 0; Hud.apply(); } Input.joy.x = 0; Input.joy.y = 0; Input.joy.active = false; Input.run = Input.runToggle; if (armed && !Player.vehicle) this.autoRun(true); else arShow(false); armed = false; };
     if (ar) hold(ar, () => { if (Input.autoRun) this.autoRun(false); }, () => { });
+    // floating stick (Menu > Controls): a thumb anywhere on the lower left of the 3D view becomes the stick
+    this.joyApi = {
+      take: (t) => {
+        if (Settings.v.joyMode !== 'float' || !G.started || jid !== null || pid !== null || HudEdit.on || this.modalOpen()) return false;
+        if (Player.vehicle && Settings.v.vehCtl !== 'stick') return false;
+        if (t.clientX > innerWidth * 0.45 || t.clientY < innerHeight * 0.3) return false;
+        jid = t.identifier; Hud.fx = 0; Hud.fy = 0; Hud.apply();
+        const r = joy.getBoundingClientRect(); Hud.fx = t.clientX - (r.left + r.width / 2); Hud.fy = t.clientY - (r.top + r.height / 2); Hud.apply();
+        jstart(t.clientX, t.clientY); return true;
+      },
+      move: (t) => { if (t.identifier === jid) jmove(t.clientX, t.clientY); },
+      end: (t) => { if (t.identifier === jid) jend(); },
+    };
     joy.addEventListener('touchstart', (e) => { e.preventDefault(); if (jid !== null) return; const t = e.changedTouches[0]; jid = t.identifier; jstart(t.clientX, t.clientY); }, { passive: false });
     joy.addEventListener('touchmove', (e) => { e.preventDefault(); for (const t of e.changedTouches) if (t.identifier === jid) jmove(t.clientX, t.clientY); }, { passive: false });
     const jtend = (e) => { for (const t of e.changedTouches) if (t.identifier === jid) jend(); };
@@ -958,12 +943,20 @@ const UI = {
     const ar = this.el('autorun'); if (ar) { ar.classList.toggle('on', !!on); ar.classList.remove('ready'); ar.hidden = !on; const t = ar.querySelector('span'); if (t) t.textContent = on ? L('Auto run · tap to stop', 'ఆటో పరుగు · ఆపడానికి నొక్కండి') : L('Auto run', 'ఆటో పరుగు'); }
     if (on) { Audio2.sfx('click'); UI.toastOnce('autorun', L('Auto run on: turn the camera to steer. Touch the stick to stop.', 'ఆటో పరుగు ఆన్: దిశ మార్చడానికి కెమెరా తిప్పండి. ఆపడానికి స్టిక్ తాకండి.'), 'info'); }
   },
+  // vehicles: the big steer / go / brake buttons, or the same stick as walking (Menu > Controls)
+  touchMode(force) {
+    if (HudEdit.on) return;
+    const pad = !!Player.vehicle && Settings.v.vehCtl !== 'stick';
+    const dp = this.el('dpad'); if (!dp || (!force && dp.hidden !== pad)) return;
+    dp.hidden = !pad; this.el('joy').style.visibility = pad ? 'hidden' : '';
+    if (!pad) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); }
+  },
   updateTouchLabels() {
     if (!isMobile) return;
     const v = Player.vehicle; const inV = !!v;
     // in a vehicle: big steer / go / brake buttons instead of the walking stick
     if (inV && Input.autoRun) this.autoRun(false);
-    const dp = this.el('dpad'); if (dp && dp.hidden === inV) { dp.hidden = !inV; this.el('joy').style.visibility = inV ? 'hidden' : ''; if (!inV) { const dr = Input.drive; dr.l = dr.r = dr.u = dr.d = 0; for (const b of dp.querySelectorAll('.db')) b.classList.remove('on'); } }
+    this.touchMode(false);
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));
     const toolOpt = !inV && (Player.tool === 'seeds' || Player.tool === 'fert' || Player.tool === 'sprayer');
@@ -986,7 +979,7 @@ const UI = {
       const lang = this.el('tlang'); lang.innerHTML = '';
       lang.appendChild(Lang.picker('', () => { segs(); acts(); if (!this.el('newgame').hidden) newForm(); }));
       const q = this.el('tqual'); q.innerHTML = '';
-      for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్య'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమా') }[p]));
+      for (const p of PRESET_ORDER) q.appendChild(h('button', { class: v.preset === p ? 'on' : '', onclick: () => { v.preset = p; Settings.save(); Game.setPreset(p); segs(); } }, PRESET_NAMES()[p]));
     };
     // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
     const a2 = this.el('a2hs');

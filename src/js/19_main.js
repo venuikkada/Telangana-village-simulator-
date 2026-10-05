@@ -401,13 +401,15 @@ const PLights = {
 // ---------------------------------------------------------------------------
 // Main loop
 // ---------------------------------------------------------------------------
-const Loop = { last: 0, next: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0, capFps: 0, win: [], work: [], winT: 0, retryAt: 0, backoff: 20000 };
-function fpsMode() { const m = Settings.v.fpsMode; return m === '30' || m === '60' || m === 'auto' ? m : Settings.v.fps60 ? '60' : 'auto'; }
-// phones: run at a steady 60 or 30 FPS. "Auto" starts at 60 and settles on 30 if the phone cannot keep up.
+const Loop = { raw: [], rawLast: 0, hz: 60, last: 0, next: 0, missionT: 0, fpsT: 0, fpsN: 0, touchT: 0, capFps: 0, win: [], work: [], winT: 0, retryAt: 0, backoff: 20000 };
+const FPS_MODES = ['auto', '30', '40', '60', '90', '120'];
+function fpsMode() { const m = Settings.v.fpsMode; return FPS_MODES.includes(m) ? m : Settings.v.fps60 ? '60' : 'auto'; }
+// frame rate (Menu > Graphics). Phones on "Auto" run a steady 60 and settle on 30 if the phone cannot keep up;
+// computers on "Max" are not held back. 90 and 120 only help on screens that fast.
 function skipFrame(now) {
-  if (!isMobile) { Loop.capFps = 0; return false; }
   const mode = fpsMode();
-  if (mode === '30') Loop.capFps = 30; else if (mode === '60' || !Loop.capFps) Loop.capFps = 60;
+  if (mode !== 'auto') Loop.capFps = +mode;
+  else if (!isMobile) { Loop.capFps = 0; return false; } else if (Loop.capFps !== 30) Loop.capFps = 60;
   const iv = 1000 / Loop.capFps;
   if (Loop.next && now < Loop.next - 2) return true;
   Loop.next = Loop.next && now - Loop.next < iv ? Loop.next + iv : now + iv;
@@ -428,6 +430,9 @@ function adaptFps(now, interval, work) {
 }
 function frame(now) {
   requestAnimationFrame(frame);
+  // how fast the screen itself refreshes (60, 90, 120 Hz), for the frame-rate choice
+  const raw = now - (Loop.rawLast || now); Loop.rawLast = now;
+  if (raw > 3 && raw < 100) { Loop.raw.push(raw); if (Loop.raw.length >= 120) { const s = Loop.raw.sort((a, b) => a - b); Loop.hz = Math.round(1000 / s[Math.floor(s.length * 0.25)]); Loop.raw = []; } }
   if (!G.ready) return;
   if (skipFrame(now)) return;
   const t0 = performance.now();
@@ -502,7 +507,7 @@ function deviceSetup() {
   document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
   const first = () => { Audio2.unlock(); Coach.prime(); };
   document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
-  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); };
+  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
   window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
   if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
   const cv = document.getElementById('gl');
@@ -553,7 +558,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Account, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

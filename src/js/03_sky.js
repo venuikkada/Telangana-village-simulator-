@@ -217,7 +217,7 @@ const Sky = {
     if (!G.preset.env) hi *= 2.1;
     this.hemi.intensity = hi + this.flash * 3;
     G.scene.environmentIntensity = lerp(a.ei, b.ei, t) * (1 - rain * 0.3) + this.flash * 2;
-    G.renderer.toneMappingExposure = lerp(a.ex, b.ex, t) * (1 + rain * 0.12 + oc * 0.06);
+    G.renderer.toneMappingExposure = lerp(a.ex, b.ex, t) * (1 + rain * 0.12 + oc * 0.06) * (Settings.v.bright || 1);
     // fog
     const f = G.scene.fog;
     f.color.copy(hor);

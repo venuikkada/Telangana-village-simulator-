@@ -34,13 +34,15 @@ const Input = {
     cv.addEventListener('contextmenu', (e) => e.preventDefault());
     // touch look on the canvas (right side), pinch zoom
     const touches = new Map(); let multi = false;
-    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
+    cv.addEventListener('touchstart', (e) => { Audio2.unlock(); for (const t of e.changedTouches) { if (UI.joyApi && UI.joyApi.take(t)) continue; touches.set(t.identifier, { x: t.clientX, y: t.clientY, t0: performance.now(), moved: 0 }); } if (touches.size >= 2) multi = true; if (touches.size === 2) { const a = [...touches.values()]; this.pinch = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); } }, { passive: true });
     cv.addEventListener('touchmove', (e) => {
       e.preventDefault();
+      if (UI.joyApi) for (const t of e.changedTouches) UI.joyApi.move(t);
       if (touches.size >= 2) { for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (p) { p.x = t.clientX; p.y = t.clientY; } } const a = [...touches.values()]; const d = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y); if (this.pinch) this.wheel += (this.pinch - d) * 0.02; this.pinch = d; return; }
       for (const t of e.changedTouches) { const p = touches.get(t.identifier); if (!p) continue; const dx = t.clientX - p.x, dy = t.clientY - p.y; this.look.dx += dx; this.look.dy += dy; p.moved += Math.abs(dx) + Math.abs(dy); p.x = t.clientX; p.y = t.clientY; }
     }, { passive: false });
     const tend = (e) => {
+      if (UI.joyApi) for (const t of e.changedTouches) UI.joyApi.end(t);
       for (const t of e.changedTouches) {
         const p = touches.get(t.identifier); touches.delete(t.identifier);
         // a quick single tap without dragging: walk there
@@ -340,9 +342,13 @@ const Cam = {
   update(dt) {
     const cam = G.camera;
     if (this.intro) { this.intro(dt, cam); return; }
-    const sens = Settings.v.sens;
+    const sens = Player.vehicle ? (Settings.v.sensVeh || 1) : Settings.v.sens;
     const dx = Input.mdx + Input.look.dx * 1.3, dy = Input.mdy + Input.look.dy * 1.3;
     if (dx || dy) { this.yaw -= dx * 0.0042 * sens; this.pitch += dy * 0.0035 * sens * (Settings.v.invertY ? -1 : 1); this.lastManual = performance.now(); }
+    if (Gyro.on) {
+      const [gy, gp] = Gyro.take(), k = Settings.v.gyroSens || 1;
+      if ((gy || gp) && G.started && !UI.modalOpen()) { this.yaw += gy * k; this.pitch += gp * k * (Settings.v.invertY ? -1 : 1); this.lastManual = performance.now(); }
+    }
     if (Input.wheel) { this.tDist = clamp(this.tDist + Input.wheel * 0.9, 2.2, Player.vehicle ? 26 : 16); }
     if (Input.pressed('KeyV')) this.toggle();
     this.dist = damp(this.dist, this.tDist, 6, dt);

@@ -251,7 +251,7 @@ const Account = {
   // redraw the account sheet, unless the player is typing in it (keeps the keyboard up)
   paint(force) {
     const st = UI.sheetState;
-    if (st && st.kind === 'account' && st.rerender) {
+    if (st && (st.kind === 'account' || (st.kind === 'settings' && st.tab === 'account')) && st.rerender) {
       const a = document.activeElement;
       if (force || !(a && a.tagName === 'INPUT' && a.closest && a.closest('#modal'))) st.rerender();
     }
@@ -273,9 +273,13 @@ const Account = {
     this.view = view || (this.st ? 'me' : this.view === 'up' ? 'up' : 'in');
     if (!this.f.email) { const last = Store.get('tvs_acct_last', null); this.f.email = this.st ? this.st.email : last && last.email ? last.email : ''; }
     UI.sheet({ title: L('Your account', 'మీ ఖాతా'), narrow: true, kind: 'account', cls: 'acct', render: (b) => this.render(b) });
-    if (this.avail === null && !this.sandboxed()) {
-      this.call('ping').then(() => this.paint(), (e) => { if (e.error === 'unavailable') { this.avail = false; this.paint(true); } });
-    }
+    this.check();
+  },
+  // can this page reach the account server? asked once, when an account screen opens
+  check() {
+    if (this.avail !== null || this.sandboxed() || this.checking) return;
+    this.checking = true;
+    this.call('ping').then(() => { this.checking = false; this.paint(); }, (e) => { this.checking = false; if (e.error === 'unavailable') { this.avail = false; this.paint(true); } });
   },
   input(key, type, label, extra) {
     const id = 'acct_' + key;
