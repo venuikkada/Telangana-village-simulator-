@@ -262,9 +262,9 @@ const Account = {
     const t = document.getElementById('title'); if (!t || t.hidden) return;
     let b = document.getElementById('tacct');
     if (!b) { b = h('button', { id: 'tacct', type: 'button', onclick: () => { Audio2.unlock(); this.open(); } }); t.appendChild(b); }
-    const s = this.st; b.innerHTML = '';
+    const s = this.st; b.innerHTML = ''; b.classList.toggle('out', !s);
     b.append(h('i', { 'aria-hidden': 'true' }, '👤'),
-      h('span', null, h('b', null, s ? this.shown() : L('Sign in', 'సైన్ ఇన్')), h('small', null, s ? (this.state === 'offline' ? L('Offline', 'ఆఫ్‌లైన్') : L('Farm saved online', 'పొలం ఆన్‌లైన్‌లో సేవ్')) : L('Save your farm online', 'పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేయండి'))));
+      h('span', null, h('b', null, s ? this.shown() : L('Login / Sign up', 'లాగిన్ / సైన్ అప్')), h('small', null, s ? (this.state === 'offline' ? L('Offline', 'ఆఫ్‌లైన్') : L('Farm saved online', 'పొలం ఆన్‌లైన్‌లో సేవ్')) : L('Save your farm online', 'పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేయండి'))));
     if (s) b.append(h('em', { 'aria-hidden': 'true' }, '✓'));
   },
   go(view) { this.view = view; this.err = ''; this.note = ''; UI.rerender(); },

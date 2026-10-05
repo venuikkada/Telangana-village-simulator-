@@ -599,6 +599,11 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 #tacct small { font: 600 11.5px/1.15 var(--font-body); opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 #tacct em { font-style: normal; font-weight: 900; color: #8be08b; }
 #tacct:focus-visible { outline: 3px solid #f2b52d; outline-offset: 2px; }
+#tacct.out { background: #f2b52d; color: #1c1405; border-color: rgba(255, 255, 255, .55); box-shadow: 0 0 0 4px rgba(242, 181, 45, .3), 0 8px 22px rgba(0, 0, 0, .3); }
+#tacct.out i { background: #1c1405; color: #f2b52d; }
+#tacct.out small { opacity: .85; }
+@media (pointer: coarse) { #tacct { padding: 8px 16px 8px 8px; } #tacct b { font-size: 16px; } #tacct small { font-size: 12px; } }
+@media (max-width: 600px) { #tacct { max-width: min(78vw, 300px); } }
 .acct .alead { margin: 0 0 12px; font-weight: 600; line-height: 1.4; }
 .aseg { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 14px; }
 .aseg button { padding: 10px 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
@@ -739,7 +744,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="flash"></div>
 </div>
 <script type="module">
-const I18N_VER = 'acc5103f67';
+const I18N_VER = '3b57693b34';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -10043,7 +10048,7 @@ const UI = {
       b.appendChild(h('div', { class: 'set' }));
       const seg = (opts, cur, fn) => { const s = h('div', { class: 'seg' }); for (const [id, lab] of opts) s.appendChild(h('button', { class: id === cur ? 'on' : '', onclick: () => { fn(id); this.rerender(); } }, lab)); return s; };
       setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
-      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Sign in / Create account', 'సైన్ ఇన్ / ఖాతా తెరవండి'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
+      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Login / Sign up', 'లాగిన్ / సైన్ అప్'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
       setRow(L('Language', 'భాష'), Lang.picker('', () => this.rerender()));
       setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
       if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
@@ -11277,9 +11282,9 @@ const Account = {
     const t = document.getElementById('title'); if (!t || t.hidden) return;
     let b = document.getElementById('tacct');
     if (!b) { b = h('button', { id: 'tacct', type: 'button', onclick: () => { Audio2.unlock(); this.open(); } }); t.appendChild(b); }
-    const s = this.st; b.innerHTML = '';
+    const s = this.st; b.innerHTML = ''; b.classList.toggle('out', !s);
     b.append(h('i', { 'aria-hidden': 'true' }, '👤'),
-      h('span', null, h('b', null, s ? this.shown() : L('Sign in', 'సైన్ ఇన్')), h('small', null, s ? (this.state === 'offline' ? L('Offline', 'ఆఫ్‌లైన్') : L('Farm saved online', 'పొలం ఆన్‌లైన్‌లో సేవ్')) : L('Save your farm online', 'పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేయండి'))));
+      h('span', null, h('b', null, s ? this.shown() : L('Login / Sign up', 'లాగిన్ / సైన్ అప్')), h('small', null, s ? (this.state === 'offline' ? L('Offline', 'ఆఫ్‌లైన్') : L('Farm saved online', 'పొలం ఆన్‌లైన్‌లో సేవ్')) : L('Save your farm online', 'పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేయండి'))));
     if (s) b.append(h('em', { 'aria-hidden': 'true' }, '✓'));
   },
   go(view) { this.view = view; this.err = ''; this.note = ''; UI.rerender(); },

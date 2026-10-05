@@ -1,0 +1,7 @@
+# Updates show up at once: browsers and the CDN check for a newer page instead of
+# reusing an old copy of index.html (the game files are all inside it).
+<IfModule mod_headers.c>
+  <FilesMatch "\.(html|webmanifest)$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+</IfModule>

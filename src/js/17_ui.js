@@ -838,7 +838,7 @@ const UI = {
       b.appendChild(h('div', { class: 'set' }));
       const seg = (opts, cur, fn) => { const s = h('div', { class: 'seg' }); for (const [id, lab] of opts) s.appendChild(h('button', { class: id === cur ? 'on' : '', onclick: () => { fn(id); this.rerender(); } }, lab)); return s; };
       setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
-      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Sign in / Create account', 'సైన్ ఇన్ / ఖాతా తెరవండి'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
+      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Login / Sign up', 'లాగిన్ / సైన్ అప్'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
       setRow(L('Language', 'భాష'), Lang.picker('', () => this.rerender()));
       setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
       if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));

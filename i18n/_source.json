@@ -4111,8 +4111,8 @@
   "te": "ఖాతా",
   "at": "17_ui.js:841"
  },
- "Sign in / Create account": {
-  "te": "సైన్ ఇన్ / ఖాతా తెరవండి",
+ "Login / Sign up": {
+  "te": "లాగిన్ / సైన్ అప్",
   "at": "17_ui.js:841"
  },
  "Language": {
@@ -4899,10 +4899,6 @@
   "te": "పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేస్తూ ఉండటానికి.",
   "at": "18b_account.js:240"
  },
- "Sign in": {
-  "te": "సైన్ ఇన్",
-  "at": "18b_account.js:267"
- },
  "Offline": {
   "te": "ఆఫ్‌లైన్",
   "at": "18b_account.js:267"
@@ -5026,6 +5022,10 @@
  "Send a new code": {
   "te": "కొత్త కోడ్ పంపండి",
   "at": "18b_account.js:339"
+ },
+ "Sign in": {
+  "te": "సైన్ ఇన్",
+  "at": "18b_account.js:345"
  },
  "Create account": {
   "te": "ఖాతా తెరవండి",
