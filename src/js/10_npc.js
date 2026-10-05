@@ -267,6 +267,11 @@ const NPCs = {
       const far = Math.hypot(h.x - P.x, h.z - P.z) > 150;
       // talking to player
       if (n.talking) { h.speed = 0; h.pose = 'talk'; h.yaw = dampAngle(h.yaw, Math.atan2(P.x - h.x, P.z - h.z), 6, dt); continue; }
+      // joining in with your fun moves: dance along, wave back, laugh
+      if (n.react) {
+        if (G.t > n.react.until || !h.visible) n.react = null;
+        else { h.speed = 0; h.pose = n.react.pose; h.yaw = dampAngle(h.yaw, Math.atan2(P.x - h.x, P.z - h.z), 5, dt); h.y = World.groundHeight(h.x, h.z); continue; }
+      }
       if (!h.visible) continue;
       if (n.path && n.pi < n.path.length) {
         const wp = n.path[n.pi];

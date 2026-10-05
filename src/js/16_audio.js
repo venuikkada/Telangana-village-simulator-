@@ -113,6 +113,13 @@ const Audio2 = {
       case 'whoosh': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.2; f.frequency.setValueAtTime(500, c.currentTime); f.frequency.exponentialRampToValueAtTime(3200, c.currentTime + 0.35); const g = c.createGain(); this.env(g, c.currentTime, 0.04, 0.12, 0.35); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 0.45); break; }
       case 'shutter': this.burst(0.04, 0.35, 'highpass', 2500, d); this.burst(0.06, 0.25, 'bandpass', 1200, d, 0.07, 2); break;
       case 'bump': this.burst(0.3, 0.5, 'lowpass', 160, d); this.tone('sine', 80, 40, 0.3, 0.3, d); break;
+      // fun moves
+      case 'clap': for (let i = 0; i < 6; i++) { this.burst(0.05, 0.4, 'bandpass', 1800, d, i * 0.24, 1.2); this.burst(0.03, 0.2, 'highpass', 4000, d, i * 0.24); } break;
+      case 'laugh': [620, 580, 540, 500, 470].forEach((f, i) => { this.tone('triangle', f * 1.1, f, 0.12, 0.09, d, i * 0.17); this.burst(0.1, 0.05, 'bandpass', f * 2.2, d, i * 0.17, 3); }); break;
+      case 'boing': this.tone('sine', 180, 720, 0.35, 0.16, d); this.tone('sine', 720, 300, 0.25, 0.08, d, 0.33); break;
+      case 'dhol': this.tone('sine', 110, 55, 0.22, 0.32, d); this.burst(0.06, 0.18, 'lowpass', 500, d); if (Math.random() < 0.5) this.burst(0.05, 0.12, 'bandpass', 2400, d, 0.23, 2); break;
+      case 'cluck': for (let i = 0; i < 3; i++) this.tone('square', 650, 500, 0.05, 0.05, d, i * 0.11); break;
+      case 'snore': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 260; const g = c.createGain(); this.env(g, c.currentTime, 0.6, 0.16, 0.9); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 1.6); break; }
     }
   },
   work(op) {

@@ -654,6 +654,31 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 .hudedit.he-veh #joy, .hudedit.he-veh #tbWork, .hudedit.he-veh #tbRun { visibility: hidden !important; }
 .hudedit #autorun, .hudedit #howtip { display: none !important; }
 @media (max-height: 420px) { #hudedit .hepanel { padding: 7px 10px; gap: 5px; top: calc(var(--st) + 4px); } }
+/* ---- fun: emote bar, dressing room, activities, race / explore strip ---- */
+#hud-br .hb .emo { font: normal 18px/1 system-ui, sans-serif; }
+#funbar { position: absolute; right: calc(var(--sr) + 16px); bottom: calc(var(--sb) + 66px); width: min(430px, calc(100vw - 32px)); padding: 10px; display: grid; gap: 8px; pointer-events: auto; z-index: 6; animation: cin .2s ease-out; }
+.fgrid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.fe { display: grid; justify-items: center; gap: 2px; padding: 6px 2px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); cursor: pointer; font: 700 11px/1.15 var(--font-body); }
+.fe i { font: normal 24px/1 system-ui, sans-serif; }
+.fe:active { transform: scale(.94); background: var(--accent); color: var(--accent-ink); }
+#funbar .row { justify-content: flex-end; flex-wrap: wrap; }
+.touch #funbar { top: calc(var(--st) + 56px); bottom: auto; right: calc(var(--sr) + 12px); max-height: calc(100dvh - var(--st) - 70px); overflow-y: auto; }
+@media (max-height: 420px) { .fgrid { grid-template-columns: repeat(8, 1fr); } .touch #funbar { width: min(600px, calc(100vw - 24px)); } .fe { padding: 4px 1px; font-size: 10px; } .fe i { font-size: 21px; } }
+#modal.side { place-items: center end; background: rgba(4, 4, 10, .12); }
+#modal.side .sheet { width: min(420px, 100%); max-height: calc(100dvh - 32px); }
+@media (max-width: 600px) { #modal.side { place-items: end center; } #modal.side .sheet { max-height: 52dvh; } }
+.swatches { display: flex; flex-wrap: wrap; gap: 6px; }
+.sw { width: 30px; height: 30px; border-radius: 50%; border: 2px solid rgba(0, 0, 0, .18); cursor: pointer; padding: 0; }
+.sw.on { outline: 3px solid var(--accent); outline-offset: 2px; }
+.sw.none { background: var(--panel-2); color: var(--ink-2); font: 800 13px/1 var(--font-body); }
+.act { padding: 12px; border-radius: 12px; background: var(--panel-2); margin-bottom: 10px; display: grid; gap: 6px; }
+.act b { font: 800 16px var(--font-display); }
+.act p { margin: 0; color: var(--ink-2); font-size: 13px; }
+.plist { display: flex; flex-wrap: wrap; gap: 4px 10px; font-size: 12.5px; color: var(--ink-2); }
+.plist .on { color: var(--good); font-weight: 700; }
+.act .race { justify-content: space-between; align-items: center; }
+#funchip { display: block; margin: 6px auto 0; border: 0; border-radius: 99px; padding: 5px 12px; background: rgba(20, 22, 34, .72); color: #fff; font: 800 13px/1.2 var(--font-body); cursor: pointer; pointer-events: auto; white-space: nowrap; }
+#funchip[hidden] { display: none; }
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
@@ -686,6 +711,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
       <button class="hb" id="bMap" aria-label="Map"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg><span class="lbl" data-en="Map" data-te="మ్యాప్">Map</span><span class="kbd">M</span></button>
       <button class="hb" id="bOffice" aria-label="Farm office"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4h8v3H8z M6 5H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1 M8 12h8 M8 16h5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg><span class="lbl" data-en="Farm office" data-te="కార్యాలయం">Farm office</span><span class="kbd">B</span></button>
       <button class="hb" id="bPhoto" aria-label="Photo mode"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3v11H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5" fill="none" stroke="currentColor" stroke-width="1.8"/></svg><span class="lbl" data-en="Photo" data-te="ఫోటో">Photo</span><span class="kbd">P</span></button>
+      <button class="hb" id="bFun" aria-label="Fun"><span class="emo" aria-hidden="true">🎉</span><span class="lbl" data-en="Fun" data-te="సరదా">Fun</span><span class="kbd">T</span></button>
       <button class="hb" id="bMenu" aria-label="Settings"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg><span class="lbl" data-en="Menu" data-te="మెనూ">Menu</span><span class="kbd">Esc</span></button>
     </div>
     <div id="toasts"></div>

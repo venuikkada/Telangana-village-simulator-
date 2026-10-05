@@ -107,13 +107,15 @@ const Player = {
     if (v.job) { UI.toast(L('A worker is using this vehicle.', 'ఒక కూలీ ఈ వాహనాన్ని వాడుతున్నారు.'), 'warn'); return; }
     this.vehicle = v; this.h.visible = v.ud.pose !== 'hidden';
     Cam.onEnterVehicle(v);
-    Audio2.engineFor(v);
+    Audio2.engineFor(v.def.quiet ? null : v);
+    this.em = null;
     Bus.emit('enterVehicle', { v });
     if (Sky.night > 0.5 && v.def.fuelCap >= 0) v.lights = true;
   },
   exitVehicle(force = false) {
     const v = this.vehicle; if (!v) return;
     if (!force && Math.abs(v.speed) > 2.5) { UI.toastOnce('slowdown', L('Slow down before getting off.', 'దిగే ముందు వేగం తగ్గించండి.'), 'warn'); return; }
+    if (!force && v.def.fly && v.alt > 0.6) { UI.toastOnce('landfirst', L('Land first: hold Down until the helicopter touches the ground.', 'ముందు దిగండి: హెలికాప్టర్ నేలను తాకే వరకు కిందికి బటన్ పట్టుకోండి.'), 'warn'); return; }
     const c = Math.cos(v.yaw), s = Math.sin(v.yaw);
     const side = v.type === 'bus' || v.type === 'harvester' ? 2.4 : v.type === 'bullock' ? 1.6 : 1.4;
     const p = { x: v.x - c * side, z: v.z + s * side };
@@ -126,7 +128,7 @@ const Player = {
   },
   update(dt) {
     const S = G.S; const P = S.player;
-    if (UI.modalOpen()) { this.h.speed = 0; if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
+    if (UI.modalOpen()) { this.h.speed = 0; if (this.em) { this.em = null; this.h.lie = 0; this.h.roll = 0; this.h.spin = 0; } if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
     const ax = Input.axis();
     // any stick or key movement takes control back from "Do it"
     if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
@@ -167,6 +169,12 @@ const Player = {
     const ld = lakeSD(q.x, q.z); if (ld < -9) { const a = Math.atan2(q.z - LAKE.z, q.x - LAKE.x); const rr = lakeRadius(a) - 9; q.x = LAKE.x + Math.cos(a) * rr; q.z = LAKE.z + Math.sin(a) * rr; }
     q.x = clamp(q.x, -PLAY_HALF, PLAY_HALF); q.z = clamp(q.z, -PLAY_HALF, PLAY_HALF);
     this.x = q.x; this.z = q.z;
+    // fun moves stop when you walk, work or jump
+    if (this.em) {
+      const E = Emote.byId(this.em.id); this.em.t += dt;
+      if (!E || ml > 0.05 || this.working || (E.dur && this.em.t > E.dur) || (Input.down('Space') && !E.hop)) this.em = null;
+      else if (E.hop && this.onGround && this.em.t > this.em.hop) { this.vy = 4.4; this.onGround = false; this.em.hop = this.em.t + 0.75; }
+    }
     // vertical
     const gy = World.groundHeight(this.x, this.z) + (f ? 0.03 : 0);
     if (Input.pressed('Space') && this.onGround) { this.vy = 5.4; this.onGround = false; Audio2.sfx('jump'); }
@@ -178,7 +186,7 @@ const Player = {
       if (this.workT <= 0) { this.workT = 0.1; this.doWork(f); }
       P.energy = Math.max(0, P.energy - dt * 0.03 * (S.easy ? 0.5 : 1));
     }
-    P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1) * (S.easy ? 0.5 : 1));
+    if (!S.explore) P.energy = Math.max(0, P.energy - dt * (0.006 + (running && this.speed > 1 ? 0.02 : 0)) * (Weather.cur.id === 'heatwave' ? 1.5 : 1) * (S.easy ? 0.5 : 1));
     // heat stress outdoors at midday
     const hr = Time.hour();
     if (Weather.cur.id === 'heatwave' && hr > 11.5 && hr < 16 && !this.inShade()) { P.health = Math.max(1, P.health - dt * 0.03); if (!this._heatWarned) { this._heatWarned = true; UI.toast(L('Heat wave! Rest in the shade or drink buttermilk at the tea stall.', 'వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.'), 'warn'); } }
@@ -187,6 +195,16 @@ const Player = {
     const h = this.h;
     h.x = this.x; h.y = this.y; h.z = this.z; h.yaw = this.yaw; h.speed = this.working ? (this.speed > 0.2 ? this.speed : 0) : this.speed;
     h.pose = this.working && this.speed < 0.6 ? 'work' : 'walk';
+    h.lie = 0; h.roll = 0; h.spin = 0;
+    if (this.em) {
+      const E = Emote.byId(this.em.id), t = this.em.t;
+      h.pose = E.pose; h.speed = 0;
+      if (E.lie) { h.lie = Math.min(1, t * 1.6); if (t > 2) P.energy = Math.min(100, P.energy + dt * 0.4); }   // a power nap
+      if (E.roll) h.roll = Math.min(1, t / E.dur) * TAU;
+      if (E.spin) h.spin = t * 9;
+      if (E.sitY) h.y = this.y + E.sitY;
+      if (E.snap && !this.em.snapped && t > 0.7) { this.em.snapped = true; Audio2.sfx('shutter'); const fl = UI.el('flash'); if (fl) { fl.classList.remove('on'); void fl.offsetWidth; fl.classList.add('on'); } }
+    }
     h.visible = Cam.mode !== 'first';
     Stats.walk += this.speed * dt;
   },
@@ -301,7 +319,9 @@ const Player = {
   },
   updateVehicle(dt, ax) {
     const v = this.vehicle;
-    const inp = { throttle: ax.y, steer: -ax.x, brake: Input.down('Space') || Input.brake };
+    const fly = !!v.def.fly;
+    const inp = { throttle: ax.y, steer: -ax.x, brake: !fly && (Input.down('Space') || Input.brake), up: fly && (Input.down('Space') || Input.brake), down: fly && (Input.down('KeyC') || Input.down('ShiftLeft') || Input.down('ShiftRight') || Input.heliDown) };
+    if (fly && v.alt > 1 && !this._flyTip) { this._flyTip = true; UI.toast(isMobile ? L('Flying! Up and Down change height; the arrows fly and turn.', 'ఎగురుతున్నారు! పైకి, కిందికి బటన్లు ఎత్తు మారుస్తాయి; బాణాలు ముందుకు, పక్కకు.') : L('Flying! Space goes up, Shift or C goes down, W A S D fly and turn.', 'ఎగురుతున్నారు! Space పైకి, Shift లేదా C కిందికి, W A S D ముందుకు, పక్కకు.'), 'info'); }
     if (Input.pressed('KeyG') || Input.implToggle) { Input.implToggle = false; this.toggleImplement(); }
     if (Input.pressed('KeyL')) { v.lights = !v.lights; Audio2.sfx('click'); }
     if (Input.pressed('KeyH') || Input.horn) { Input.horn = false; Audio2.horn(v); Bus.emit('horn', {}); }

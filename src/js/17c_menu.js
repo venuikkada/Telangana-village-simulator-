@@ -184,6 +184,8 @@ const PRESET_NAMES = () => ({ LOW: L('Smooth', 'స్మూత్'), MEDIUM: L(
 const Menu = {
   tab: 'basic',
   boot() {
+    // days used to fly by: new and old players start at half speed (more time to explore)
+    if (!Settings.v.ts2) { Settings.v.ts2 = true; if ((Settings.v.timeScale || 1) === 1) Settings.v.timeScale = 0.5; Settings.save(); }
     Hud.apply(); Look.apply();
     if (Settings.v.gyro) {
       Gyro.enable(false);
@@ -225,7 +227,11 @@ const Menu = {
     const v = Settings.v, row = this.grid(b);
     row(L('Language', 'భాష'), Lang.picker('', () => UI.rerender()));
     if (G.started) row(L('Difficulty', 'కష్టం'), this.seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; UI.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
-    row(L('Game speed', 'ఆట వేగం'), this.seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
+    row(L('Game speed', 'ఆట వేగం'), this.seg([[0.25, '¼×'], [0.5, '½×'], [1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }), L('Slower days give you more time to explore.', 'నెమ్మదిగా సాగే రోజులు అన్వేషణకు ఎక్కువ సమయం ఇస్తాయి.'));
+    if (G.started) {
+      row(L('Explore mode', 'అన్వేషణ మోడ్'), this.seg([[true, L('On', 'ఆన్')], [false, L('Off', 'ఆఫ్')]], !!G.S.explore, (x) => Fun.explore(x)), L('Stops the clock so you can roam as long as you like.', 'గడియారం ఆగుతుంది, ఎంతసేపైనా తిరగొచ్చు.'));
+      row(L('Your character', 'మీ పాత్ర'), UI.btn('👕 ' + L('Dress up', 'దుస్తులు మార్చు'), () => Wardrobe.open(), 'acc sm'));
+    }
     row(L('Minimap', 'చిన్న మ్యాప్'), this.onOff('minimap', () => Look.apply()));
     row(L('Helpers', 'సహాయకాలు'), h('div', { class: 'row' }, this.chk('helper', L('“Do it for me” button', '“నా బదులు చేయి” బటన్'), () => { if (!v.helper) Auto.stop(false); }), isMobile ? this.chk('tapWalk', L('Tap the ground to walk', 'నేలపై నొక్కితే నడక')) : null));
     if (document.fullscreenEnabled) row(L('Screen', 'స్క్రీన్'), UI.btn(document.fullscreenElement ? L('Exit full screen', 'ఫుల్ స్క్రీన్ ఆపు') : L('Full screen', 'ఫుల్ స్క్రీన్'), () => Game.toggleFullscreen(), 'alt sm'));

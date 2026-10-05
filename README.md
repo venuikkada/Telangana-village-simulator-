@@ -59,6 +59,11 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Photos and sharing:** photo mode has a Take photo button. The picture gets the game's name and link and can be saved, shared or sent on WhatsApp. "Invite friends" in the Menu shares the game link.
 - **Saving:** the game saves every morning, after you sleep and every few minutes, in your browser.
 - **Sign in with email:** tap **👤 Sign in** on the title screen (or Menu → Account) and create a free account with your email and a password. Your farm is then also saved online, so you can continue on any phone or computer: sign in there and tap Continue. If two devices both played, the game asks which farm to keep. Forgot your password? Get a 6-digit code by email and set a new one. You can sign out or delete your account any time.
+- **Free rides to explore everything:** a hatchback car, a yellow taxi, an open jeep that goes off-road, a scooter, a bicycle, a go-kart, a racing bike, an auto rickshaw, the village bus, a lorry and a **helicopter** on its own helipad, all parked near your house. In the helicopter, Up and Down (Space / C) change height and the stick or arrows fly and turn; it hovers when you let go and lands gently. Cars now drive on the roads too.
+- **Dress up your farmer:** 🎉 Fun → 👕 Dress up opens a dressing room with a live view of your farmer: man or woman, skin, hair colour (even blue or red), turban or cap, sunglasses, mustache or bindi, top colour, lungi, dhoti, pants, shorts, saree or salwar, a towel or dupatta, height and build. 🎲 Surprise me picks a random look.
+- **Funny moves:** the 🎉 Fun button (T on a computer) has 16 moves: wave, namaste, dance, folk dance, clap, laugh, show muscles, chicken dance, cartwheel, spin, jump for joy, yoga, selfie, facepalm, sit down and nap. Villagers nearby wave back, clap, laugh or join your dance, with a dhol beat.
+- **More time to explore:** days now run at half speed (about 8 minutes from morning to evening), with ¼× to 8× in Menu → Basic. **Explore mode** stops the clock and tiredness so you can roam as long as you like.
+- **Fun activities:** 30 **golden mangoes** hidden all over the map (₹500 each, a big prize for all 30, and a "show me the nearest" hint), **places to discover** (₹200 each), and three **checkpoint races** (Village loop, Lake and hill ride, Highway dash) for any vehicle or on foot, with gold, silver and bronze medals and your best times.
 - **Settings like the big mobile games:** the Menu has six tabs.
   - **Basic:** language, difficulty, game speed, minimap on or off, helpers and full screen.
   - **Graphics:** quality (Smooth, Balanced, HD, Ultra HD, Cinematic), frame rate (Auto, 30, 40, 60, 90, 120), five colour styles (Classic, Colorful, Realistic, Soft, Movie), brightness and an FPS counter.
@@ -128,6 +133,7 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/15b_coach.js` | Step-by-step coach, gold guide arrow, spoken instructions |
 | `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
+| `src/js/12c_fun.js` | Dressing room, funny moves, Explore mode, golden mangoes, places to discover, races |
 | `src/js/17c_menu.js` | The Menu tabs, graphics styles, button layout editor, floating joystick, gyroscope |
 | `src/js/18_save.js` | Browser and cloud saves |
 | `src/js/18b_account.js` | Sign in / sign up with email, password reset, keeping the farm in step with the account |

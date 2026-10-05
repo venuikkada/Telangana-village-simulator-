@@ -25,14 +25,8 @@ function newGameState(o = {}) {
   };
 }
 
-function playerAppearance(g) {
-  const a = Humans.appearance(g === 'f'
-    ? { gender: 'f', saree: '#2e8b57', blouse: '#e2b81f', skin: '#94613f' }
-    : { gender: 'm', shirt: '#f2efe6', lower: 'lungi', lungi: '#3a5a9a', turban: false, skin: '#94613f' });
-  a.h = 1.0; a.w = 1.0; a.hair = C('#1c1612');
-  if (g !== 'f') { a.towel = C('#b93a2c'); a.stache = true; }
-  return a;
-}
+// your farmer's look (Fun > Dress up)
+function playerAppearance(g, look) { return Wardrobe.app(g, look); }
 
 // snap the interpolated weather to the current weather (used when time is skipped)
 function snapWeather() {
@@ -49,6 +43,7 @@ const DAY_START = 6.5, DAY_END = 18;
 const Sim = {
   acc: 0, STEP: 5, skipping: false, ending: false,
   tick(dt) {
+    if (G.S.explore) return;   // Explore mode: the clock stands still
     const dm = dt * (60 / GAME_SEC_PER_HOUR) * Time.scale;
     this.clock(dm, false);
     if (!this.ending && Time.hour() >= DAY_END) this.endDay();
@@ -269,15 +264,39 @@ const Game = {
       Cam.focus.set(cx + Math.cos(a + 1.1) * 40, 2, cz + Math.sin(a + 1.1) * 40);
     };
   },
-  // free rides (auto rickshaw, racing bike, village bus, lorry) parked by roads near your house
+  // a helipad on open ground near the village (the same spot every time), with a painted H
+  helipad() {
+    if (this._pad) return this._pad;
+    let spot = null;
+    for (let r = 0; r <= 160 && !spot; r += 8) for (let k = 0; k < Math.max(1, r / 4) && !spot; k++) {
+      const a = (k / Math.max(1, r / 4)) * TAU + r * 0.13, x = HOME.x + 45 + Math.cos(a) * r, z = HOME.z + 40 + Math.sin(a) * r;
+      const o = World.occGet(x, z); if (o !== OCC.FREE && o !== OCC.VILLAGE && o !== OCC.KEEP) continue;
+      if (fieldAt(x, z) || lakeSD(x, z) < 8 || World.collideCircle({ x, z }, 6.5)) continue;
+      const h0 = World.groundHeight(x, z); if (Math.abs(World.groundHeight(x + 4, z) - h0) > 0.6 || Math.abs(World.groundHeight(x, z + 4) - h0) > 0.6) continue;
+      spot = { x, z };
+    }
+    spot = spot || { x: HOME.x + 45, z: HOME.z + 40 };
+    const b = new GeoBuilder(), y = World.groundHeight(spot.x, spot.z) + 0.03, wh = C('#f4f1ea');
+    b.cyl(4.6, 0.05, spot.x, y, spot.z, C('#5d6166'), 16); b.cyl(4.2, 0.06, spot.x, y, spot.z, C('#e2b81f'), 16); b.cyl(3.9, 0.07, spot.x, y, spot.z, C('#5d6166'), 16);
+    b.box(0.5, 0.1, 3.2, spot.x - 1.1, y + 0.05, spot.z, 0, wh); b.box(0.5, 0.1, 3.2, spot.x + 1.1, y + 0.05, spot.z, 0, wh); b.box(1.8, 0.1, 0.5, spot.x, y + 0.05, spot.z, 0, wh);
+    const m = new THREE.Mesh(b.build(), MAT.std); m.receiveShadow = true; G.scene.add(m);
+    this._pad = spot; return spot;
+  },
+  // free rides parked by roads near your house: bikes, autos, cars, a jeep, a go-kart, a bus, a lorry and a helicopter.
+  // Older farms get whatever is missing.
   spawnFreeRides() {
-    const want = [['racer', HOME.x + 22, HOME.z - 14], ['autorick', HOME.x + 40, HOME.z - 12], ['lorry', HOME.x + 70, HOME.z - 20], ['citybus', HOME.x + 105, HOME.z - 24]];
-    const used = [];
+    const want = [['racer', HOME.x + 22, HOME.z - 14], ['scooter', HOME.x + 16, HOME.z - 10], ['cycle', HOME.x + 12, HOME.z + 8], ['autorick', HOME.x + 40, HOME.z - 12], ['car', HOME.x + 55, HOME.z - 16],
+      ['kart', HOME.x + 30, HOME.z - 30], ['jeep', HOME.x - 30, HOME.z - 20], ['taxi', HOME.x + 85, HOME.z - 22], ['lorry', HOME.x + 70, HOME.z - 20], ['citybus', HOME.x + 105, HOME.z - 24]];
+    const have = new Set(Vehicles.player.map((v) => v.type));
+    const used = Vehicles.player.map((v) => ({ x: v.x, z: v.z }));   // parked rides only (traffic moves on)
+    const pad = this.helipad();
+    if (!have.has('heli')) Vehicles.spawnOwned({ type: 'heli', x: pad.x, z: pad.z, yaw: 0 });
     for (const [type, x0, z0] of want) {
+      if (have.has(type)) continue;
       const nd = Graph.nodes[Graph.nearest(x0, z0)]; if (!nd) continue;
       let spot = null;
       // beside the road, on open ground, not on top of another ride
-      for (let r = 4; r <= 10 && !spot; r += 2) for (let k = 0; k < 8 && !spot; k++) {
+      for (let r = 4; r <= 18 && !spot; r += 2) for (let k = 0; k < 8 && !spot; k++) {
         const a = (k / 8) * TAU, x = nd.x + Math.cos(a) * r, z = nd.z + Math.sin(a) * r; const o = World.occGet(x, z);
         if (o !== OCC.FREE && o !== OCC.VILLAGE && o !== OCC.KEEP) continue;
         if (used.some((u) => Math.hypot(u.x - x, u.z - z) < 9)) continue;
@@ -330,9 +349,9 @@ const Game = {
       Vehicles.spawnOwned({ type: 'bullock', x: -110, z: 66, yaw: Math.PI, impl: 'bcart' });
       Vehicles.spawnOwned({ type: 'moped', x: -114.5, z: 47.5, yaw: Math.PI / 2 });
     }
-    if (!Vehicles.player.some((v) => v.def.free)) this.spawnFreeRides();
+    this.spawnFreeRides();
     // player
-    Player.init(playerAppearance(S.player.gender));
+    Player.init(playerAppearance(S.player.gender, S.player.look));
     Player.x = S.player.x; Player.z = S.player.z; Player.yaw = S.player.yaw || 0;
     Player.y = World.groundHeight(Player.x, Player.z);
     // farm, village, workers, missions
@@ -361,6 +380,7 @@ const Game = {
     Missions.ensure();
     if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
+    Fun.start();
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
@@ -472,6 +492,7 @@ function frame(now) {
       Loop.missionT -= dt; if (Loop.missionT <= 0) { Loop.missionT = 0.5; Missions.update(); }
       UI.update(dt);
       Extras.update(dt);
+      Fun.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -558,7 +579,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

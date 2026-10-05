@@ -116,12 +116,14 @@ class Vehicle {
     }
   }
   update(dt, inp) {
+    if (this.def.fly) { this.updateFly(dt, inp); return; }
     const d = this.def;
     const surf = World.surfaceAt(this.x, this.z);
     const wet = U.uWet.value;
     const roadsCC = G.S && G.S.village.roads;
     let smul = surf === 'asphalt' || surf === 'concrete' ? 1 : surf === 'dirt' ? (roadsCC ? 1 : 0.9 - wet * 0.25) : surf === 'field' ? 0.88 - wet * 0.2 : surf === 'water' ? 0.3 : 0.82 - wet * 0.2;
     if (this.type === 'bullock' || this.type === 'harvester') smul = Math.max(smul, 0.85);
+    if (d.offroad && surf !== 'water') smul = Math.max(smul, 0.95);   // the jeep and the bicycle go anywhere
     const mine = this === Player.vehicle;   // the player's own ride: quicker and snappier than traffic
     let maxSp = d.maxSpeed * smul * (mine && this.type !== 'bullock' ? 1.35 : 1);
     if (this.lowered && this.impl && IMPLEMENTS[this.impl].op) maxSp = Math.min(maxSp, IMPLEMENTS[this.impl].maxSpeed);
@@ -176,6 +178,40 @@ class Vehicle {
     this.ud.lightMat.emissiveIntensity = this.lights ? 3 : 0;
     this.place();
     this.fx(dt, surf);
+  }
+  // the helicopter: Up / Down to rise and sink, stick or arrows to fly and turn; it hovers when you let go
+  updateFly(dt, inp) {
+    const d = this.def, mine = this === Player.vehicle, ud = this.ud;
+    const floor = (x, z) => Math.max(World.groundHeight(x, z), lakeSD(x, z) < 0 ? LAKE.full : -1e9);
+    this.alt = this.alt || 0; this.vy = this.vy || 0;
+    this.rotorSpin = damp(this.rotorSpin || 0, mine ? 1 : 0, mine ? 0.9 : 0.45, dt);
+    const ready = this.rotorSpin > 0.7;
+    const lift = mine ? (ready ? (inp.up ? 1 : 0) - (inp.down ? 1 : 0) : 0) : (this.alt > 0 ? -1 : 0);
+    this.vy = damp(this.vy, lift * 7, 2.5, dt);
+    this.alt = clamp(this.alt + this.vy * dt, 0, 160);
+    if (this.alt <= 0 && this.vy < 0) this.vy = 0;
+    const air = this.alt > 0.5;
+    const th = air ? clamp(inp.throttle || 0, -1, 1) : 0;
+    this.speed = damp(this.speed, th * d.maxSpeed * (th < 0 ? 0.4 : 1), air ? 1.1 : 4, dt);
+    const turn = (inp.steer || 0) * (air ? 1.3 : ready ? 0.5 : 0);
+    this.yaw += turn * dt;
+    this.x += Math.sin(this.yaw) * this.speed * dt; this.z += Math.cos(this.yaw) * this.speed * dt;
+    if (this.alt < 4 && this.collide()) this.speed *= 0.3;
+    this.x = clamp(this.x, -PLAY_HALF, PLAY_HALF); this.z = clamp(this.z, -PLAY_HALF, PLAY_HALF);
+    // nose down when flying forward, lean into turns
+    this.pitch = damp(this.pitch, (this.speed / d.maxSpeed) * 0.22, 3, dt);
+    this.lean = damp(this.lean, -turn * 0.14 * Math.min(1, Math.abs(this.speed) / 6 + 0.3), 3, dt);
+    const gy = floor(this.x, this.z);
+    this.y = gy + this.alt;
+    this.group.position.set(this.x, this.y, this.z);
+    this.group.rotation.set(this.pitch, this.yaw, this.lean, 'YXZ');
+    if (ud.rotor) ud.rotor.rotation.y += this.rotorSpin * 26 * dt;
+    if (ud.tailRotor) ud.tailRotor.rotation.x += this.rotorSpin * 40 * dt;
+    this.throttle = Math.abs(th) + Math.abs(lift) * 0.5;
+    this.rpm = damp(this.rpm, this.rotorSpin * (0.45 + Math.abs(th) * 0.3 + Math.abs(lift) * 0.2), 3, dt);
+    ud.lightMat.emissiveIntensity = this.lights ? 3 : 0;
+    // rotor wash: dust blowing out under it near the ground
+    if (this.rotorSpin > 0.6 && this.alt < 12 && frand() < 0.5 * G.preset.particles) { const a = frand() * TAU, r = 2 + frand() * 3; FX.emit('dust', this.x + Math.cos(a) * r, gy + 0.2, this.z + Math.sin(a) * r, Math.cos(a) * 4, 0.6, Math.sin(a) * 4); }
   }
   collide() {
     if (this.ghost) return false; // AI field machines pass through edge trees and pump houses
@@ -272,7 +308,7 @@ const Vehicles = {
       this.cull(v, Math.hypot(v.x - P0.x, v.z - P0.z));
       if (v === Player.vehicle) continue;
       if (v.job) { v.job.update(dt); continue; }
-      if (Math.abs(v.speed) > 0.01) v.update(dt, { throttle: 0, steer: 0, brake: true });
+      if (Math.abs(v.speed) > 0.01 || (v.def.fly && (v.rotorSpin > 0.01 || v.alt > 0))) v.update(dt, { throttle: 0, steer: 0, brake: true });
       else if (v.bulls) { for (const a of v.bulls) if (a) { a.speed = 0; a.pose = Sky.night > 0.7 ? 'lie' : 'stand'; } }
     }
     Traffic.update(dt);
@@ -320,6 +356,8 @@ const Traffic = {
     for (let k = 0; k < Math.round(7 * G.preset.npc); k++) this.add('npcbike', null, { trips: true, speed: 9 + frand() * 3 });
     for (let k = 0; k < 3; k++) this.add('auto', null, { trips: true, speed: 8, townBias: true });
     for (let k = 0; k < 2; k++) this.add('npctractor', null, { trips: true, speed: 6.5, impl: 'trailer' });
+    // cars on the roads too
+    for (let k = 0; k < Math.round(5 * G.preset.npc); k++) this.add('npccar', null, { trips: true, speed: 10 + frand() * 3, townBias: k % 2 === 0 });
   },
   nearestIdx(route, x, z) { let bi = 0, bd = 1e9; route.forEach((p, i) => { const d = Math.hypot(p.x - x, p.z - z); if (d < bd) { bd = d; bi = i; } }); return bi; },
   add(type, route, o) {

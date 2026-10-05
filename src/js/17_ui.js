@@ -83,6 +83,7 @@ const UI = {
     this.el('bOffice').onclick = () => this.office();
     this.el('bMenu').onclick = () => this.settings();
     this.el('bPhoto').onclick = () => this.photo();
+    const bf = this.el('bFun'); if (bf) bf.onclick = () => { Audio2.unlock(); Fun.bar(); };
     this.el('mapwrap').onclick = () => this.map();
     this.el('prompt').onclick = () => Interact.trigger();
     this.initTouch();
@@ -99,6 +100,7 @@ const UI = {
       if (e.code === 'KeyM') this.map();
       else if (e.code === 'KeyB' || e.code === 'KeyI' || e.code === 'Tab') { e.preventDefault(); this.office(e.code === 'KeyI' ? 'storage' : undefined); }
       else if (e.code === 'KeyP') this.photo();
+      else if (e.code === 'KeyT' && G.started && !this.modalOpen()) Fun.bar();
       else if (e.code === 'Equal' && !Player.vehicle) { Input.autoRun = !Input.autoRun; Input.run = Input.autoRun; if (Input.autoRun) this.toastOnce('autorunpc', L('Auto run on: steer with the mouse. Press W or S to stop.', 'ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.'), 'info'); }
       else if (e.code === 'F1' || e.code === 'Slash') { e.preventDefault(); this.help(); }
     });
@@ -840,7 +842,7 @@ const UI = {
         [L('Left stick', 'ఎడమ స్టిక్'), L('Walk; push it all the way to run', 'నడవండి; పూర్తిగా నెడితే పరుగు')], [L('Drag right side', 'కుడివైపు లాగండి'), L('Look around, pinch to zoom', 'చుట్టూ చూడండి, జూమ్ కోసం పించ్')], [L('Work', 'పని'), L('Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests', 'పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది')], [L('Use', 'వాడు'), L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], [L('Gold arrow', 'బంగారు బాణం'), L('Always points to your next goal', 'మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది')], [L('Map', 'మ్యాప్'), L('Tap a place, then take an auto straight there', 'ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['V', L('Switch camera view', 'కెమెరా మార్చు')],
       ] : [
         ['W A S D', L('Walk / drive', 'నడవండి / నడపండి')], ['Shift', L('Run', 'పరుగు')], ['Space', L('Jump / brake', 'దూకు / బ్రేక్')], [L('Mouse drag, wheel', 'మౌస్ లాగడం, వీల్'), L('Look around, zoom', 'చూడండి, జూమ్')], ['E', L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], ['F', L('Hold on your field: Auto does the next job', 'పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది')],
-        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
+        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['T', L('Fun moves, dress up and activities', 'సరదా కదలికలు, దుస్తులు, ఆటలు')], ['Space / C', L('Helicopter: up / down', 'హెలికాప్టర్: పైకి / కిందికి')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
       ];
       const t = h('table', { class: 't' }); for (const [k, v2] of rows) t.appendChild(h('tr', null, h('td', null, h('span', { class: 'kbd' }, k)), h('td', null, v2)));
       b.appendChild(t);
@@ -932,7 +934,7 @@ const UI = {
       hold(b, () => { Input.drive[k] = 1; b.classList.add('on'); }, () => { Input.drive[k] = 0; b.classList.remove('on'); });
     }
     hold(this.el('tbE'), () => { Input.interactTap = true; }, () => { });
-    hold(this.el('tbG'), () => { const v = Player.vehicle; if (v) { if (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)) Input.implToggle = true; else Input.horn = true; } else Player.cycleOpt(); }, () => { });
+    hold(this.el('tbG'), () => { const v = Player.vehicle; if (v && v.def.fly) { Input.heliDown = true; return; } if (v) { if (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)) Input.implToggle = true; else Input.horn = true; } else Player.cycleOpt(); }, () => { Input.heliDown = false; });
     hold(this.el('tbV'), () => Cam.toggle(), () => { });
     hold(this.el('tbJump'), () => { if (Player.vehicle) Input.brake = true; else Input.pressedQ.add('Space'); }, () => { Input.brake = false; });
     hold(this.el('tbRun'), () => { Input.runToggle = !Input.runToggle; Input.run = Input.runToggle; this.el('tbRun').classList.toggle('on', Input.runToggle); }, () => { });
@@ -960,9 +962,10 @@ const UI = {
     const set = (id, txt, vis = true) => { const el = this.el(id); if (!el) return; if (el.dataset.l !== txt) { el.dataset.l = txt; el.textContent = txt; } el.style.visibility = vis ? '' : 'hidden'; };
     const implOp = !!(v && (v.type === 'harvester' || (v.impl && IMPLEMENTS[v.impl].op)));
     const toolOpt = !inV && (Player.tool === 'seeds' || Player.tool === 'fert' || Player.tool === 'sprayer');
-    set('tbG', inV ? (implOp ? (v.lowered ? L('Raise', 'ఎత్తు') : L('Lower', 'దించు')) : L('Horn', 'హారన్')) : L('Type', 'రకం'), inV || toolOpt);
+    const fly = inV && v.def.fly;
+    set('tbG', inV ? (fly ? L('Down ▼', 'కిందికి ▼') : implOp ? (v.lowered ? L('Raise', 'ఎత్తు') : L('Lower', 'దించు')) : L('Horn', 'హారన్')) : L('Type', 'రకం'), inV || toolOpt);
     set('tbV', L('View', 'వ్యూ'));
-    set('tbJump', inV ? L('Brake', 'బ్రేక్') : L('Jump', 'దూకు'));
+    set('tbJump', inV ? (fly ? L('Up ▲', 'పైకి ▲') : L('Brake', 'బ్రేక్')) : L('Jump', 'దూకు'));
     set('tbRun', L('Run', 'పరుగు'), !inV);
     set('tbWork', L('Work', 'పని'), !inV);
     const real = (Interact.current || []).filter((o) => o.id !== 'exit');
@@ -1253,6 +1256,7 @@ const Map2 = {
   placeName(p) { return L(p.en, p.te); },
   // the place, mission target or waypoint the guide is pointing at
   target() {
+    const ft = Fun.guide(); if (ft) return ft;   // the next race checkpoint
     const wp = G.S && G.S.waypoint;
     if (wp) return { x: wp.x, z: wp.z, name: wp.name || L('Waypoint', 'గమ్యం'), wp: true };
     const st = Coach.step;   // the next step of the mission you follow

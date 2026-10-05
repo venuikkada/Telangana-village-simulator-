@@ -146,9 +146,39 @@ const Humans = {
         break;
       }
       case 'wave': { arR = -2.6 + Math.sin(h.t * 8) * 0.3; elR = -0.3; armOutR = -0.3; break; }
+      // ---- fun moves (Fun button) ----
+      case 'namaste': { arL = arR = -0.45; armOutL = -0.42; armOutR = 0.42; elL = elR = -1.95; headP = 0.12; break; }
+      case 'clap': { const c = Math.max(0, Math.sin(h.t * 13)); arL = arR = -1.2; elL = elR = -0.45; armOutL = -0.12 + c * 0.42; armOutR = -armOutL; bob = Math.abs(Math.sin(h.t * 6.5)) * 0.015; break; }
+      case 'laugh': { const q = Math.sin(h.t * 20); lean = -0.2 + q * 0.03; headP = -0.35 + q * 0.06; arL = arR = -0.35; armOutL = -0.25; armOutR = 0.25; elL = elR = -1.7; bob = Math.abs(q) * 0.02; break; }
+      case 'flex': { const q = Math.sin(h.t * 3) * 0.08; armOutL = 1.45 + q; armOutR = -1.45 - q; arL = arR = 0; elL = elR = -1.7; lean = -0.05; headY = Math.sin(h.t * 1.5) * 0.4; break; }
+      case 'bhangra': {
+        const w = h.t * 6.5, up = Math.max(0, Math.sin(w)), up2 = Math.max(0, -Math.sin(w));
+        arL = arR = -2.75; armOutL = 0.45 + Math.sin(w * 2) * 0.12; armOutR = -armOutL; elL = elR = -0.35;
+        thL = -up * 0.9; knL = up * 1.5; thR = -up2 * 0.9; knR = up2 * 1.5; bob = Math.abs(Math.sin(w)) * 0.07; headY = Math.sin(w) * 0.25;
+        break;
+      }
+      case 'yoga': { const q = (Math.sin(h.t * 0.9) + 1) / 2; arL = arR = -3.0 + q * 0.2; armOutL = 0.05; armOutR = -0.05; elL = elR = 0; lean = q * 1.25; headP = q * 0.4; break; }
+      case 'facepalm': { arR = -1.75; elR = -2.3; armOutR = 0.32; arL = 0.1; headP = 0.25; headY = Math.sin(h.t * 2.2) * 0.25; break; }
+      case 'chicken': {
+        const f = Math.abs(Math.sin(h.t * 11)), w = h.t * 7;
+        arL = arR = 0.15; elL = elR = -2.7; armOutL = 0.25 + f * 0.6; armOutR = -armOutL;
+        knL = Math.max(0, Math.sin(w)) * 0.6; knR = Math.max(0, -Math.sin(w)) * 0.6; headP = Math.sin(h.t * 9) * 0.25; lean = 0.15; bob = Math.abs(Math.sin(w)) * 0.03;
+        break;
+      }
+      case 'selfie': { arR = -1.95; elR = -0.25; armOutR = 0.15; arL = -0.1; headY = 0.25; headP = -0.1; lean = -0.05; break; }
+      case 'star': { armOutL = 1.5; armOutR = -1.5; arL = arR = 0; elL = elR = 0; thL = -0.25; thR = 0.25; break; }
+      case 'joy': { arL = arR = -2.9; armOutL = 0.35; armOutR = -0.35; elL = elR = -0.1; break; }
+      case 'groundsit': { sitting = true; thL = thR = -1.5; knL = knR = 2.5; arL = arR = -0.5; elL = elR = -0.6; armOutL = 0.2; armOutR = -0.2; lean = 0.05; break; }
+      case 'sleep': { arL = arR = 0.05; armOutL = 0.15; armOutR = -0.15; elL = elR = -0.1; break; }
     }
-    // root
-    this._q.setFromAxisAngle(UP, h.yaw); this._p.set(h.x, h.y + bob * hs, h.z); this._s.set(hs, hs, hs);
+    // root; lying down (nap), cartwheels and spins turn the whole body
+    if (h.lie || h.roll || h.spin) {
+      _e1.set(-(h.lie || 0) * Math.PI / 2, h.yaw + (h.spin || 0), h.roll || 0, 'YXZ'); this._q.setFromEuler(_e1);
+      const piv = (h.roll ? 0.9 : 0.12) * hs;
+      this._p.set(0, piv, 0).applyQuaternion(this._q);
+      this._p.set(h.x - this._p.x, h.y + piv - this._p.y + (h.lie || 0) * 0.16 * hs + bob * hs, h.z - this._p.z);
+    } else { this._q.setFromAxisAngle(UP, h.yaw); this._p.set(h.x, h.y + bob * hs, h.z); }
+    this._s.set(hs, hs, hs);
     root.compose(this._p, this._q, this._s);
     const i = h.idx;
     // torso frame
@@ -169,11 +199,12 @@ const Humans = {
     this.put('head', 0, i, this.scaled(tmp, jA, 0.22, 0.26, 0.23));
     this.put('hair', 0, i, this.scaled(tmp, jA, 0.24, 0.27, 0.25, 0, 0.01, -0.012));
     this.put('bun', 0, i, a.bun ? this.scaled(tmp, jA, 0.12, 0.12, 0.1, 0, 0.0, -0.13) : this.zero);
-    this.put('eye', 0, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, -0.05, 0.02, 0.105));
-    this.put('eye', 1, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, 0.05, 0.02, 0.105));
+    // eyes, or sunglasses
+    if (a.shades) { this.put('eye', 0, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, -0.055, 0.025, 0.108)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, 0.055, 0.025, 0.108)); }
+    else { this.put('eye', 0, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, -0.05, 0.02, 0.105)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, 0.05, 0.02, 0.105)); }
     this.put('stache', 0, i, a.stache ? this.scaled(tmp, jA, 0.09, 0.022, 0.03, 0, -0.045, 0.105) : this.zero);
     this.put('bindi', 0, i, a.bindi ? this.scaled(tmp, jA, 0.022, 0.022, 0.012, 0, 0.065, 0.113) : this.zero);
-    this.put('turban', 0, i, a.turban ? this.scaled(tmp, jA, 0.27, 0.1, 0.27, 0, 0.1, -0.005) : this.zero);
+    this.put('turban', 0, i, !a.turban ? this.zero : a.hat === 'cap' ? this.scaled(tmp, jA, 0.25, 0.075, 0.2, 0, 0.15, -0.01) : this.scaled(tmp, jA, 0.27, 0.1, 0.27, 0, 0.1, -0.005));
     this.put('item', 0, i, h.carry === 'pot' ? this.scaled(tmp, jA, 0.34, 0.3, 0.34, 0, 0.3, 0) : this.zero);
     // arms
     for (const [k, sx, ar, el, out] of [[0, -1, arL, elL, armOutL], [1, 1, arR, elR, armOutR]]) {
