@@ -4107,565 +4107,573 @@
   "te": "సినిమాటిక్",
   "at": "17_ui.js:840"
  },
+ "Account": {
+  "te": "ఖాతా",
+  "at": "17_ui.js:841"
+ },
+ "Sign in / Create account": {
+  "te": "సైన్ ఇన్ / ఖాతా తెరవండి",
+  "at": "17_ui.js:841"
+ },
  "Language": {
   "te": "భాష",
-  "at": "17_ui.js:841"
+  "at": "17_ui.js:842"
  },
  "Game speed": {
   "te": "ఆట వేగం",
-  "at": "17_ui.js:842"
+  "at": "17_ui.js:843"
  },
  "Difficulty": {
   "te": "కష్టం",
-  "at": "17_ui.js:843"
+  "at": "17_ui.js:844"
  },
  "Easy": {
   "te": "సులభం",
-  "at": "17_ui.js:843"
+  "at": "17_ui.js:844"
  },
  "Normal": {
   "te": "సాధారణం",
-  "at": "17_ui.js:843"
+  "at": "17_ui.js:844"
  },
  "Easy mode: crops forgive mistakes and you tire slowly.": {
   "te": "సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.",
-  "at": "17_ui.js:843"
+  "at": "17_ui.js:844"
  },
  "Normal mode: real farming.": {
   "te": "సాధారణ మోడ్: నిజమైన వ్యవసాయం.",
-  "at": "17_ui.js:843"
+  "at": "17_ui.js:844"
  },
  "Master volume": {
   "te": "మొత్తం శబ్దం",
-  "at": "17_ui.js:845"
+  "at": "17_ui.js:846"
  },
  "Music": {
   "te": "సంగీతం",
-  "at": "17_ui.js:845"
+  "at": "17_ui.js:846"
  },
  "Ambience": {
   "te": "పరిసర శబ్దాలు",
-  "at": "17_ui.js:845"
+  "at": "17_ui.js:846"
  },
  "Effects": {
   "te": "ఎఫెక్ట్స్",
-  "at": "17_ui.js:845"
+  "at": "17_ui.js:846"
  },
  "Camera speed": {
   "te": "కెమెరా వేగం",
-  "at": "17_ui.js:846"
+  "at": "17_ui.js:847"
  },
  "Voice guide": {
   "te": "వాయిస్ గైడ్",
-  "at": "17_ui.js:848"
+  "at": "17_ui.js:849"
  },
  "Frame rate": {
   "te": "ఫ్రేమ్ రేట్",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "60 smooth": {
   "te": "60 స్మూత్",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "30 battery": {
   "te": "30 బ్యాటరీ",
-  "at": "17_ui.js:849"
+  "at": "17_ui.js:850"
  },
  "Options": {
   "te": "ఎంపికలు",
-  "at": "17_ui.js:850"
+  "at": "17_ui.js:851"
  },
  "Invert camera Y": {
   "te": "కెమెరా Y తిప్పు",
-  "at": "17_ui.js:850"
+  "at": "17_ui.js:851"
  },
  "Camera follows you": {
   "te": "కెమెరా మిమ్మల్ని అనుసరిస్తుంది",
-  "at": "17_ui.js:850"
+  "at": "17_ui.js:851"
  },
  "Hold left mouse to work": {
   "te": "ఎడమ మౌస్‌తో పని",
-  "at": "17_ui.js:850"
+  "at": "17_ui.js:851"
  },
  "Show FPS": {
   "te": "FPS చూపు",
-  "at": "17_ui.js:850"
+  "at": "17_ui.js:851"
  },
  "Helpers": {
   "te": "సహాయకాలు",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "“Do it for me” button": {
   "te": "“నా బదులు చేయి” బటన్",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "Tap the ground to walk": {
   "te": "నేలపై నొక్కితే నడక",
-  "at": "17_ui.js:852"
+  "at": "17_ui.js:853"
  },
  "Screen": {
   "te": "స్క్రీన్",
-  "at": "17_ui.js:853"
+  "at": "17_ui.js:854"
  },
  "Exit full screen": {
   "te": "ఫుల్ స్క్రీన్ ఆపు",
-  "at": "17_ui.js:853"
+  "at": "17_ui.js:854"
  },
  "Full screen": {
   "te": "ఫుల్ స్క్రీన్",
-  "at": "17_ui.js:853"
+  "at": "17_ui.js:854"
  },
  "Invite friends": {
   "te": "స్నేహితులను ఆహ్వానించండి",
-  "at": "17_ui.js:857"
+  "at": "17_ui.js:858"
  },
  "Controls": {
   "te": "నియంత్రణలు",
-  "at": "17_ui.js:858"
+  "at": "17_ui.js:859"
  },
  "Main menu": {
   "te": "ముఖ్య మెనూ",
-  "at": "17_ui.js:859"
+  "at": "17_ui.js:860"
  },
  "Turn on cloud save": {
   "te": "క్లౌడ్ సేవ్ ఆన్ చేయండి",
-  "at": "17_ui.js:861"
+  "at": "17_ui.js:862"
  },
  "Left stick": {
   "te": "ఎడమ స్టిక్",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Walk; push it all the way to run": {
   "te": "నడవండి; పూర్తిగా నెడితే పరుగు",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Drag right side": {
   "te": "కుడివైపు లాగండి",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Look around, pinch to zoom": {
   "te": "చుట్టూ చూడండి, జూమ్ కోసం పించ్",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests": {
   "te": "పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Use": {
   "te": "వాడు",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Talk, shop, drive, buy seeds, rest, get off": {
   "te": "మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Gold arrow": {
   "te": "బంగారు బాణం",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Always points to your next goal": {
   "te": "మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Tap a place, then take an auto straight there": {
   "te": "ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Lower or raise implement": {
   "te": "పనిముట్టు దించు/ఎత్తు",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Switch camera view": {
   "te": "కెమెరా మార్చు",
-  "at": "17_ui.js:867"
+  "at": "17_ui.js:868"
  },
  "Walk / drive": {
   "te": "నడవండి / నడపండి",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Run": {
   "te": "పరుగు",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Jump / brake": {
   "te": "దూకు / బ్రేక్",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Mouse drag, wheel": {
   "te": "మౌస్ లాగడం, వీల్",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Look around, zoom": {
   "te": "చూడండి, జూమ్",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Hold on your field: Auto does the next job": {
   "te": "పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది",
-  "at": "17_ui.js:869"
+  "at": "17_ui.js:870"
  },
  "Auto, hoe, seeds, fertilizer, sprayer, sickle": {
   "te": "ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Switch seed / fertilizer / chemical": {
   "te": "విత్తనం / ఎరువు / మందు మార్చు",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Horn / headlights": {
   "te": "హారన్ / లైట్లు",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "First / third person": {
   "te": "ఫస్ట్ / థర్డ్ పర్సన్",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Farm office / storage": {
   "te": "వ్యవసాయ కార్యాలయం / నిల్వ",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Photo mode": {
   "te": "ఫోటో మోడ్",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Menu & settings": {
   "te": "మెనూ & సెట్టింగ్‌లు",
-  "at": "17_ui.js:870"
+  "at": "17_ui.js:871"
  },
  "Tip: follow the gold arrow. When the crop is growing and there is nothing to do, use “Rest” on your field to jump ahead.": {
   "te": "చిట్కా: బంగారు బాణాన్ని అనుసరించండి. పంట పెరుగుతూ పని లేనప్పుడు పొలంలో 'విశ్రాంతి' వాడి సమయం ముందుకు జరపండి.",
-  "at": "17_ui.js:874"
+  "at": "17_ui.js:875"
  },
  "Take photo": {
   "te": "ఫోటో తీయండి",
-  "at": "17_ui.js:888"
+  "at": "17_ui.js:889"
  },
  "Back": {
   "te": "వెనక్కి",
-  "at": "17_ui.js:889"
+  "at": "17_ui.js:890"
  },
  "Photo mode: drag to frame your shot, then tap Take photo": {
   "te": "ఫోటో మోడ్: లాగి చిత్రాన్ని సరిచేసి, ఫోటో తీయండి నొక్కండి",
-  "at": "17_ui.js:892"
+  "at": "17_ui.js:893"
  },
  "Photo mode: frame your shot, then click Take photo (P to return)": {
   "te": "ఫోటో మోడ్: చిత్రాన్ని సరిచేసి ఫోటో తీయండి నొక్కండి (తిరిగి రావడానికి P)",
-  "at": "17_ui.js:892"
+  "at": "17_ui.js:893"
  },
  "Auto run · tap to stop": {
   "te": "ఆటో పరుగు · ఆపడానికి నొక్కండి",
-  "at": "17_ui.js:957"
+  "at": "17_ui.js:958"
  },
  "Auto run": {
   "te": "ఆటో పరుగు",
-  "at": "17_ui.js:957"
+  "at": "17_ui.js:958"
  },
  "Auto run on: turn the camera to steer. Touch the stick to stop.": {
   "te": "ఆటో పరుగు ఆన్: దిశ మార్చడానికి కెమెరా తిప్పండి. ఆపడానికి స్టిక్ తాకండి.",
-  "at": "17_ui.js:958"
+  "at": "17_ui.js:959"
  },
  "Raise": {
   "te": "ఎత్తు",
-  "at": "17_ui.js:969"
+  "at": "17_ui.js:970"
  },
  "Lower": {
   "te": "దించు",
-  "at": "17_ui.js:969"
+  "at": "17_ui.js:970"
  },
  "Horn": {
   "te": "హారన్",
-  "at": "17_ui.js:969"
+  "at": "17_ui.js:970"
  },
  "Type": {
   "te": "రకం",
-  "at": "17_ui.js:969"
+  "at": "17_ui.js:970"
  },
  "View": {
   "te": "వ్యూ",
-  "at": "17_ui.js:970"
+  "at": "17_ui.js:971"
  },
  "Brake": {
   "te": "బ్రేక్",
-  "at": "17_ui.js:971"
+  "at": "17_ui.js:972"
  },
  "Jump": {
   "te": "దూకు",
-  "at": "17_ui.js:971"
+  "at": "17_ui.js:972"
  },
  "Full screen on iPhone: ": {
   "te": "ఐఫోన్‌లో ఫుల్ స్క్రీన్: ",
-  "at": "17_ui.js:997"
+  "at": "17_ui.js:998"
  },
  "tap Share, then “Add to Home Screen”, and open the game from your home screen.": {
   "te": "షేర్ నొక్కి “Add to Home Screen” ఎంచుకోండి, తర్వాత హోమ్ స్క్రీన్ నుంచి ఆట తెరవండి.",
-  "at": "17_ui.js:997"
+  "at": "17_ui.js:998"
  },
  "Continue": {
   "te": "కొనసాగించండి",
-  "at": "17_ui.js:1001"
+  "at": "17_ui.js:1002"
  },
  "New game": {
   "te": "కొత్త ఆట",
-  "at": "17_ui.js:1002"
+  "at": "17_ui.js:1003"
  },
  "Raju": {
   "te": "రాజు",
-  "at": "17_ui.js:1008"
+  "at": "17_ui.js:1009"
  },
  "Radha": {
   "te": "రాధ",
-  "at": "17_ui.js:1008"
+  "at": "17_ui.js:1009"
  },
  "Your name": {
   "te": "మీ పేరు",
-  "at": "17_ui.js:1008"
+  "at": "17_ui.js:1009"
  },
  "Farmer (man)": {
   "te": "రైతు (పురుషుడు)",
-  "at": "17_ui.js:1010"
+  "at": "17_ui.js:1011"
  },
  "Farmer (woman)": {
   "te": "రైతు (స్త్రీ)",
-  "at": "17_ui.js:1010"
+  "at": "17_ui.js:1011"
  },
  "Best for kids & first time": {
   "te": "పిల్లలకు, కొత్తవారికి",
-  "at": "17_ui.js:1014"
+  "at": "17_ui.js:1015"
  },
  "Real farming": {
   "te": "నిజమైన వ్యవసాయం",
-  "at": "17_ui.js:1014"
+  "at": "17_ui.js:1015"
  },
  "Start farming": {
   "te": "వ్యవసాయం మొదలుపెట్టండి",
-  "at": "17_ui.js:1016"
+  "at": "17_ui.js:1017"
  },
  "Show me seeds and fertilizer": {
   "te": "విత్తనాలు, ఎరువులు చూపించండి",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "What do you have?": {
   "te": "ఏమేమి ఉన్నాయి?",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "One chai, please": {
   "te": "ఒక చాయ్ ఇవ్వండి",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "About tractors…": {
   "te": "ట్రాక్టర్ల గురించి…",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "Today's prices?": {
   "te": "ఈ రోజు ధరలు?",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "I don't feel well": {
   "te": "నాకు ఒంట్లో బాగాలేదు",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "Village development": {
   "te": "గ్రామాభివృద్ధి",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "I need a loan": {
   "te": "నాకు అప్పు కావాలి",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "Loans and deposits": {
   "te": "రుణాలు, డిపాజిట్లు",
-  "at": "17_ui.js:1039"
+  "at": "17_ui.js:1041"
  },
  "Namaskaram, {0}! Ramapuram grows when its farmers grow. {1}": {
   "te": "నమస్కారం {0} గారూ! రైతులు ఎదిగితేనే రామాపురం ఎదుగుతుంది. {1}",
-  "at": "17_ui.js:1040"
+  "at": "17_ui.js:1042"
  },
  "Money? I always have money. Just remember — interest every single day.": {
   "te": "డబ్బా? నా దగ్గర ఎప్పుడూ ఉంటుంది. గుర్తుంచుకోండి — వడ్డీ ప్రతి రోజూ.",
-  "at": "17_ui.js:1042"
+  "at": "17_ui.js:1044"
  },
  "A tractor ploughs in an hour what bullocks plough in a day. Rent one, or buy a Bhoomi 35.": {
   "te": "ఎడ్లు రోజంతా దున్నేది ట్రాక్టర్ గంటలో దున్నుతుంది. అద్దెకు తీసుకోండి, లేదా భూమి 35 కొనండి.",
-  "at": "17_ui.js:1043"
+  "at": "17_ui.js:1045"
  },
  "Anna! Will you take us to the fields?": {
   "te": "అన్నా! మమ్మల్ని పొలానికి తీసుకెళ్తావా?",
-  "at": "17_ui.js:1044"
+  "at": "17_ui.js:1046"
  },
  "School was fun today. Ravi Sir taught us about rain!": {
   "te": "ఈ రోజు బడిలో బాగుంది. రవి సార్ వాన గురించి నేర్పారు!",
-  "at": "17_ui.js:1044"
+  "at": "17_ui.js:1046"
  },
  "Can I ride the bullock cart?": {
   "te": "నేను ఎడ్లబండి ఎక్కొచ్చా?",
-  "at": "17_ui.js:1044"
+  "at": "17_ui.js:1046"
  },
  "Any advice?": {
   "te": "ఏదైనా సలహా?",
-  "at": "17_ui.js:1046"
+  "at": "17_ui.js:1048"
  },
  "Goodbye": {
   "te": "సెలవు",
-  "at": "17_ui.js:1047"
+  "at": "17_ui.js:1049"
  },
  "Village kid": {
   "te": "ఊరి పిల్లవాడు",
-  "at": "17_ui.js:1052"
+  "at": "17_ui.js:1054"
  },
  "Villager": {
   "te": "గ్రామస్తుడు",
-  "at": "17_ui.js:1052"
+  "at": "17_ui.js:1054"
  },
  "Friendship: ": {
   "te": "స్నేహం: ",
-  "at": "17_ui.js:1057"
+  "at": "17_ui.js:1059"
  },
  "I saw {0} in your {1}. Spray today, not tomorrow.": {
   "te": "మీ {0}లో {1} చూశాను. రేపు కాదు, ఈ రోజే పిచికారీ చేయండి.",
-  "at": "17_ui.js:1065"
+  "at": "17_ui.js:1067"
  },
  "Your {0} is thirsty. {1}": {
   "te": "మీ {0}కు నీరు కావాలి. {1}",
-  "at": "17_ui.js:1066"
+  "at": "17_ui.js:1068"
  },
  "Your {0} is ready. Don't leave it standing — it loses quality every day.": {
   "te": "మీ {0} కోతకు సిద్ధం. అలాగే వదిలేయకండి — రోజురోజుకు నాణ్యత తగ్గుతుంది.",
-  "at": "17_ui.js:1067"
+  "at": "17_ui.js:1069"
  },
  "Weeds are taking over {0}. Use the hoe or herbicide.": {
   "te": "{0}లో కలుపు పెరిగిపోయింది. పార లేదా కలుపు మందు వాడండి.",
-  "at": "17_ui.js:1068"
+  "at": "17_ui.js:1070"
  },
  "{0} looks pale. It needs urea or DAP.": {
   "te": "{0} పాలిపోయినట్టుంది. యూరియా లేదా డీఏపీ వేయండి.",
-  "at": "17_ui.js:1069"
+  "at": "17_ui.js:1071"
  },
  "Your harvest is getting wet in the open! Move it into storage.": {
   "te": "మీ పంట కుప్ప వానలో తడుస్తోంది! నిల్వలోకి తరలించండి.",
-  "at": "17_ui.js:1070"
+  "at": "17_ui.js:1072"
  },
  "This season {0} does well, and its price is {1}.": {
   "te": "ఈ సీజన్‌లో {0} బాగా పండుతుంది, ధర {1}.",
-  "at": "17_ui.js:1074"
+  "at": "17_ui.js:1076"
  },
  "Kirana": {
   "te": "కిరాణం",
-  "at": "17_ui.js:1083"
+  "at": "17_ui.js:1085"
  },
  "Tractor workshop": {
   "te": "ట్రాక్టర్ వర్క్‌షాప్",
-  "at": "17_ui.js:1084"
+  "at": "17_ui.js:1086"
  },
  "Health centre": {
   "te": "ఆరోగ్య కేంద్రం",
-  "at": "17_ui.js:1085"
+  "at": "17_ui.js:1087"
  },
  "Bus stop": {
   "te": "బస్ స్టాప్",
-  "at": "17_ui.js:1086"
+  "at": "17_ui.js:1088"
  },
  "Town bus stand": {
   "te": "పట్టణ బస్ స్టాండ్",
-  "at": "17_ui.js:1087"
+  "at": "17_ui.js:1089"
  },
  "Petrol bunk": {
   "te": "పెట్రోల్ బంక్",
-  "at": "17_ui.js:1089"
+  "at": "17_ui.js:1091"
  },
  "Dhaba": {
   "te": "దాబా",
-  "at": "17_ui.js:1090"
+  "at": "17_ui.js:1092"
  },
  "Hill shrine": {
   "te": "గుట్ట గుడి",
-  "at": "17_ui.js:1091"
+  "at": "17_ui.js:1093"
  },
  "Waypoint": {
   "te": "గమ్యం",
-  "at": "17_ui.js:1262"
+  "at": "17_ui.js:1264"
  },
  "Map of the mandal": {
   "te": "మండలం మ్యాప్",
-  "at": "17_ui.js:1335"
+  "at": "17_ui.js:1337"
  },
  "Zoom in": {
   "te": "జూమ్ ఇన్",
-  "at": "17_ui.js:1338"
+  "at": "17_ui.js:1340"
  },
  "Zoom out": {
   "te": "జూమ్ అవుట్",
-  "at": "17_ui.js:1338"
+  "at": "17_ui.js:1340"
  },
  "Centre on me": {
   "te": "నా దగ్గరికి",
-  "at": "17_ui.js:1339"
+  "at": "17_ui.js:1341"
  },
  "You": {
   "te": "మీరు",
-  "at": "17_ui.js:1343"
+  "at": "17_ui.js:1345"
  },
  "Your fields": {
   "te": "మీ పొలాలు",
-  "at": "17_ui.js:1343"
+  "at": "17_ui.js:1345"
  },
  "For sale / lease": {
   "te": "అమ్మకం / కౌలు",
-  "at": "17_ui.js:1343"
+  "at": "17_ui.js:1345"
  },
  "Marked spot": {
   "te": "గుర్తు పెట్టిన చోటు",
-  "at": "17_ui.js:1390"
+  "at": "17_ui.js:1392"
  },
  "Where to?": {
   "te": "ఎక్కడికి?",
-  "at": "17_ui.js:1399"
+  "at": "17_ui.js:1401"
  },
  "Tap a place on the map. The gold arrow will lead you there, or take an auto straight there.": {
   "te": "మ్యాప్‌లో ఒక చోటు నొక్కండి. బంగారు బాణం దారి చూపిస్తుంది, లేదా ఆటోలో నేరుగా వెళ్ళండి.",
-  "at": "17_ui.js:1399"
+  "at": "17_ui.js:1401"
  },
  "Now heading to: ": {
   "te": "ఇప్పుడు వెళ్తున్నది: ",
-  "at": "17_ui.js:1400"
+  "at": "17_ui.js:1402"
  },
  " away · the gold arrow now points here": {
   "te": " దూరం · బంగారు బాణం ఇటు చూపిస్తుంది",
-  "at": "17_ui.js:1405"
+  "at": "17_ui.js:1407"
  },
  "Drive there now ({0} min)": {
   "te": "ఇప్పుడే అక్కడికి నడపండి ({0} నిమి.)",
-  "at": "17_ui.js:1407"
+  "at": "17_ui.js:1409"
  },
  "Take an auto there ({0})": {
   "te": "ఆటోలో వెళ్ళండి ({0})",
-  "at": "17_ui.js:1407"
+  "at": "17_ui.js:1409"
  },
  "Walk with the arrow": {
   "te": "బాణంతో నడవండి",
-  "at": "17_ui.js:1408"
+  "at": "17_ui.js:1410"
  },
  "Clear target": {
   "te": "గమ్యం తీసేయండి",
-  "at": "17_ui.js:1409"
+  "at": "17_ui.js:1411"
  },
  "Ramapuram": {
   "te": "రామాపురం",
-  "at": "17_ui.js:1443"
+  "at": "17_ui.js:1445"
  },
  "Seethampet": {
   "te": "సీతంపేట",
-  "at": "17_ui.js:1443"
+  "at": "17_ui.js:1445"
  },
  "Nagaram town": {
   "te": "నగరం పట్టణం",
-  "at": "17_ui.js:1443"
+  "at": "17_ui.js:1445"
  },
  "Pedda Cheruvu": {
   "te": "పెద్ద చెరువు",
-  "at": "17_ui.js:1443"
+  "at": "17_ui.js:1445"
  },
  "Highway": {
   "te": "హైవే",
-  "at": "17_ui.js:1443"
+  "at": "17_ui.js:1445"
  },
  "Shabash!": {
   "te": "శభాష్!",
@@ -4721,47 +4729,315 @@
  },
  "Could not save the game.": {
   "te": "ఆటను సేవ్ చేయలేకపోయాం.",
-  "at": "18_save.js:43"
+  "at": "18_save.js:45"
  },
  "Game saved.": {
   "te": "ఆట సేవ్ అయింది.",
-  "at": "18_save.js:47"
+  "at": "18_save.js:50"
  },
  "This browser blocked saving. Turn on site storage, or keep this tab open.": {
   "te": "ఈ బ్రౌజర్ సేవ్‌ను అడ్డుకుంది. సైట్ స్టోరేజ్ ఆన్ చేయండి.",
-  "at": "18_save.js:48"
+  "at": "18_save.js:51"
  },
  "Cloud save is full. Your game is still saved in this browser.": {
   "te": "క్లౌడ్ సేవ్ నిండింది. మీ ఆట ఈ బ్రౌజర్‌లో సేవ్ అయింది.",
-  "at": "18_save.js:100"
+  "at": "18_save.js:103"
  },
  "Cloud save is on.": {
   "te": "క్లౌడ్ సేవ్ ఆన్ అయింది.",
-  "at": "18_save.js:118"
+  "at": "18_save.js:122"
  },
  "Cloud save is not available here. Your game still saves in this browser.": {
   "te": "ఇక్కడ క్లౌడ్ సేవ్ అందుబాటులో లేదు. మీ ఆట ఈ బ్రౌజర్‌లో సేవ్ అవుతుంది.",
-  "at": "18_save.js:119"
+  "at": "18_save.js:123"
  },
  "Saved in this browser at {0}.": {
   "te": "ఈ బ్రౌజర్‌లో {0}కు సేవ్ అయింది.",
-  "at": "18_save.js:125"
+  "at": "18_save.js:129"
  },
  "Not saved yet in this session.": {
   "te": "ఈ సెషన్‌లో ఇంకా సేవ్ కాలేదు.",
-  "at": "18_save.js:125"
+  "at": "18_save.js:129"
  },
  " Cloud save is on, so you can continue on another device.": {
   "te": " క్లౌడ్ సేవ్ ఆన్‌లో ఉంది, వేరే పరికరంలో కూడా కొనసాగించవచ్చు.",
-  "at": "18_save.js:126"
+  "at": "18_save.js:130"
  },
  " Cloud save is read-only for your account.": {
   "te": " మీ ఖాతాకు క్లౌడ్ సేవ్ చదవడానికి మాత్రమే.",
-  "at": "18_save.js:127"
+  "at": "18_save.js:131"
  },
  " The game also saves every morning and after you sleep.": {
   "te": " ప్రతి ఉదయం, మీరు నిద్రపోయిన తర్వాత కూడా ఆట సేవ్ అవుతుంది.",
-  "at": "18_save.js:128"
+  "at": "18_save.js:132"
+ },
+ "Please type a correct email address.": {
+  "te": "సరైన ఈమెయిల్ చిరునామా టైప్ చేయండి.",
+  "at": "18b_account.js:52"
+ },
+ "Use a longer password: at least 8 letters or numbers, and not an easy one like 12345678.": {
+  "te": "పొడవైన పాస్‌వర్డ్ వాడండి: కనీసం 8 అక్షరాలు లేదా అంకెలు, 12345678 లాంటి సులభమైనది కాదు.",
+  "at": "18b_account.js:53"
+ },
+ "This email already has an account. Please sign in.": {
+  "te": "ఈ ఈమెయిల్‌కు ఇప్పటికే ఖాతా ఉంది. దయచేసి సైన్ ఇన్ చేయండి.",
+  "at": "18b_account.js:54"
+ },
+ "Wrong email or password.": {
+  "te": "ఈమెయిల్ లేదా పాస్‌వర్డ్ తప్పు.",
+  "at": "18b_account.js:55"
+ },
+ "Wrong password.": {
+  "te": "పాస్‌వర్డ్ తప్పు.",
+  "at": "18b_account.js:56"
+ },
+ "Too many tries. Please wait a few minutes and try again.": {
+  "te": "చాలా ప్రయత్నాలు అయ్యాయి. కొన్ని నిమిషాలు ఆగి మళ్ళీ ప్రయత్నించండి.",
+  "at": "18b_account.js:57"
+ },
+ "That code is wrong or too old. Ask for a new code.": {
+  "te": "ఆ కోడ్ తప్పు లేదా పాతది. కొత్త కోడ్ అడగండి.",
+  "at": "18b_account.js:58"
+ },
+ "We could not send the email just now. Please try again later.": {
+  "te": "ఇప్పుడు ఈమెయిల్ పంపలేకపోయాం. కాసేపటి తర్వాత ప్రయత్నించండి.",
+  "at": "18b_account.js:59"
+ },
+ "No internet connection. Please try again.": {
+  "te": "ఇంటర్నెట్ కనెక్షన్ లేదు. మళ్ళీ ప్రయత్నించండి.",
+  "at": "18b_account.js:60"
+ },
+ "Something went wrong. Please try again in a little while.": {
+  "te": "ఏదో పొరపాటు జరిగింది. కాసేపటి తర్వాత ప్రయత్నించండి.",
+  "at": "18b_account.js:61"
+ },
+ "Opening the farm from your account…": {
+  "te": "మీ ఖాతాలోని పొలం తెరుస్తున్నాం…",
+  "at": "18b_account.js:104"
+ },
+ "Farm loaded from your account": {
+  "te": "మీ ఖాతా నుంచి పొలం వచ్చింది",
+  "at": "18b_account.js:107"
+ },
+ "Tap Continue to play.": {
+  "te": "ఆడటానికి కొనసాగించండి నొక్కండి.",
+  "at": "18b_account.js:107"
+ },
+ "New farm": {
+  "te": "కొత్త పొలం",
+  "at": "18b_account.js:165"
+ },
+ "Which farm do you want to play?": {
+  "te": "ఏ పొలంలో ఆడాలనుకుంటున్నారు?",
+  "at": "18b_account.js:166"
+ },
+ "This device and your account have different farms.": {
+  "te": "ఈ పరికరంలో, మీ ఖాతాలో వేర్వేరు పొలాలు ఉన్నాయి.",
+  "at": "18b_account.js:166"
+ },
+ "The farm in your account": {
+  "te": "మీ ఖాతాలోని పొలం",
+  "at": "18b_account.js:168"
+ },
+ "The farm on this device": {
+  "te": "ఈ పరికరంలోని పొలం",
+  "at": "18b_account.js:169"
+ },
+ "The farm you do not choose is replaced.": {
+  "te": "మీరు ఎంచుకోని పొలం దీనితో మారిపోతుంది.",
+  "at": "18b_account.js:170"
+ },
+ "Account created!": {
+  "te": "ఖాతా తెరిచాం!",
+  "at": "18b_account.js:195"
+ },
+ "Your farm now saves online too.": {
+  "te": "ఇప్పుడు మీ పొలం ఆన్‌లైన్‌లో కూడా సేవ్ అవుతుంది.",
+  "at": "18b_account.js:195"
+ },
+ "Signed in": {
+  "te": "సైన్ ఇన్ అయ్యారు",
+  "at": "18b_account.js:196"
+ },
+ "Your farm saves online now.": {
+  "te": "ఇప్పుడు మీ పొలం ఆన్‌లైన్‌లో సేవ్ అవుతుంది.",
+  "at": "18b_account.js:196"
+ },
+ "We sent a 6-digit code to {0}. It can take a minute; look in the spam folder too.": {
+  "te": "{0} కు 6 అంకెల కోడ్ పంపాం. ఒక నిమిషం పట్టొచ్చు; స్పామ్ ఫోల్డర్‌లో కూడా చూడండి.",
+  "at": "18b_account.js:200"
+ },
+ "New password saved": {
+  "te": "కొత్త పాస్‌వర్డ్ సేవ్ అయింది",
+  "at": "18b_account.js:204"
+ },
+ "You are signed in.": {
+  "te": "మీరు సైన్ ఇన్ అయ్యారు.",
+  "at": "18b_account.js:204"
+ },
+ "Account deleted": {
+  "te": "ఖాతా తొలగించాం",
+  "at": "18b_account.js:208"
+ },
+ "The farm on this device stays.": {
+  "te": "ఈ పరికరంలోని పొలం అలాగే ఉంటుంది.",
+  "at": "18b_account.js:208"
+ },
+ "Signed out": {
+  "te": "సైన్ అవుట్ అయ్యారు",
+  "at": "18b_account.js:234"
+ },
+ "Your farm stays on this device.": {
+  "te": "మీ పొలం ఈ పరికరంలో అలాగే ఉంటుంది.",
+  "at": "18b_account.js:234"
+ },
+ "Please sign in again": {
+  "te": "దయచేసి మళ్ళీ సైన్ ఇన్ చేయండి",
+  "at": "18b_account.js:240"
+ },
+ "to keep saving your farm online.": {
+  "te": "పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేస్తూ ఉండటానికి.",
+  "at": "18b_account.js:240"
+ },
+ "Sign in": {
+  "te": "సైన్ ఇన్",
+  "at": "18b_account.js:267"
+ },
+ "Offline": {
+  "te": "ఆఫ్‌లైన్",
+  "at": "18b_account.js:267"
+ },
+ "Farm saved online": {
+  "te": "పొలం ఆన్‌లైన్‌లో సేవ్",
+  "at": "18b_account.js:267"
+ },
+ "Save your farm online": {
+  "te": "పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేయండి",
+  "at": "18b_account.js:267"
+ },
+ "Your account": {
+  "te": "మీ ఖాతా",
+  "at": "18b_account.js:275"
+ },
+ "Show password": {
+  "te": "పాస్‌వర్డ్ చూపు",
+  "at": "18b_account.js:285"
+ },
+ "Save your farm online and play it on any phone or computer.": {
+  "te": "మీ పొలాన్ని ఆన్‌లైన్‌లో సేవ్ చేసి ఏ ఫోన్ లేదా కంప్యూటర్‌లోనైనా ఆడండి.",
+  "at": "18b_account.js:292"
+ },
+ "Sign in and sign up work on the game website.": {
+  "te": "సైన్ ఇన్, సైన్ అప్ ఆట వెబ్‌సైట్‌లో పనిచేస్తాయి.",
+  "at": "18b_account.js:296"
+ },
+ "Open the game website": {
+  "te": "ఆట వెబ్‌సైట్ తెరవండి",
+  "at": "18b_account.js:297"
+ },
+ "Please wait…": {
+  "te": "కొంచెం ఆగండి…",
+  "at": "18b_account.js:301"
+ },
+ "Email": {
+  "te": "ఈమెయిల్",
+  "at": "18b_account.js:304"
+ },
+ "New password": {
+  "te": "కొత్త పాస్‌వర్డ్",
+  "at": "18b_account.js:305"
+ },
+ "Password": {
+  "te": "పాస్‌వర్డ్",
+  "at": "18b_account.js:305"
+ },
+ "Saving your farm to your account…": {
+  "te": "మీ పొలాన్ని ఖాతాలో సేవ్ చేస్తున్నాం…",
+  "at": "18b_account.js:310"
+ },
+ "Offline. Your farm will be saved online when the internet is back.": {
+  "te": "ఆఫ్‌లైన్. ఇంటర్నెట్ వచ్చాక మీ పొలం ఆన్‌లైన్‌లో సేవ్ అవుతుంది.",
+  "at": "18b_account.js:311"
+ },
+ "Your farm is saved online:": {
+  "te": "మీ పొలం ఆన్‌లైన్‌లో సేవ్ అయింది:",
+  "at": "18b_account.js:313"
+ },
+ "Your farm will be saved online the next time the game saves.": {
+  "te": "ఆట తదుపరి సారి సేవ్ అయినప్పుడు మీ పొలం ఆన్‌లైన్‌లో సేవ్ అవుతుంది.",
+  "at": "18b_account.js:313"
+ },
+ "Choose which farm to keep": {
+  "te": "ఏ పొలం ఉంచాలో ఎంచుకోండి",
+  "at": "18b_account.js:316"
+ },
+ "Save now": {
+  "te": "ఇప్పుడే సేవ్ చేయండి",
+  "at": "18b_account.js:318"
+ },
+ "Sign out": {
+  "te": "సైన్ అవుట్",
+  "at": "18b_account.js:319"
+ },
+ "Signed in on this device. Your farm is also saved in this browser.": {
+  "te": "ఈ పరికరంలో సైన్ ఇన్ అయ్యారు. మీ పొలం ఈ బ్రౌజర్‌లో కూడా సేవ్ అవుతుంది.",
+  "at": "18b_account.js:320"
+ },
+ "Delete my account": {
+  "te": "నా ఖాతా తొలగించు",
+  "at": "18b_account.js:321"
+ },
+ "This deletes your account and the farm saved in it. The farm on this device stays. Type your password to confirm.": {
+  "te": "ఇది మీ ఖాతాను, అందులో సేవ్ అయిన పొలాన్ని తొలగిస్తుంది. ఈ పరికరంలోని పొలం అలాగే ఉంటుంది. నిర్ధారించడానికి పాస్‌వర్డ్ టైప్ చేయండి.",
+  "at": "18b_account.js:325"
+ },
+ "Delete forever": {
+  "te": "శాశ్వతంగా తొలగించు",
+  "at": "18b_account.js:326"
+ },
+ "Cancel": {
+  "te": "రద్దు",
+  "at": "18b_account.js:326"
+ },
+ "Forgot your password? We will email you a code to set a new one.": {
+  "te": "పాస్‌వర్డ్ మర్చిపోయారా? కొత్తది పెట్టడానికి మీకు ఈమెయిల్‌లో కోడ్ పంపుతాం.",
+  "at": "18b_account.js:330"
+ },
+ "Send code": {
+  "te": "కోడ్ పంపండి",
+  "at": "18b_account.js:331"
+ },
+ "Back to sign in": {
+  "te": "సైన్ ఇన్‌కు వెనక్కి",
+  "at": "18b_account.js:331"
+ },
+ "6-digit code": {
+  "te": "6 అంకెల కోడ్",
+  "at": "18b_account.js:336"
+ },
+ "At least 8 characters": {
+  "te": "కనీసం 8 అక్షరాలు",
+  "at": "18b_account.js:337"
+ },
+ "Set new password": {
+  "te": "కొత్త పాస్‌వర్డ్ పెట్టండి",
+  "at": "18b_account.js:338"
+ },
+ "Send a new code": {
+  "te": "కొత్త కోడ్ పంపండి",
+  "at": "18b_account.js:339"
+ },
+ "Create account": {
+  "te": "ఖాతా తెరవండి",
+  "at": "18b_account.js:346"
+ },
+ "We use your email only to sign you in and to help if you forget your password.": {
+  "te": "మీ ఈమెయిల్‌ను సైన్ ఇన్ కోసం, పాస్‌వర్డ్ మర్చిపోతే సహాయం కోసం మాత్రమే వాడతాం.",
+  "at": "18b_account.js:350"
+ },
+ "Forgot password?": {
+  "te": "పాస్‌వర్డ్ మర్చిపోయారా?",
+  "at": "18b_account.js:351"
  },
  "The sun sets… a new day begins": {
   "te": "సూర్యుడు అస్తమిస్తున్నాడు… కొత్త రోజు మొదలవుతోంది",

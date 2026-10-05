@@ -574,6 +574,57 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 @keyframes arpulse { 50% { box-shadow: 0 0 0 6px rgba(47, 125, 58, .25); } }
 @media (pointer: coarse) and (max-height: 400px) { #autorun { bottom: calc(var(--sb) + 132px); left: calc(var(--sl) + 24px); } }
 @media (pointer: coarse) and (min-width: 761px) and (min-height: 521px) { #autorun { bottom: calc(var(--sb) + 200px); left: calc(var(--sl) + 50px); } }
+/* ---- account: title corner button, sign in / create account sheet ---- */
+#tacct { position: absolute; top: calc(var(--st) + 12px); right: calc(var(--sr) + 14px); display: flex; align-items: center; gap: 9px; max-width: min(46vw, 260px); padding: 6px 14px 6px 6px; border-radius: 99px; border: 1px solid rgba(246, 239, 226, .32); background: rgba(12, 10, 20, .58); color: #f6efe2; cursor: pointer; text-align: left; -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); box-shadow: 0 6px 18px rgba(0, 0, 0, .25); z-index: 3; }
+#tacct i { flex: none; width: 34px; height: 34px; border-radius: 50%; display: grid; place-items: center; background: #f2b52d; color: #1c1405; font: normal 18px/1 system-ui, sans-serif; }
+#tacct span { display: grid; gap: 2px; min-width: 0; }
+#tacct b { font: 800 15px/1.15 var(--font-display); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tacct small { font: 600 11.5px/1.15 var(--font-body); opacity: .8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+#tacct em { font-style: normal; font-weight: 900; color: #8be08b; }
+#tacct:focus-visible { outline: 3px solid #f2b52d; outline-offset: 2px; }
+.acct .alead { margin: 0 0 12px; font-weight: 600; line-height: 1.4; }
+.aseg { display: grid; grid-template-columns: 1fr 1fr; margin-bottom: 14px; }
+.aseg button { padding: 10px 8px; font-size: 14px; font-weight: 700; color: var(--ink); }
+.aform { display: grid; gap: 12px; }
+.aform .alead { margin: 0; }
+.afield { display: grid; gap: 5px; }
+.afield label { font-weight: 700; font-size: 13px; }
+.afield input { width: 100%; box-sizing: border-box; min-height: 46px; font: 600 16px var(--font-body); padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); -webkit-user-select: text; user-select: text; }
+.afield input:focus { outline: 2px solid var(--accent); outline-offset: 1px; }
+.afield input::placeholder { color: var(--ink-2); opacity: .7; }
+.pw { position: relative; }
+.pw input { padding-right: 50px; }
+.pw .eye { position: absolute; right: 3px; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border: 0; background: transparent; cursor: pointer; font: normal 18px/1 system-ui, sans-serif; color: var(--ink); }
+.aerr, .anote { margin: 0; padding: 9px 12px; border-radius: 10px; font-weight: 600; line-height: 1.35; }
+.aerr { background: rgba(179, 50, 42, .14); background: color-mix(in srgb, var(--bad) 15%, transparent); color: var(--bad); }
+.anote { background: rgba(47, 125, 58, .14); background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); }
+.acct .btn.big { width: 100%; text-align: center; text-decoration: none; display: block; box-sizing: border-box; }
+.alink { justify-self: start; border: 0; background: none; padding: 6px 2px; cursor: pointer; color: var(--indigo); font: 700 13.5px var(--font-body); text-decoration: underline; text-underline-offset: 3px; }
+.alink.danger { color: var(--bad); margin-top: 6px; }
+.asmall { margin: 0; color: var(--ink-2); font-size: 12.5px; line-height: 1.4; }
+.ame { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.ame > div:last-child { display: grid; gap: 2px; min-width: 0; }
+.ame b { font: 800 18px/1.15 var(--font-display); }
+.ame small { color: var(--ink-2); overflow-wrap: anywhere; }
+.aav { flex: none; width: 50px; height: 50px; border-radius: 50%; display: grid; place-items: center; background: var(--accent); color: var(--accent-ink); font: 800 22px/1 var(--font-display); }
+.astat { display: grid; gap: 3px; padding: 11px 13px; border-radius: 12px; background: var(--panel-2); font-weight: 600; }
+.astat small { color: var(--ink-2); font-weight: 600; }
+.astat.saved { box-shadow: inset 4px 0 0 var(--good); }
+.astat.offline, .astat.conflict { box-shadow: inset 4px 0 0 var(--warn); }
+.acct .btn.big + .row, .astat + .btn.big { margin-top: 12px; }
+.afarms { display: grid; gap: 10px; margin-bottom: 10px; }
+.afarm { display: grid; gap: 3px; text-align: left; padding: 13px 15px; border-radius: 14px; }
+.afarm b { font: 800 17px/1.2 var(--font-display); }
+.afarm span { font-weight: 600; }
+.afarm small { color: var(--ink-2); }
+.set .btn.sm { max-width: 100%; overflow-wrap: anywhere; justify-self: start; }
+@media (max-height: 420px) {
+  .aform { gap: 8px; }
+  .afield input { min-height: 40px; padding: 7px 10px; }
+  .acct .alead { margin-bottom: 8px; }
+  #tacct { top: calc(var(--st) + 8px); padding: 4px 12px 4px 4px; }
+  #tacct i { width: 30px; height: 30px; font-size: 16px; }
+}
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>

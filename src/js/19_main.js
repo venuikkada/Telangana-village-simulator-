@@ -536,14 +536,16 @@ async function boot(hot) {
     UI.loading(1, L('Preparing graphics…', 'గ్రాఫిక్స్ సిద్ధం చేస్తున్నాం…')); await nextFrame();
     Render.warm();
     requestAnimationFrame(frame);
-    window.addEventListener('visibilitychange', () => { if (document.hidden) SaveSys.quickLocal(); else Game.keepAwake(); });
+    window.addEventListener('visibilitychange', () => { if (document.hidden) Account.saved(SaveSys.quickLocal(), true); else Game.keepAwake(); });
     try { matchMedia('(orientation: portrait)').addEventListener('change', () => { Game.rotateHint(); Render.resize(); }); } catch (e) { /* old browsers */ }
     const rok = document.getElementById('rotateOk'); if (rok) rok.onclick = () => { Settings.v.portraitOk = true; Settings.save(); Game.rotateHint(); };
     window.addEventListener('pagehide', () => SaveSys.quickLocal());
     if (hot && SaveSys.valid(hot.save)) { document.getElementById('loading').hidden = true; Game.fadeStart(hot.save); return; }
     document.getElementById('loading').hidden = true;
+    Account.load();
     Game.showTitle();
     SaveSys.initCloud().then((d) => { if (d && !G.started) Game.showTitle(); });
+    Account.init().then(() => { if (!G.started) Game.showTitle(); });
   } catch (e) {
     console.error(e);
     showFatal(e);
@@ -551,7 +553,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Account, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

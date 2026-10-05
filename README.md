@@ -57,7 +57,9 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Trophies:** 21 trophies, from "First seeds" and "Lakhpati" to "Tractor owner" and "Crorepati", each with a cash reward. See them in Farm office → Trophies.
 - **Your own dog:** adopt Moti, Kalu or Tommy at your house for free. Your dog follows you everywhere, even beside your tractor, and patting it gives you energy.
 - **Photos and sharing:** photo mode has a Take photo button. The picture gets the game's name and link and can be saved, shared or sent on WhatsApp. "Invite friends" in the Menu shares the game link.
-- **Saving:** the game saves every morning, after you sleep and every few minutes. On claude.ai your farm can also save to your account, so you can continue on another device.
+- **Saving:** the game saves every morning, after you sleep and every few minutes, in your browser.
+- **Sign in with email:** tap **👤 Sign in** on the title screen (or Menu → Account) and create a free account with your email and a password. Your farm is then also saved online, so you can continue on any phone or computer: sign in there and tap Continue. If two devices both played, the game asks which farm to keep. Forgot your password? Get a 6-digit code by email and set a new one. You can sign out or delete your account any time.
+- **How accounts are kept safe:** passwords and reset codes are stored only as bcrypt hashes, sign-ins use random tokens stored only as hashes, wrong-password and reset attempts are rate-limited, and the account data lives outside the website folder (`api/account.php`, SQLite). The claude.ai version links to the website for signing in.
 
 ## Controls
 
@@ -120,6 +122,8 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
 | `src/js/18_save.js` | Browser and cloud saves |
+| `src/js/18b_account.js` | Sign in / sign up with email, password reset, keeping the farm in step with the account |
+| `api/account.php` | The account server (PHP + SQLite) that runs on the website |
 | `src/js/19_main.js` | World build, game start, simulation clock, main loop |
 | `tools/build.mjs` | Joins everything into `index.html` |
 | `tools/*.cjs` | Headless browser tests and screenshot scripts |

@@ -8,6 +8,8 @@ const SAVE_VERSION = 1;
 const SaveSys = {
   lastLocal: 0, lastCloud: 0, cloudState: 'off', // off | ready | saving | readonly | error
   db: null, uid: null, ref: null, writing: false, queued: null, cloudSave: null, autoT: 0,
+  hold: false,     // a farm from the account is being opened: do not save over it
+  prefer: null,    // that farm, chosen by the player over the browser's newest save
 
   // ---------- snapshot of everything needed to resume ----------
   serialize() {
@@ -38,11 +40,12 @@ const SaveSys = {
 
   // ---------- save entry point ----------
   save(manual = false) {
-    if (!G.started || !G.S) return false;
+    if (!G.started || !G.S || this.hold) return false;
     let data;
     try { data = this.serialize(); } catch (e) { console.error('save failed', e); if (manual) UI.toast(L('Could not save the game.', 'ఆటను సేవ్ చేయలేకపోయాం.'), 'bad'); return false; }
     const ok = this.writeLocal(data);
     this.pushCloud(data);
+    Account.saved(data, manual);
     if (manual) {
       if (ok || this.cloudState === 'ready' || this.cloudState === 'saving') { UI.savedFlash(); UI.toast(L('Game saved.', 'ఆట సేవ్ అయింది.'), 'good'); }
       else UI.toast(L('This browser blocked saving. Turn on site storage, or keep this tab open.', 'ఈ బ్రౌజర్ సేవ్‌ను అడ్డుకుంది. సైట్ స్టోరేజ్ ఆన్ చేయండి.'), 'bad');
@@ -50,7 +53,7 @@ const SaveSys = {
     return ok;
   },
   // quick synchronous save when the tab is hidden or closed
-  quickLocal() { if (!G.started || !G.S) return; try { this.writeLocal(this.serialize()); } catch (e) { /* ignore */ } },
+  quickLocal() { if (!G.started || !G.S || this.hold) return null; try { const d = this.serialize(); this.writeLocal(d); return d; } catch (e) { return null; } },
 
   // ---------- cloud (optional; silently absent outside the claude.ai viewer) ----------
   async initCloud(ask = false) {
@@ -108,6 +111,7 @@ const SaveSys = {
   },
   // newest of browser and cloud save
   best() {
+    if (this.prefer) return this.prefer;
     const a = this.readLocal(), b = this.cloudSave;
     if (a && b) return (b.savedAt || 0) > (a.savedAt || 0) ? b : a;
     return a || b || null;

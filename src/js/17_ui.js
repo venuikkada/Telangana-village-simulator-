@@ -838,6 +838,7 @@ const UI = {
       b.appendChild(h('div', { class: 'set' }));
       const seg = (opts, cur, fn) => { const s = h('div', { class: 'seg' }); for (const [id, lab] of opts) s.appendChild(h('button', { class: id === cur ? 'on' : '', onclick: () => { fn(id); this.rerender(); } }, lab)); return s; };
       setRow(L('Graphics', 'గ్రాఫిక్స్'), seg(PRESET_ORDER.map((p) => [p, { LOW: L('Low', 'తక్కువ'), MEDIUM: L('Medium', 'మధ్యస్థం'), HIGH: L('High', 'ఎక్కువ'), ULTRA: L('Ultra', 'అల్ట్రా'), CINEMATIC: L('Cinematic', 'సినిమాటిక్') }[p]]), v.preset, (p) => { v.preset = p; Settings.save(); Game.setPreset(p); }));
+      setRow(L('Account', 'ఖాతా'), this.btn(Account.st ? '👤 ' + Account.st.email : L('Sign in / Create account', 'సైన్ ఇన్ / ఖాతా తెరవండి'), () => Account.open(), Account.st ? 'alt sm' : 'acc sm'));
       setRow(L('Language', 'భాష'), Lang.picker('', () => this.rerender()));
       setRow(L('Game speed', 'ఆట వేగం'), seg([[1, '1×'], [2, '2×'], [4, '4×'], [8, '8×']], v.timeScale, (t) => { v.timeScale = t; Time.scale = t; Settings.save(); }));
       if (G.started) setRow(L('Difficulty', 'కష్టం'), seg([[true, L('Easy', 'సులభం')], [false, L('Normal', 'సాధారణం')]], !!G.S.easy, (x) => { G.S.easy = x; this.toast(x ? L('Easy mode: crops forgive mistakes and you tire slowly.', 'సులభ మోడ్: పంటలు తప్పులను క్షమిస్తాయి, మీరు నెమ్మదిగా అలసిపోతారు.') : L('Normal mode: real farming.', 'సాధారణ మోడ్: నిజమైన వ్యవసాయం.'), 'info'); }));
@@ -856,7 +857,7 @@ const UI = {
         this.btn(L('How to play', 'ఎలా ఆడాలి'), () => HowTo.show(), 'alt'),
         this.btn(L('Invite friends', 'స్నేహితులను ఆహ్వానించండి'), () => Photo.invite(), 'alt'),
         this.btn(L('Controls', 'నియంత్రణలు'), () => this.help(), 'alt'),
-        this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); location.reload(); }, 'alt')));
+        this.btn(L('Main menu', 'ముఖ్య మెనూ'), () => { SaveSys.save(false); Account.settle(4000).then(() => location.reload()); }, 'alt')));
       b.appendChild(h('p', { class: 'empty' }, SaveSys.status()));
       if (SaveSys.cloudState === 'askable') b.appendChild(this.btn(L('Turn on cloud save', 'క్లౌడ్ సేవ్ ఆన్ చేయండి'), () => SaveSys.enableCloud(), 'alt sm'));
     } });
@@ -1019,6 +1020,7 @@ const UI = {
       if (!isMobile) name.focus();   // phones: no keyboard popping over the screen
     };
     segs(); acts();
+    Account.pill();
   },
 };
 
