@@ -7,12 +7,15 @@ const TRAFFIC_DEFS = {
   auto: { en: 'Auto', te: 'ఆటో', maxSpeed: 10, rev: 2, accel: 2.5, turn: 1.3, wheelBase: 1.7, fuelCap: 0, fuelUse: 0 },
   npcbike: { en: 'Motorcycle', te: 'బైక్', maxSpeed: 13, rev: 2, accel: 4, turn: 1.8, wheelBase: 1.35, fuelCap: 0, fuelUse: 0, model: 'bike' },
   npctractor: { en: 'Tractor', te: 'ట్రాక్టర్', maxSpeed: 7.5, rev: 2, accel: 2, turn: 1, wheelBase: 2.1, fuelCap: 0, fuelUse: 0, model: 'tractor35' },
+  npccar: { en: 'Car', te: 'కారు', maxSpeed: 15, rev: 2, accel: 3, turn: 1.3, wheelBase: 2.4, fuelCap: 0, fuelUse: 0, model: 'car' },
 };
 const FOOTPRINT = {
   tractor35: [[0, 1.3, 0.9], [0, -0.5, 1.0]], tractor50: [[0, 1.4, 0.95], [0, -0.5, 1.05]], npctractor: [[0, 1.3, 0.9], [0, -0.5, 1.0]],
   harvester: [[0, 3.4, 2.2], [0, 1.0, 1.4], [0, -1.6, 1.4]], bus: [[0, 4, 1.3], [0, 1.4, 1.3], [0, -1.4, 1.3], [0, -4, 1.3]], truck: [[0, 3, 1.2], [0, 0.4, 1.2], [0, -2.4, 1.2]],
   pickup: [[0, 1.3, 1.0], [0, -1.3, 1.0]], moped: [[0, 0.4, 0.35], [0, -0.4, 0.35]], bike: [[0, 0.4, 0.35], [0, -0.4, 0.35]], npcbike: [[0, 0.4, 0.35], [0, -0.4, 0.35]], auto: [[0, 0.5, 0.75], [0, -0.6, 0.75]],
   bullock: [[0, 2.8, 0.95], [0, 0, 0.9]],
+  car: [[0, 1.0, 0.85], [0, -1.0, 0.85]], taxi: [[0, 1.0, 0.85], [0, -1.0, 0.85]], npccar: [[0, 1.0, 0.85], [0, -1.0, 0.85]], jeep: [[0, 1.1, 0.9], [0, -1.1, 0.9]],
+  scooter: [[0, 0.35, 0.35], [0, -0.35, 0.35]], cycle: [[0, 0.35, 0.3], [0, -0.35, 0.3]], kart: [[0, 0.4, 0.6], [0, -0.45, 0.6]], heli: [[0, 0.6, 1.4], [0, -2.6, 0.6]],
 };
 const IMPL_WORK_Z = { plough: -1.95, cultivator: -1.9, rotavator: -1.75, seeddrill: -1.85, spreader: -2.0, sprayer: -2.25, bplough: -0.6 };
 const MOUNTED = ['plough', 'cultivator', 'rotavator', 'seeddrill', 'spreader', 'sprayer'];

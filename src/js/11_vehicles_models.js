@@ -262,6 +262,76 @@ function buildVehicleModel(type, o = {}) {
       seat = { x: -0.6, y: 1.8, z: 2.9 }; cam = 14; lights.push([0.85, 1.2, 3.87], [-0.85, 1.2, 3.87]);
       break;
     }
+    case 'car': case 'taxi': {
+      const body = C(o.color || (type === 'taxi' ? '#f2c20f' : pick(['#c0392b', '#f2f2ee', '#2d6ca6', '#7a7f87', '#e07b22', '#2f7d3a']))), dk = C('#2f3134'), gl = C('#1e2a33');
+      bb.p.box(1.62, 0.62, 3.7, 0, 0.62, 0, 0, body);                       // body
+      bb.p.box(1.5, 0.56, 2.0, 0, 1.2, -0.25, 0, body);                      // cabin
+      bb.s.box(1.53, 0.4, 1.72, 0, 1.22, -0.22, 0, gl, 0, 0, 0); bb.s.box(1.32, 0.4, 2.03, 0, 1.22, -0.25, 0, gl, 0, 0, 0);   // windows
+      bb.s.box(1.66, 0.2, 0.14, 0, 0.42, 1.86, 0, dk); bb.s.box(1.66, 0.2, 0.14, 0, 0.42, -1.86, 0, dk);                      // bumpers
+      bb.s.box(0.9, 0.12, 0.05, 0, 0.62, 1.86, 0, C('#9aa0a5'));                                                                // grille
+      if (type === 'taxi') { bb.p.box(1.64, 0.1, 3.72, 0, 0.8, 0, 0, C('#1a1a1a'), 0, 0, 0); bb.p.box(0.55, 0.16, 0.26, 0, 1.56, -0.25, 0, C('#f2f2ee')); }
+      for (const x of [-0.74, 0.74]) { W(x, 0.33, 1.15, 0.33, 0.22, 'car', true); W(x, 0.33, -1.15, 0.33, 0.22, 'car'); }
+      seat = { x: 0.35, y: 0.45, z: -0.15 }; cam = 7.5; lights.push([0.55, 0.72, 1.87], [-0.55, 0.72, 1.87]);
+      break;
+    }
+    case 'jeep': {
+      const body = C(o.color || pick(['#3f5f2a', '#b8321f', '#20364a', '#e2b81f'])), dk = C('#2f3134'), mt = C('#3a3d42');
+      bb.p.box(1.72, 0.72, 3.8, 0, 0.9, 0, 0, body);                         // tub
+      bb.p.box(1.72, 0.28, 1.25, 0, 1.38, 1.22, 0, body);                    // bonnet
+      bb.s.box(1.52, 0.5, 0.06, 0, 1.75, 0.6, 0, C('#1e2a33'), 0.25);        // windscreen
+      for (const x of [-0.8, 0.8]) bb.m.box(0.08, 0.75, 0.08, x, 1.62, -0.55, 0, mt);
+      bb.m.box(1.68, 0.08, 0.08, 0, 2.0, -0.55, 0, mt);                       // roll bar
+      bb.s.cyl(0.36, 0.24, 0, 0.95, -2.02, dk, 10, 0, Math.PI / 2);          // spare wheel
+      bb.s.box(1.8, 0.2, 0.16, 0, 0.5, 1.92, 0, dk); bb.s.box(1.8, 0.2, 0.16, 0, 0.5, -1.92, 0, dk);
+      for (const x of [-0.8, 0.8]) { W(x, 0.42, 1.25, 0.42, 0.3, 'car', true); W(x, 0.42, -1.25, 0.42, 0.3, 'car'); }
+      seat = { x: 0.4, y: 0.95, z: 0.05 }; cam = 7.5; lights.push([0.6, 1.1, 1.87], [-0.6, 1.1, 1.87]);
+      break;
+    }
+    case 'scooter': {
+      const body = C(o.color || pick(['#e84393', '#2d6ca6', '#f2f2ee', '#e2b81f', '#2f7d3a'])), dk = C('#2a2a2e'), ch = C('#c9ccd0');
+      bb.p.box(0.42, 0.22, 0.95, 0, 0.42, -0.1, 0, body);                    // floor board
+      bb.p.box(0.46, 0.42, 0.62, 0, 0.7, -0.4, 0, body);                     // body under the seat
+      bb.s.box(0.36, 0.1, 0.6, 0, 0.96, -0.38, 0, dk);                       // seat
+      bb.p.box(0.38, 0.78, 0.16, 0, 0.78, 0.42, 0, body);                    // front shield
+      bb.m.beam(0, 0.38, 0.58, 0, 1.18, 0.46, 0.03, ch); bb.m.box(0.64, 0.04, 0.04, 0, 1.18, 0.46, 0, ch);
+      W(0, 0.24, 0.6, 0.24, 0.08, 'bike', true); W(0, 0.24, -0.62, 0.24, 0.09, 'bike');
+      seat = { x: 0, y: 0.9, z: -0.32 }; pose = 'ride'; cam = 5.5; lights.push([0, 1.02, 0.52]);
+      break;
+    }
+    case 'cycle': {
+      const fr = C(o.color || pick(['#1f1f24', '#2d6ca6', '#c0392b', '#2f7d3a'])), ch = C('#c9ccd0'), dk = C('#1a1a1a');
+      bb.m.beam(0, 0.36, -0.5, 0, 0.78, -0.05, 0.022, fr); bb.m.beam(0, 0.78, -0.05, 0, 0.84, 0.42, 0.022, fr);
+      bb.m.beam(0, 0.36, -0.5, 0, 0.38, 0.02, 0.02, fr); bb.m.beam(0, 0.38, 0.02, 0, 0.84, 0.42, 0.024, fr); bb.m.beam(0, 0.38, 0.02, 0, 0.8, -0.05, 0.022, fr);
+      bb.m.beam(0, 0.36, 0.55, 0, 0.98, 0.42, 0.022, ch); bb.m.box(0.52, 0.03, 0.03, 0, 0.99, 0.4, 0, ch);
+      bb.s.box(0.14, 0.06, 0.26, 0, 0.84, -0.06, 0, dk);
+      W(0, 0.36, 0.55, 0.36, 0.035, 'bike', true); W(0, 0.36, -0.5, 0.36, 0.035, 'bike');
+      seat = { x: 0, y: 0.82, z: -0.08 }; pose = 'ride'; cam = 5;
+      break;
+    }
+    case 'kart': {
+      const body = C(o.color || pick(['#e2b81f', '#c0392b', '#2f7d3a', '#2d6ca6'])), dk = C('#2f3134');
+      bb.s.box(1.1, 0.08, 1.95, 0, 0.17, 0, 0, dk);                          // chassis
+      bb.p.box(0.72, 0.2, 0.55, 0, 0.32, 0.82, 0, body);                     // nose
+      bb.p.box(1.25, 0.14, 0.28, 0, 0.3, -0.98, 0, body);                    // rear bumper
+      for (const x of [-0.5, 0.5]) bb.p.box(0.24, 0.2, 1.0, x, 0.3, 0.02, 0, body);
+      bb.s.box(0.46, 0.42, 0.4, 0, 0.44, -0.4, 0, C('#1a1a1a'));            // seat back
+      bb.m.box(0.32, 0.04, 0.04, 0, 0.62, 0.28, 0, dk); bb.m.beam(0, 0.3, 0.45, 0, 0.62, 0.3, 0.02, dk);
+      for (const x of [-0.56, 0.56]) { W(x, 0.16, 0.66, 0.16, 0.18, 'car', true); W(x * 1.04, 0.19, -0.64, 0.19, 0.25, 'car'); }
+      seat = { x: 0, y: 0.3, z: -0.32 }; cam = 5.2;
+      break;
+    }
+    case 'heli': {
+      const body = C(o.color || '#c0392b'), wh = C('#f2f2ee'), dk = C('#2f3134'), gl = C('#1e2a33');
+      bb.p.sphere(1, 0, 1.6, 0.2, body, PRIM.ico1, 1.2, 1.0, 1.75);         // cabin
+      bb.s.sphere(1, 0, 1.78, 0.95, gl, PRIM.ico1, 0.98, 0.72, 0.92);       // glass nose
+      bb.p.box(0.34, 0.34, 3.7, 0, 1.78, -2.7, 0, body); bb.p.box(0.36, 0.08, 3.7, 0, 1.6, -2.7, 0, wh);   // tail boom
+      bb.p.box(0.08, 0.95, 0.62, 0, 2.2, -4.45, 0, body); bb.p.box(1.1, 0.06, 0.4, 0, 1.85, -4.2, 0, body);
+      bb.p.box(2.2, 0.12, 1.4, 0, 1.0, 0.2, 0, wh);                          // belly stripe
+      for (const x of [-0.92, 0.92]) { bb.m.box(0.08, 0.08, 3.1, x, 0.1, 0.2, 0, dk); for (const z of [-0.6, 0.9]) bb.m.beam(x, 0.1, z, x * 0.6, 0.85, z, 0.04, dk); }
+      bb.m.cyl(0.14, 0.45, 0, 2.6, 0.25, dk, 8);                             // rotor mast
+      seat = { x: 0.35, y: 1.0, z: 0.55 }; cam = 18; lights.push([0, 0.95, 1.95]);
+      break;
+    }
     case 'auto': {
       const body = C('#2f7d3a'), roof = C('#e2b81f');
       bb.p.box(1.3, 0.7, 2.3, 0, 0.75, 0, 0, body); bb.p.box(1.35, 0.08, 2.2, 0, 1.9, -0.1, 0, roof);
@@ -283,5 +353,13 @@ function buildVehicleModel(type, o = {}) {
   const lightMat = new THREE.MeshStandardMaterial({ color: 0x333333, emissive: 0xfff2cc, emissiveIntensity: 0, roughness: 0.3 });
   for (const [x, y, z] of lights) { const lm = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.14, 0.04), lightMat); lm.position.set(x, y, z); g.add(lm); }
   g.userData = { wheels: wheelObjs, seat, pose, cam, lightMat };
+  if (type === 'heli') {
+    const bm = new THREE.MeshStandardMaterial({ color: 0x2a2c30, roughness: 0.6 });
+    const rotor = new THREE.Group(); rotor.position.set(0, 3.08, 0.25);
+    for (let k = 0; k < 2; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(9.2, 0.05, 0.32), bm); b.rotation.y = k * Math.PI / 2; b.castShadow = true; rotor.add(b); }
+    const tail = new THREE.Group(); tail.position.set(0.24, 2.2, -4.5);
+    for (let k = 0; k < 2; k++) { const b = new THREE.Mesh(new THREE.BoxGeometry(0.05, 1.3, 0.14), bm); b.rotation.x = k * Math.PI / 2; tail.add(b); }
+    g.add(rotor); g.add(tail); g.userData.rotor = rotor; g.userData.tailRotor = tail;
+  }
   return g;
 }

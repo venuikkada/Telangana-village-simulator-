@@ -122,6 +122,14 @@ const VEHICLES = {
   racer:     { en: 'Racing bike', te: 'రేసింగ్ బైక్', maxSpeed: 28, rev: 3, accel: 8, turn: 2.0, wheelBase: 1.35, fuelCap: 0, fuelUse: 0, price: 0, cam: 5.8, two: true, model: 'bike', free: true },
   citybus:   { en: 'Village bus', te: 'పల్లె బస్సు', maxSpeed: 16, rev: 2.5, accel: 2.6, turn: 0.85, wheelBase: 6.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 14, model: 'bus', free: true },
   lorry:     { en: 'Lorry', te: 'లారీ', maxSpeed: 20, rev: 3, accel: 2.8, turn: 0.85, wheelBase: 4.8, fuelCap: 0, fuelUse: 0, price: 0, cam: 12, model: 'truck', free: true },
+  // more free rides for exploring: cars, a jeep, scooter, bicycle, go-kart and a helicopter
+  car:       { en: 'Hatchback car', te: 'హ్యాచ్‌బ్యాక్ కారు', maxSpeed: 26, rev: 4, accel: 6, turn: 1.25, wheelBase: 2.4, fuelCap: 0, fuelUse: 0, price: 0, cam: 7.5, model: 'car', free: true },
+  taxi:      { en: 'Yellow taxi', te: 'పసుపు టాక్సీ', maxSpeed: 25, rev: 4, accel: 5.8, turn: 1.25, wheelBase: 2.4, fuelCap: 0, fuelUse: 0, price: 0, cam: 7.5, model: 'taxi', free: true },
+  jeep:      { en: 'Open jeep', te: 'ఓపెన్ జీప్', maxSpeed: 24, rev: 4, accel: 6.5, turn: 1.2, wheelBase: 2.5, fuelCap: 0, fuelUse: 0, price: 0, cam: 7.5, model: 'jeep', free: true, offroad: true },
+  scooter:   { en: 'Scooter', te: 'స్కూటర్', maxSpeed: 18, rev: 2.5, accel: 6, turn: 2.0, wheelBase: 1.25, fuelCap: 0, fuelUse: 0, price: 0, cam: 5.5, two: true, model: 'scooter', free: true },
+  cycle:     { en: 'Bicycle', te: 'సైకిల్', maxSpeed: 9, rev: 1.5, accel: 3.5, turn: 2.1, wheelBase: 1.05, fuelCap: 0, fuelUse: 0, price: 0, cam: 5, two: true, model: 'cycle', free: true, quiet: true, offroad: true },
+  kart:      { en: 'Go-kart', te: 'గో-కార్ట్', maxSpeed: 24, rev: 3, accel: 9, turn: 1.6, wheelBase: 1.3, fuelCap: 0, fuelUse: 0, price: 0, cam: 5.2, model: 'kart', free: true },
+  heli:      { en: 'Village helicopter', te: 'గ్రామ హెలికాప్టర్', maxSpeed: 30, rev: 8, accel: 5, turn: 1.4, wheelBase: 3, fuelCap: 0, fuelUse: 0, price: 0, cam: 18, model: 'heli', free: true, fly: true },
   pickup:    { en: 'Pickup van', te: 'పికప్ వ్యాన్', maxSpeed: 25, rev: 4, accel: 5.5, turn: 1.25, wheelBase: 2.8, fuelCap: 45, fuelUse: 2.6, cargo: 20, price: 780000, cam: 9, shop: 'dealer' },
 };
 const TRACTOR_RENT_PER_HOUR = 900;
