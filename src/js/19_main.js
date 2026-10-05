@@ -493,6 +493,7 @@ function frame(now) {
       UI.update(dt);
       Extras.update(dt);
       Fun.update(dt);
+      Games.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -579,7 +580,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

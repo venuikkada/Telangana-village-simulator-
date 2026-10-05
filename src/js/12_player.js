@@ -108,6 +108,7 @@ const Player = {
     this.vehicle = v; this.h.visible = v.ud.pose !== 'hidden';
     Cam.onEnterVehicle(v);
     Audio2.engineFor(v.def.quiet ? null : v);
+    if (Games.mode) Games.stop();
     this.em = null;
     Bus.emit('enterVehicle', { v });
     if (Sky.night > 0.5 && v.def.fuelCap >= 0) v.lights = true;
@@ -129,7 +130,7 @@ const Player = {
   update(dt) {
     const S = G.S; const P = S.player;
     if (UI.modalOpen()) { this.h.speed = 0; if (this.em) { this.em = null; this.h.lie = 0; this.h.roll = 0; this.h.spin = 0; } if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
-    const ax = Input.axis();
+    const ax = Games.busy() ? { x: 0, y: 0 } : Input.axis();   // cricket and fishing keep you in place
     // any stick or key movement takes control back from "Do it"
     if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
     if (Settings.v.helper && (Input.pressed('Enter') || Input.pressed('NumpadEnter'))) Auto.doStep();
@@ -139,7 +140,7 @@ const Player = {
     if (Input.pressed('KeyQ')) this.cycleOpt();
     const auto = Auto.on ? Auto.steer(dt, this) : null;
     if (auto && auto.work && this.tool !== 'auto') this.tool = 'auto';
-    const wantWork = Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work);
+    const wantWork = !Games.mode && (Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work));   // F is the game button in a game
     const f = fieldAt(this.x, this.z);
     this.working = wantWork && P.energy > 1 && !!f;
     this.axis.x = ax.x; this.axis.y = ax.y;
@@ -196,6 +197,7 @@ const Player = {
     h.x = this.x; h.y = this.y; h.z = this.z; h.yaw = this.yaw; h.speed = this.working ? (this.speed > 0.2 ? this.speed : 0) : this.speed;
     h.pose = this.working && this.speed < 0.6 ? 'work' : 'walk';
     h.lie = 0; h.roll = 0; h.spin = 0;
+    if (h.gpose) { h.pose = h.gpose; h.speed = 0; }   // batting, fishing
     if (this.em) {
       const E = Emote.byId(this.em.id), t = this.em.t;
       h.pose = E.pose; h.speed = 0;
@@ -355,7 +357,7 @@ const Player = {
 
 // ---------------- camera ----------------
 const Cam = {
-  mode: 'third', yaw: Math.PI / 2, pitch: 0.32, dist: 6, tDist: 6, focus: new THREE.Vector3(), lastManual: 0, intro: null, photo: false,
+  mode: 'third', yaw: Math.PI / 2, pitch: 0.32, dist: 6, tDist: 6, focus: new THREE.Vector3(), lastManual: 0, intro: null, photo: false, aim: null,
   onEnterVehicle(v) { this.tDist = v.ud.cam; },
   onExitVehicle() { this.tDist = 6; },
   toggle() { this.mode = this.mode === 'third' ? 'first' : 'third'; UI.toast(this.mode === 'first' ? L('First-person view', 'ఫస్ట్-పర్సన్ వ్యూ') : L('Third-person view', 'థర్డ్-పర్సన్ వ్యూ'), 'info'); },
@@ -390,6 +392,7 @@ const Cam = {
     if (Math.abs(cam.fov - fovT) > 0.05) { cam.fov = damp(cam.fov, fovT, 3, dt); cam.updateProjectionMatrix(); }
     // third person
     this.pitch = clamp(this.pitch, -0.2, 1.35);
+    if (this.aim) this.pitch = damp(this.pitch, 0.04, 3, dt);   // flying a kite: stay low and look up
     let tx, ty, tz;
     if (v) {
       tx = v.x; ty = v.y + (v.type === 'harvester' ? 3.2 : v.type === 'bus' || v.type === 'truck' ? 2.5 : 1.6); tz = v.z;
@@ -412,7 +415,12 @@ const Cam = {
     const gy = World.groundHeight(cx, cz) + 0.5;
     if (cy < gy) cy = gy;
     cam.position.set(cx, cy, cz);
-    cam.lookAt(this.focus.x, this.focus.y, this.focus.z);
+    if (this.aim) {
+      // frame both you and the thing in the sky: look halfway between the two
+      _v1.set(this.focus.x - cx, this.focus.y - cy, this.focus.z - cz).normalize();
+      _v2.set(this.aim.x - cx, this.aim.y - cy, this.aim.z - cz).normalize();
+      _v1.add(_v2); cam.lookAt(cx + _v1.x, cy + _v1.y, cz + _v1.z);
+    } else cam.lookAt(this.focus.x, this.focus.y, this.focus.z);
   },
 };
 

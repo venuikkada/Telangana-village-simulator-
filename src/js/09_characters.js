@@ -170,6 +170,8 @@ const Humans = {
       case 'joy': { arL = arR = -2.9; armOutL = 0.35; armOutR = -0.35; elL = elR = -0.1; break; }
       case 'groundsit': { sitting = true; thL = thR = -1.5; knL = knR = 2.5; arL = arR = -0.5; elL = elR = -0.6; armOutL = 0.2; armOutR = -0.2; lean = 0.05; break; }
       case 'sleep': { arL = arR = 0.05; armOutL = 0.15; armOutR = -0.15; elL = elR = -0.1; break; }
+      case 'bat': { lean = 0.3; thL = -0.3; thR = 0.25; knL = 0.4; knR = 0.35; arL = arR = -0.75; armOutL = -0.4; armOutR = 0.3; elL = elR = -0.5; break; }   // gully cricket
+      case 'fish': { arL = arR = -1.0; armOutL = -0.3; armOutR = 0.25; elL = elR = -0.7; lean = 0.08; break; }   // holding the fishing rod
     }
     // root; lying down (nap), cartwheels and spins turn the whole body
     if (h.lie || h.roll || h.spin) {

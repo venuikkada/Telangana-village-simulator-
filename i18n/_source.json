@@ -985,155 +985,155 @@
  },
  "Slow down before getting off.": {
   "te": "దిగే ముందు వేగం తగ్గించండి.",
-  "at": "12_player.js:117"
+  "at": "12_player.js:118"
  },
  "Land first: hold Down until the helicopter touches the ground.": {
   "te": "ముందు దిగండి: హెలికాప్టర్ నేలను తాకే వరకు కిందికి బటన్ పట్టుకోండి.",
-  "at": "12_player.js:118"
+  "at": "12_player.js:119"
  },
  "Heat wave! Rest in the shade or drink buttermilk at the tea stall.": {
   "te": "వడగాలులు! నీడలో విశ్రాంతి తీసుకోండి లేదా టీ స్టాల్‌లో మజ్జిగ తాగండి.",
-  "at": "12_player.js:192"
+  "at": "12_player.js:193"
  },
  "Pump switched on: the field needs water.": {
   "te": "పొలానికి నీరు కావాలి: మోటార్ వేశాం.",
-  "at": "12_player.js:236"
+  "at": "12_player.js:238"
  },
  "Canal gate opened: the field needs water.": {
   "te": "పొలానికి నీరు కావాలి: కాలువ తూము తెరిచాం.",
-  "at": "12_player.js:237"
+  "at": "12_player.js:239"
  },
  "No seeds: ": {
   "te": "విత్తనాలు లేవు: ",
-  "at": "12_player.js:262"
+  "at": "12_player.js:264"
  },
  "Pests on your crop! ": {
   "te": "పంటకు పురుగులు! ",
-  "at": "12_player.js:262"
+  "at": "12_player.js:264"
  },
  "Your crop is hungry: ": {
   "te": "పంటకు ఎరువు కావాలి: ",
-  "at": "12_player.js:262"
+  "at": "12_player.js:264"
  },
  "{0} is growing well ({1}%). ": {
   "te": "{0} బాగా పెరుగుతోంది ({1}%). ",
-  "at": "12_player.js:263"
+  "at": "12_player.js:265"
  },
  "Tap “Rest” to let it grow.": {
   "te": "'విశ్రాంతి' నొక్కితే పంట పెరుగుతుంది.",
-  "at": "12_player.js:263"
+  "at": "12_player.js:265"
  },
  "Press E to rest while it grows.": {
   "te": "పంట పెరిగే వరకు విశ్రాంతికి E నొక్కండి.",
-  "at": "12_player.js:263"
+  "at": "12_player.js:265"
  },
  "Field ploughed! Now ": {
   "te": "దుక్కి అయింది! ఇప్పుడు ",
-  "at": "12_player.js:302"
+  "at": "12_player.js:304"
  },
  "Want to sow? ": {
   "te": "విత్తాలా? ",
-  "at": "12_player.js:302"
+  "at": "12_player.js:304"
  },
  " Sowing ploughs the rest too.": {
   "te": " విత్తేటప్పుడు మిగతాది కూడా దున్నుతుంది.",
-  "at": "12_player.js:302"
+  "at": "12_player.js:304"
  },
  "No {0} seeds: ": {
   "te": "{0} విత్తనాలు లేవు: ",
-  "at": "12_player.js:314"
+  "at": "12_player.js:316"
  },
  "This field already has another crop.": {
   "te": "ఈ పొలంలో ఇప్పటికే వేరే పంట ఉంది.",
-  "at": "12_player.js:314"
+  "at": "12_player.js:316"
  },
  "No {0} left: ": {
   "te": "{0} లేదు: ",
-  "at": "12_player.js:314"
+  "at": "12_player.js:316"
  },
  "No {0}: ": {
   "te": "{0} లేదు: ",
-  "at": "12_player.js:314"
+  "at": "12_player.js:316"
  },
  "Flying! Up and Down change height; the arrows fly and turn.": {
   "te": "ఎగురుతున్నారు! పైకి, కిందికి బటన్లు ఎత్తు మారుస్తాయి; బాణాలు ముందుకు, పక్కకు.",
-  "at": "12_player.js:324"
+  "at": "12_player.js:326"
  },
  "Flying! Space goes up, Shift or C goes down, W A S D fly and turn.": {
   "te": "ఎగురుతున్నారు! Space పైకి, Shift లేదా C కిందికి, W A S D ముందుకు, పక్కకు.",
-  "at": "12_player.js:324"
+  "at": "12_player.js:326"
  },
  "Header lowered — drive over ripe crop to harvest.": {
   "te": "హెడర్ దించారు — పండిన పంట మీదుగా నడిపి కోయండి.",
-  "at": "12_player.js:344"
+  "at": "12_player.js:346"
  },
  "Header raised.": {
   "te": "హెడర్ ఎత్తారు.",
-  "at": "12_player.js:344"
+  "at": "12_player.js:346"
  },
  "No working implement attached. Attach one at your farm (E near the tractor).": {
   "te": "పనిచేసే పనిముట్టు లేదు. మీ ఇంటి దగ్గర అటాచ్ చేయండి.",
-  "at": "12_player.js:345"
+  "at": "12_player.js:347"
  },
  "Load the sprayer with": {
   "te": "స్ప్రేయర్‌లో నింపండి",
-  "at": "12_player.js:349"
+  "at": "12_player.js:351"
  },
  "Load the spreader with": {
   "te": "స్ప్రెడర్‌లో నింపండి",
-  "at": "12_player.js:350"
+  "at": "12_player.js:352"
  },
  "First-person view": {
   "te": "ఫస్ట్-పర్సన్ వ్యూ",
-  "at": "12_player.js:361"
+  "at": "12_player.js:363"
  },
  "Third-person view": {
   "te": "థర్డ్-పర్సన్ వ్యూ",
-  "at": "12_player.js:361"
+  "at": "12_player.js:363"
  },
  "Rest until the crop needs you": {
   "te": "పంటకు పని వచ్చే వరకు విశ్రాంతి",
-  "at": "12_player.js:439"
+  "at": "12_player.js:447"
  },
  "Buy seeds (delivered here)": {
   "te": "విత్తనాలు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:440"
+  "at": "12_player.js:448"
  },
  "Buy pesticide (delivered here)": {
   "te": "పురుగుమందు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:440"
+  "at": "12_player.js:448"
  },
  "Buy fertilizer (delivered here)": {
   "te": "ఎరువు కొనండి (ఇక్కడికే)",
-  "at": "12_player.js:440"
+  "at": "12_player.js:448"
  },
  "Talk to ": {
   "te": "మాట్లాడండి: ",
-  "at": "12_player.js:443"
+  "at": "12_player.js:451"
  },
  "Drive bullocks": {
   "te": "ఎడ్లను తోలండి",
-  "at": "12_player.js:446"
+  "at": "12_player.js:454"
  },
  "Drive ": {
   "te": "నడపండి: ",
-  "at": "12_player.js:446"
+  "at": "12_player.js:454"
  },
  " (free ride)": {
   "te": " (ఉచితం)",
-  "at": "12_player.js:446"
+  "at": "12_player.js:454"
  },
  "Change implement": {
   "te": "పనిముట్టు మార్చండి",
-  "at": "12_player.js:447"
+  "at": "12_player.js:455"
  },
  "Pat ": {
   "te": "నిమరండి: ",
-  "at": "12_player.js:450"
+  "at": "12_player.js:458"
  },
  "Get off": {
   "te": "దిగండి",
-  "at": "12_player.js:452"
+  "at": "12_player.js:460"
  },
  "your field": {
   "te": "మీ పొలం",
@@ -1347,125 +1347,393 @@
   "te": "కునుకు",
   "at": "12c_fun.js:114"
  },
+ "Holi colours": {
+  "te": "హోలీ రంగులు",
+  "at": "12c_fun.js:115"
+ },
  "Get off the vehicle first.": {
   "te": "ముందు వాహనం దిగండి.",
-  "at": "12c_fun.js:121"
+  "at": "12c_fun.js:122"
  },
  "The villagers are dancing with you!": {
   "te": "ఊరి వాళ్లు మీతో కలిసి డాన్స్ చేస్తున్నారు!",
-  "at": "12c_fun.js:135"
+  "at": "12c_fun.js:138"
  },
  "Village loop": {
   "te": "ఊరి చుట్టు",
-  "at": "12c_fun.js:150"
+  "at": "12c_fun.js:153"
  },
  "Lake and hill ride": {
   "te": "చెరువు, గుట్ట సవారీ",
-  "at": "12c_fun.js:151"
+  "at": "12c_fun.js:154"
  },
  "Highway dash": {
   "te": "హైవే పరుగు",
-  "at": "12c_fun.js:152"
+  "at": "12c_fun.js:155"
  },
  "Explore mode: the clock stops and you do not get tired. Go anywhere!": {
   "te": "అన్వేషణ మోడ్: గడియారం ఆగుతుంది, అలసట ఉండదు. ఎక్కడికైనా వెళ్లండి!",
-  "at": "12c_fun.js:181"
+  "at": "12c_fun.js:184"
  },
  "Explore mode off: the day goes on.": {
   "te": "అన్వేషణ మోడ్ ఆఫ్: రోజు కొనసాగుతుంది.",
-  "at": "12c_fun.js:181"
+  "at": "12c_fun.js:184"
  },
  "Checkpoint": {
   "te": "చెక్‌పాయింట్",
-  "at": "12c_fun.js:185"
+  "at": "12c_fun.js:188"
  },
  "Golden mango!": {
   "te": "బంగారు మామిడి!",
-  "at": "12c_fun.js:219"
+  "at": "12c_fun.js:222"
  },
  "All golden mangoes found!": {
   "te": "అన్ని బంగారు మామిడి పండ్లు దొరికాయి!",
-  "at": "12c_fun.js:220"
+  "at": "12c_fun.js:223"
  },
  "Mango master": {
   "te": "మామిడి మాస్టర్",
-  "at": "12c_fun.js:220"
+  "at": "12c_fun.js:223"
  },
  "Place discovered": {
   "te": "కొత్త ప్రదేశం",
-  "at": "12c_fun.js:227"
+  "at": "12c_fun.js:230"
  },
  "Golden mango": {
   "te": "బంగారు మామిడి",
-  "at": "12c_fun.js:234"
+  "at": "12c_fun.js:237"
  },
  "Follow the gold arrow to the nearest golden mango.": {
   "te": "దగ్గరి బంగారు మామిడి కోసం బంగారు బాణాన్ని అనుసరించండి.",
-  "at": "12c_fun.js:235"
+  "at": "12c_fun.js:238"
  },
  "This race is not ready yet.": {
   "te": "ఈ పందెం ఇంకా సిద్ధం కాలేదు.",
-  "at": "12c_fun.js:257"
+  "at": "12c_fun.js:260"
  },
  "New best!": {
   "te": "కొత్త రికార్డు!",
-  "at": "12c_fun.js:304"
+  "at": "12c_fun.js:307"
  },
  "Explore mode · time paused": {
   "te": "అన్వేషణ మోడ్ · సమయం ఆగింది",
-  "at": "12c_fun.js:314"
+  "at": "12c_fun.js:318"
+ },
+ "Fly a kite": {
+  "te": "గాలిపటం",
+  "at": "12c_fun.js:329"
+ },
+ "Cricket": {
+  "te": "క్రికెట్",
+  "at": "12c_fun.js:329"
+ },
+ "Fishing": {
+  "te": "చేపల వేట",
+  "at": "12c_fun.js:329"
+ },
+ "Lucky wheel": {
+  "te": "లక్కీ చక్రం",
+  "at": "12c_fun.js:329"
  },
  "Dress up": {
   "te": "దుస్తులు మార్చు",
-  "at": "12c_fun.js:326"
+  "at": "12c_fun.js:332"
  },
  "Activities": {
   "te": "ఆటలు",
-  "at": "12c_fun.js:327"
+  "at": "12c_fun.js:333"
  },
  "Fun & activities": {
   "te": "సరదా ఆటలు",
-  "at": "12c_fun.js:334"
+  "at": "12c_fun.js:340"
  },
  "Explore mode": {
   "te": "అన్వేషణ మోడ్",
-  "at": "12c_fun.js:336"
+  "at": "12c_fun.js:342"
  },
  "Stops the clock and tiredness so you can roam the whole map: free cars, jeeps, bikes and the helicopter are parked near your house.": {
   "te": "గడియారం, అలసట ఆగుతాయి, మొత్తం మ్యాప్ తిరగొచ్చు: ఉచిత కార్లు, జీపులు, బైకులు, హెలికాప్టర్ మీ ఇంటి దగ్గర ఉన్నాయి.",
-  "at": "12c_fun.js:336"
+  "at": "12c_fun.js:342"
  },
  "Golden mango hunt": {
   "te": "బంగారు మామిడి వేట",
-  "at": "12c_fun.js:338"
+  "at": "12c_fun.js:344"
  },
  "{0} of {1} found. Each one is worth ₹500, and all of them a big prize.": {
   "te": "{0}లో {1} దొరికాయి. ఒక్కొక్కటి ₹500, అన్నీ దొరికితే పెద్ద బహుమతి.",
-  "at": "12c_fun.js:338"
+  "at": "12c_fun.js:344"
  },
  "Show me the nearest": {
   "te": "దగ్గరిది చూపించు",
-  "at": "12c_fun.js:339"
+  "at": "12c_fun.js:345"
  },
  "Places to discover": {
   "te": "చూడాల్సిన ప్రదేశాలు",
-  "at": "12c_fun.js:341"
+  "at": "12c_fun.js:347"
  },
  "{0} of {1} discovered. Visit a place to discover it.": {
   "te": "{0}లో {1} చూశారు. చూడటానికి ఆ ప్రదేశానికి వెళ్లండి.",
-  "at": "12c_fun.js:341"
+  "at": "12c_fun.js:347"
  },
  "Races": {
   "te": "పందేలు",
-  "at": "12c_fun.js:343"
+  "at": "12c_fun.js:349"
  },
  "Drive through the rings as fast as you can, in any vehicle or on foot. Faster = better medal.": {
   "te": "ఏ వాహనంలోనైనా లేదా కాలినడకన రింగుల గుండా వీలైనంత వేగంగా వెళ్లండి. వేగం ఎక్కువైతే మంచి పతకం.",
-  "at": "12c_fun.js:343"
+  "at": "12c_fun.js:349"
  },
  "Start": {
   "te": "మొదలు",
-  "at": "12c_fun.js:344"
+  "at": "12c_fun.js:350"
+ },
+ "Games": {
+  "te": "ఆటలు",
+  "at": "12c_fun.js:352"
+ },
+ "Kite fights": {
+  "te": "గాలిపటాల పోటీ",
+  "at": "12c_fun.js:353"
+ },
+ "{0} kites cut": {
+  "te": "{0} గాలిపటాలు తెంపారు",
+  "at": "12c_fun.js:353"
+ },
+ "Gully cricket": {
+  "te": "వీధి క్రికెట్",
+  "at": "12c_fun.js:354"
+ },
+ "Best: {0} runs": {
+  "te": "ఉత్తమం: {0} పరుగులు",
+  "at": "12c_fun.js:354"
+ },
+ "{0} fish caught": {
+  "te": "{0} చేపలు పట్టారు",
+  "at": "12c_fun.js:355"
+ },
+ "Free spin ready!": {
+  "te": "ఉచిత స్పిన్ సిద్ధం!",
+  "at": "12c_fun.js:356"
+ },
+ "Next free spin tomorrow": {
+  "te": "తదుపరి ఉచిత స్పిన్ రేపు",
+  "at": "12c_fun.js:356"
+ },
+ "Colour the villagers near you": {
+  "te": "దగ్గరి గ్రామస్తులకు రంగులు చల్లండి",
+  "at": "12c_fun.js:357"
+ },
+ "Play": {
+  "te": "ఆడు",
+  "at": "12c_fun.js:358"
+ },
+ "Rohu": {
+  "te": "రోహు",
+  "at": "12d_games.js:8"
+ },
+ "Katla": {
+  "te": "బొచ్చె",
+  "at": "12d_games.js:9"
+ },
+ "Murrel": {
+  "te": "కొర్రమీను",
+  "at": "12d_games.js:10"
+ },
+ "Prawns": {
+  "te": "రొయ్యలు",
+  "at": "12d_games.js:11"
+ },
+ "Golden fish": {
+  "te": "బంగారు చేప",
+  "at": "12d_games.js:12"
+ },
+ "Golden turban": {
+  "te": "బంగారు తలపాగా",
+  "at": "12d_games.js:20"
+ },
+ "Mango map": {
+  "te": "మామిడి మ్యాప్",
+  "at": "12d_games.js:22"
+ },
+ "Kites cut": {
+  "te": "తెంపిన గాలిపటాలు",
+  "at": "12d_games.js:59"
+ },
+ "runs": {
+  "te": "పరుగులు",
+  "at": "12d_games.js:60"
+ },
+ "ball": {
+  "te": "బంతి",
+  "at": "12d_games.js:60"
+ },
+ "Bura na mano, Holi hai!": {
+  "te": "బురా న మానో, హోలీ హై!",
+  "at": "12d_games.js:109"
+ },
+ "Happy Holi!": {
+  "te": "హ్యాపీ హోలీ!",
+  "at": "12d_games.js:109"
+ },
+ "{0} villagers coloured": {
+  "te": "{0} మంది గ్రామస్తులకు రంగులు",
+  "at": "12d_games.js:109"
+ },
+ "Splash! Find villagers to colour.": {
+  "te": "రంగులు! గ్రామస్తుల దగ్గరికి వెళ్లండి.",
+  "at": "12d_games.js:109"
+ },
+ "Dive": {
+  "te": "డైవ్",
+  "at": "12d_games.js:139"
+ },
+ "Turn the camera to steer your kite. Hold Dive to swoop onto another kite and cut it!": {
+  "te": "గాలిపటాన్ని తిప్పడానికి కెమెరా తిప్పండి. ఇంకో గాలిపటాన్ని తెంపడానికి డైవ్ పట్టుకోండి!",
+  "at": "12d_games.js:140"
+ },
+ "Drag with the mouse to steer your kite. Hold F (or Dive) to swoop onto another kite and cut it!": {
+  "te": "మౌస్‌తో లాగి గాలిపటాన్ని తిప్పండి. ఇంకో గాలిపటాన్ని తెంపడానికి F (లేదా డైవ్) పట్టుకోండి!",
+  "at": "12d_games.js:141"
+ },
+ "A kite is coming for yours! Hold Dive to cut it first.": {
+  "te": "ఒక గాలిపటం మీ గాలిపటం మీదికి వస్తోంది! ముందే తెంపడానికి డైవ్ పట్టుకోండి.",
+  "at": "12d_games.js:191"
+ },
+ "You cut a kite!": {
+  "te": "గాలిపటం తెంపారు!",
+  "at": "12d_games.js:218"
+ },
+ "Kai po che!": {
+  "te": "కాయ్ పో చే!",
+  "at": "12d_games.js:218"
+ },
+ "Oh no! Your kite was cut. Here is a new one: dive when a kite comes at you.": {
+  "te": "అయ్యో! మీ గాలిపటం తెగింది. ఇదిగో కొత్తది: ఏదైనా గాలిపటం మీదికి వచ్చినప్పుడు డైవ్ చేయండి.",
+  "at": "12d_games.js:224"
+ },
+ "No open ground for cricket here.": {
+  "te": "ఇక్కడ క్రికెట్‌కు ఖాళీ మైదానం లేదు.",
+  "at": "12d_games.js:247"
+ },
+ "Hit!": {
+  "te": "కొట్టు!",
+  "at": "12d_games.js:270"
+ },
+ "Tap Hit just as the ball reaches you. Perfect timing = SIX!": {
+  "te": "బంతి మీ దగ్గరికి వచ్చిన క్షణంలో కొట్టు నొక్కండి. సరైన సమయం = సిక్స్!",
+  "at": "12d_games.js:271"
+ },
+ "Out of the ground!": {
+  "te": "మైదానం బయటికి!",
+  "at": "12d_games.js:330"
+ },
+ "SIX!": {
+  "te": "సిక్స్!",
+  "at": "12d_games.js:330"
+ },
+ "Lovely shot!": {
+  "te": "అద్భుతమైన షాట్!",
+  "at": "12d_games.js:332"
+ },
+ "FOUR!": {
+  "te": "ఫోర్!",
+  "at": "12d_games.js:332"
+ },
+ "A bit early": {
+  "te": "కొంచెం ముందుగా",
+  "at": "12d_games.js:333"
+ },
+ "A bit late": {
+  "te": "కొంచెం ఆలస్యంగా",
+  "at": "12d_games.js:333"
+ },
+ "2 runs": {
+  "te": "2 పరుగులు",
+  "at": "12d_games.js:333"
+ },
+ "1 run": {
+  "te": "1 పరుగు",
+  "at": "12d_games.js:333"
+ },
+ "The stumps are down.": {
+  "te": "వికెట్లు పడిపోయాయి.",
+  "at": "12d_games.js:341"
+ },
+ "Bowled!": {
+  "te": "బౌల్డ్!",
+  "at": "12d_games.js:341"
+ },
+ "Missed! Tap Hit as the ball arrives.": {
+  "te": "తప్పింది! బంతి రాగానే కొట్టు నొక్కండి.",
+  "at": "12d_games.js:342"
+ },
+ "Missed! Try to time it better.": {
+  "te": "తప్పింది! సమయం సరిగ్గా చూసి కొట్టండి.",
+  "at": "12d_games.js:342"
+ },
+ "Innings over": {
+  "te": "ఇన్నింగ్స్ ముగిసింది",
+  "at": "12d_games.js:355"
+ },
+ "{0} runs": {
+  "te": "{0} పరుగులు",
+  "at": "12d_games.js:355"
+ },
+ "Lake ghat": {
+  "te": "చెరువు ఘాట్",
+  "at": "12d_games.js:366"
+ },
+ "Fishing is at the lake. Follow the gold arrow to the ghat.": {
+  "te": "చేపల వేట చెరువులో. బంగారు బాణాన్ని అనుసరించి ఘాట్‌కు వెళ్లండి.",
+  "at": "12d_games.js:367"
+ },
+ "Pull!": {
+  "te": "లాగు!",
+  "at": "12d_games.js:382"
+ },
+ "Wait for the red float to dip under, then tap Pull quickly!": {
+  "te": "ఎరుపు బెండు నీటిలో మునిగినప్పుడు వెంటనే లాగు నొక్కండి!",
+  "at": "12d_games.js:383"
+ },
+ "It got away! Pull as soon as the float dips.": {
+  "te": "తప్పించుకుంది! బెండు మునగగానే లాగండి.",
+  "at": "12d_games.js:405"
+ },
+ "Too early! The fish swam away.": {
+  "te": "చాలా త్వరగా! చేప ఈదుకుంటూ వెళ్లిపోయింది.",
+  "at": "12d_games.js:420"
+ },
+ "Golden fish!": {
+  "te": "బంగారు చేప!",
+  "at": "12d_games.js:428"
+ },
+ "You caught a fish!": {
+  "te": "చేప పట్టారు!",
+  "at": "12d_games.js:428"
+ },
+ "One free spin every day": {
+  "te": "ప్రతి రోజు ఒక ఉచిత స్పిన్",
+  "at": "12d_games.js:438"
+ },
+ "Spin!": {
+  "te": "తిప్పండి!",
+  "at": "12d_games.js:444"
+ },
+ "Come back tomorrow for another free spin": {
+  "te": "మరో ఉచిత స్పిన్ కోసం రేపు రండి",
+  "at": "12d_games.js:444"
+ },
+ "You won": {
+  "te": "మీరు గెలిచారు",
+  "at": "12d_games.js:483"
+ },
+ "Look at your new turban!": {
+  "te": "మీ కొత్త తలపాగా చూడండి!",
+  "at": "12d_games.js:483"
+ },
+ "Follow the gold arrow!": {
+  "te": "బంగారు బాణాన్ని అనుసరించండి!",
+  "at": "12d_games.js:483"
  },
  "AM": {
   "te": "ఉ.",
@@ -2521,10 +2789,6 @@
  },
  "Temple": {
   "te": "గుడి",
-  "at": "15_missions.js:69"
- },
- "Lake ghat": {
-  "te": "చెరువు ఘాట్",
   "at": "15_missions.js:69"
  },
  "Santha ground": {
@@ -5693,19 +5957,19 @@
  },
  "This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.": {
   "te": "ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.",
-  "at": "19_main.js:518"
+  "at": "19_main.js:519"
  },
  "Something went wrong while loading: ": {
   "te": "లోడ్ చేస్తుండగా సమస్య వచ్చింది: ",
-  "at": "19_main.js:519"
+  "at": "19_main.js:520"
  },
  "Loading fonts…": {
   "te": "అక్షరాలు లోడ్ అవుతున్నాయి…",
-  "at": "19_main.js:551"
+  "at": "19_main.js:552"
  },
  "Preparing graphics…": {
   "te": "గ్రాఫిక్స్ సిద్ధం చేస్తున్నాం…",
-  "at": "19_main.js:562"
+  "at": "19_main.js:563"
  },
  "Energy": {
   "te": "శక్తి",

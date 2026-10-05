@@ -967,7 +967,7 @@ const UI = {
     set('tbV', L('View', 'వ్యూ'));
     set('tbJump', inV ? (fly ? L('Up ▲', 'పైకి ▲') : L('Brake', 'బ్రేక్')) : L('Jump', 'దూకు'));
     set('tbRun', L('Run', 'పరుగు'), !inV);
-    set('tbWork', L('Work', 'పని'), !inV);
+    set('tbWork', L('Work', 'పని'), !inV && !Games.mode);
     const real = (Interact.current || []).filter((o) => o.id !== 'exit');
     set('tbE', inV && !real.length ? L('Get off', 'దిగు') : real.length ? L('Use', 'వాడు') : L('Use', 'వాడు'));
     this.el('tbE').classList.toggle('dim', !inV && !real.length);

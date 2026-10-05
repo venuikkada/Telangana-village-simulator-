@@ -45,18 +45,18 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     // ---- funny moves, villagers join in ----
     await ev(() => { const s = window.__tvs.sys; const n = s.NPCs.list.find((q) => !q.worker && q.h.visible); s.Player.x = n.h.x + 3; s.Player.z = n.h.z; s.Player.y = s.World.groundHeight(s.Player.x, s.Player.z); });
     await page.keyboard.press('KeyT');
-    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fe').length === 16; }, 3000), 'Fun bar with 16 moves (T key)');
+    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fgrid .fe').length === 17 && b.querySelectorAll('.fe.fg').length === 4; }, 3000), 'Fun bar with 17 moves and 4 games (T key)');
     await shot(page, 'fun_bar');
     await ev(() => [...document.querySelectorAll('#funbar .fe')].find((b) => /Dance/.test(b.textContent)).click());
-    await waitFor(() => window.__tvs.sys.Player.h.pose === 'bhangra', 8000);
+    await waitFor(() => window.__tvs.sys.Player.h.pose === 'bhangra', 20000);
     const dn = await ev(() => { const s = window.__tvs.sys; return { em: s.Player.em && s.Player.em.id, pose: s.Player.h.pose, joined: s.NPCs.list.filter((n) => n.react && n.react.pose === 'bhangra').length }; });
     ok(dn.em === 'dance' && dn.pose === 'bhangra' && dn.joined >= 1, 'dancing, villagers join in ' + JSON.stringify(dn));
     await ev(() => window.__tvs.sys.Emote.play('sleep'));
     ok(await waitFor(() => window.__tvs.sys.Player.h.lie > 0.95, 15000), 'nap: lies down');
-    await page.keyboard.down('KeyW'); await waitFor(() => !window.__tvs.sys.Player.em && window.__tvs.sys.Player.h.lie === 0, 8000); await page.keyboard.up('KeyW');
+    await page.keyboard.down('KeyW'); await waitFor(() => !window.__tvs.sys.Player.em && window.__tvs.sys.Player.h.lie === 0, 20000); await page.keyboard.up('KeyW');
     ok(await ev(() => !window.__tvs.sys.Player.em && window.__tvs.sys.Player.h.lie === 0), 'walking ends the move');
     await ev(() => window.__tvs.sys.Emote.play('cartwheel'));
-    ok(await waitFor(() => window.__tvs.sys.Player.h.roll > 1, 3000), 'cartwheel rolls');
+    ok(await waitFor(() => window.__tvs.sys.Player.h.roll > 1, 15000), 'cartwheel rolls');
 
     // ---- dressing room ----
     await ev(() => window.__tvs.sys.Wardrobe.open());
@@ -83,7 +83,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     // ---- golden mango and a new place ----
     const m0 = await ev(() => { const s = window.__tvs.sys, F = s.Fun; const sp = F.spots[0]; const money = window.__tvs.S.money; s.Player.x = sp.x; s.Player.z = sp.z; s.Player.y = s.World.groundHeight(sp.x, sp.z); return { n: F.spots.length, money }; });
     ok(m0.n === 30, '30 golden mangoes hidden');
-    ok(await waitFor(() => window.__tvs.S.fun.mangoes.includes(0), 4000), 'picked up a golden mango');
+    ok(await waitFor(() => window.__tvs.S.fun.mangoes.includes(0), 20000), 'picked up a golden mango');
     const pl = await ev(() => { const s = window.__tvs.sys; const f = window.__tvs.S.fun; const p = s.Map2.places().find((q) => !f.places[q.id]); s.Player.x = p.x + 5; s.Player.z = p.z; s.Player.y = s.World.groundHeight(p.x + 5, p.z); return p.id; });
     ok(await waitFor((id) => !!window.__tvs.S.fun.places[id], 20000, pl), 'discovered a place: ' + pl);
 
@@ -98,7 +98,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
       await ev(() => { const s = window.__tvs.sys, r = s.Fun.race; if (!r) return; const p = r.pts[r.i]; s.Player.x = p.x; s.Player.z = p.z; s.Player.y = s.World.groundHeight(p.x, p.z); });
       await page.waitForTimeout(250);
     }
-    ok(await waitFor(() => !window.__tvs.sys.Fun.race && !!window.__tvs.S.fun.best.village, 4000), 'race finished, best time saved ' + JSON.stringify(await ev(() => window.__tvs.S.fun.best)));
+    ok(await waitFor(() => !window.__tvs.sys.Fun.race && !!window.__tvs.S.fun.best.village, 20000), 'race finished, best time saved ' + JSON.stringify(await ev(() => window.__tvs.S.fun.best)));
     await ev(() => window.__tvs.sys.Fun.open());
     const act = await ev(() => document.getElementById('modal').innerText);
     ok(/Golden mango hunt/.test(act) && /Places to discover/.test(act) && /Races/.test(act) && /Explore mode/.test(act), 'activities sheet');

@@ -527,6 +527,7 @@ const FX = {
     firefly: { c: [0.9, 1.0, 0.45], a: 1.0, s0: 0.1, s1: 0.1, life: 4, g: 0, drag: 0.6, glow: true },
     splash: { c: [0.8, 0.85, 0.9], a: 0.6, s0: 0.1, s1: 0.4, life: 0.35, g: 3, drag: 0 },
     spark: { c: [1.0, 0.8, 0.4], a: 1.0, s0: 0.2, s1: 0.05, life: 0.8, g: 2, drag: 0.5, glow: true },
+    gulal: { c: [1.0, 0.3, 0.6], a: 0.9, s0: 0.3, s1: 2.2, life: 1.8, g: -0.15, drag: 1.7 },   // Holi colour powder
   },
   emit(type, x, y, z, vx = 0, vy = 0, vz = 0, col = null) {
     if (this.parts.length >= this.max) return;

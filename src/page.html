@@ -679,6 +679,23 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 .act .race { justify-content: space-between; align-items: center; }
 #funchip { display: block; margin: 6px auto 0; border: 0; border-radius: 99px; padding: 5px 12px; background: rgba(20, 22, 34, .72); color: #fff; font: 800 13px/1.2 var(--font-body); cursor: pointer; pointer-events: auto; white-space: nowrap; }
 #funchip[hidden] { display: none; }
+/* ---- games: the big action button, the games row in the Fun bar, the lucky wheel ---- */
+#gamebtn { position: absolute; left: 50%; bottom: calc(var(--sb) + 104px); transform: translateX(-50%); width: 124px; height: 124px; border-radius: 50%; border: 4px solid #fff8e6; background: radial-gradient(circle at 40% 35%, #ffe08a, #f2b52d 60%, #d9930c); color: #2a1a02; font: 800 19px/1.1 var(--font-display); box-shadow: 0 0 0 6px rgba(242, 181, 45, .35), 0 10px 26px rgba(0, 0, 0, .35); pointer-events: auto; touch-action: none; z-index: 7; cursor: pointer; -webkit-user-select: none; user-select: none; padding: 6px; }
+#gamebtn.on { transform: translateX(-50%) scale(.92); background: radial-gradient(circle at 40% 35%, #fff2c4, #ffcf4d 60%, #e6a417); }
+#gamebtn[hidden] { display: none; }
+@media (max-height: 420px) { #gamebtn { width: 96px; height: 96px; font-size: 16px; bottom: calc(var(--sb) + 92px); } }
+#gamebtn.atwork { bottom: auto; transform: translate(-50%, -50%); }
+#gamebtn.atwork.on { transform: translate(-50%, -50%) scale(.92); }
+#gamebtn.desk { left: 28px; bottom: calc(var(--sb) + 28px); transform: none; width: 112px; height: 112px; }
+#gamebtn.desk.on { transform: scale(.92); }
+.fgames { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; border-top: 1px solid var(--line); padding-top: 8px; }
+.fe.fg { background: rgba(242, 181, 45, .22); background: color-mix(in srgb, var(--accent) 22%, var(--panel-2)); }
+.fe.dot { position: relative; }
+.fe.dot::after { content: ""; position: absolute; top: 5px; right: 8px; width: 9px; height: 9px; border-radius: 50%; background: #e84393; box-shadow: 0 0 0 2px var(--panel-2); }
+.wheelbox { position: relative; display: grid; place-items: center; margin: 6px auto 14px; width: min(300px, 70vw, 52vh); }
+.wheelcv { width: 100%; height: auto; border-radius: 50%; box-shadow: 0 8px 26px rgba(0, 0, 0, .25); will-change: transform; }
+.wheelptr { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); z-index: 1; font: normal 30px/1 system-ui, sans-serif; color: #c0392b; text-shadow: 0 2px 0 #fff; }
+.wheelgo { display: block; margin: 0 auto 4px; min-width: min(240px, 100%); }
 </style>
 <div id="app">
   <canvas id="gl" tabindex="0"></canvas>
