@@ -17,7 +17,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
 
     // ---- the Fun bar has the games, with a dot on the free spin ----
     await page.keyboard.press('KeyT');
-    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fe.fg').length === 4; }, 3000), 'Fun bar shows 4 games');
+    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fe.fg').length === 7; }, 3000), 'Fun bar shows 7 games');
     ok(await ev(() => /Lucky wheel/.test(document.querySelector('#funbar .fe.fg.dot').textContent)), 'free spin marked with a dot');
 
     // ---- Holi: villagers near you turn colourful and dance ----

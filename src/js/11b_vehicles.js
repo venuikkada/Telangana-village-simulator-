@@ -246,6 +246,7 @@ class Vehicle {
   work(dt) {
     const op = this.type === 'harvester' ? 'harvest' : this.impl ? IMPLEMENTS[this.impl].op : null;
     if (!op || this.speed < 0.25) return;
+    if (this === Player.vehicle && G.S.player.mustRest) { if (fieldAt(this.x, this.z)) Rest.nag(); return; }   // too tired to work: rest first
     const P = this.implWorkPoint();
     const opts = { crop: this.sowCrop, item: op === 'spray' ? this.chem : op === 'fertilize' ? this.fert : null, byPlayer: this === Player.vehicle, free: this.aiFree };
     let n = 0, fieldHit = null;
@@ -528,6 +529,8 @@ const FX = {
     splash: { c: [0.8, 0.85, 0.9], a: 0.6, s0: 0.1, s1: 0.4, life: 0.35, g: 3, drag: 0 },
     spark: { c: [1.0, 0.8, 0.4], a: 1.0, s0: 0.2, s1: 0.05, life: 0.8, g: 2, drag: 0.5, glow: true },
     gulal: { c: [1.0, 0.3, 0.6], a: 0.9, s0: 0.3, s1: 2.2, life: 1.8, g: -0.15, drag: 1.7 },   // Holi colour powder
+    paper: { c: [1.0, 1.0, 1.0], a: 1.0, s0: 0.16, s1: 0.13, life: 3.2, g: 0.9, drag: 1.8 },   // bits of a cut kite
+    feather: { c: [0.95, 0.92, 0.86], a: 1.0, s0: 0.14, s1: 0.12, life: 2.4, g: 0.55, drag: 2.2 },
   },
   emit(type, x, y, z, vx = 0, vy = 0, vz = 0, col = null) {
     if (this.parts.length >= this.max) return;

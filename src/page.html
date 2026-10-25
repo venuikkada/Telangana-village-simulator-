@@ -114,6 +114,20 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 @keyframes mflash { 0% { box-shadow: 0 0 0 0 rgba(242, 181, 45, .95), var(--shadow); transform: scale(1.04); } 35% { transform: scale(1); } 100% { box-shadow: 0 0 0 14px rgba(242, 181, 45, 0), var(--shadow); } }
 @keyframes mremind { 0%, 100% { transform: translateX(0); } 10%, 30%, 50% { transform: translateX(-5px); } 20%, 40% { transform: translateX(5px); } 60% { box-shadow: 0 0 0 4px rgba(242, 181, 45, .9), var(--shadow); } }
 #missions .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
+#missions .mhead h4 { flex: 1 1 auto; min-width: 0; }
+#missions .mhead h4.th { display: block; }
+#missions .tmin { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font: 800 13px/1 var(--font-body); cursor: pointer; padding: 0; display: grid; place-items: center; }
+#missions .trow { display: grid; grid-template-columns: 20px 1fr auto; gap: 6px; align-items: center; font: 600 12.5px/1.25 var(--font-body); }
+#missions .trow i { font-style: normal; font-size: 15px; text-align: center; }
+#missions .trow em { font: 700 11px var(--font-body); font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#missions .trow.warn { color: var(--bad); }
+#missions .trow.ok { color: var(--good); }
+#missions .tbonus { font: 700 11px/1.2 var(--font-body); color: var(--ink-2); }
+#missions .restbar { display: grid; gap: 6px; background: rgba(67, 116, 255, .16); border: 1px solid rgba(67, 116, 255, .4); border-radius: 10px; padding: 6px 8px; font: 800 13px/1.25 var(--font-body); }
+#missions .restbar .do { justify-self: start; }
+#tbtns #tbWork.rest { background: #4a6fd8; color: #fff; box-shadow: 0 0 0 4px rgba(74, 111, 216, .35), var(--shadow); }
+.act.task.done { opacity: .62; }
+.act.task .prog { margin: 6px 0 2px; }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
 .prog { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }

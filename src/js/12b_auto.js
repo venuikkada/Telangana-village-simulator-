@@ -67,6 +67,7 @@ const Auto = {
       const st = Coach.step;
       if (!(nd.item === 'seed' && !f.crop && st && st.icon === 'work')) { this.stop(false); return null; }
     }
+    if (this.mode === 'farm' && G.S.player.mustRest) { this.stop(false); Rest.nag(); return null; }
     if (this.mode === 'farm' && G.S.player.energy < 2) { this.stop(false); UI.toastOnce('tired', L('You are tired. Eat something at the tea stall or rest at home.', 'మీరు అలసిపోయారు. టీ స్టాల్‌లో తినండి లేదా ఇంట్లో విశ్రాంతి తీసుకోండి.'), 'warn'); return null; }
     return { dx: dx / d, dz: dz / d, run: !working && d > 2.5, work: working };
   },

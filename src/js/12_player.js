@@ -110,6 +110,7 @@ const Player = {
     Audio2.engineFor(v.def.quiet ? null : v);
     if (Games.mode) Games.stop();
     this.em = null;
+    Bus.emit('ride', { type: v.type });
     Bus.emit('enterVehicle', { v });
     if (Sky.night > 0.5 && v.def.fuelCap >= 0) v.lights = true;
   },
@@ -130,6 +131,7 @@ const Player = {
   update(dt) {
     const S = G.S; const P = S.player;
     if (UI.modalOpen()) { this.h.speed = 0; if (this.em) { this.em = null; this.h.lie = 0; this.h.roll = 0; this.h.spin = 0; } if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
+    if (Games.mode === 'jump') { Games.jumpStep(dt); return; }   // a cannonball into the lake moves you itself
     const ax = Games.busy() ? { x: 0, y: 0 } : Input.axis();   // cricket and fishing keep you in place
     // any stick or key movement takes control back from "Do it"
     if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
@@ -142,7 +144,8 @@ const Player = {
     if (auto && auto.work && this.tool !== 'auto') this.tool = 'auto';
     const wantWork = !Games.mode && (Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work));   // F is the game button in a game
     const f = fieldAt(this.x, this.z);
-    this.working = wantWork && P.energy > 1 && !!f;
+    this.working = wantWork && P.energy > 1 && !!f && !P.mustRest;
+    if (wantWork && f && f.isPlayer && P.mustRest) Rest.nag();   // too tired: rest first
     this.axis.x = ax.x; this.axis.y = ax.y;
     // movement
     const camYaw = Cam.yaw;

@@ -131,6 +131,20 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 @keyframes mflash { 0% { box-shadow: 0 0 0 0 rgba(242, 181, 45, .95), var(--shadow); transform: scale(1.04); } 35% { transform: scale(1); } 100% { box-shadow: 0 0 0 14px rgba(242, 181, 45, 0), var(--shadow); } }
 @keyframes mremind { 0%, 100% { transform: translateX(0); } 10%, 30%, 50% { transform: translateX(-5px); } 20%, 40% { transform: translateX(5px); } 60% { box-shadow: 0 0 0 4px rgba(242, 181, 45, .9), var(--shadow); } }
 #missions .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
+#missions .mhead h4 { flex: 1 1 auto; min-width: 0; }
+#missions .mhead h4.th { display: block; }
+#missions .tmin { flex: none; width: 24px; height: 24px; border-radius: 50%; border: 1px solid var(--line); background: var(--panel-2); color: var(--ink); font: 800 13px/1 var(--font-body); cursor: pointer; padding: 0; display: grid; place-items: center; }
+#missions .trow { display: grid; grid-template-columns: 20px 1fr auto; gap: 6px; align-items: center; font: 600 12.5px/1.25 var(--font-body); }
+#missions .trow i { font-style: normal; font-size: 15px; text-align: center; }
+#missions .trow em { font: 700 11px var(--font-body); font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#missions .trow.warn { color: var(--bad); }
+#missions .trow.ok { color: var(--good); }
+#missions .tbonus { font: 700 11px/1.2 var(--font-body); color: var(--ink-2); }
+#missions .restbar { display: grid; gap: 6px; background: rgba(67, 116, 255, .16); border: 1px solid rgba(67, 116, 255, .4); border-radius: 10px; padding: 6px 8px; font: 800 13px/1.25 var(--font-body); }
+#missions .restbar .do { justify-self: start; }
+#tbtns #tbWork.rest { background: #4a6fd8; color: #fff; box-shadow: 0 0 0 4px rgba(74, 111, 216, .35), var(--shadow); }
+.act.task.done { opacity: .62; }
+.act.task .prog { margin: 6px 0 2px; }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
 .prog { height: 5px; border-radius: 3px; background: var(--line); overflow: hidden; }
@@ -811,7 +825,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="flash"></div>
 </div>
 <script type="module">
-const I18N_VER = 'ed21a733c4';
+const I18N_VER = '5b15ee61b7';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -4930,6 +4944,8 @@ const Humans = {
       case 'sleep': { arL = arR = 0.05; armOutL = 0.15; armOutR = -0.15; elL = elR = -0.1; break; }
       case 'bat': { lean = 0.3; thL = -0.3; thR = 0.25; knL = 0.4; knR = 0.35; arL = arR = -0.75; armOutL = -0.4; armOutR = 0.3; elL = elR = -0.5; break; }   // gully cricket
       case 'fish': { arL = arR = -1.0; armOutL = -0.3; armOutR = 0.25; elL = elR = -0.7; lean = 0.08; break; }   // holding the fishing rod
+      case 'tuck': { thL = thR = -1.75; knL = knR = 2.4; arL = arR = -0.8; elL = elR = -1.6; armOutL = 0.15; armOutR = -0.15; lean = 0.35; break; }   // cannonball
+      case 'swim': { const w = h.t * 5; arL = -2.5 + Math.sin(w) * 0.9; arR = -2.5 + Math.sin(w + Math.PI) * 0.9; armOutL = 0.45; armOutR = -0.45; elL = elR = -0.2; thL = Math.sin(w * 2) * 0.35; thR = -thL; lean = 0.5; break; }
     }
     // root; lying down (nap), cartwheels and spins turn the whole body
     if (h.lie || h.roll || h.spin) {
@@ -5024,6 +5040,7 @@ const SPECIES = {
   sheep: { L: 0.85, H: 0.7, W: 0.46, leg: 0.4, neck: 0.25, head: [0.16, 0.2, 0.28], snout: [0.1, 0.1, 0.1], ear: [0.12, 0.05, 0.02], horn: null, hump: null, tail: 0.15, cols: ['#2e2a28', '#4a4440', '#d8d2c8', '#3a3431'], speed: 1.2, sound: 'bleat', wool: true, earsDown: true },
   dog: { L: 0.72, H: 0.58, W: 0.26, leg: 0.4, neck: 0.25, head: [0.16, 0.17, 0.22], snout: [0.1, 0.09, 0.14], ear: [0.08, 0.1, 0.02], horn: null, hump: null, tail: 0.3, cols: ['#b58352', '#c79a64', '#8a5a34', '#2a2420', '#d8c6a8'], speed: 2.2, sound: 'bark', tailUp: true },
   cat: { L: 0.42, H: 0.3, W: 0.16, leg: 0.2, neck: 0.12, head: [0.12, 0.11, 0.12], snout: [0.05, 0.04, 0.04], ear: [0.05, 0.06, 0.01], horn: null, hump: null, tail: 0.3, cols: ['#d8a060', '#3a3a3a', '#8a8a8a', '#e8e0d0'], speed: 1.4, sound: 'meow', tailUp: true },
+  monkey: { L: 0.42, H: 0.5, W: 0.22, leg: 0.3, neck: 0.12, head: [0.15, 0.15, 0.14], snout: [0.08, 0.07, 0.05], ear: [0.05, 0.05, 0.01], horn: null, hump: null, tail: 0.62, cols: ['#8c7b66', '#7d6d5a'], speed: 3, sound: null, tailUp: true },
   chicken: { L: 0.3, H: 0.32, W: 0.2, leg: 0.14, neck: 0.1, head: [0.09, 0.1, 0.1], snout: [0.03, 0.03, 0.05], ear: null, horn: null, hump: null, tail: 0.14, cols: ['#b85a2a', '#f0e8dc', '#6b3a1e', '#2a2420'], speed: 1.2, sound: 'cluck', biped: true, comb: true },
 };
 const Animals = {
@@ -6176,6 +6193,7 @@ class Vehicle {
   work(dt) {
     const op = this.type === 'harvester' ? 'harvest' : this.impl ? IMPLEMENTS[this.impl].op : null;
     if (!op || this.speed < 0.25) return;
+    if (this === Player.vehicle && G.S.player.mustRest) { if (fieldAt(this.x, this.z)) Rest.nag(); return; }   // too tired to work: rest first
     const P = this.implWorkPoint();
     const opts = { crop: this.sowCrop, item: op === 'spray' ? this.chem : op === 'fertilize' ? this.fert : null, byPlayer: this === Player.vehicle, free: this.aiFree };
     let n = 0, fieldHit = null;
@@ -6458,6 +6476,8 @@ const FX = {
     splash: { c: [0.8, 0.85, 0.9], a: 0.6, s0: 0.1, s1: 0.4, life: 0.35, g: 3, drag: 0 },
     spark: { c: [1.0, 0.8, 0.4], a: 1.0, s0: 0.2, s1: 0.05, life: 0.8, g: 2, drag: 0.5, glow: true },
     gulal: { c: [1.0, 0.3, 0.6], a: 0.9, s0: 0.3, s1: 2.2, life: 1.8, g: -0.15, drag: 1.7 },   // Holi colour powder
+    paper: { c: [1.0, 1.0, 1.0], a: 1.0, s0: 0.16, s1: 0.13, life: 3.2, g: 0.9, drag: 1.8 },   // bits of a cut kite
+    feather: { c: [0.95, 0.92, 0.86], a: 1.0, s0: 0.14, s1: 0.12, life: 2.4, g: 0.55, drag: 2.2 },
   },
   emit(type, x, y, z, vx = 0, vy = 0, vz = 0, col = null) {
     if (this.parts.length >= this.max) return;
@@ -6604,6 +6624,7 @@ const Player = {
     Audio2.engineFor(v.def.quiet ? null : v);
     if (Games.mode) Games.stop();
     this.em = null;
+    Bus.emit('ride', { type: v.type });
     Bus.emit('enterVehicle', { v });
     if (Sky.night > 0.5 && v.def.fuelCap >= 0) v.lights = true;
   },
@@ -6624,6 +6645,7 @@ const Player = {
   update(dt) {
     const S = G.S; const P = S.player;
     if (UI.modalOpen()) { this.h.speed = 0; if (this.em) { this.em = null; this.h.lie = 0; this.h.roll = 0; this.h.spin = 0; } if (!this.vehicle) { this.h.pose = 'idle'; this.h.x = this.x; this.h.y = this.y; this.h.z = this.z; } else this.vehicle.update(dt, { throttle: 0, steer: 0, brake: true }); return; }
+    if (Games.mode === 'jump') { Games.jumpStep(dt); return; }   // a cannonball into the lake moves you itself
     const ax = Games.busy() ? { x: 0, y: 0 } : Input.axis();   // cricket and fishing keep you in place
     // any stick or key movement takes control back from "Do it"
     if (Auto.on && (Math.abs(ax.x) > 0.15 || Math.abs(ax.y) > 0.15)) Auto.stop(true);
@@ -6636,7 +6658,8 @@ const Player = {
     if (auto && auto.work && this.tool !== 'auto') this.tool = 'auto';
     const wantWork = !Games.mode && (Input.down('KeyF') || Input.work || Input.mouseWork || !!(auto && auto.work));   // F is the game button in a game
     const f = fieldAt(this.x, this.z);
-    this.working = wantWork && P.energy > 1 && !!f;
+    this.working = wantWork && P.energy > 1 && !!f && !P.mustRest;
+    if (wantWork && f && f.isPlayer && P.mustRest) Rest.nag();   // too tired: rest first
     this.axis.x = ax.x; this.axis.y = ax.y;
     // movement
     const camYaw = Cam.yaw;
@@ -7043,6 +7066,7 @@ const Auto = {
       const st = Coach.step;
       if (!(nd.item === 'seed' && !f.crop && st && st.icon === 'work')) { this.stop(false); return null; }
     }
+    if (this.mode === 'farm' && G.S.player.mustRest) { this.stop(false); Rest.nag(); return null; }
     if (this.mode === 'farm' && G.S.player.energy < 2) { this.stop(false); UI.toastOnce('tired', L('You are tired. Eat something at the tea stall or rest at home.', 'మీరు అలసిపోయారు. టీ స్టాల్‌లో తినండి లేదా ఇంట్లో విశ్రాంతి తీసుకోండి.'), 'warn'); return null; }
     return { dx: dx / d, dz: dz / d, run: !working && d > 2.5, work: working };
   },
@@ -7348,9 +7372,11 @@ const Fun = {
     Celebrate.ribbon({ kind: 'sun', icon: '🥭', top: L('Golden mango!', 'బంగారు మామిడి!'), title: n + ' / ' + this.spots.length, sub: '+' + fmtINR(500), ms: 2200 });
     if (all) { Money.add(10000, 'fun'); Celebrate.shower(170); Celebrate.ribbon({ kind: 'big', icon: '🏆', top: L('All golden mangoes found!', 'అన్ని బంగారు మామిడి పండ్లు దొరికాయి!'), title: L('Mango master', 'మామిడి మాస్టర్'), sub: '+' + fmtINR(10000), ms: 3600 }); Audio2.sfx('fanfare'); }
     if (G.S.waypoint && G.S.waypoint.mango === i) G.S.waypoint = null;
+    Bus.emit('mango', { i });
   },
   discover(p) {
     const f = this.st(); f.places[p.id] = true;
+    Bus.emit('discover', { id: p.id });
     Money.add(200, 'fun');
     const n = Object.keys(f.places).length, all = Map2.places().length;
     Celebrate.ribbon({ kind: 'sun', icon: '📍', top: L('Place discovered', 'కొత్త ప్రదేశం'), title: Map2.placeName(p), sub: n + ' / ' + all + '  +' + fmtINR(200), ms: 2400 });
@@ -7428,6 +7454,7 @@ const Fun = {
     const prize = { gold: 3000, silver: 2000, bronze: 1000 }[medal] || 300;
     const best = f.best[R.id], isBest = !best || t < best.t;
     if (isBest) f.best[R.id] = { t: +t.toFixed(1), medal };
+    Bus.emit('raceEnd', { id: R.id, medal });
     Money.add(prize, 'fun');
     Celebrate.burst(innerWidth / 2, innerHeight * 0.35, 90, 1); Celebrate.coins(innerWidth / 2, innerHeight * 0.35, prize, 8);
     Celebrate.ribbon({ kind: medal ? 'big' : 'sun', icon: medal === 'gold' ? '🥇' : medal === 'silver' ? '🥈' : medal === 'bronze' ? '🥉' : '🏁', top: LN(R), title: this.fmtT(t) + (isBest ? '  ' + L('New best!', 'కొత్త రికార్డు!') : ''), sub: '+' + fmtINR(prize), ms: 3600 });
@@ -7452,11 +7479,12 @@ const Fun = {
     if (!b) { b = h('div', { id: 'funbar', class: 'card' }); (UI.el('hud') || document.body).appendChild(b); }
     b.innerHTML = '';
     b.append(h('div', { class: 'fgrid' }, ...EMOTES.map((E) => h('button', { type: 'button', class: 'fe', onclick: () => { Audio2.unlock(); Emote.play(E.id); } }, h('i', null, E.icon), h('span', null, LN(E))))),
-      h('div', { class: 'fgames' }, ...[['🪁', L('Fly a kite', 'గాలిపటం'), () => Games.kiteStart()], ['🏏', L('Cricket', 'క్రికెట్'), () => Games.cricketStart()], ['🎣', L('Fishing', 'చేపల వేట'), () => Games.fishStart()], ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), () => Games.wheel()]].map(([ic, lab, fn]) =>
+      h('div', { class: 'fgames' }, ...[['🪁', L('Fly a kite', 'గాలిపటం'), () => Games.kiteStart()], ['🏏', L('Cricket', 'క్రికెట్'), () => Games.cricketStart()], ['🎣', L('Fishing', 'చేపల వేట'), () => Games.fishStart()], ['🐓', L('Rooster', 'కోడిపుంజు'), () => Games.roosterStart()], ['💦', L('Lake jump', 'చెరువులో దూకు'), () => Games.jumpStart()], ['🐒', L('Monkey', 'కోతి'), () => Games.monkeyStart(false)], ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), () => Games.wheel()]].map(([ic, lab, fn]) =>
         h('button', { type: 'button', class: 'fe fg' + (ic === '🎡' && Games.canSpin() ? ' dot' : ''), onclick: () => { Audio2.unlock(); Audio2.sfx('click'); fn(); } }, h('i', null, ic), h('span', null, lab)))),
       h('div', { class: 'row' },
         h('button', { type: 'button', class: 'btn acc sm', onclick: () => { Audio2.sfx('click'); Wardrobe.open(); } }, '👕 ' + L('Dress up', 'దుస్తులు మార్చు')),
         h('button', { type: 'button', class: 'btn alt sm', onclick: () => { Audio2.sfx('click'); this.open(); } }, '🎯 ' + L('Activities', 'ఆటలు')),
+        h('button', { type: 'button', class: 'btn alt sm', onclick: () => { Audio2.sfx('click'); Tasks.open(); } }, '📋 ' + L("Today's tasks", 'ఈ రోజు పనులు')),
         h('button', { type: 'button', class: 'btn alt sm', onclick: () => { this.bar(false); } }, '✕')));
     b.hidden = false;
   },
@@ -7479,6 +7507,9 @@ const Fun = {
         ...[['🪁', L('Kite fights', 'గాలిపటాల పోటీ'), (LANG === 'en' ? `${gs.kites} kites cut` : L(`${gs.kites} kites cut`, `${gs.kites} గాలిపటాలు తెంపారు`, "{0} kites cut", [gs.kites])), () => Games.kiteStart()],
           ['🏏', L('Gully cricket', 'వీధి క్రికెట్'), (LANG === 'en' ? `Best: ${gs.best} runs` : L(`Best: ${gs.best} runs`, `ఉత్తమం: ${gs.best} పరుగులు`, "Best: {0} runs", [gs.best])), () => Games.cricketStart()],
           ['🎣', L('Fishing', 'చేపల వేట'), (LANG === 'en' ? `${fishN} fish caught` : L(`${fishN} fish caught`, `${fishN} చేపలు పట్టారు`, "{0} fish caught", [fishN])), () => Games.fishStart()],
+          ['🐓', L('Rooster chase', 'కోడిపుంజు వేట'), (LANG === 'en' ? `${gs.roosters || 0} caught` : L(`${gs.roosters || 0} caught`, `${gs.roosters || 0} పట్టారు`, "{0} caught", [gs.roosters || 0])), () => Games.roosterStart()],
+          ['💦', L('Lake jump', 'చెరువులో దూకు'), (LANG === 'en' ? `${gs.splash || 0} jumps` : L(`${gs.splash || 0} jumps`, `${gs.splash || 0} సార్లు దూకారు`, "{0} jumps", [gs.splash || 0])), () => Games.jumpStart()],
+          ['🐒', L('Naughty monkey', 'అల్లరి కోతి'), (LANG === 'en' ? `${gs.monkeys || 0} times` : L(`${gs.monkeys || 0} times`, `${gs.monkeys || 0} సార్లు`, "{0} times", [gs.monkeys || 0])), () => Games.monkeyStart(false)],
           ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), Games.canSpin() ? L('Free spin ready!', 'ఉచిత స్పిన్ సిద్ధం!') : L('Next free spin tomorrow', 'తదుపరి ఉచిత స్పిన్ రేపు'), () => Games.wheel()],
           ['🎨', L('Holi colours', 'హోలీ రంగులు'), L('Colour the villagers near you', 'దగ్గరి గ్రామస్తులకు రంగులు చల్లండి'), () => { UI.close(); Emote.play('holi'); }]]
           .map(([ic, name, stat, fn]) => h('div', { class: 'row race' }, h('span', null, ic + ' ' + name + ' · ' + stat), UI.btn(L('Play', 'ఆడు'), fn, 'acc sm')))));
@@ -7490,16 +7521,17 @@ const Fun = {
 // ---- 12d_games.js ----
 // ============================================================================
 // Games: Holi colours on the villagers, kite fights in the sky, gully cricket,
-// fishing at the lake and a daily lucky wheel. Each is a few taps with one big
-// button (HIT, PULL, DIVE) and a cheer at the end.
+// fishing at the lake, a runaway rooster, a cannonball into the lake, a naughty
+// monkey and a daily lucky wheel. Each is a few taps with one big button (HIT,
+// PULL, DIVE, CATCH) and a cheer at the end.
 // ============================================================================
 const HOLI_COLS = ['#ff2e93', '#22c55e', '#facc15', '#3b82f6', '#a855f7', '#fb923c', '#ef4444'];
 const FISH = [
-  { id: 'rohu', en: 'Rohu', te: 'రోహు', w: [1, 3], p: 120, odds: 0.45 },
-  { id: 'katla', en: 'Katla', te: 'బొచ్చె', w: [2, 5], p: 110, odds: 0.25 },
-  { id: 'murrel', en: 'Murrel', te: 'కొర్రమీను', w: [1, 2.5], p: 300, odds: 0.17 },
-  { id: 'prawn', en: 'Prawns', te: 'రొయ్యలు', w: [0.3, 0.8], p: 600, odds: 0.1 },
-  { id: 'golden', en: 'Golden fish', te: 'బంగారు చేప', w: [0.5, 1], p: 2500, odds: 0.03 },
+  { id: 'rohu', en: 'Rohu', te: 'రోహు', w: [1, 3], p: 120, odds: 0.45, col: '#c3ccd2', fin: '#d0645a' },
+  { id: 'katla', en: 'Katla', te: 'బొచ్చె', w: [2, 5], p: 110, odds: 0.25, col: '#8e9aa2', fin: '#6a757c' },
+  { id: 'murrel', en: 'Murrel', te: 'కొర్రమీను', w: [1, 2.5], p: 300, odds: 0.17, col: '#55603d', fin: '#3a4229' },
+  { id: 'prawn', en: 'Prawns', te: 'రొయ్యలు', w: [0.3, 0.8], p: 600, odds: 0.1, col: '#f0a080', fin: '#e0704f' },
+  { id: 'golden', en: 'Golden fish', te: 'బంగారు చేప', w: [0.5, 1], p: 2500, odds: 0.03, col: '#ffc21a', fin: '#ffe066' },
 ];
 const WHEEL = [
   { en: '₹500', te: '₹500', money: 500, col: '#f2b52d', w: 22 },
@@ -7511,14 +7543,14 @@ const WHEEL = [
   { en: '₹5,000', te: '₹5,000', money: 5000, col: '#6b3fa0', w: 4 },
   { en: 'Mango map', te: 'మామిడి మ్యాప్', mango: true, col: '#e84393', w: 8 },
 ];
-const _gv = new THREE.Vector3();
+const _gv = new THREE.Vector3(), _gw = new THREE.Vector3(), _ga = new THREE.Vector3(), _gb = new THREE.Vector3(), _gc = new THREE.Vector3();
 
 const Games = {
-  mode: null,   // 'kite' | 'cricket' | 'fish'
-  btn: null, onDown: null, onUp: null,
+  mode: null,   // 'kite' | 'cricket' | 'fish' | 'rooster' | 'jump' | 'monkey'
+  btn: null, onDown: null, onUp: null, rings: [], drip: 0, monkeyT: 30,
   st() { const f = Fun.st(); f.games = f.games || {}; const g = f.games; g.fish = g.fish || {}; g.kites = g.kites || 0; g.best = g.best || 0; return g; },
-  // cricket and fishing hold you in place: the stick does not walk you away
-  busy() { return this.mode === 'cricket' || this.mode === 'fish'; },
+  // cricket, fishing and the lake jump hold you in place: the stick does not walk you away
+  busy() { return this.mode === 'cricket' || this.mode === 'fish' || this.mode === 'jump'; },
   // the one big button every game uses; F on a computer
   action(label, down, up) {
     let b = this.btn;
@@ -7547,33 +7579,79 @@ const Games = {
   },
   chipText() {
     if (this.mode === 'kite') return '🪁 ' + L('Kites cut', 'తెంపిన గాలిపటాలు') + ': ' + this.kite.cut + '  ✕';
-    if (this.mode === 'cricket') { const c = this.cr; return '🏏 ' + c.runs + ' ' + L('runs', 'పరుగులు') + ' · ' + L('ball', 'బంతి') + ' ' + Math.min(6, c.bn + 1) + '/6  ✕'; }
-    if (this.mode === 'fish') return '🎣 ' + L('Fishing', 'చేపల వేట') + '  ✕';
+    if (this.mode === 'cricket') { const c = this.cr; const balls = []; for (let i = 0; i < 6; i++) balls.push(c.log[i] !== undefined ? String(c.log[i]) : '○'); return '🏏 ' + c.runs + ' ' + L('runs', 'పరుగులు') + ' · ' + balls.join(' ') + '  ✕'; }
+    if (this.mode === 'fish') return '🎣 ' + L('Fishing', 'చేపల వేట') + (this.fs && this.fs.n ? ' · 🐟 ' + this.fs.n : '') + '  ✕';
+    if (this.mode === 'rooster' && this.rc) return '🐓 ' + Math.max(0, Math.ceil(this.rc.limit - this.rc.t)) + 's  ✕';
+    if (this.mode === 'jump') return '💦 ' + L('Lake jump', 'చెరువులో దూకు') + '  ✕';
+    if (this.mode === 'monkey') return '🐒 ' + L('Naughty monkey', 'అల్లరి కోతి') + '  ✕';
     return '';
   },
   // take a mesh out of the scene and free its GPU buffers (the shared material stays)
   drop(o) {
-    if (!o) return; G.scene.remove(o);
+    if (!o) return; G.scene.remove(o); if (o.parent) o.parent.remove(o);
     o.traverse((m) => { if (m.geometry) m.geometry.dispose(); if (m.material && m.material !== MAT.std) m.material.dispose(); });
   },
   stop() {
     const m = this.mode; this.mode = null; this.action(null);
-    if (m === 'kite' && this.kite) { const k = this.kite; Cam.aim = null; this.drop(k.mesh); this.drop(k.line); for (const r of k.rivals) this.drop(r.mesh); this.kite = null; }
-    if (m === 'cricket' && this.cr) { const c = this.cr; this.drop(c.ball); this.drop(c.stumps); this.drop(c.bat); if (this.bowler) this.bowler.visible = false; Cam.intro = null; this.cr = null; }
-    if (m === 'fish' && this.fs) { const f = this.fs; for (const o of [f.bob, f.line, f.rod, f.fish]) this.drop(o); this.fs = null; }
+    if (m === 'kite' && this.kite) { const k = this.kite; Cam.aim = null; this.drop(k.mesh); this.drop(k.line); for (const r of k.rivals) { this.drop(r.mesh); this.drop(r.str); } for (const s of k.sky) { this.drop(s.mesh); this.drop(s.str); } this.kite = null; }
+    if (m === 'cricket' && this.cr) {
+      const c = this.cr; for (const o of [c.ball, c.stumps, c.bat, c.field, c.trail]) this.drop(o);
+      if (this.bowler) this.bowler.visible = false;
+      for (const k of this.kids || []) k.h.visible = false;
+      Cam.intro = null; this.cr = null;
+    }
+    if (m === 'fish' && this.fs) { const f = this.fs; for (const o of [f.bob, f.line, f.rod, f.fish, f.basket]) this.drop(o); this.fs = null; }
+    if (m === 'rooster' && this.rc) { this.rc.a.visible = false; this.rc = null; }
+    if (m === 'jump' && this.jp) { const j = this.jp, P = Player; if (j.ph !== 'done') { P.x = j.x0; P.z = j.z0; P.y = World.groundHeight(j.x0, j.z0); } this.jp = null; }
+    if (m === 'monkey' && this.mk) this.monkeyEnd();
     if (Player.h) Player.h.gpose = null;
     Fun.chipUpdate();
   },
   update(dt) {
-    if (!this.mode) return;
+    this.ringUpdate(dt);
+    if (this.drip > 0) { this.drip -= dt; if (Math.random() < 0.5) FX.emit('water', Player.x + (Math.random() - 0.5) * 0.4, Player.y + 0.6 + Math.random() * 0.9, Player.z + (Math.random() - 0.5) * 0.4, 0, -0.5, 0); }
+    if (!this.mode) { this.monkeyMaybe(dt); return; }
     if (UI.modalOpen()) return;
     if (Input.pressed('KeyF') && this.onDown) { this.onDown(); this.fkey = true; }
     if (this.fkey && !Input.down('KeyF')) { this.fkey = false; if (this.onUp) this.onUp(); }
     if (this.mode === 'kite') this.kiteUpdate(dt);
     else if (this.mode === 'cricket') this.cricketUpdate(dt);
     else if (this.mode === 'fish') this.fishUpdate(dt);
+    else if (this.mode === 'rooster') this.roosterUpdate(dt);
+    else if (this.mode === 'monkey') this.monkeyUpdate(dt);
   },
   ribbon(icon, top, title, sub, kind = 'sun', ms = 2200) { Celebrate.ribbon({ kind, icon, top, title, sub: sub || '', ms }); },
+
+  // ---------- small helpers: a string that sags, ripples on the water, feathers ----------
+  curve(n, color, opacity = 1) {
+    const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n * 3), 3));
+    const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color, transparent: opacity < 1, opacity })); l.frustumCulled = false; return l;
+  },
+  sag(line, ax, ay, az, bx, by, bz, sag) {
+    const pa = line.geometry.attributes.position, n = pa.count;
+    for (let i = 0; i < n; i++) { const u = i / (n - 1); pa.setXYZ(i, ax + (bx - ax) * u, ay + (by - ay) * u - Math.sin(u * Math.PI) * sag, az + (bz - az) * u); }
+    pa.needsUpdate = true;
+  },
+  ripple(x, y, z, size = 1, life = 1.2) {
+    let r = this.rings.find((q) => q.t >= q.life);
+    if (!r) {
+      if (this.rings.length >= 10) return;
+      const m = new THREE.Mesh(new THREE.RingGeometry(0.86, 1, 36), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0, depthWrite: false, side: THREE.DoubleSide }));
+      m.rotation.x = -Math.PI / 2; m.renderOrder = 3; G.scene.add(m);
+      r = { m, t: 0, life: 0 }; this.rings.push(r);
+    }
+    r.t = 0; r.life = life; r.size = size; r.m.visible = true; r.m.position.set(x, y + 0.03, z);
+  },
+  ringUpdate(dt) {
+    for (const r of this.rings) {
+      if (r.t >= r.life) { r.m.visible = false; continue; }
+      r.t += dt; const u = Math.min(1, r.t / r.life);
+      r.m.scale.setScalar(0.15 + u * r.size * 1.6); r.m.material.opacity = 0.55 * (1 - u);
+    }
+  },
+  feathers(x, y, z, n, cols = [[0.95, 0.92, 0.86], [0.66, 0.15, 0.11], [0.45, 0.25, 0.12]]) {
+    for (let i = 0; i < n; i++) FX.emit('feather', x, y, z, (Math.random() - 0.5) * 3, 1 + Math.random() * 2, (Math.random() - 0.5) * 3, pick(cols));
+  },
 
   // ---------- Holi: throw colour powder; everyone near you turns colourful ----------
   holi() {
@@ -7601,18 +7679,29 @@ const Games = {
   },
 
   // ---------- kites: aim with the camera, hold Dive to swoop and cut the other kites ----------
-  kiteMesh(c1, c2) {
-    const g = new THREE.Group();
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0.7, 0, -0.55, 0.08, 0, 0, -0.7, 0, 0, 0.7, 0, 0, -0.7, 0, 0.55, 0.08, 0]), 3));
-    const body = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: c1, side: THREE.DoubleSide, fog: true }));
-    const stripe = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.12), new THREE.MeshBasicMaterial({ color: c2, side: THREE.DoubleSide }));
-    stripe.position.set(0, 0.08, 0.01);
-    const tail = new THREE.Mesh(new THREE.PlaneGeometry(0.14, 1.7), new THREE.MeshBasicMaterial({ color: c2, side: THREE.DoubleSide }));
-    tail.position.y = -1.5;
-    g.add(body, stripe, tail); g.scale.setScalar(1.7); g.userData.tail = tail;
+  // a patang: four paper panels in two colours, a bamboo spine and bow, a tail flap and a tassel
+  kiteMesh(c1, c2, scale = 1.7) {
+    const g = new THREE.Group(), A = C(c1), B = C(c2);
+    const T = [0, 0.78], Lf = [-0.62, 0.12], Bt = [0, -0.62], R = [0.62, 0.12], M = [0, 0.12];
+    const pos = [], col = [];
+    for (const [p, q, r, c] of [[T, Lf, M, A], [T, M, R, B], [Lf, Bt, M, B], [M, Bt, R, A]]) for (const v of [p, q, r]) { pos.push(v[0], v[1], 0); col.push(c.r, c.g, c.b); }
+    const pg = new THREE.BufferGeometry(); pg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); pg.setAttribute('color', new THREE.Float32BufferAttribute(col, 3));
+    g.add(new THREE.Mesh(pg, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.DoubleSide })));
+    const fg = new THREE.BufferGeometry(); fg.setAttribute('position', new THREE.Float32BufferAttribute([0, -0.56, 0.004, -0.17, -0.84, 0.004, 0.17, -0.84, 0.004], 3));
+    g.add(new THREE.Mesh(fg, new THREE.MeshBasicMaterial({ color: A, side: THREE.DoubleSide })));
+    const stick = new THREE.MeshBasicMaterial({ color: 0x6b4a22 });
+    const spine = new THREE.Mesh(new THREE.BoxGeometry(0.024, 1.4, 0.02), stick); spine.position.set(0, 0.08, 0.012); g.add(spine);
+    g.add(new THREE.Mesh(new THREE.TubeGeometry(new THREE.QuadraticBezierCurve3(new THREE.Vector3(-0.62, 0.12, 0.014), new THREE.Vector3(0, 0.5, 0.014), new THREE.Vector3(0.62, 0.12, 0.014)), 10, 0.012, 4, false), stick));
+    const segs = []; let parent = g;
+    for (let i = 0; i < 6; i++) {
+      const s = new THREE.Group(); s.position.y = i ? -0.24 : -0.84; parent.add(s);
+      const rb = new THREE.Mesh(new THREE.PlaneGeometry(i === 5 ? 0.2 : 0.09, 0.22), new THREE.MeshBasicMaterial({ color: i % 2 ? 0xffffff : B, side: THREE.DoubleSide })); rb.position.y = -0.11; s.add(rb);
+      segs.push(s); parent = s;
+    }
+    g.userData.tail = segs; g.scale.setScalar(scale);
     return g;
   },
+  kiteWave(mesh, t, k = 1) { const s = mesh.userData.tail; for (let i = 0; i < s.length; i++) { s[i].rotation.z = Math.sin(t * 6 * k - i * 0.9) * 0.32; s[i].rotation.x = Math.sin(t * 4.3 * k - i * 0.7) * 0.18; } },
   kiteStart() {
     if (Player.vehicle) { UI.toast(L('Get off the vehicle first.', 'ముందు వాహనం దిగండి.'), 'info'); return; }
     this.stop(); UI.close(); Fun.bar(false);
@@ -7620,11 +7709,20 @@ const Games = {
     const sp = this.kiteSpot(), P = Player;
     if (sp) { P.x = sp.x; P.z = sp.z; P.y = World.groundHeight(sp.x, sp.z); P.em = null; }
     this.mode = 'kite';
-    const k = this.kite = { L: 4, t: 0, pos: new THREE.Vector3(), init: false, rivals: [], cut: 0, dive: false, elev: 0.6, hurt: 0, atkT: 9 };
-    k.mesh = this.kiteMesh(pick(['#e84393', '#f2b52d', '#2d6ca6', '#2f7d3a', '#c0392b']), '#ffffff');
-    k.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.75 }));
-    k.line.frustumCulled = false;
+    const k = this.kite = { L: 4, t: 0, pos: new THREE.Vector3(), init: false, rivals: [], sky: [], cut: 0, dive: false, elev: 0.6, hurt: 0, atkT: 9 };
+    k.mesh = this.kiteMesh(pick(['#e84393', '#f2b52d', '#2d6ca6', '#2f7d3a', '#c0392b']), pick(['#ffffff', '#1a1a1a', '#facc15']));
+    k.line = this.curve(20, 0xff9ec4, 0.95);   // the manja
     G.scene.add(k.mesh, k.line);
+    // a sky full of kites far away, like Sankranti
+    const gy = World.groundHeight(P.x, P.z);
+    for (let i = 0; i < 9; i++) {
+      const a = Math.random() * TAU, d = 55 + Math.random() * 70;
+      const s = { x: P.x + Math.cos(a) * d, y: gy + 24 + Math.random() * 26, z: P.z + Math.sin(a) * d, ph: Math.random() * 10, a };
+      s.mesh = this.kiteMesh(pick(HOLI_COLS), pick(['#ffffff', '#1a1a1a', '#facc15', '#2d6ca6']), 1.3);
+      s.str = this.curve(2, 0xffffff, 0.3);
+      const ax = s.x + Math.cos(a) * 45, az = s.z + Math.sin(a) * 45; s.ax = ax; s.az = az; s.ay = World.groundHeight(ax, az) + 1.4;
+      G.scene.add(s.mesh, s.str); k.sky.push(s);
+    }
     Cam.aim = k.pos;   // the camera stays low and looks up so you see you and your kite
     this.action('🪁 ' + L('Dive', 'డైవ్'), () => { k.dive = true; }, () => { k.dive = false; });
     UI.toastOnce('kitetip', isMobile ? L('Turn the camera to steer your kite. Hold Dive to swoop onto another kite and cut it!', 'గాలిపటాన్ని తిప్పడానికి కెమెరా తిప్పండి. ఇంకో గాలిపటాన్ని తెంపడానికి డైవ్ పట్టుకోండి!')
@@ -7652,7 +7750,11 @@ const Games = {
     const P = Player.pos(), a = Math.atan2(-Math.cos(Cam.yaw), -Math.sin(Cam.yaw)) + (Math.random() - 0.5) * 2.2, d = 18 + Math.random() * 14;
     const r = { t: Math.random() * 10, cx: P.x + Math.cos(a) * d, cz: P.z + Math.sin(a) * d, cy: World.groundHeight(P.x, P.z) + 11 + Math.random() * 10, rad: 3 + Math.random() * 4, w: 0.25 + Math.random() * 0.25, pos: new THREE.Vector3(), atk: null };
     r.mesh = this.kiteMesh(pick(['#6b3fa0', '#e07b22', '#1f9e9a', '#ff2e93', '#22c55e', '#facc15']), pick(['#1a1a1a', '#ffffff', '#c0392b']));
-    G.scene.add(r.mesh);
+    r.cols = [r.mesh.children[0].geometry.attributes.color.getX(0), r.mesh.children[0].geometry.attributes.color.getY(0), r.mesh.children[0].geometry.attributes.color.getZ(0)];
+    // its flyer stands far behind it: the string runs down to them
+    r.ax = r.cx + Math.cos(a) * 50; r.az = r.cz + Math.sin(a) * 50; r.ay = World.groundHeight(r.ax, r.az) + 1.4;
+    r.str = this.curve(10, 0xffffff, 0.45);
+    G.scene.add(r.mesh, r.str);
     return r;
   },
   kiteUpdate(dt) {
@@ -7667,8 +7769,14 @@ const Games = {
     _gv.set(ax + fx * Math.cos(k.elev) * k.L + rx * sway, ay + Math.sin(k.elev) * k.L + 1, az + fz * Math.cos(k.elev) * k.L + rz * sway);
     if (!k.init) { k.pos.copy(_gv); k.init = true; } else k.pos.lerp(_gv, 1 - Math.exp(-dt * (k.dive ? 3.6 : 1.8)));
     k.mesh.position.copy(k.pos); k.mesh.lookAt(ax, ay, az); k.mesh.rotateZ(Math.sin(k.t * 3.1) * 0.25);
-    k.mesh.userData.tail.rotation.z = Math.sin(k.t * 6) * 0.35;
-    const pa = k.line.geometry.attributes.position; pa.setXYZ(0, ax, ay, az); pa.setXYZ(1, k.pos.x, k.pos.y, k.pos.z); pa.needsUpdate = true;
+    this.kiteWave(k.mesh, k.t, k.dive ? 1.8 : 1);
+    // the string from your hands sags a little, less when you pull it tight in a dive
+    this.sag(k.line, ax + fx * 0.3, ay - 0.15, az + fz * 0.3, k.pos.x, k.pos.y, k.pos.z, k.dive ? 0.25 : 0.04 * k.L);
+    for (const s of k.sky) {
+      s.mesh.position.set(s.x + Math.sin(k.t * 0.5 + s.ph) * 2, s.y + Math.sin(k.t * 0.8 + s.ph) * 1.4, s.z + Math.cos(k.t * 0.4 + s.ph) * 2);
+      s.mesh.lookAt(s.ax, s.ay, s.az); s.mesh.rotateZ(Math.sin(k.t * 2.4 + s.ph) * 0.25); this.kiteWave(s.mesh, k.t + s.ph);
+      const pa = s.str.geometry.attributes.position; pa.setXYZ(0, s.ax, s.ay, s.az); pa.setXYZ(1, s.mesh.position.x, s.mesh.position.y, s.mesh.position.z); pa.needsUpdate = true;
+    }
     // the other kites drift in lazy circles: dive onto one to cut it. Now and then one swoops at
     // yours, and if it gets there before you dive, it cuts your string.
     while (k.rivals.length < 3) k.rivals.push(this.kiteRival());
@@ -7689,7 +7797,9 @@ const Games = {
       } else {
         if (r.atk !== null) { r.atk += dt; const u = Math.min(1, r.atk / 2.6); r.pos.lerpVectors(r.from, k.pos, u * u * (3 - 2 * u)); }
         else r.pos.set(r.cx + Math.cos(r.t * r.w) * r.rad, r.cy + Math.sin(r.t * 0.8) * 2, r.cz + Math.sin(r.t * r.w) * r.rad);
-        r.mesh.lookAt(ax, ay, az); r.mesh.rotateZ(Math.sin(r.t * (r.atk !== null ? 9 : 2.7)) * 0.3); r.mesh.userData.tail.rotation.z = Math.sin(r.t * (r.atk !== null ? 14 : 5)) * 0.4;
+        r.mesh.lookAt(r.ax, r.ay, r.az); r.mesh.rotateZ(Math.sin(r.t * (r.atk !== null ? 9 : 2.7)) * 0.3);
+        this.kiteWave(r.mesh, r.t, r.atk !== null ? 2 : 1);
+        this.sag(r.str, r.ax, r.ay, r.az, r.pos.x, r.pos.y, r.pos.z, 1.2);
         const d = r.pos.distanceTo(k.pos);
         if (k.dive && d < 3.4) this.kiteCut(r);
         else if (r.atk !== null && (d < 1.6 || r.atk > 4)) { if (d < 1.6 && !k.hurt) this.kiteLost(); this.kiteBack(r); }
@@ -7697,15 +7807,18 @@ const Games = {
       }
       r.mesh.position.copy(r.pos);
     }
-    k.rivals = k.rivals.filter((r) => { if (r.dead) { this.drop(r.mesh); return false; } return true; });
+    k.rivals = k.rivals.filter((r) => { if (r.dead) { this.drop(r.mesh); this.drop(r.str); return false; } return true; });
   },
   // an attacker goes back to circling from wherever it is now
   kiteBack(r) { r.atk = null; r.cx = r.pos.x - Math.cos(r.t * r.w) * r.rad; r.cz = r.pos.z - Math.sin(r.t * r.w) * r.rad; r.cy = r.pos.y - Math.sin(r.t * 0.8) * 2; },
   kiteCut(r) {
     const k = this.kite; r.falling = true; r.atk = null; r.vy = 0; r.vx = (Math.random() - 0.5) * 4; r.vz = (Math.random() - 0.5) * 4;
+    r.str.visible = false;
+    for (let i = 0; i < 26; i++) FX.emit('paper', r.pos.x, r.pos.y, r.pos.z, (Math.random() - 0.5) * 5, Math.random() * 2.5, (Math.random() - 0.5) * 5, i % 3 ? r.cols : [1, 1, 1]);
     k.cut++; this.st().kites++;
     Money.add(150, 'fun'); Audio2.sfx('tada'); Celebrate.burst(innerWidth / 2, innerHeight * 0.3, 50, 0.8);
     this.ribbon('🪁', L('You cut a kite!', 'గాలిపటం తెంపారు!'), L('Kai po che!', 'కాయ్ పో చే!'), '+' + fmtINR(150));
+    Bus.emit('kiteCut', {});
     Fun.chipUpdate();
   },
   kiteLost() {
@@ -7726,10 +7839,69 @@ const Games = {
           const x = cx + fx * s, z = cz + fz * s, o = World.occGet(x, z);
           if ((o !== OCC.FREE && o !== OCC.VILLAGE && o !== OCC.KEEP) || fieldAt(x, z) || lakeSD(x, z) < 4 || World.collideCircle({ x, z }, 2.2) || Math.abs(World.groundHeight(x, z) - h0) > 0.9) ok = false;
         }
-        if (ok) return (this._pitch = { bx: cx - fx * 9, bz: cz - fz * 9, wx: cx + fx * 9, wz: cz + fz * 9, fx, fz, yaw });
+        if (ok) return (this._pitch = { bx: cx - fx * 9, bz: cz - fz * 9, wx: cx + fx * 9, wz: cz + fz * 9, fx, fz, yaw, cx, cz });
       }
     }
     return null;
+  },
+  // pitch-local (across, along) to world; `along` runs from the batter (-9) to the bowler (+9)
+  lw(p, lx, lz) { const cs = Math.cos(p.yaw), sn = Math.sin(p.yaw); return { x: p.cx + cs * lx + sn * lz, z: p.cz - sn * lx + cs * lz }; },
+  // the ground: a rolled strip with chalk creases, the far stumps and a ring of boundary flags
+  cricketField(p) {
+    const grp = new THREE.Group();
+    const sg = new THREE.PlaneGeometry(2.9, 23, 1, 23); sg.rotateX(-Math.PI / 2);
+    const pa = sg.attributes.position;
+    for (let i = 0; i < pa.count; i++) { const w = this.lw(p, pa.getX(i), pa.getZ(i)); pa.setXYZ(i, w.x, World.groundHeight(w.x, w.z) + 0.04, w.z); }
+    sg.computeVertexNormals();
+    const strip = new THREE.Mesh(sg, new THREE.MeshStandardMaterial({ color: 0xd2b97f, roughness: 1 })); strip.receiveShadow = true; grp.add(strip);
+    const gb = new GeoBuilder(), white = C('#fbf8f0');
+    gb.setBase(p.cx, 0, p.cz, p.yaw);
+    const at = (lx, lz) => { const w = this.lw(p, lx, lz); return World.groundHeight(w.x, w.z); };
+    for (const e of [-1, 1]) {
+      const zs = e < 0 ? -9.9 : 10.2;   // the stumps line at each end
+      gb.box(2.64, 0.012, 0.06, 0, at(0, zs) + 0.05, zs, 0, white);
+      const zp = zs - e * 1.22; gb.box(3.2, 0.012, 0.06, 0, at(0, zp) + 0.05, zp, 0, white);   // popping crease
+      for (const sx of [-1.32, 1.32]) gb.box(0.06, 0.012, 2.44, sx, at(sx, zs) + 0.05, zs, 0, white);   // return creases
+    }
+    // the bowler's stumps and bails
+    const wood = C('#efe2bf'), band = C('#c0392b');
+    for (const sx of [-0.11, 0, 0.11]) { gb.boxB(0.045, 0.71, 0.045, sx, at(sx, 10.2), 10.2, 0, wood); gb.box(0.05, 0.05, 0.05, sx, at(sx, 10.2) + 0.5, 10.2, 0, band); }
+    for (const sx of [-0.055, 0.055]) gb.box(0.11, 0.022, 0.03, sx, at(0, 10.2) + 0.72, 10.2, 0, wood);
+    // boundary flags on a big circle
+    for (let i = 0; i < 18; i++) {
+      const a = (i / 18) * TAU, lx = Math.cos(a) * 28, lz = Math.sin(a) * 28, w = this.lw(p, lx, lz);
+      if (World.collideCircle({ x: w.x, z: w.z }, 0.6) || lakeSD(w.x, w.z) < 1) continue;
+      const y = World.groundHeight(w.x, w.z);
+      gb.cyl(0.03, 1.2, lx, y, lz, C('#f4f1ea'), 6);
+      gb.box(0.02, 0.26, 0.36, lx, y + 1.06, lz + 0.18, 0, i % 2 ? C('#e2b81f') : C('#c0392b'));
+    }
+    gb.clearBase();
+    const marks = new THREE.Mesh(gb.build(), MAT.std); marks.castShadow = true; marks.receiveShadow = true; grp.add(marks);
+    return grp;
+  },
+  // village kids as fielders and a wicket-keeper, made once and reused
+  team(p) {
+    if (!this.kids) {
+      this.kids = [];
+      for (let i = 0; i < 6; i++) { const h0 = Humans.create(Humans.appearance({ age: 'child', gender: i % 3 === 2 ? 'f' : 'm' }), p.cx, p.cz); if (h0) this.kids.push({ h: h0 }); }
+    }
+    const spots = [[0, -12.4], [9, -7], [11, 2], [-6, 7.5], [-11, -1], [-7, -14]];   // keeper, point, cover, mid-on, mid-wicket, fine leg
+    this.kids.forEach((k, i) => {
+      const s = spots[i % spots.length], w = this.lw(p, s[0], s[1]);
+      k.home = w; k.tx = w.x; k.tz = w.z; k.keeper = i === 0;
+      const h0 = k.h; h0.visible = true; h0.x = w.x; h0.z = w.z; h0.y = World.groundHeight(w.x, w.z); h0.speed = 0; h0.pose = k.keeper ? 'bat' : 'idle';
+      h0.yaw = Math.atan2(p.bx - w.x, p.bz - w.z);
+    });
+  },
+  teamUpdate(dt) {
+    const c = this.cr, p = c.p;
+    for (const k of this.kids || []) {
+      const h0 = k.h, dx = k.tx - h0.x, dz = k.tz - h0.z, d = Math.hypot(dx, dz);
+      if (d > 0.4) { const sp = Math.min(d / dt, k.run ? 6.2 : 2.4); h0.x += dx / d * sp * dt; h0.z += dz / d * sp * dt; h0.yaw = dampAngle(h0.yaw, Math.atan2(dx, dz), 10, dt); h0.pose = 'walk'; h0.speed = sp; }
+      else { h0.speed = 0; h0.pose = c.cheer > 0 ? 'joy' : k.keeper ? 'bat' : 'idle'; if (c.cheer <= 0) h0.yaw = dampAngle(h0.yaw, Math.atan2(p.bx - h0.x, p.bz - h0.z), 4, dt); }
+      h0.y = World.groundHeight(h0.x, h0.z);
+    }
+    if (c.cheer > 0) c.cheer -= dt;
   },
   cricketStart() {
     if (Player.vehicle) Player.exitVehicle(true);
@@ -7737,25 +7909,44 @@ const Games = {
     const p = this.pitch(); if (!p) { UI.toast(L('No open ground for cricket here.', 'ఇక్కడ క్రికెట్‌కు ఖాళీ మైదానం లేదు.'), 'warn'); return; }
     this.stop(); UI.close(); Fun.bar(false);
     this.mode = 'cricket';
-    const c = this.cr = { p, bn: 0, runs: 0, state: 'wait', t: -1.2, press: null, swing: 0, out: false };
+    const c = this.cr = { p, bn: 0, runs: 0, state: 'wait', t: -1.2, press: null, swing: 0, out: false, log: [], hist: [], cheer: 0, bails: null };
     const P = Player; P.x = p.bx; P.z = p.bz; P.y = World.groundHeight(p.bx, p.bz); P.yaw = p.yaw; P.em = null;
     const rx = -Math.cos(p.yaw), rz = Math.sin(p.yaw); c.rx = rx; c.rz = rz;
-    // ball, stumps behind you, and your bat
-    c.ball = new THREE.Mesh(new THREE.SphereGeometry(0.12, 10, 8), new THREE.MeshStandardMaterial({ color: 0xc22b2b, roughness: 0.45 }));
+    c.field = this.cricketField(p);
+    // a red ball with a white seam
+    c.ball = new THREE.Mesh(new THREE.SphereGeometry(0.11, 14, 10), new THREE.MeshStandardMaterial({ color: 0xb3201f, roughness: 0.4 }));
+    const seam = new THREE.Mesh(new THREE.TorusGeometry(0.111, 0.008, 4, 24), new THREE.MeshBasicMaterial({ color: 0xf6f0e0 })); c.ball.add(seam);
     c.ball.castShadow = true;
-    const sb = new GeoBuilder(), gy = P.y;
-    for (const o of [-0.13, 0, 0.13]) sb.box(0.05, 0.72, 0.05, rx * o, gy + 0.36, rz * o, 0, C('#f4e9d0'));
-    sb.box(0.32, 0.04, 0.05, 0, gy + 0.74, 0, p.yaw, C('#e2b81f'));
-    c.stumps = new THREE.Mesh(sb.build(), MAT.std); c.stumps.position.set(p.bx - p.fx * 0.9, 0, p.bz - p.fz * 0.9);
-    const bb = new GeoBuilder(); bb.box(0.13, 0.62, 0.05, 0, -0.42, 0, 0, C('#d9b47a')); bb.box(0.04, 0.3, 0.04, 0, 0.0, 0, 0, C('#2f3134'));
+    c.trail = this.curve(12, 0xffffff, 0.5); c.trail.visible = false;
+    // your stumps, with bails that fly when you are bowled
+    const sw = this.lw(p, 0, -9.9), sy = World.groundHeight(sw.x, sw.z);
+    c.stumps = new THREE.Group(); c.stumps.position.set(sw.x, sy, sw.z); c.stumps.rotation.y = p.yaw;
+    const sb = new GeoBuilder();
+    for (const sx of [-0.11, 0, 0.11]) { sb.boxB(0.045, 0.71, 0.045, sx, 0, 0, 0, C('#efe2bf')); sb.box(0.05, 0.05, 0.05, sx, 0.5, 0, 0, C('#c0392b')); }
+    c.stumpMesh = new THREE.Mesh(sb.build(), MAT.std); c.stumpMesh.castShadow = true; c.stumps.add(c.stumpMesh);
+    c.bails = [-0.055, 0.055].map((sx) => { const b = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.022, 0.03), new THREE.MeshStandardMaterial({ color: 0xefe2bf })); b.position.set(sx, 0.72, 0); c.stumps.add(b); return { m: b, x0: sx }; });
+    // the bat: a willow blade with a dark grip
+    const bb = new GeoBuilder();
+    bb.box(0.115, 0.56, 0.04, 0, -0.44, 0, 0, C('#e6c98f')); bb.box(0.06, 0.48, 0.025, 0, -0.42, -0.028, 0, C('#d4b479'));
+    bb.box(0.1, 0.05, 0.045, 0, -0.2, 0, 0, C('#c0392b')); bb.box(0.04, 0.3, 0.04, 0, 0.0, 0, 0, C('#1d1f22'));
     c.bat = new THREE.Mesh(bb.build(), MAT.std); c.bat.castShadow = true;
-    G.scene.add(c.ball, c.stumps, c.bat);
+    G.scene.add(c.field, c.ball, c.stumps, c.bat, c.trail);
     if (!this.bowler) this.bowler = Humans.create(Humans.appearance({ gender: 'm', shirt: '#f4f4f0', lower: 'pants', pants: '#f4f4f0' }), p.wx, p.wz);
     const bw = this.bowler; if (bw) { bw.visible = true; bw.x = p.wx + p.fx * 6; bw.z = p.wz + p.fz * 6; bw.y = World.groundHeight(bw.x, bw.z); bw.yaw = p.yaw + Math.PI; bw.pose = 'idle'; bw.speed = 0; }
-    // camera behind the batter, looking down the pitch
+    this.team(p);
+    // camera behind the batter looking down the pitch; it follows the ball when you hit it
+    const home = () => _gb.set(Player.x - p.fx * 4.6 + rx * 1.0, Player.y + 2.2, Player.z - p.fz * 4.6 + rz * 1.0);
+    c.cam = home().clone(); c.look = new THREE.Vector3(p.wx, World.groundHeight(p.wx, p.wz) + 0.9, p.wz);
     Cam.intro = (dt, cam) => {
-      const P2 = Player; cam.position.set(P2.x - p.fx * 4.4 + rx * 0.9, P2.y + 2.3, P2.z - p.fz * 4.4 + rz * 0.9);
-      cam.lookAt(p.wx, World.groundHeight(p.wx, p.wz) + 0.9, p.wz); Cam.focus.set(P2.x, P2.y, P2.z);
+      const k = 1 - Math.exp(-dt * 3.2);
+      if (c.state === 'flight' && c.ball.visible) {
+        _ga.copy(c.ball.position); c.look.lerp(_ga, 1 - Math.exp(-dt * 7));
+        c.cam.lerp(_gb.set(Player.x - p.fx * 6 + rx * 2.4, Player.y + 3.6, Player.z - p.fz * 6 + rz * 2.4), k);
+      } else {
+        c.look.lerp(_ga.set(p.wx, World.groundHeight(p.wx, p.wz) + 0.9, p.wz), 1 - Math.exp(-dt * 4));
+        c.cam.lerp(home(), k);
+      }
+      cam.position.copy(c.cam); cam.lookAt(c.look); Cam.focus.set(Player.x, Player.y, Player.z);
     };
     this.action('🏏 ' + L('Hit!', 'కొట్టు!'), () => { if (c.state === 'ball' && c.press === null) { c.press = c.t; c.swing = 0.001; Audio2.sfx('whoosh'); } }, null);
     UI.toastOnce('crickettip', L('Tap Hit just as the ball reaches you. Perfect timing = SIX!', 'బంతి మీ దగ్గరికి వచ్చిన క్షణంలో కొట్టు నొక్కండి. సరైన సమయం = సిక్స్!'), 'info');
@@ -7772,6 +7963,14 @@ const Games = {
     else { const u = Math.min(1, (s - 1) / 0.25); out.set(lerp(bat.x, c.stumps.position.x, u), lerp(bat.y, World.groundHeight(p.bx, p.bz) + 0.4, u), lerp(bat.z, c.stumps.position.z, u)); }
     return out;
   },
+  trailUpdate() {
+    const c = this.cr, hst = c.hist;
+    if (!c.ball.visible) { hst.length = 0; c.trail.visible = false; return; }
+    hst.push(c.ball.position.clone()); if (hst.length > 12) hst.shift();
+    const pa = c.trail.geometry.attributes.position;
+    for (let i = 0; i < 12; i++) { const q = hst[Math.max(0, hst.length - 12 + i)] || hst[0]; pa.setXYZ(i, q.x, q.y, q.z); }
+    pa.needsUpdate = true; c.trail.visible = hst.length > 2;
+  },
   cricketUpdate(dt) {
     const c = this.cr, p = c.p, P = Player, bw = this.bowler;
     P.x = p.bx; P.z = p.bz; P.yaw = p.yaw;
@@ -7783,10 +7982,16 @@ const Games = {
     c.bat.position.set(P.x + c.rx * 0.38 + p.fx * 0.15, P.y + 1.0, P.z + c.rz * 0.38 + p.fz * 0.15);
     c.bat.rotation.set(0, 0, 0); c.bat.rotation.order = 'YXZ'; c.bat.rotation.y = p.yaw - sw * 2.2; c.bat.rotation.x = -0.35 - sw * 1.1;
     if (c.swing >= 1) c.swing = 0;
+    // flying bails after a bowled
+    if (c.bailT > 0) {
+      c.bailT -= dt;
+      for (const b of c.bails) { b.vy -= 9.8 * dt; b.m.position.x += b.vx * dt; b.m.position.y = Math.max(0.02, b.m.position.y + b.vy * dt); b.m.position.z += b.vz * dt; if (b.m.position.y > 0.02) { b.m.rotation.x += dt * 12; b.m.rotation.z += dt * 7; } }
+    }
+    this.teamUpdate(dt);
     if (c.state === 'wait') {
       if (bw) { bw.pose = 'idle'; bw.speed = 0; }
       c.ball.visible = false;
-      if (c.t >= 0) { c.state = 'runup'; c.t = 0; c.T = 0.85 + Math.random() * 0.3; c.press = null; }
+      if (c.t >= 0) { c.state = 'runup'; c.t = 0; c.T = 0.85 + Math.random() * 0.3; c.press = null; c.bounced = false; }
     } else if (c.state === 'runup') {
       const u = Math.min(1, c.t / 1.3);
       if (bw) { bw.x = lerp(p.wx + p.fx * 6, p.wx, u); bw.z = lerp(p.wz + p.fz * 6, p.wz, u); bw.y = World.groundHeight(bw.x, bw.z); bw.pose = 'walk'; bw.speed = 5; bw.yaw = p.yaw + Math.PI; }
@@ -7798,43 +8003,55 @@ const Games = {
         const e = c.press - c.T;   // seconds early (-) or late (+)
         if (Math.abs(e) < 0.3) { this.cricketHit(e); return; }
       }
-      this.ballAt(s, c.ball.position);
+      this.ballAt(s, c.ball.position); c.ball.rotation.x -= dt * 20;
+      if (!c.bounced && s >= 0.78) { c.bounced = true; const q = c.ball.position; for (let i = 0; i < 5; i++) FX.emit('dust', q.x, q.y, q.z, (Math.random() - 0.5), 0.4, (Math.random() - 0.5)); }
       if (s > 1.25) this.cricketMiss();
     } else if (c.state === 'flight') {
-      const v = c.vel; v.y -= 9.8 * dt; c.ball.position.addScaledVector(v, dt);
+      const v = c.vel; v.y -= 9.8 * dt; c.ball.position.addScaledVector(v, dt); c.ball.rotation.x += dt * 25;
       const gy = World.groundHeight(c.ball.position.x, c.ball.position.z) + 0.12;
-      if (c.ball.position.y < gy) { c.ball.position.y = gy; if (v.y < 0) { v.y *= -0.35; v.x *= 0.6; v.z *= 0.6; } }
+      if (c.ball.position.y < gy) { c.ball.position.y = gy; if (v.y < -1.5) { const q = c.ball.position; for (let i = 0; i < 6; i++) FX.emit('dust', q.x, q.y, q.z, (Math.random() - 0.5) * 2, 0.6, (Math.random() - 0.5) * 2); } if (v.y < 0) { v.y *= -0.35; v.x *= 0.6; v.z *= 0.6; } }
       if (c.t > 2.6) this.cricketNext();
     } else if (c.state === 'done') { if (c.t > 1.6) this.cricketNext(); }
+    if (this.cr) this.trailUpdate();   // the innings may have just ended
   },
   cricketHit(e) {
     const c = this.cr, p = c.p, q = Math.abs(e);
     const kind = q < 0.07 ? 6 : q < 0.14 ? 4 : q < 0.21 ? 2 : 1;
-    c.runs += kind; c.state = 'flight'; c.t = 0;
+    c.runs += kind; c.log.push(kind); c.state = 'flight'; c.t = 0;
     const ang = clamp(e * 4, -1.1, 1.1) + (Math.random() - 0.5) * 0.4;   // early pulls to one side, late to the other
     const dx = p.fx * Math.cos(ang) + c.rx * Math.sin(ang), dz = p.fz * Math.cos(ang) + c.rz * Math.sin(ang);
     const sp = kind === 6 ? 25 : kind === 4 ? 23 : kind === 2 ? 13 : 8, vy = kind === 6 ? 15 : kind === 4 ? 3 : 5;
     c.vel = new THREE.Vector3(dx * sp, vy, dz * sp);
+    // the nearest fielder runs after it (a six goes over everyone's head)
+    const land = { x: c.ball.position.x + dx * sp * 1.1, z: c.ball.position.z + dz * sp * 1.1 };
+    let best = null, bd = 1e9; for (const k of this.kids || []) { k.run = false; if (k.keeper) continue; const d = Math.hypot(k.h.x - land.x, k.h.z - land.z); if (d < bd) { bd = d; best = k; } }
+    if (best && kind < 6) { best.tx = land.x; best.tz = land.z; best.run = true; }
     Audio2.sfx('bump');
     if (kind === 6) {
+      c.cheer = 3.5;
       this.ribbon('🏏', L('Out of the ground!', 'మైదానం బయటికి!'), L('SIX!', 'సిక్స్!'), '+' + kind, 'big', 1800); Celebrate.shower(90); Audio2.sfx('fanfare');
       for (const n of NPCs.list) if (!n.worker && n.h.visible && Math.hypot(n.h.x - p.bx, n.h.z - p.bz) < 45) n.react = { pose: 'bhangra', until: G.t + 4 };
-    } else if (kind === 4) { this.ribbon('🏏', L('Lovely shot!', 'అద్భుతమైన షాట్!'), L('FOUR!', 'ఫోర్!'), '+4', 'sun', 1600); Celebrate.burst(innerWidth / 2, innerHeight * 0.35, 50, 0.7); Audio2.sfx('tada'); }
+    } else if (kind === 4) { c.cheer = 1.5; this.ribbon('🏏', L('Lovely shot!', 'అద్భుతమైన షాట్!'), L('FOUR!', 'ఫోర్!'), '+4', 'sun', 1600); Celebrate.burst(innerWidth / 2, innerHeight * 0.35, 50, 0.7); Audio2.sfx('tada'); }
     else { this.ribbon('🏏', e < 0 ? L('A bit early', 'కొంచెం ముందుగా') : L('A bit late', 'కొంచెం ఆలస్యంగా'), kind === 2 ? L('2 runs', '2 పరుగులు') : L('1 run', '1 పరుగు'), '+' + kind, 'sun', 1400); }
+    Bus.emit('cricketShot', { kind });
     Fun.chipUpdate();
   },
   cricketMiss() {
     const c = this.cr; c.state = 'done'; c.t = 0;
     const bowled = Math.random() < 0.45;
     if (bowled) {
-      c.out = true; c.stumps.rotation.x = -0.5; Audio2.sfx('bump');
+      c.out = true; c.log.push('W'); c.stumpMesh.rotation.x = -0.5; Audio2.sfx('bump');
+      c.bailT = 1.6; for (const b of c.bails) { b.vx = (Math.random() - 0.5) * 2; b.vy = 3 + Math.random() * 2; b.vz = -1.5 - Math.random() * 2; }
+      const kp = this.kids && this.kids[0]; if (kp) c.cheer = 2;
       this.ribbon('😮', L('The stumps are down.', 'వికెట్లు పడిపోయాయి.'), L('Bowled!', 'బౌల్డ్!'), '', 'sun', 1600);
-    } else UI.toast(c.press === null ? L('Missed! Tap Hit as the ball arrives.', 'తప్పింది! బంతి రాగానే కొట్టు నొక్కండి.') : L('Missed! Try to time it better.', 'తప్పింది! సమయం సరిగ్గా చూసి కొట్టండి.'), 'info');
+    } else { c.log.push('•'); UI.toast(c.press === null ? L('Missed! Tap Hit as the ball arrives.', 'తప్పింది! బంతి రాగానే కొట్టు నొక్కండి.') : L('Missed! Try to time it better.', 'తప్పింది! సమయం సరిగ్గా చూసి కొట్టండి.'), 'info'); }
+    Fun.chipUpdate();
   },
   cricketNext() {
     const c = this.cr; c.bn += 1;
     if (c.out || c.bn >= 6) { this.cricketEnd(); return; }
-    c.state = 'wait'; c.t = -0.9; c.stumps.rotation.x = 0;
+    c.state = 'wait'; c.t = -0.9; c.stumpMesh.rotation.x = 0;
+    for (const k of this.kids || []) { k.run = false; k.tx = k.home.x; k.tz = k.home.z; }
     Fun.chipUpdate();
   },
   cricketEnd() {
@@ -7844,10 +8061,24 @@ const Games = {
     if (prize) { Money.add(prize, 'fun'); Celebrate.coins(innerWidth / 2, innerHeight * 0.4, prize, 6); }
     this.ribbon('🏏', L('Innings over', 'ఇన్నింగ్స్ ముగిసింది'), (LANG === 'en' ? `${c.runs} runs` : L(`${c.runs} runs`, `${c.runs} పరుగులు`, "{0} runs", [c.runs])) + (best ? '  ' + L('New best!', 'కొత్త రికార్డు!') : ''), prize ? '+' + fmtINR(prize) : '', c.runs >= 12 ? 'big' : 'sun', 3000);
     if (c.runs >= 12) Celebrate.shower(120);
+    Bus.emit('cricketEnd', { runs: c.runs });
     this.stop();
   },
 
   // ---------- fishing at the lake: wait for the float to dip, then pull ----------
+  fishMesh(fish, s = 1) {
+    const g = new THREE.Group(), gold = fish.id === 'golden';
+    const body = new THREE.MeshStandardMaterial({ color: fish.col, roughness: 0.32, metalness: gold ? 0.65 : 0.3, emissive: gold ? 0x5a3c00 : 0x000000 });
+    const fin = new THREE.MeshStandardMaterial({ color: fish.fin, roughness: 0.6, side: THREE.DoubleSide });
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.2, 14, 10), body); b.scale.set(0.55, 0.75, 1.5); g.add(b);
+    const tri = (pts) => { const q = new THREE.BufferGeometry(); q.setAttribute('position', new THREE.Float32BufferAttribute(pts, 3)); q.computeVertexNormals(); return new THREE.Mesh(q, fin); };
+    const tail = tri([0, 0, -0.26, 0, 0.17, -0.46, 0, -0.17, -0.46]); g.add(tail);
+    g.add(tri([0, 0.13, 0.12, 0, 0.13, -0.15, 0, 0.25, -0.07]));
+    const eye = new THREE.MeshBasicMaterial({ color: 0x111111 });
+    for (const sx of [-1, 1]) { const e = new THREE.Mesh(new THREE.SphereGeometry(0.022, 6, 4), eye); e.position.set(sx * 0.1, 0.04, 0.2); g.add(e); }
+    g.userData.tail = tail; g.scale.setScalar(s);
+    return g;
+  },
   fishStart() {
     if (Player.vehicle) Player.exitVehicle(true);
     if (Player.vehicle) return;
@@ -7859,51 +8090,102 @@ const Games = {
     this.stop(); UI.close(); Fun.bar(false);
     this.mode = 'fish';
     const a = Math.atan2(LAKE.z - P.z, LAKE.x - P.x), dx = Math.cos(a), dz = Math.sin(a);
-    P.yaw = Math.atan2(dx, dz); P.em = null; Cam.yaw = P.yaw + Math.PI;   // look out over the water
+    P.yaw = Math.atan2(dx, dz); P.em = null; Cam.yaw = P.yaw + Math.PI + 0.55;   // over your shoulder: the rod, the line and the water
     let d = 7; while (d < 22 && lakeSD(P.x + dx * d, P.z + dz * d) > -1.5) d += 1;
-    const f = this.fs = { dx, dz, tx: P.x + dx * d, tz: P.z + dz * d, state: 'cast', t: 0, wait: 0, caught: null };
-    f.bob = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 8), new THREE.MeshBasicMaterial({ color: 0xff4d2e }));
-    f.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(), new THREE.Vector3()]), new THREE.LineBasicMaterial({ color: 0xf4f1ea, transparent: true, opacity: 0.8 }));
-    f.line.frustumCulled = false;
-    f.rod = new THREE.Mesh(new THREE.CylinderGeometry(0.018, 0.03, 2.8, 6), new THREE.MeshStandardMaterial({ color: 0x8a5a2a }));
-    f.fish = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 6), new THREE.MeshStandardMaterial({ color: 0xb8c4cc, metalness: 0.4, roughness: 0.35 }));
-    f.fish.scale.set(0.6, 0.6, 1.6); f.fish.visible = false;
-    G.scene.add(f.bob, f.line, f.rod, f.fish);
+    const f = this.fs = { dx, dz, tx: P.x + dx * d, tz: P.z + dz * d, state: 'cast', t: 0, wait: 0, caught: null, tip: new THREE.Vector3(), n: 0, rip: 0, inBasket: [] };
+    // a red-and-white float with a little antenna
+    f.bob = new THREE.Group();
+    const red = new THREE.MeshStandardMaterial({ color: 0xff3b1f, roughness: 0.5 });
+    f.bob.add(new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 6, 0, TAU, 0, Math.PI / 2), red), new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 6, 0, TAU, Math.PI / 2, Math.PI / 2), new THREE.MeshStandardMaterial({ color: 0xf6f3ea, roughness: 0.5 })));
+    const ant = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.24, 4), red); ant.position.y = 0.22; f.bob.add(ant);
+    f.line = this.curve(16, 0xf4f1ea, 0.85);
+    // a bamboo rod in segments so it can bend, a cork grip and a reel
+    f.rod = new THREE.Group(); f.seg = [];
+    const sg = new THREE.CylinderGeometry(1, 1, 1, 6), cane = new THREE.MeshStandardMaterial({ color: 0x8a5a2a, roughness: 0.6 }), cork = new THREE.MeshStandardMaterial({ color: 0xc9a46b, roughness: 0.9 });
+    for (let i = 0; i < 6; i++) { const m = new THREE.Mesh(sg, i === 0 ? cork : cane); m.castShadow = true; f.rod.add(m); f.seg.push(m); }
+    f.reel = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.05, 12), new THREE.MeshStandardMaterial({ color: 0x2a2d31, metalness: 0.6, roughness: 0.4 })); f.rod.add(f.reel);
+    f.fish = new THREE.Group(); f.fish.visible = false;
+    // a woven basket by your feet that fills up
+    const bk = f.basket = new THREE.Group(), wick = new THREE.MeshStandardMaterial({ color: 0x9a6b35, roughness: 1, side: THREE.DoubleSide });
+    const wall = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.22, 0.32, 14, 1, true), wick); wall.position.y = 0.16;
+    const base = new THREE.Mesh(new THREE.CircleGeometry(0.22, 14), wick); base.rotation.x = -Math.PI / 2; base.position.y = 0.02;
+    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.3, 0.025, 4, 18), wick); rim.rotation.x = Math.PI / 2; rim.position.y = 0.32;
+    bk.add(wall, base, rim);
+    const bx = P.x - dx * 0.2 + dz * 0.75, bz = P.z - dz * 0.2 - dx * 0.75; bk.position.set(bx, World.groundHeight(bx, bz), bz);
+    G.scene.add(f.bob, f.line, f.rod, f.fish, f.basket);
     this.action('🎣 ' + L('Pull!', 'లాగు!'), () => this.fishPull(), null);
     UI.toastOnce('fishtip', L('Wait for the red float to dip under, then tap Pull quickly!', 'ఎరుపు బెండు నీటిలో మునిగినప్పుడు వెంటనే లాగు నొక్కండి!'), 'info');
     Fun.chipUpdate();
   },
-  fishTip(out) { const P = Player, f = this.fs; return out.set(P.x + f.dx * 2.5, P.y + 2.6, P.z + f.dz * 2.5); },
+  // the rod from your hands out over the water, bending when a fish pulls
+  rodUpdate(bend) {
+    const f = this.fs, P = Player, n = f.seg.length;
+    const H = _ga.set(P.x + f.dx * 0.32, P.y + 1.02, P.z + f.dz * 0.32);
+    const T = _gb.set(P.x + f.dx * 2.7, P.y + 2.75 - bend * 1.15, P.z + f.dz * 2.7);
+    const M = _gc.set((H.x + T.x) / 2, (H.y + T.y) / 2 + 0.22 + bend * 0.45, (H.z + T.z) / 2);
+    const at = (u, out) => { const a = (1 - u) * (1 - u), b = 2 * (1 - u) * u, c = u * u; return out.set(a * H.x + b * M.x + c * T.x, a * H.y + b * M.y + c * T.y, a * H.z + b * M.z + c * T.z); };
+    for (let i = 0; i < n; i++) {
+      const p0 = at(i / n, _gv), p1 = at((i + 1) / n, _gw);
+      const m = f.seg[i], len = p0.distanceTo(p1), r = i === 0 ? 0.034 : lerp(0.024, 0.007, i / (n - 1));
+      m.position.set((p0.x + p1.x) / 2, (p0.y + p1.y) / 2, (p0.z + p1.z) / 2);
+      _gw.sub(p0).normalize(); m.quaternion.setFromUnitVectors(UP, _gw); m.scale.set(r, len, r);
+    }
+    at(0.1, f.reel.position); f.reel.position.y -= 0.06; f.reel.quaternion.setFromUnitVectors(UP, _gv.set(-f.dz, 0, f.dx));
+    return f.tip.copy(T);
+  },
   fishUpdate(dt) {
     const f = this.fs, P = Player;
     if (P.h) P.h.gpose = 'fish';
     f.t += dt;
     const wy = World.lake.position.y;
-    // the rod from your hands out over the water
-    const hx = P.x + f.dx * 0.35, hy = P.y + 1.05, hz = P.z + f.dz * 0.35, tip = this.fishTip(_v2);
-    f.rod.position.set((hx + tip.x) / 2, (hy + tip.y) / 2, (hz + tip.z) / 2);
-    _v3.set(tip.x - hx, tip.y - hy, tip.z - hz).normalize(); f.rod.quaternion.setFromUnitVectors(UP, _v3);
+    const bend = f.state === 'bite' ? 0.32 + Math.sin(f.t * 25) * 0.08 : f.state === 'catch' ? Math.max(0, 0.55 - f.t * 0.6) : f.state === 'wait' ? 0.05 + Math.sin(f.t * 1.7) * 0.01 : 0.08;
+    const tip = this.rodUpdate(bend);
+    let sag = 0.3;
     if (f.state === 'cast') {
       const u = Math.min(1, f.t / 0.7);
       f.bob.position.set(lerp(tip.x, f.tx, u), lerp(tip.y, wy, u) + Math.sin(u * Math.PI) * 2, lerp(tip.z, f.tz, u));
-      if (u >= 1) { f.state = 'wait'; f.t = 0; f.wait = 2 + Math.random() * 5; FX.emit('splash', f.tx, wy + 0.1, f.tz, 0, 1.5, 0); Audio2.sfx('step'); }
+      sag = 0.15;
+      if (u >= 1) { f.state = 'wait'; f.t = 0; f.wait = 2 + Math.random() * 5; FX.emit('splash', f.tx, wy + 0.1, f.tz, 0, 1.5, 0); this.ripple(f.tx, wy, f.tz, 1.2, 1.4); Audio2.sfx('step'); }
     } else if (f.state === 'wait') {
-      f.bob.position.set(f.tx, wy + 0.04 + Math.sin(f.t * 2.4) * 0.03, f.tz);
-      if (f.t > f.wait) { f.state = 'bite'; f.t = 0; Audio2.sfx('hint'); for (let k = 0; k < 6; k++) FX.emit('splash', f.tx + (Math.random() - 0.5) * 0.6, wy + 0.1, f.tz + (Math.random() - 0.5) * 0.6, 0, 1.2 + Math.random(), 0); }
+      f.bob.position.set(f.tx, wy + 0.04 + Math.sin(f.t * 2.4) * 0.03, f.tz); sag = 0.5;
+      f.rip -= dt; if (f.rip <= 0) { f.rip = 1.8; this.ripple(f.tx, wy, f.tz, 0.6, 1.6); }
+      if (f.t > f.wait) {
+        f.state = 'bite'; f.t = 0; Audio2.sfx('hint');
+        for (let k = 0; k < 6; k++) FX.emit('splash', f.tx + (Math.random() - 0.5) * 0.6, wy + 0.1, f.tz + (Math.random() - 0.5) * 0.6, 0, 1.2 + Math.random(), 0);
+        this.ripple(f.tx, wy, f.tz, 1.4, 0.9); this.ripple(f.tx, wy, f.tz, 0.8, 0.7);
+      }
     } else if (f.state === 'bite') {
-      f.bob.position.set(f.tx, wy - 0.22 + Math.sin(f.t * 25) * 0.05, f.tz);
+      f.bob.position.set(f.tx, wy - 0.22 + Math.sin(f.t * 25) * 0.05, f.tz); sag = 0.03;
+      f.rip -= dt; if (f.rip <= 0) { f.rip = 0.3; this.ripple(f.tx, wy, f.tz, 0.9, 0.6); }
       if (f.t > 1.0) { f.state = 'recast'; f.t = 0; UI.toast(L('It got away! Pull as soon as the float dips.', 'తప్పించుకుంది! బెండు మునగగానే లాగండి.'), 'info'); }
     } else if (f.state === 'catch') {
-      const u = Math.min(1, f.t / 0.8);
-      f.fish.visible = true; f.fish.position.set(lerp(f.tx, tip.x, u), lerp(wy, tip.y - 0.6, u) + Math.sin(u * Math.PI) * 2.2, lerp(f.tz, tip.z, u));
-      f.fish.rotation.set(Math.sin(f.t * 30) * 0.4, f.t * 3, 0);
-      f.bob.position.copy(f.fish.position);
-      if (f.t > 1.6) { f.fish.visible = false; f.state = 'recast'; f.t = 0; }
+      // the fish jumps out of the water to you, wriggling, then drops into the basket
+      const bp = f.basket.position;
+      if (f.t < 0.8) {
+        const u = f.t / 0.8;
+        f.fish.position.set(lerp(f.tx, tip.x, u), lerp(wy, tip.y - 0.7, u) + Math.sin(u * Math.PI) * 2.2, lerp(f.tz, tip.z, u));
+        f.bob.position.copy(f.fish.position); sag = 0.02;
+      } else {
+        const u = Math.min(1, (f.t - 0.8) / 0.55);
+        f.fish.position.set(lerp(tip.x, bp.x, u), lerp(tip.y - 0.7, bp.y + 0.3, u) + Math.sin(u * Math.PI) * 0.5, lerp(tip.z, bp.z, u));
+        f.bob.position.lerp(tip, Math.min(1, dt * 5)); sag = 0.4;
+      }
+      f.fish.rotation.set(Math.sin(f.t * 30) * 0.35, f.t * 3, Math.sin(f.t * 22) * 0.3);
+      if (f.fish.userData.tail) f.fish.userData.tail.rotation.y = Math.sin(f.t * 40) * 0.6;
+      if (f.t > 1.35) { this.basketAdd(f.caught); f.fish.visible = false; f.state = 'recast'; f.t = 0; }
     } else if (f.state === 'recast') {
-      f.bob.position.lerp(tip, Math.min(1, dt * 4));
+      f.bob.position.lerp(tip, Math.min(1, dt * 4)); sag = 0.3;
       if (f.t > 0.8) { f.state = 'cast'; f.t = 0; }
     }
-    const pa = f.line.geometry.attributes.position; pa.setXYZ(0, tip.x, tip.y, tip.z); pa.setXYZ(1, f.bob.position.x, f.bob.position.y, f.bob.position.z); pa.needsUpdate = true;
+    this.sag(f.line, tip.x, tip.y, tip.z, f.bob.position.x, f.bob.position.y + 0.2, f.bob.position.z, sag);
+  },
+  basketAdd(fish) {
+    const f = this.fs; if (!fish) return;
+    if (f.inBasket.length >= 5) return;
+    const m = this.fishMesh(fish, 0.42), a = f.inBasket.length * 1.3;
+    m.position.set(Math.cos(a) * 0.08, 0.22 + f.inBasket.length * 0.04, Math.sin(a) * 0.08); m.rotation.set(0.2, a * 2, Math.PI / 2 * (f.inBasket.length % 2 ? 1 : -1) * 0.3);
+    f.basket.add(m); f.inBasket.push(m);
+    Audio2.sfx('step');
   },
   fishPull() {
     const f = this.fs; if (!f) return;
@@ -7913,11 +8195,271 @@ const Games = {
     for (const q of FISH) { if (r < q.odds) { fish = q; break; } r -= q.odds; }
     const kg = +(fish.w[0] + Math.random() * (fish.w[1] - fish.w[0])).toFixed(1), pay = fish.id === 'golden' ? fish.p : Math.round(fish.p * kg);
     const g = this.st(); g.fish[fish.id] = (g.fish[fish.id] || 0) + 1;
-    f.state = 'catch'; f.t = 0; f.fish.material.color.set(fish.id === 'golden' ? 0xffc21a : fish.id === 'prawn' ? 0xf0a080 : 0xb8c4cc);
-    Money.add(pay, 'fun'); Audio2.sfx(fish.id === 'golden' ? 'fanfare' : 'coin');
+    f.state = 'catch'; f.t = 0; f.caught = fish; f.n++;
+    // swap in a fish of the right kind and colour
+    this.drop(f.fish); f.fish = this.fishMesh(fish, 1 + Math.min(1, kg / 4) * 0.4); G.scene.add(f.fish);
+    const wy = World.lake.position.y; for (let k = 0; k < 14; k++) FX.emit('water', f.tx, wy + 0.1, f.tz, (Math.random() - 0.5) * 2, 2 + Math.random() * 3, (Math.random() - 0.5) * 2);
+    this.ripple(f.tx, wy, f.tz, 1.8, 1.0);
+    Money.add(pay, 'fun'); Audio2.sfx(fish.id === 'golden' ? 'fanfare' : 'coin'); Audio2.sfx('splash');
     this.ribbon(fish.id === 'golden' ? '🌟' : '🐟', fish.id === 'golden' ? L('Golden fish!', 'బంగారు చేప!') : L('You caught a fish!', 'చేప పట్టారు!'), LN(fish) + ' · ' + kg + ' kg', '+' + fmtINR(pay), fish.id === 'golden' ? 'big' : 'sun', 2000);
     if (fish.id === 'golden') Celebrate.shower(120);
     Celebrate.coins(innerWidth / 2, innerHeight * 0.45, pay, 4);
+    Bus.emit('fishCaught', { id: fish.id, kg });
+    Fun.chipUpdate();
+  },
+
+  // ---------- the runaway rooster: chase it and grab it ----------
+  roosterStart() {
+    if (Player.vehicle) Player.exitVehicle(true);
+    if (Player.vehicle) return;
+    this.stop(); UI.close(); Fun.bar(false);
+    const P = Player;
+    const sp = this.kiteSpot(); if (sp) { P.x = sp.x; P.z = sp.z; P.y = World.groundHeight(sp.x, sp.z); P.em = null; }   // open ground for a proper chase
+    const fx = -Math.sin(Cam.yaw), fz = -Math.cos(Cam.yaw), x = P.x + fx * 5, z = P.z + fz * 5;
+    let a = this.rooster; if (!a) a = this.rooster = Animals.create('chicken', x, z, { col: '#a8261c', s: 2.1 });
+    if (!a) return;
+    this.mode = 'rooster';
+    a.visible = true; a.x = x; a.z = z; a.y = World.groundHeight(x, z); a.yaw = Math.atan2(fx, fz); a.speed = 0; a.pose = 'stand';
+    this.rc = { a, t: 0, limit: 60, cx: P.x, cz: P.z, hopT: 0.4, hop: 0, wig: Math.random() * 10, miss: 0 };
+    this.feathers(x, a.y + 0.5, z, 10);
+    this.action('🐓 ' + L('Catch!', 'పట్టుకో!'), () => this.roosterTry(), null);
+    Audio2.sfx('rooster');
+    UI.toastOnce('roostertip', L('The rooster ran away! Run after it and tap Catch when you are close.', 'కోడిపుంజు పారిపోయింది! దాని వెంట పరుగెత్తి దగ్గరికి వచ్చాక పట్టుకో నొక్కండి.'), 'info');
+    Fun.chipUpdate();
+  },
+  roosterUpdate(dt) {
+    const r = this.rc, a = r.a, P = Player;
+    if (P.vehicle) { this.stop(); return; }
+    r.t += dt; r.miss = Math.max(0, r.miss - dt);
+    if (Math.floor(r.t) !== Math.floor(r.t - dt)) Fun.chipUpdate();
+    if (r.t > r.limit) { UI.toast(L('The rooster got away! Try again.', 'కోడిపుంజు తప్పించుకుంది! మళ్ళీ ప్రయత్నించండి.'), 'info'); this.stop(); return; }
+    const dx = a.x - P.x, dz = a.z - P.z, d = Math.hypot(dx, dz) || 1;
+    // it runs from you, zig-zagging; it turns back before it leaves the ground
+    let vx, vz;
+    if (d < 8) { vx = dx / d; vz = dz / d; const zz = Math.sin(r.t * 3.1 + r.wig) * 0.9; const px = -vz, pz = vx; vx += px * zz; vz += pz * zz; }
+    else { vx = Math.sin(r.t * 0.7 + r.wig) * 0.3; vz = Math.cos(r.t * 0.6) * 0.3; }
+    const hx = a.x - r.cx, hz = a.z - r.cz, hd = Math.hypot(hx, hz); if (hd > 18) { vx -= hx / hd * 1.6; vz -= hz / hd * 1.6; }
+    const vl = Math.hypot(vx, vz) || 1, sp = d < 8 ? 4.4 + (d < 3 ? 1.1 : 0) : 0.6;
+    const q = { x: a.x + vx / vl * sp * dt, z: a.z + vz / vl * sp * dt }; World.collideCircle(q, 0.35);
+    if (lakeSD(q.x, q.z) > 0.5) { a.x = q.x; a.z = q.z; }
+    a.speed = damp(a.speed, sp, 6, dt); a.yaw = dampAngle(a.yaw, Math.atan2(vx, vz), 10, dt);
+    // now and then a panicked flap and hop
+    r.hopT -= dt; if (r.hopT <= 0 && d < 6) { r.hopT = 1.1 + Math.random() * 1.6; r.hop = 0.001; this.feathers(a.x, a.y + 0.4, a.z, 5); Audio2.sfx('cluck'); }
+    if (r.hop > 0) { r.hop += dt * 2.6; if (r.hop >= 1) r.hop = 0; }
+    a.y = World.groundHeight(a.x, a.z) + (r.hop > 0 ? Math.sin(r.hop * Math.PI) * 0.7 : 0);
+  },
+  roosterTry() {
+    const r = this.rc; if (!r || r.miss > 0) return;
+    const a = r.a, d = Math.hypot(a.x - Player.x, a.z - Player.z);
+    if (d < 1.8) { this.roosterCaught(); return; }
+    r.miss = 0.7; Audio2.sfx('boing');
+    UI.toast(d < 4 ? L('So close! Get a little nearer.', 'దాదాపు! ఇంకొంచెం దగ్గరికి వెళ్ళండి.') : L('Too far! Run after it.', 'చాలా దూరం! దాని వెంట పరుగెత్తండి.'), 'info');
+  },
+  roosterCaught() {
+    const r = this.rc, a = r.a;
+    this.feathers(a.x, a.y + 0.4, a.z, 30);
+    Audio2.sfx('rooster'); setTimeout(() => Audio2.sfx('laugh'), 400);
+    const g = this.st(); g.roosters = (g.roosters || 0) + 1;
+    Money.add(400, 'fun'); Celebrate.coins(innerWidth / 2, innerHeight * 0.45, 400, 4); Celebrate.burst(innerWidth / 2, innerHeight * 0.35, 40, 0.7);
+    this.ribbon('🐓', L('Got it!', 'పట్టేశారు!'), L('Kokkoroko!', 'కొక్కొరొకో!'), '+' + fmtINR(400), 'big', 2200);
+    for (const n of NPCs.list) if (!n.worker && n.h.visible && Math.hypot(n.h.x - a.x, n.h.z - a.z) < 20) n.react = { pose: 'laugh', until: G.t + 3 };
+    Bus.emit('rooster', {});
+    this.stop();
+  },
+
+  // ---------- a cannonball into the lake ----------
+  jumpStart() {
+    if (Player.vehicle) Player.exitVehicle(true);
+    if (Player.vehicle) return;
+    const P = Player;
+    if (lakeSD(P.x, P.z) > 14) {
+      G.S.waypoint = { x: POI.ghat.x, z: POI.ghat.z, name: L('Lake ghat', 'చెరువు ఘాట్') };
+      UI.close(); Fun.bar(false); UI.toast(L('Go to the lake ghat to jump in. Follow the gold arrow.', 'చెరువులో దూకడానికి ఘాట్‌కు వెళ్ళండి. బంగారు బాణాన్ని అనుసరించండి.'), 'info'); return;
+    }
+    this.stop(); UI.close(); Fun.bar(false);
+    const a = Math.atan2(LAKE.z - P.z, LAKE.x - P.x), dx = Math.cos(a), dz = Math.sin(a);
+    let ds = 0; while (ds < 16 && lakeSD(P.x + dx * ds, P.z + dz * ds) > 0) ds += 0.25;   // the water's edge
+    let dw = ds + 2.5; while (dw < ds + 12 && lakeSD(P.x + dx * dw, P.z + dz * dw) > -2.2) dw += 0.5;   // deep enough to jump into
+    const run = Math.max(0, ds - 0.8);
+    this.mode = 'jump';
+    this.jp = { t: 0, ph: 'run', x0: P.x, z0: P.z, dx, dz, yaw: Math.atan2(dx, dz), run, rt: Math.max(0.35, run / 6.5), ex: P.x + dx * run, ez: P.z + dz * run, tx: P.x + dx * dw, tz: P.z + dz * dw, wy: World.lake.position.y };
+    P.em = null; Cam.yaw = this.jp.yaw + Math.PI + 0.6;
+    Audio2.sfx('whoosh');
+    Fun.chipUpdate();
+  },
+  // runs from Player.update while jumping: it moves the farmer itself
+  jumpStep(dt) {
+    const j = this.jp, P = Player, h = P.h; if (!j) return;
+    j.t += dt; h.lie = 0; h.spin = 0; h.roll = 0; h.speed = 0; h.gpose = null; P.yaw = j.yaw;
+    if (j.ph === 'run') {
+      const u = Math.min(1, j.t / j.rt);
+      P.x = lerp(j.x0, j.ex, u); P.z = lerp(j.z0, j.ez, u); P.y = World.groundHeight(P.x, P.z); h.pose = 'walk'; h.speed = j.run > 0.2 ? 6.5 : 0;
+      if (u >= 1) { j.ph = 'air'; j.t = 0; j.ay = P.y; Audio2.sfx('jump'); }
+    } else if (j.ph === 'air') {   // up, tucked in, and a spin
+      const u = Math.min(1, j.t / 0.95);
+      P.x = lerp(j.ex, j.tx, u); P.z = lerp(j.ez, j.tz, u); P.y = lerp(j.ay + 0.3, j.wy - 0.9, u) + Math.sin(u * Math.PI) * 3.2;
+      h.pose = 'tuck'; h.roll = u * TAU * 1.5;
+      if (u >= 1) { j.ph = 'splash'; j.t = 0; this.jumpSplash(); }
+    } else if (j.ph === 'splash') {   // under for a moment, then up for air
+      const u = Math.min(1, j.t / 0.7); P.y = j.wy - 1.75 + u * 0.5; h.pose = 'tuck';
+      if (u >= 1) { j.ph = 'swim'; j.t = 0; j.rip = 0; }
+    } else if (j.ph === 'swim') {   // paddle back to the steps
+      const u = Math.min(1, j.t / 3.2), sx = j.ex - j.dx * 0.2, sz = j.ez - j.dz * 0.2;
+      P.x = lerp(j.tx, sx + j.dx * 1.4, u); P.z = lerp(j.tz, sz + j.dz * 1.4, u); P.y = j.wy - 1.25 + Math.sin(j.t * 3) * 0.05;
+      P.yaw = j.yaw + Math.PI; h.pose = 'swim';
+      j.rip -= dt; if (j.rip <= 0) { j.rip = 0.55; this.ripple(P.x, j.wy, P.z, 1.1, 1.2); FX.emit('splash', P.x, j.wy + 0.1, P.z, 0, 1, 0); }
+      if (u >= 1) { j.ph = 'out'; j.t = 0; j.ox = P.x; j.oz = P.z; }
+    } else if (j.ph === 'out') {   // climb out, dripping
+      const u = Math.min(1, j.t / 0.7);
+      P.x = lerp(j.ox, j.ex, u); P.z = lerp(j.oz, j.ez, u); P.y = lerp(j.wy - 1.1, World.groundHeight(j.ex, j.ez), u); P.yaw = j.yaw + Math.PI;
+      h.pose = 'walk'; h.speed = 2;
+      if (u >= 1) { j.ph = 'done'; this.jumpDone(); return; }
+    }
+    h.x = P.x; h.y = P.y; h.z = P.z; h.yaw = P.yaw;
+  },
+  jumpSplash() {
+    const j = this.jp, P = Player;
+    for (let i = 0; i < 60; i++) { const a = Math.random() * TAU, s = 1 + Math.random() * 3.5; FX.emit('water', P.x, j.wy + 0.2, P.z, Math.cos(a) * s, 4 + Math.random() * 6, Math.sin(a) * s); }
+    for (let i = 0; i < 10; i++) FX.emit('spray', P.x + (Math.random() - 0.5), j.wy + 0.4, P.z + (Math.random() - 0.5), (Math.random() - 0.5) * 2, 2 + Math.random() * 2, (Math.random() - 0.5) * 2);
+    this.ripple(P.x, j.wy, P.z, 3, 1.6); this.ripple(P.x, j.wy, P.z, 2, 1.2); this.ripple(P.x, j.wy, P.z, 1.2, 0.9);
+    Audio2.sfx('splash');
+    for (const n of NPCs.list) if (!n.worker && n.h.visible && Math.hypot(n.h.x - P.x, n.h.z - P.z) < 30) n.react = { pose: Math.random() < 0.5 ? 'clap' : 'laugh', until: G.t + 4 };
+  },
+  jumpDone() {
+    const g = this.st(), first = g.splashDay !== Time.day();
+    g.splashDay = Time.day(); g.splash = (g.splash || 0) + 1;
+    const P = G.S.player; P.energy = Math.min(100, P.energy + 15);
+    if (first) { Money.add(300, 'fun'); Celebrate.coins(innerWidth / 2, innerHeight * 0.45, 300, 3); }
+    this.ribbon('💦', L('Cannonball!', 'దబ్బున దూకారు!'), L('What a splash!', 'ఎంత పెద్ద చిందు!'), (first ? '+' + fmtINR(300) + ' · ' : '') + L('Energy', 'శక్తి') + ' +15', 'big', 2400);
+    setTimeout(() => Audio2.sfx('laugh'), 300);
+    this.drip = 4;
+    Bus.emit('splash', {});
+    this.stop();
+  },
+
+  // ---------- the naughty monkey: it grabs your cap (or your lunch box) and runs up a tree ----------
+  monkeyTree(x, z, dmin, dmax) {
+    let best = null, bd = 1e9;
+    for (const k of ['neem', 'banyan', 'tamarind', 'mango']) for (const t of Veg.lists[k] || []) { const d = Math.hypot(t.x - x, t.z - z); if (d > dmin && d < dmax && d < bd) { bd = d; best = t; } }
+    return best;
+  },
+  // once a day or so, when you walk about the village near the big trees
+  monkeyMaybe(dt) {
+    this.monkeyT -= dt; if (this.monkeyT > 0) return;
+    this.monkeyT = 25;
+    const S = G.S; if (!G.started || !S || UI.modalOpen() || Player.vehicle || Rest.busy || S.player.mustRest) return;
+    if (S.missions.tut < TUTORIAL.length) return;
+    const g = this.st(); if (g.monkeyDay === Time.day()) return;
+    const hr = Time.hour(); if (hr < 8 || hr > 17) return;
+    if (Math.random() < 0.12 && this.monkeyTree(Player.x, Player.z, 8, 30)) this.monkeyStart(true);
+  },
+  monkeyStart(auto) {
+    const P = Player;
+    if (P.vehicle) { if (auto) return false; Player.exitVehicle(true); if (P.vehicle) return false; }
+    const from = this.monkeyTree(P.x, P.z, 6, 45);
+    if (!from) { if (!auto) UI.toast(L('No monkeys around here. Try near the big village trees.', 'ఇక్కడ కోతులు లేవు. గ్రామంలోని పెద్ద చెట్ల దగ్గర ప్రయత్నించండి.'), 'info'); return false; }
+    let a = this.monkey; if (!a) a = this.monkey = Animals.create('monkey', from.x, from.z, { s: 1.35 });
+    if (!a) return false;
+    this.stop(); UI.close(); Fun.bar(false);
+    this.mode = 'monkey';
+    const S = G.S, look = S.player.look || {}, hat = !!look.hat && look.hat !== 'none';
+    this.st().monkeyDay = Time.day();
+    a.visible = true; a.x = from.x; a.z = from.z; a.y = World.groundHeight(from.x, from.z) + 3; a.speed = 0; a.pose = 'stand';
+    const m = this.mk = { a, ph: 'down', t: 0, item: hat ? 'hat' : 'tiffin', hat: hat ? look.hat : null, from, near: null, back: false };
+    // the thing it steals
+    const gb = new GeoBuilder();
+    if (hat) { gb.sphere(0.19, 0, 0.06, 0, C(look.hatCol || '#f4f1ea'), PRIM.ico1, 1.15, 0.55, 1.15); }
+    else { for (let i = 0; i < 3; i++) gb.cyl(0.1, 0.08, 0, i * 0.085, 0, C('#d5dade'), 12); gb.box(0.03, 0.3, 0.03, 0.1, 0.12, 0, 0, C('#b9bec2')); gb.box(0.03, 0.3, 0.03, -0.1, 0.12, 0, 0, C('#b9bec2')); gb.box(0.23, 0.03, 0.03, 0, 0.28, 0, 0, C('#b9bec2')); }
+    m.mesh = new THREE.Mesh(gb.build(), MAT.std); m.mesh.visible = false; m.mesh.castShadow = true; G.scene.add(m.mesh);
+    Audio2.sfx('monkey');
+    Fun.chipUpdate();
+    return true;
+  },
+  monkeyUpdate(dt) {
+    const m = this.mk, a = m.a, P = Player; m.t += dt;
+    const go = (tx, tz, sp) => { const dx = tx - a.x, dz = tz - a.z, d = Math.hypot(dx, dz); if (d > 0.05) { const s = Math.min(d, sp * dt); a.x += dx / d * s; a.z += dz / d * s; a.yaw = Math.atan2(dx, dz); } a.speed = d > 0.3 ? sp : 0; return d; };
+    const gy = World.groundHeight(a.x, a.z);
+    if (m.ph === 'down') {   // climbs down its tree
+      a.y = Math.max(gy, a.y - dt * 3.5); a.speed = 1.5;
+      if (a.y <= gy + 0.01) { m.ph = 'come'; m.t = 0; }
+    } else if (m.ph === 'come') {   // and runs straight at you
+      const d = go(P.x, P.z, 6.5); a.y = gy + Math.abs(Math.sin(m.t * 9)) * 0.14;
+      if (d < 0.9) { m.ph = 'grab'; m.t = 0; this.monkeyGrab(); }
+      else if (m.t > 9) { this.stop(); return; }   // you ran off: it gives up
+    } else if (m.ph === 'grab') {
+      a.speed = 0; a.y = gy + Math.abs(Math.sin(m.t * 14)) * 0.3;
+      if (m.t > 0.5) { m.ph = 'flee'; m.t = 0; m.tree = this.monkeyTree(a.x, a.z, 12, 50) || m.from; G.S.waypoint = { x: m.tree.x, z: m.tree.z, name: L('Naughty monkey', 'అల్లరి కోతి'), monkey: true }; }
+    } else if (m.ph === 'flee') {   // off to a tree, looking back to tease you
+      const d = go(m.tree.x, m.tree.z, 7.5); a.y = gy + Math.abs(Math.sin(m.t * 10)) * 0.15;
+      if (d < 0.6) { m.ph = 'climb'; m.t = 0; m.top = gy + 3.2 * (m.tree.s || 1); }
+    } else if (m.ph === 'climb') {
+      const u = Math.min(1, m.t / 1.1); a.y = lerp(gy, m.top, u); a.speed = 2;
+      if (u >= 1) { m.ph = 'tease'; m.t = 0; m.chat = 0; }
+    } else if (m.ph === 'tease') {   // sits on a branch with your things, chattering
+      a.speed = 0; a.y = m.top + Math.abs(Math.sin(m.t * 4)) * 0.12; a.yaw = Math.atan2(P.x - a.x, P.z - a.z);
+      m.chat -= dt; if (m.chat <= 0) { m.chat = 2.6 + Math.random() * 2; Audio2.sfx('monkey'); }
+      const near = Math.hypot(P.x - a.x, P.z - a.z) < 10;
+      if (near !== m.near) {
+        m.near = near;
+        this.action(near ? '🍌 ' + L('Throw a banana', 'అరటిపండు విసురు') : null, () => this.monkeyThrow(), null);
+        if (near) UI.toastOnce('monkeytip', L('Throw it a banana: the monkey will swap your things for it!', 'అరటిపండు విసరండి: దానికి బదులుగా కోతి మీ వస్తువు ఇచ్చేస్తుంది!'), 'info');
+      }
+    } else if (m.ph === 'banana') {   // the banana flies up
+      const u = Math.min(1, m.t / 0.7), b = m.banana;
+      b.position.set(lerp(m.bx, a.x, u), lerp(m.by, a.y + 0.4, u) + Math.sin(u * Math.PI) * 1.6, lerp(m.bz, a.z, u)); b.rotation.z += dt * 14;
+      if (u >= 1) { this.drop(b); m.banana = null; m.ph = 'drop'; m.t = 0; Audio2.sfx('monkey'); m.dx0 = a.x; m.dy0 = a.y + 0.6; m.dz0 = a.z; }
+    } else if (m.ph === 'drop') {   // your things fall back down to you
+      const u = Math.min(1, m.t / 0.8);
+      m.mesh.position.set(lerp(m.dx0, P.x, u), lerp(m.dy0, P.y + 1.2, u) + Math.sin(u * Math.PI) * 0.8, lerp(m.dz0, P.z, u)); m.mesh.rotation.x += dt * 8;
+      a.y = m.top + Math.abs(Math.sin(m.t * 6)) * 0.05;
+      if (u >= 1) { this.monkeyReturn(); m.ph = 'leave'; m.t = 0; }
+    } else if (m.ph === 'leave') {   // happy with its banana, it climbs down and wanders off
+      if (a.y > gy + 0.01) { a.y = Math.max(gy, a.y - dt * 3); a.speed = 1.5; }
+      else { const away = m.away || (m.away = { x: a.x + (a.x - P.x) * 3 + 10, z: a.z + (a.z - P.z) * 3 + 10 }); go(away.x, away.z, 5); }
+      if (m.t > 4) { this.stop(); return; }
+    }
+    // the camera looks up at it while it has your things (unless you are turning the camera yourself)
+    const watch = m.ph === 'flee' || m.ph === 'climb' || m.ph === 'tease' || m.ph === 'banana' || m.ph === 'drop';
+    Cam.aim = watch ? a : null;
+    if (watch && performance.now() - Cam.lastManual > 1500) Cam.yaw = dampAngle(Cam.yaw, Math.atan2(-(a.x - P.x), -(a.z - P.z)), 2.2, dt);
+    // your things ride along on the monkey
+    if (m.mesh.visible && m.ph !== 'drop') { m.mesh.position.set(a.x, a.y + (m.item === 'hat' ? 0.62 : 0.45), a.z); m.mesh.rotation.set(0, a.yaw, 0); }
+  },
+  monkeyGrab() {
+    const m = this.mk, S = G.S;
+    if (m.item === 'hat') { S.player.look = Object.assign({}, S.player.look, { hat: 'none' }); Wardrobe.apply(); }
+    m.mesh.visible = true;
+    Audio2.sfx('monkey'); setTimeout(() => Audio2.sfx('laugh'), 350);
+    this.feathers(Player.x, Player.y + 1.6, Player.z, 6, [[0.55, 0.47, 0.38]]);
+    UI.toast(m.item === 'hat' ? L('A monkey snatched your cap! Follow it and give it a banana.', 'ఒక కోతి మీ టోపీ ఎత్తుకెళ్ళింది! దాని వెంట వెళ్ళి అరటిపండు ఇవ్వండి.') : L('A monkey snatched your lunch box! Follow it and give it a banana.', 'ఒక కోతి మీ టిఫిన్ బాక్సు ఎత్తుకెళ్ళింది! దాని వెంట వెళ్ళి అరటిపండు ఇవ్వండి.'), 'warn');
+    for (const n of NPCs.list) if (!n.worker && n.h.visible && Math.hypot(n.h.x - Player.x, n.h.z - Player.z) < 18) n.react = { pose: 'laugh', until: G.t + 3 };
+  },
+  monkeyThrow() {
+    const m = this.mk; if (!m || m.ph !== 'tease') return;
+    const P = Player; m.ph = 'banana'; m.t = 0; this.action(null);
+    const b = m.banana = new THREE.Mesh(new THREE.TorusGeometry(0.13, 0.035, 6, 12, Math.PI * 0.8), new THREE.MeshStandardMaterial({ color: 0xf5d03b, roughness: 0.6 }));
+    m.bx = P.x; m.by = P.y + 1.5; m.bz = P.z; b.position.set(m.bx, m.by, m.bz); G.scene.add(b);
+    Audio2.sfx('whoosh');
+  },
+  monkeyReturn() {
+    const m = this.mk, S = G.S; if (m.back) return;
+    m.back = true; m.mesh.visible = false;
+    if (m.item === 'hat' && m.hat) { S.player.look = Object.assign({}, S.player.look, { hat: m.hat }); Wardrobe.apply(); }
+    if (S.waypoint && S.waypoint.monkey) S.waypoint = null;
+    const g = this.st(); g.monkeys = (g.monkeys || 0) + 1;
+    Money.add(300, 'fun'); Celebrate.coins(innerWidth / 2, innerHeight * 0.45, 300, 3);
+    this.ribbon('🐒', L('Thank you, monkey!', 'థాంక్యూ కోతి!'), m.item === 'hat' ? L('You got your cap back', 'మీ టోపీ తిరిగి వచ్చింది') : L('You got your lunch box back', 'మీ టిఫిన్ బాక్సు తిరిగి వచ్చింది'), '+' + fmtINR(300), 'big', 2400);
+    Audio2.sfx('tada');
+    Bus.emit('monkey', {});
+  },
+  // the game ended early (another game, a vehicle...): you always get your things back
+  monkeyEnd() {
+    const m = this.mk, S = G.S;
+    if (!m.back && m.item === 'hat' && m.hat && m.mesh.visible) { S.player.look = Object.assign({}, S.player.look, { hat: m.hat }); Wardrobe.apply(); }
+    if (S.waypoint && S.waypoint.monkey) S.waypoint = null;
+    if (m.banana) this.drop(m.banana);
+    if (Cam.aim === m.a) Cam.aim = null;
+    this.drop(m.mesh); m.a.visible = false; this.mk = null;
   },
 
   // ---------- the lucky wheel: one free spin a day ----------
@@ -7952,6 +8494,7 @@ const Games = {
     const tot = WHEEL.reduce((s, q) => s + wt(q), 0); let r = Math.random() * tot, k = 0;
     for (; k < WHEEL.length - 1; k++) { if (r < wt(WHEEL[k])) break; r -= wt(WHEEL[k]); }
     this.st().spin = ymd(new Date());
+    Bus.emit('wheelSpin', {});
     // land segment k under the pointer at the top, after a few full turns
     const n = WHEEL.length, end = 360 * 5 - (k / n) * 360 + (Math.random() - 0.5) * (300 / n), ms = fast ? 50 : 3800, t0 = performance.now();
     let lastSeg = -1;
@@ -9167,6 +9710,7 @@ const Services = {
         Sim.advance(60); hrs++;
       }
       const P = G.S.player; P.energy = Math.min(100, P.energy + hrs * 2.5);
+      Rest.rested(hrs);
       Player.need = null;
       const cd = f.crop ? CROPS[f.crop] : null;
       const what = !f.crop ? '' : f.growth >= 0.97 ? L('It is ready: hold Work to harvest!', 'పంట సిద్ధం: కోయడానికి \'పని\' పట్టుకోండి!') : f.outbreak || f.pests > 10 ? L('Pests! Hold Work to spray.', 'పురుగులు! పిచికారీకి \'పని\' పట్టుకోండి.') : f.weeds > 16 ? L('Weeds came up: hold Work to weed.', 'కలుపు వచ్చింది: \'పని\' పట్టుకోండి.') : f.nut < 40 ? L('The crop is hungry: hold Work to feed it.', 'పంటకు ఆకలి: ఎరువు కోసం \'పని\' పట్టుకోండి.') : cd && f.water < cd.wLo ? L('The field is dry: hold Work to water it.', 'పొలం ఎండిపోయింది: నీటికి \'పని\' పట్టుకోండి.') : '';
@@ -9406,6 +9950,7 @@ const Pet = {
     if (now - this.patAt < 90) { UI.toast((LANG === 'en' ? `${this.name()} wags its tail.` : L(`${this.name()} wags its tail.`, `${this.name()} తోక ఊపుతోంది.`, "{0} wags its tail.", [this.name()])), 'info'); return; }
     this.patAt = now;
     const P = G.S.player; P.energy = Math.min(100, P.energy + 10);
+    Bus.emit('pat', {});
     UI.toast((LANG === 'en' ? `${this.name()} is happy! +10 energy` : L(`${this.name()} is happy! +10 energy`, `${this.name()} సంతోషంగా ఉంది! +10 శక్తి`, "{0} is happy! +10 energy", [this.name()])), 'good');
   },
   // every frame from Fauna.update: trot behind and to the left of the farmer (or the vehicle)
@@ -9633,7 +10178,7 @@ const Missions = {
   add(m) {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
-    if (G.started && !m.tpl.startsWith('t_')) UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');   // the tutorial shows up in the corner card
+    if (G.started && m.special) UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');   // only the urgent ones: farm goals wait quietly in the task list
     UI.dirty = true;
     return m;
   },
@@ -9964,11 +10509,12 @@ const COACH_STEPS = {
 
 const Coach = {
   step: null, key: '', changedAt: 0, banT: 0,
-  // the mission the player follows: their own pick, else tutorial first
+  // the mission being guided: the one the player asked for ("Guide me"), else the tutorial.
+  // After the tutorial nothing is pushed: the corner card shows today's tasks instead.
   current() {
     const S = G.S; if (!S || !S.missions) return null;
     const act = Missions.ordered(); if (!act.length) return null;
-    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act[0];
+    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act.find((m) => m.tpl.startsWith('t_')) || null;
   },
   follow(m) { G.S.missions.focus = m ? m.uid : null; this.key = ''; UI.dirty = true; UI._mKey = ''; },
   compute() {
@@ -9990,8 +10536,8 @@ const Coach = {
     // still making progress (closer to the place, field getting done)? then no reminder needed
     const tg = st.target; const mark = Math.round(clamp01(st.m.prog / st.m.target) * 40) + '|' + (tg ? Math.round(CH.dist(tg) / 12) : '') + '|' + (st.progress !== undefined ? Math.round(st.progress * 20) : '');
     if (mark !== this.mark) { this.mark = mark; this.activeAt = now; }
-    // stuck on the same step for a while: a gentle reminder in the corner, at most once a minute
-    if (now - this.activeAt > 40000 && now - (this.remindAt || 0) > 60000 && !UI.modalOpen() && !UI.photoMode) { this.remindAt = now; this.activeAt = now; this.show(st, true); }
+    // stuck on a tutorial step for a while: a gentle reminder in the corner, at most every 90 seconds
+    if (st.m.tpl.startsWith('t_') && now - this.activeAt > 50000 && now - (this.remindAt || 0) > 90000 && !UI.modalOpen() && !UI.photoMode && !Games.mode) { this.remindAt = now; this.activeAt = now; this.show(st, true); }
   },
   // a new step (or a reminder): the corner card glows, the tips open for a reminder, and it can be read aloud
   show(st, reminder) {
@@ -10065,6 +10611,274 @@ const COACH_ICON = {
   office: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8v3H8z M6 5H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V6a1 1 0 0 0-1-1h-1 M8 12h8 M8 16h5"/></svg>',
   map: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M3 6l6-2 6 2 6-2v14l-6 2-6-2-6 2z M9 4v14 M15 6v14"/></svg>',
   coin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M8.5 8h7M8.5 11h7M9 8c4 0 5 3 0 3l5 5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+
+// ---- 15c_tasks.js ----
+// ============================================================================
+// Today's tasks: a fresh list of small things to do every day (farm, village, fun and
+// exploring), each with a reward and a bonus for finishing them all. The corner card shows
+// these instead of pushing "go to your field and work" all day long; the bigger farm goals
+// stay in the list too, and the gold arrow guides you only when you ask ("Guide me").
+// Rest: after about 4 hours of work the farmer has to rest for 3 to 5 hours.
+// ============================================================================
+const TASK_POOL = [
+  // ---- farm (only when it makes sense right now) ----
+  { id: 'plough', cat: 'farm', icon: '🚜', en: 'Plough part of your field', te: 'పొలంలో కొంత దున్నండి', ev: 'work', amt: (p) => (p.by === 'player' && p.op === 'plough' ? p.n : 0), n: 20, reward: 800,
+    can: () => Fields.playerFields().some((f) => !f.crop && f.countMin(1) < f.n * 0.8), go: () => Tasks.field((f) => !f.crop) },
+  { id: 'sow', cat: 'farm', icon: '🌱', en: 'Sow seeds on your field', te: 'పొలంలో విత్తనాలు వేయండి', ev: 'work', amt: (p) => (p.by === 'player' && p.op === 'sow' ? p.n : 0), n: 20, reward: 900,
+    can: () => Fields.playerFields().some((f) => !f.crop || f.sownTiles < f.n * 0.9), go: () => Tasks.field((f) => !f.crop || f.sownTiles < f.n * 0.9) },
+  { id: 'tend', cat: 'farm', icon: '🧺', en: 'Feed, weed or spray your crop', te: 'పంటకు ఎరువు, కలుపు లేదా పిచికారీ', ev: 'work', amt: (p) => (p.by === 'player' && (p.op === 'fertilize' || p.op === 'weed' || p.op === 'spray') ? p.n : 0), n: 12, reward: 800,
+    can: () => Fields.playerFields().some((f) => f.crop && f.growth < 0.9), go: () => Tasks.field((f) => f.crop && f.growth < 0.9) },
+  { id: 'harvest', cat: 'farm', icon: '🌾', en: 'Harvest 1 quintal', te: '1 క్వింటాల్ కోయండి', ev: 'harvestTile', amt: (p) => p.qty || 0, n: 1, reward: 1000,
+    can: () => Fields.playerFields().some((f) => f.crop && f.growth >= 0.85), go: () => Tasks.field((f) => f.crop && f.growth >= 0.85) },
+  { id: 'sell', cat: 'farm', icon: '💰', en: 'Sell some of your harvest', te: 'కొంత పంట అమ్మండి', ev: 'sold', n: 1, reward: 800,
+    can: () => Fields.playerFields().some((f) => f.heap && f.heap.qty > 0.05) || G.S.storage.some((e) => e.qty > 0.05), go: () => { const f = Fields.playerFields().find((q) => q.heap && q.heap.qty > 0.05 && q.heapSpot); if (f) Tasks.point(f.heapSpot.x, f.heapSpot.z, L('Harvest heap', 'పంట కుప్ప')); else Tasks.show('yardSell'); } },
+  // ---- village ----
+  { id: 'chai', cat: 'village', icon: '☕', en: 'Drink chai at the tea stall', te: 'టీ స్టాల్‌లో చాయ్ తాగండి', ev: 'eat', n: 1, reward: 300, go: () => Tasks.show('tea') },
+  { id: 'pray', cat: 'village', icon: '🛕', en: 'Pray at the temple', te: 'గుడిలో దండం పెట్టండి', ev: 'pray', n: 1, reward: 300, go: () => Tasks.show('temple') },
+  { id: 'talk', cat: 'village', icon: '💬', en: 'Talk to 2 villagers', te: 'ఇద్దరు గ్రామస్తులతో మాట్లాడండి', ev: 'talk', n: 2, reward: 500,
+    go: () => { UI.close(); UI.toast(L('Walk up to any villager and talk.', 'ఏ గ్రామస్తుడి దగ్గరికైనా వెళ్ళి మాట్లాడండి.'), 'info'); } },
+  { id: 'dog', cat: 'village', icon: '🐕', en: 'Pat your dog', te: 'మీ కుక్కను నిమరండి', ev: 'pat', n: 1, reward: 300, can: () => !!G.S.pet,
+    go: () => { UI.close(); UI.toast(L('Your dog follows you: walk close and pat it.', 'మీ కుక్క మీ వెంటే ఉంది: దగ్గరికి వెళ్ళి నిమరండి.'), 'info'); } },
+  { id: 'shop', cat: 'village', icon: '🛒', en: 'Buy something at a shop', te: 'దుకాణంలో ఏదైనా కొనండి', ev: 'bought', n: 1, reward: 300, go: () => Tasks.show('kirana') },
+  { id: 'bus', cat: 'village', icon: '🚌', en: 'Ride the bus', te: 'బస్సు ఎక్కండి', ev: 'bus', n: 1, reward: 500, go: () => Tasks.show('busV') },
+  // ---- fun ----
+  { id: 'six', cat: 'fun', grp: 'cricket', icon: '🏏', en: 'Hit a SIX in gully cricket', te: 'వీధి క్రికెట్‌లో సిక్స్ కొట్టండి', ev: 'cricketShot', test: (p) => p.kind === 6, n: 1, reward: 700, go: () => Games.cricketStart() },
+  { id: 'runs', cat: 'fun', grp: 'cricket', icon: '🏏', en: 'Score 15 runs in one innings', te: 'ఒక ఇన్నింగ్స్‌లో 15 పరుగులు చేయండి', ev: 'cricketEnd', test: (p) => p.runs >= 15, n: 1, reward: 1000, go: () => Games.cricketStart() },
+  { id: 'kites', cat: 'fun', icon: '🪁', en: 'Cut 2 kites', te: '2 గాలిపటాలు తెంపండి', ev: 'kiteCut', n: 2, reward: 600, go: () => Games.kiteStart() },
+  { id: 'fish', cat: 'fun', icon: '🎣', en: 'Catch 2 fish', te: '2 చేపలు పట్టండి', ev: 'fishCaught', n: 2, reward: 600, go: () => Games.fishStart() },
+  { id: 'holi', cat: 'fun', icon: '🎨', en: 'Colour 3 villagers at Holi', te: 'హోలీలో 3 మందికి రంగులు చల్లండి', ev: 'holi', amt: (p) => p.n || 0, n: 3, reward: 500, go: () => { UI.close(); Emote.play('holi'); } },
+  { id: 'dance', cat: 'fun', grp: 'move', icon: '💃', en: 'Dance with the villagers', te: 'గ్రామస్తులతో డాన్స్ చేయండి', ev: 'emote', test: (p) => p.id === 'dance' || p.id === 'folk', n: 1, reward: 300, go: () => { UI.close(); Emote.play('dance'); } },
+  { id: 'chicken', cat: 'fun', grp: 'move', icon: '🐔', en: 'Do the chicken dance', te: 'కోడి డాన్స్ చేయండి', ev: 'emote', test: (p) => p.id === 'chicken', n: 1, reward: 300, go: () => { UI.close(); Emote.play('chicken'); } },
+  { id: 'selfie', cat: 'fun', grp: 'move', icon: '🤳', en: 'Take a selfie', te: 'సెల్ఫీ తీసుకోండి', ev: 'emote', test: (p) => p.id === 'selfie', n: 1, reward: 300, go: () => { UI.close(); Emote.play('selfie'); } },
+  { id: 'mango', cat: 'fun', icon: '🥭', en: 'Find a golden mango', te: 'బంగారు మామిడి కనుక్కోండి', ev: 'mango', n: 1, reward: 700, can: () => Fun.st().mangoes.length < Fun.spots.length, go: () => Fun.nearestMango() },
+  { id: 'race', cat: 'fun', icon: '🏁', en: 'Win a race medal', te: 'పందెంలో పతకం గెలవండి', ev: 'raceEnd', test: (p) => !!p.medal, n: 1, reward: 1000, go: () => Fun.open() },
+  { id: 'wheel', cat: 'fun', icon: '🎡', en: 'Spin the lucky wheel', te: 'లక్కీ చక్రం తిప్పండి', ev: 'wheelSpin', n: 1, reward: 200, can: () => Games.canSpin(), go: () => Games.wheel() },
+  { id: 'rooster', cat: 'fun', icon: '🐓', en: 'Catch the runaway rooster', te: 'పారిపోయిన కోడిపుంజును పట్టుకోండి', ev: 'rooster', n: 1, reward: 600, go: () => Games.roosterStart() },
+  { id: 'monkey', cat: 'fun', icon: '🐒', en: 'Get your things back from the monkey', te: 'కోతి నుంచి మీ వస్తువు తిరిగి తెచ్చుకోండి', ev: 'monkey', n: 1, reward: 500, go: () => Games.monkeyStart(false) },
+  { id: 'splash', cat: 'fun', icon: '💦', en: 'Jump into the lake', te: 'చెరువులో దూకండి', ev: 'splash', n: 1, reward: 500, go: () => Games.jumpStart() },
+  // ---- explore ----
+  { id: 'place', cat: 'explore', icon: '📍', en: 'Discover a new place', te: 'కొత్త ప్రదేశం కనుక్కోండి', ev: 'discover', n: 1, reward: 500,
+    can: () => Map2.places().some((p) => !Fun.st().places[p.id]), go: () => { const P = Player.pos(), f = Fun.st(); const p = Map2.places().filter((q) => !f.places[q.id]).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z))[0]; if (p) Tasks.point(p.x, p.z, Map2.placeName(p)); } },
+  { id: 'heli', cat: 'explore', grp: 'ride', icon: '🚁', en: 'Fly the helicopter', te: 'హెలికాప్టర్ నడపండి', ev: 'ride', test: (p) => p.type === 'heli', n: 1, reward: 500, can: () => Vehicles.player.some((v) => v.type === 'heli'), go: () => Tasks.vehicle('heli') },
+  { id: 'jeep', cat: 'explore', grp: 'ride', icon: '🚙', en: 'Take the jeep for a drive', te: 'జీపులో షికారు చేయండి', ev: 'ride', test: (p) => p.type === 'jeep', n: 1, reward: 300, can: () => Vehicles.player.some((v) => v.type === 'jeep'), go: () => Tasks.vehicle('jeep') },
+  { id: 'auto', cat: 'explore', grp: 'ride', icon: '🛺', en: 'Ride an auto rickshaw', te: 'ఆటోలో తిరగండి', ev: 'ride', test: (p) => p.type === 'autorick', n: 1, reward: 300, can: () => Vehicles.player.some((v) => v.type === 'autorick'), go: () => Tasks.vehicle('autorick') },
+];
+const TASK_BY = Object.fromEntries(TASK_POOL.map((t) => [t.id, t]));
+const TASK_BONUS = 3000;
+
+const Tasks = {
+  st() { const S = G.S; if (!S.tasks || S.tasks.day !== Time.day()) this.newDay(); return S.tasks; },
+  init() {
+    if (!this._bound) {
+      this._bound = true;
+      for (const ev of [...new Set(TASK_POOL.map((t) => t.ev))]) Bus.on(ev, (p) => { if (G.started) this.onEvent(ev, p || {}); });
+    }
+    this.st();
+  },
+  ok(t) { try { return !t.can || !!t.can(); } catch (e) { return false; } },
+  // five a day: one farm job (when there is one), one in the village, two fun things and one trip
+  newDay() {
+    const S = G.S, had = !!S.tasks;
+    const used = new Set(), list = [];
+    const take = (cat, n) => {
+      const c = TASK_POOL.filter((t) => t.cat === cat && !list.includes(t) && !(t.grp && used.has(t.grp)) && this.ok(t)).sort(() => Math.random() - 0.5);
+      for (const t of c.slice(0, n)) { list.push(t); if (t.grp) used.add(t.grp); }
+    };
+    take('farm', 1); take('village', 1); take('fun', 2); take('explore', 1);
+    if (list.length < 5) take('fun', 5 - list.length);
+    S.tasks = { day: Time.day(), list: list.map((t) => ({ id: t.id, prog: 0, done: false })), bonus: false, swaps: 1 };
+    if (had && G.started) UI.toast(L('New tasks for today!', 'ఈ రోజుకు కొత్త పనులు!') + ' 📋', 'mission');
+    UI._mKey = ''; UI.dirty = true;
+  },
+  onEvent(ev, p) {
+    const T = this.st();
+    for (const e of T.list) {
+      const t = TASK_BY[e.id]; if (!t || e.done || t.ev !== ev) continue;
+      let a = 0; try { a = t.amt ? t.amt(p) : t.test ? (t.test(p) ? 1 : 0) : 1; } catch (er) { a = 0; }
+      if (a <= 0) continue;
+      e.prog = Math.min(t.n, e.prog + a);
+      if (e.prog >= t.n - 1e-6) this.done(e, t);
+      UI._mKey = ''; UI.dirty = true;
+    }
+  },
+  done(e, t) {
+    e.done = true; UI._mKey = ''; UI.dirty = true;
+    Money.add(t.reward, 'task');
+    Celebrate.ribbon({ kind: 'sun', icon: t.icon, top: L('Task done!', 'పని పూర్తి!'), title: LN(t), sub: '+' + fmtINR(t.reward), ms: 2400 });
+    Audio2.sfx('mission');
+    const T = G.S.tasks;
+    if (!T.bonus && T.list.every((q) => q.done)) {
+      T.bonus = true; Money.add(TASK_BONUS, 'task');
+      Celebrate.ribbon({ kind: 'big', icon: '🎁', top: L("All of today's tasks done!", 'ఈ రోజు పనులన్నీ పూర్తి!'), title: L('Bonus', 'బోనస్') + ' ' + fmtINR(TASK_BONUS), sub: L('New tasks come every morning.', 'ప్రతి ఉదయం కొత్త పనులు వస్తాయి.'), ms: 3400 });
+      Celebrate.shower(140); Audio2.sfx('fanfare');
+    }
+    Bus.emit('taskDone', { id: t.id });
+  },
+  // one free swap a day for a task you do not fancy
+  swap(i) {
+    const T = this.st(); const e = T.list[i]; if (!e || e.done || T.swaps < 1) return;
+    const have = new Set(T.list.map((q) => q.id)), grps = new Set(T.list.map((q) => TASK_BY[q.id] && TASK_BY[q.id].grp).filter(Boolean));
+    const c = TASK_POOL.filter((t) => !have.has(t.id) && !(t.grp && grps.has(t.grp)) && this.ok(t));
+    if (!c.length) return;
+    const t = pick(c); T.list[i] = { id: t.id, prog: 0, done: false }; T.swaps--;
+    Audio2.sfx('switch'); UI._mKey = ''; UI.dirty = true;
+  },
+  go(e) {
+    const t = TASK_BY[e.id]; if (!t || !t.go) return;
+    Audio2.sfx('click');
+    try { t.go(); } catch (er) { console.warn('task go', er); }
+  },
+  // "Show me": the gold arrow points there
+  point(x, z, name) { G.S.waypoint = { x, z, name }; UI.close(); UI.toast(L('Follow the gold arrow!', 'బంగారు బాణాన్ని అనుసరించండి!'), 'info'); UI.dirty = true; },
+  show(id) { const p = Map2.places().find((q) => q.id === id); if (p) this.point(p.x, p.z, Map2.placeName(p)); },
+  field(pred) {
+    const P = Player.pos(); const f = Fields.playerFields().filter((q) => { try { return pred(q); } catch (e) { return false; } }).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z))[0];
+    if (f) this.point(f.x, f.z, f.label());
+  },
+  vehicle(type) { const v = Vehicles.player.find((q) => q.type === type); if (v) this.point(v.x, v.z, LN(v.def)); },
+  count() { const T = this.st(); return { d: T.list.filter((e) => e.done).length, n: T.list.length }; },
+  // ---- the corner card when no tutorial step or followed goal is shown ----
+  card(mb) {
+    const T = this.st(), c = this.count(), S = G.S;
+    const mini = !!Settings.v.taskMini;
+    const head = h('div', { class: 'mhead' }, h('h4', { class: 'th' }, '📋 ' + L("Today's tasks", 'ఈ రోజు పనులు') + ` · ${c.d}/${c.n}`),
+      h('button', { class: 'tmin', type: 'button', 'aria-label': mini ? L('Show tasks', 'పనులు చూపించు') : L('Hide tasks', 'పనులు దాచు'), onclick: (e) => { e.stopPropagation(); Settings.v.taskMini = !mini; Settings.save(); UI._mKey = ''; UI.dirty = true; Audio2.sfx('click'); } }, mini ? '▾' : '–'));
+    mb.appendChild(head);
+    if (mini) return;
+    const urgent = S.missions.active.filter((m) => m.special);
+    for (const m of urgent.slice(0, 1)) mb.appendChild(h('div', { class: 'trow warn' }, h('i', null, '⚠️'), h('span', null, LN(m.title))));
+    const open = T.list.filter((e) => !e.done), max = innerHeight < 450 ? 2 : 3;
+    for (const e of open.slice(0, max)) {
+      const t = TASK_BY[e.id]; if (!t) continue;
+      mb.appendChild(h('div', { class: 'trow' }, h('i', null, t.icon), h('span', null, LN(t)), t.n > 1 ? h('em', null, `${Math.floor(e.prog + 1e-6)}/${t.n}`) : null));
+    }
+    if (!open.length) mb.appendChild(h('div', { class: 'trow ok' }, h('i', null, '✅'), h('span', null, L('All done! New tasks tomorrow.', 'అన్నీ పూర్తి! రేపు కొత్త పనులు.'))));
+    else if (!T.bonus) mb.appendChild(h('small', { class: 'tbonus' }, '🎁 ' + L('Finish all for a bonus of', 'అన్నీ చేస్తే బోనస్') + ' ' + fmtINR(TASK_BONUS)));
+  },
+  // ---- the full list: today's tasks, farm goals and the tutorial ----
+  open() {
+    Fun.bar(false);
+    UI.sheet({ title: L("Today's tasks", 'ఈ రోజు పనులు'), sub: (LANG === 'en' ? `Day ${Time.day()} · finish all for a bonus of ${fmtINR(TASK_BONUS)}` : L(`Day ${Time.day()} · finish all for a bonus of ${fmtINR(TASK_BONUS)}`, `రోజు ${Time.day()} · అన్నీ చేస్తే ${fmtINR(TASK_BONUS)} బోనస్`, "Day {0} · finish all for a bonus of {1}", [Time.day(), fmtINR(TASK_BONUS)])), narrow: true, kind: 'tasks', render: (b) => {
+      const T = this.st(), S = G.S;
+      T.list.forEach((e, i) => {
+        const t = TASK_BY[e.id]; if (!t) return;
+        const row = h('div', { class: 'act task' + (e.done ? ' done' : '') },
+          h('div', { class: 'row', style: { justifyContent: 'space-between', flexWrap: 'nowrap' } },
+            h('b', null, (e.done ? '✅ ' : t.icon + ' ') + LN(t)), h('span', { class: 'chip good' }, '+' + fmtINR(t.reward))));
+        if (!e.done) {
+          if (t.n > 1) row.appendChild(h('div', { class: 'prog' }, h('b', { style: { width: Math.round(clamp01(e.prog / t.n) * 100) + '%' } })));
+          const r = h('div', { class: 'row' });
+          if (t.go) r.appendChild(UI.btn(L('Go', 'వెళ్దాం') + ' ➜', () => this.go(e), 'acc sm'));
+          if (T.swaps > 0) r.appendChild(UI.btn('🔄 ' + L('Swap', 'మార్చు'), () => this.swap(i), 'alt sm'));
+          row.appendChild(r);
+        }
+        b.appendChild(row);
+      });
+      b.appendChild(h('p', { class: 'empty', style: { padding: '4px 0 0' } }, T.bonus ? '🎁 ' + L('Bonus collected. New tasks come every morning.', 'బోనస్ అందింది. ప్రతి ఉదయం కొత్త పనులు వస్తాయి.') : L('One free swap a day. New tasks come every morning.', 'రోజుకు ఒకసారి ఉచితంగా మార్చుకోవచ్చు. ప్రతి ఉదయం కొత్త పనులు వస్తాయి.')));
+      // the tutorial, if it is still running
+      const tut = S.missions.active.find((m) => m.tpl.startsWith('t_'));
+      if (tut) {
+        b.appendChild(h('div', { class: 'sec' }, L('Tutorial', 'శిక్షణ') + ` · ${Math.min(TUTORIAL.length, S.missions.tut + 1)}/${TUTORIAL.length}`));
+        b.appendChild(h('div', { class: 'act' }, h('b', null, LN(tut.title)), h('div', { class: 'row' }, UI.btn(L('Skip tutorial', 'శిక్షణ దాటవేయి'), () => this.skipTutorial(), 'alt sm'))));
+      }
+      // bigger farm goals: guided only when you ask
+      const goals = Missions.ordered().filter((m) => !m.tpl.startsWith('t_'));
+      if (goals.length) {
+        b.appendChild(h('div', { class: 'sec' }, L('Farm goals', 'వ్యవసాయ లక్ష్యాలు')));
+        for (const m of goals) {
+          const on = S.missions.focus === m.uid;
+          b.appendChild(h('div', { class: 'act' }, h('div', { class: 'row', style: { justifyContent: 'space-between', flexWrap: 'nowrap' } }, h('b', null, (m.special ? '⚠️ ' : '') + LN(m.title)), m.reward ? h('span', { class: 'chip good' }, '+' + fmtShortINR(m.reward)) : null),
+            h('div', { class: 'prog' }, h('b', { style: { width: Math.round(clamp01(m.prog / m.target) * 100) + '%' } })),
+            h('div', { class: 'row' }, on ? UI.btn(L('Stop guiding', 'దారి చూపడం ఆపు'), () => Coach.follow(null), 'alt sm') : UI.btn('🧭 ' + L('Guide me', 'దారి చూపించు'), () => { Coach.follow(m); UI.close(); }, 'acc sm'))));
+        }
+      }
+    } });
+  },
+  skipTutorial() {
+    const M = G.S.missions;
+    M.active = M.active.filter((m) => !m.tpl.startsWith('t_')); M.tut = TUTORIAL.length;
+    if (M.focus && !M.active.some((m) => m.uid === M.focus)) M.focus = null;
+    Missions.ensure(); Coach.key = ''; UI._mKey = ''; UI.dirty = true;
+    UI.close(); UI.toast(L("Tutorial skipped. Here are today's tasks!", 'శిక్షణ దాటవేశారు. ఇవీ ఈ రోజు పనులు!'), 'good');
+  },
+};
+
+// ---------- compulsory rest ----------
+const Rest = {
+  WORK_H: 4, lastWork: -9, nagT: -99,
+  init() {
+    if (this._bound) return; this._bound = true;
+    Bus.on('work', (p) => { if (p && p.by === 'player') this.lastWork = G.t; });
+    Bus.on('sleep', (p) => this.rested(p && p.night ? 24 : 2));
+  },
+  P() { const P = G.S.player; if (typeof P.workMin !== 'number') P.workMin = 0; return P; },
+  limit() { return this.WORK_H * 60 * (G.S.easy ? 1.25 : 1); },
+  hoursNeeded() { const P = this.P(); return clamp(3 + (P.energy < 60 ? 1 : 0) + (P.energy < 30 || Weather.cur.id === 'heatwave' ? 1 : 0), 3, 5); },
+  update(dt) {
+    if (!G.started || G.S.explore) return;
+    const P = this.P();
+    if (P.mustRest) return;
+    if (G.t - this.lastWork < 0.5) {
+      P.workMin += dt * (60 / GAME_SEC_PER_HOUR) * Time.scale;
+      const lim = this.limit();
+      if (P.workMin >= lim) this.need();
+      else if (P.workMin >= lim - 30 && !P.restWarned) { P.restWarned = true; UI.toast(L('You have worked for hours. Half an hour more, then you must rest.', 'గంటల తరబడి పని చేశారు. ఇంకో అరగంట తర్వాత తప్పకుండా విశ్రాంతి తీసుకోవాలి.'), 'warn'); }
+    }
+    if (P.energy <= 0.5) this.need();
+  },
+  need() {
+    const P = this.P(); if (P.mustRest) return;
+    P.mustRest = true; P.restH = this.hoursNeeded();
+    if (Auto.on) Auto.stop(false);
+    Audio2.sfx('yawn');
+    Celebrate.ribbon({ kind: 'sun', icon: '😴', top: L('Compulsory rest', 'తప్పనిసరి విశ్రాంతి'), title: (LANG === 'en' ? `Rest for ${P.restH} hours` : L(`Rest for ${P.restH} hours`, `${P.restH} గంటలు విశ్రాంతి తీసుకోండి`, "Rest for {0} hours", [P.restH])), sub: L('You worked hard. No more work until you rest.', 'బాగా కష్టపడ్డారు. విశ్రాంతి తీసుకునే వరకు పని లేదు.'), ms: 3400 });
+    UI._mKey = ''; UI.dirty = true;
+    if (isMobile) UI.updateTouchLabels();
+    Bus.emit('mustRest', { h: P.restH });
+  },
+  // tried to work while too tired: a short reminder, not too often
+  nag() {
+    if (G.t - this.nagT < 6) return; this.nagT = G.t;
+    UI.toast(isMobile ? L('Too tired to work! Tap 😴 Rest first.', 'పని చేయలేనంత అలసట! ముందు 😴 విశ్రాంతి నొక్కండి.') : L('Too tired to work! Press R to rest first.', 'పని చేయలేనంత అలసట! ముందు విశ్రాంతికి R నొక్కండి.'), 'warn');
+    Audio2.sfx('yawn');
+  },
+  start() {
+    const P = this.P(); if (this.busy) return;
+    const v = Player.vehicle;
+    if (v) { if (v.def.fly && v.alt > 0.3) { UI.toast(L('Land the helicopter first.', 'ముందు హెలికాప్టర్ దించండి.'), 'warn'); return; } Player.exitVehicle(true); if (Player.vehicle) return; }
+    if (Games.mode) Games.stop();
+    if (UI.modalOpen()) UI.close();
+    const hrs = P.mustRest ? (P.restH || 3) : 3;
+    const home = Math.hypot(Player.x - (HOME.x + 8), Player.z - HOME.z) < 30;
+    this.busy = true;
+    Player.em = { id: 'sleep', t: 0, hop: 0, snapped: false };   // lie down for a moment, then the hours pass
+    Audio2.sfx('yawn'); setTimeout(() => Audio2.sfx('snore'), 800);
+    setTimeout(() => {
+      UI.fade(() => {
+        try {
+          const d0 = Time.day();
+          Sim.advance(hrs * 60);
+          const k = home ? HOUSE_LEVELS[G.S.houseLevel].rest : 1;
+          P.energy = Math.min(100, P.energy + hrs * 16 * k); P.health = Math.min(100, P.health + hrs * 3 * k);
+          this.rested(hrs);
+          if (Player.em && Player.em.id === 'sleep') Player.em = null;
+          if (Time.day() !== d0) { P.energy = 100; Celebrate.morning(true); }
+          else UI.toast((LANG === 'en' ? `You rested for ${hrs} hours. Ready to work again!` : L(`You rested for ${hrs} hours. Ready to work again!`, `${hrs} గంటలు విశ్రాంతి తీసుకున్నారు. మళ్ళీ పనికి సిద్ధం!`, "You rested for {0} hours. Ready to work again!", [hrs])), 'good');
+          Audio2.sfx('ready'); SaveSys.save(false);
+          Bus.emit('rest', { h: hrs });
+        } finally { this.busy = false; }
+      }, (LANG === 'en' ? `Resting for ${hrs} hours…` : L(`Resting for ${hrs} hours…`, `${hrs} గంటలు విశ్రాంతి…`, "Resting for {0} hours…", [hrs])));
+    }, 1300);
+  },
+  // any rest of 3 hours or more (or a night) clears the tiredness
+  rested(hrs) {
+    const P = this.P();
+    if (hrs >= 3) { P.workMin = 0; P.mustRest = false; P.restWarned = false; }
+    else P.workMin = Math.max(0, P.workMin - hrs * 60);
+    UI._mKey = ''; UI.dirty = true;
+    if (isMobile && G.started) UI.updateTouchLabels();
+  },
 };
 
 // ---- 16_audio.js ----
@@ -10189,6 +11003,9 @@ const Audio2 = {
       case 'boing': this.tone('sine', 180, 720, 0.35, 0.16, d); this.tone('sine', 720, 300, 0.25, 0.08, d, 0.33); break;
       case 'dhol': this.tone('sine', 110, 55, 0.22, 0.32, d); this.burst(0.06, 0.18, 'lowpass', 500, d); if (Math.random() < 0.5) this.burst(0.05, 0.12, 'bandpass', 2400, d, 0.23, 2); break;
       case 'cluck': for (let i = 0; i < 3; i++) this.tone('square', 650, 500, 0.05, 0.05, d, i * 0.11); break;
+      case 'splash': this.burst(0.55, 0.5, 'lowpass', 1100, d); this.burst(0.4, 0.22, 'bandpass', 2600, d, 0.04, 1.4); this.tone('sine', 240, 60, 0.32, 0.2, d); break;
+      case 'monkey': for (let i = 0; i < 6; i++) this.tone('square', 850 + Math.random() * 500, 1300 + Math.random() * 500, 0.05, 0.05, d, i * 0.075); break;
+      case 'yawn': this.tone('triangle', 430, 230, 0.75, 0.1, d); this.burst(0.6, 0.05, 'bandpass', 700, d, 0.05, 2); break;
       case 'snore': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 260; const g = c.createGain(); this.env(g, c.currentTime, 0.6, 0.16, 0.9); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 1.6); break; }
     }
   },
@@ -10438,6 +11255,8 @@ const UI = {
       else if (e.code === 'KeyB' || e.code === 'KeyI' || e.code === 'Tab') { e.preventDefault(); this.office(e.code === 'KeyI' ? 'storage' : undefined); }
       else if (e.code === 'KeyP') this.photo();
       else if (e.code === 'KeyT' && G.started && !this.modalOpen()) Fun.bar();
+      else if (e.code === 'KeyR' && G.S.player.mustRest) Rest.start();
+      else if (e.code === 'KeyJ') Tasks.open();
       else if (e.code === 'Equal' && !Player.vehicle) { Input.autoRun = !Input.autoRun; Input.run = Input.autoRun; if (Input.autoRun) this.toastOnce('autorunpc', L('Auto run on: steer with the mouse. Press W or S to stop.', 'ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.'), 'info'); }
       else if (e.code === 'F1' || e.code === 'Slash') { e.preventDefault(); this.help(); }
     });
@@ -10593,15 +11412,19 @@ const UI = {
     const nAct = S.missions.active.length;
     const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
     const howOpen = !!st && (this.howOpen || performance.now() < (this.howUntil || 0));
-    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on + '|' + howOpen + '|' + !!Settings.v.helper;
+    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on + '|' + howOpen + '|' + !!Settings.v.helper + '|' + !!S.player.mustRest + '|' + innerHeight;
     if (mkey !== this._mKey) {
       this._mKey = mkey;
       const mb = this.el('missions'); mb.innerHTML = '';
-      if (!cur) mb.append(h('h4', null, L('Missions', 'లక్ష్యాలు')), h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
+      // compulsory rest comes first: nothing else can be done until then
+      if (S.player.mustRest) mb.appendChild(h('div', { class: 'restbar' }, h('span', null, '😴 ' + (LANG === 'en' ? `Time to rest: ${S.player.restH || 3} hours` : L(`Time to rest: ${S.player.restH || 3} hours`, `విశ్రాంతి సమయం: ${S.player.restH || 3} గంటలు`, "Time to rest: {0} hours", [S.player.restH || 3]))),
+        h('button', { class: 'do', type: 'button', onclick: (e) => { e.stopPropagation(); Rest.start(); } }, L('Rest now', 'ఇప్పుడే విశ్రాంతి'), isMobile ? null : h('span', { class: 'kbd' }, 'R'))));
+      if (!cur) Tasks.card(mb);
       else {
         const tut = cur.tpl.startsWith('t_');
-        mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? (LANG === 'en' ? `Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}` : L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`, "Tutorial {0} of {1}", [Math.min(TUTORIAL.length, S.missions.tut + 1), TUTORIAL.length])) : L('Mission', 'లక్ష్యం') + (nAct > 1 ? (LANG === 'en' ? ` · ${nAct - 1} more` : L(` · ${nAct - 1} more`, ` · ఇంకా ${nAct - 1}`, " · {0} more", [nAct - 1])) : '')),
-          cur.reward ? h('span', { class: 'rw' }, '+' + fmtShortINR(cur.reward)) : null));
+        mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? (LANG === 'en' ? `Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}` : L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`, "Tutorial {0} of {1}", [Math.min(TUTORIAL.length, S.missions.tut + 1), TUTORIAL.length])) : '🧭 ' + L('Guiding you', 'దారి చూపిస్తోంది')),
+          cur.reward ? h('span', { class: 'rw' }, '+' + fmtShortINR(cur.reward)) : null,
+          h('button', { class: 'tmin', type: 'button', title: tut ? L('Skip tutorial', 'శిక్షణ దాటవేయి') : L('Stop guiding', 'దారి చూపడం ఆపు'), 'aria-label': tut ? L('Skip tutorial', 'శిక్షణ దాటవేయి') : L('Stop guiding', 'దారి చూపడం ఆపు'), onclick: (e) => { e.stopPropagation(); Audio2.sfx('click'); if (tut) Tasks.skipTutorial(); else Coach.follow(null); } }, tut ? '⏭' : '✕')));
         mb.appendChild(h('b', { class: 'mt' }, LN(cur.title)));
         if (Auto.on) {
           const sp = h('div', { class: 'step auto' }); sp.innerHTML = COACH_ICON[Auto.mode === 'farm' ? 'work' : 'walk'];
@@ -10616,7 +11439,7 @@ const UI = {
         // optional helper (Menu → "Do it for me" button): off unless the player turns it on
         if (st && (Settings.v.helper || Auto.on)) mb.appendChild(h('button', { class: 'do' + (Auto.on ? ' stop' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); if (Auto.on) Auto.stop(true); else Auto.doStep(); } }, Auto.on ? L('■ Stop', '■ ఆపు') : L('▶ Do it for me', '▶ నా బదులు చేయి'), isMobile || Auto.on ? null : h('span', { class: 'kbd' }, 'Enter')));
       }
-      mb.onclick = () => this.office('missions');
+      mb.onclick = () => Tasks.open();
       // "How?" tips: a small panel beside the card (never over the controls)
       const tip = this.el('howtip');
       if (tip) {
@@ -10768,7 +11591,8 @@ const UI = {
     const S = G.S; const hr = Time.hour();
     const night = hr >= 16;   // late afternoon: sleep through to the next morning
     const list = [
-      { id: 'sleep', label: () => night ? L('Sleep until tomorrow morning', 'రేపు ఉదయం వరకు నిద్రపోండి') : L('Rest for 2 hours', '2 గంటలు విశ్రాంతి'), act: () => Sim.sleep(night) },
+      S.player.mustRest && !night ? { id: 'sleep', label: () => (LANG === 'en' ? `Rest for ${S.player.restH || 3} hours` : L(`Rest for ${S.player.restH || 3} hours`, `${S.player.restH || 3} గంటలు విశ్రాంతి తీసుకోండి`, "Rest for {0} hours", [S.player.restH || 3])), act: () => Rest.start() }
+        : { id: 'sleep', label: () => night ? L('Sleep until tomorrow morning', 'రేపు ఉదయం వరకు నిద్రపోండి') : L('Rest for 2 hours', '2 గంటలు విశ్రాంతి'), act: () => Sim.sleep(night) },
       { id: 'office', label: () => L('Open the farm office', 'వ్యవసాయ కార్యాలయం తెరవండి'), act: () => this.office() },
       { id: 'store', label: () => L('Storage & supplies', 'నిల్వ & సామాగ్రి'), act: () => this.office('storage') },
       { id: 'save', label: () => L('Save game', 'ఆట సేవ్ చేయండి'), act: () => SaveSys.save(true) },
@@ -11179,7 +12003,7 @@ const UI = {
         [L('Left stick', 'ఎడమ స్టిక్'), L('Walk; push it all the way to run', 'నడవండి; పూర్తిగా నెడితే పరుగు')], [L('Drag right side', 'కుడివైపు లాగండి'), L('Look around, pinch to zoom', 'చుట్టూ చూడండి, జూమ్ కోసం పించ్')], [L('Work', 'పని'), L('Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests', 'పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది')], [L('Use', 'వాడు'), L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], [L('Gold arrow', 'బంగారు బాణం'), L('Always points to your next goal', 'మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది')], [L('Map', 'మ్యాప్'), L('Tap a place, then take an auto straight there', 'ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['V', L('Switch camera view', 'కెమెరా మార్చు')],
       ] : [
         ['W A S D', L('Walk / drive', 'నడవండి / నడపండి')], ['Shift', L('Run', 'పరుగు')], ['Space', L('Jump / brake', 'దూకు / బ్రేక్')], [L('Mouse drag, wheel', 'మౌస్ లాగడం, వీల్'), L('Look around, zoom', 'చూడండి, జూమ్')], ['E', L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], ['F', L('Hold on your field: Auto does the next job', 'పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది')],
-        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['T', L('Fun moves, dress up and activities', 'సరదా కదలికలు, దుస్తులు, ఆటలు')], ['Space / C', L('Helicopter: up / down', 'హెలికాప్టర్: పైకి / కిందికి')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
+        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['T', L('Fun moves, dress up and activities', 'సరదా కదలికలు, దుస్తులు, ఆటలు')], ['J', L("Today's tasks", 'ఈ రోజు పనులు')], ['R', L('Rest when you are tired', 'అలసినప్పుడు విశ్రాంతి')], ['Space / C', L('Helicopter: up / down', 'హెలికాప్టర్: పైకి / కిందికి')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
       ];
       const t = h('table', { class: 't' }); for (const [k, v2] of rows) t.appendChild(h('tr', null, h('td', null, h('span', { class: 'kbd' }, k)), h('td', null, v2)));
       b.appendChild(t);
@@ -11264,7 +12088,7 @@ const UI = {
     joy.addEventListener('pointermove', (e) => { if (pid !== null && e.pointerId === pid) jmove(e.clientX, e.clientY); });
     const pend = (e) => { if (pid !== null && e.pointerId === pid) jend(); };
     joy.addEventListener('pointerup', pend); joy.addEventListener('pointercancel', pend);
-    hold(this.el('tbWork'), () => { Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
+    hold(this.el('tbWork'), () => { if (G.S && G.S.player.mustRest) { Rest.start(); return; } Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
     // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
     for (const [bid, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
       const b = this.el(bid); if (!b) continue;
@@ -11304,7 +12128,8 @@ const UI = {
     set('tbV', L('View', 'వ్యూ'));
     set('tbJump', inV ? (fly ? L('Up ▲', 'పైకి ▲') : L('Brake', 'బ్రేక్')) : L('Jump', 'దూకు'));
     set('tbRun', L('Run', 'పరుగు'), !inV);
-    set('tbWork', L('Work', 'పని'), !inV && !Games.mode);
+    set('tbWork', G.S.player.mustRest ? '😴 ' + L('Rest', 'విశ్రాంతి') : L('Work', 'పని'), !inV && !Games.mode);
+    this.el('tbWork').classList.toggle('rest', !!G.S.player.mustRest);
     const real = (Interact.current || []).filter((o) => o.id !== 'exit');
     set('tbE', inV && !real.length ? L('Get off', 'దిగు') : real.length ? L('Use', 'వాడు') : L('Use', 'వాడు'));
     this.el('tbE').classList.toggle('dim', !inV && !real.length);
@@ -12905,6 +13730,7 @@ const Sim = {
     else Farm.checkLeases();
   },
   onMorning() {
+    Tasks.st();   // a fresh list of tasks every morning
     const fest = Time.festivalToday();
     if (fest) UI.toast((LANG === 'en' ? `Today is ${fest.en}! ${fest.desc.en}` : L(`Today is ${fest.en}! ${fest.desc.en}`, `ఈ రోజు ${fest.te}! ${fest.desc.te}`, "Today is {0}! {1}", [fest, fest.desc])), 'season');
     if (Time.weekday() === SANTHA_WEEKDAY) UI.toast(L('Sunday santha today: the weekly market is on at the village ground until 2 PM.', 'ఈ రోజు ఆదివారం సంత: మధ్యాహ్నం 2 వరకు గ్రామ మైదానంలో వారపు సంత.'), 'season');
@@ -13185,6 +14011,7 @@ const Game = {
     if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
     Fun.start();
+    Tasks.init(); Rest.init();
     if (data) {
       UI.toast((LANG === 'en' ? `Welcome back, ${S.player.name}. ${Time.fmtDate()}` : L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`, "Welcome back, {0}. {1}", [S.player.name, Time.fmtDate()])), 'good');
     } else {
@@ -13298,6 +14125,7 @@ function frame(now) {
       Extras.update(dt);
       Fun.update(dt);
       Games.update(dt);
+      Rest.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -13384,7 +14212,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

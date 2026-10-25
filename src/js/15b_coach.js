@@ -175,11 +175,12 @@ const COACH_STEPS = {
 
 const Coach = {
   step: null, key: '', changedAt: 0, banT: 0,
-  // the mission the player follows: their own pick, else tutorial first
+  // the mission being guided: the one the player asked for ("Guide me"), else the tutorial.
+  // After the tutorial nothing is pushed: the corner card shows today's tasks instead.
   current() {
     const S = G.S; if (!S || !S.missions) return null;
     const act = Missions.ordered(); if (!act.length) return null;
-    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act[0];
+    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act.find((m) => m.tpl.startsWith('t_')) || null;
   },
   follow(m) { G.S.missions.focus = m ? m.uid : null; this.key = ''; UI.dirty = true; UI._mKey = ''; },
   compute() {
@@ -201,8 +202,8 @@ const Coach = {
     // still making progress (closer to the place, field getting done)? then no reminder needed
     const tg = st.target; const mark = Math.round(clamp01(st.m.prog / st.m.target) * 40) + '|' + (tg ? Math.round(CH.dist(tg) / 12) : '') + '|' + (st.progress !== undefined ? Math.round(st.progress * 20) : '');
     if (mark !== this.mark) { this.mark = mark; this.activeAt = now; }
-    // stuck on the same step for a while: a gentle reminder in the corner, at most once a minute
-    if (now - this.activeAt > 40000 && now - (this.remindAt || 0) > 60000 && !UI.modalOpen() && !UI.photoMode) { this.remindAt = now; this.activeAt = now; this.show(st, true); }
+    // stuck on a tutorial step for a while: a gentle reminder in the corner, at most every 90 seconds
+    if (st.m.tpl.startsWith('t_') && now - this.activeAt > 50000 && now - (this.remindAt || 0) > 90000 && !UI.modalOpen() && !UI.photoMode && !Games.mode) { this.remindAt = now; this.activeAt = now; this.show(st, true); }
   },
   // a new step (or a reminder): the corner card glows, the tips open for a reminder, and it can be read aloud
   show(st, reminder) {

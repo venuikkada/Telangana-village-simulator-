@@ -41,13 +41,15 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Workers:** daily labourers, permanent farmhands and tractor drivers who take your tractor to the field.
 - **Village development:** fund CC roads, street lights, a drinking water tank, a shopping complex, a school, the health centre, canal lining, a village godown and a market expansion.
 - **Ranks:** Small Farmer → Successful Farmer → Large Farmer → Agricultural Business Owner → Village Agribusiness → Agricultural Company.
-- **Missions:** an eight-step tutorial, then missions that adapt to your farm, plus pest attacks, droughts and the festivals Bonalu, Bathukamma, Sankranti and Ugadi.
+- **Missions:** an eight-step tutorial (you can skip it), then farm goals that adapt to your farm, plus pest attacks, droughts and the festivals Bonalu, Bathukamma, Sankranti and Ugadi.
+- **Today's tasks:** every morning brings five new tasks: one farm job, one in the village (chai at the tea stall, the temple, the bus, your dog), two fun ones (hit a six, cut kites, catch fish, Holi, the rooster, the monkey, a lake jump) and one trip (the helicopter, the jeep, a new place). Each pays a reward, all five pay a ₹3,000 bonus, and you can swap one task a day.
 - **Village life:** up to about 70 villagers with daily routines, including the sarpanch, the seed shop owner, the mechanic, the doctor, the moneylender and the shepherd. There are cattle, buffaloes, goats, sheep, dogs, chickens and birds, plus buses, lorries, autos and motorbikes on the roads.
 - **Sound:** wind, rain, crickets, temple bells, engines and animals, and music that follows the time of day. All of it is generated live in the browser.
 - **Easy to play:** one Auto button does the next job on your field: plough, sow, water, feed, weed, spray or harvest. Missing seeds or fertilizer? One tap gets them delivered to the field. When the crop is growing, "Rest" jumps ahead to the next thing it needs.
 - **Never lost:** a gold arrow and an on-screen marker always point to your next goal. The minimap faces north and shows shops, roads and your fields. On the full map, tap any place and take an auto straight there.
 - **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Phones start on Low and run at a steady 60 or 30 FPS ("Auto" picks what the phone can hold). Far trees and fields switch to lighter models, and resolution adjusts automatically to keep the game smooth.
-- **Your mission in the corner:** the card at the top right always says the next step. Tap "How?" for simple tips; if you are stuck for a while it gently reminds you. Nothing covers the middle of the screen.
+- **Your tasks in the corner:** after the tutorial the card at the top right lists today's tasks instead of telling you to go to your field and work. Tap it for the full list; fold it away with –. Want help with a farm goal? Tap **Guide me** and the card and the gold arrow show you each step until you stop guiding.
+- **Compulsory rest:** after about 4 hours of work (5 in Easy mode) your farmer must rest for 3 to 5 hours before working again. Tap **😴 Rest** (it replaces the Work button) or press R; the hours pass and you wake up fresh. A night's sleep resets it too.
 - **Daytime only:** play runs from 6:30 in the morning to 6 in the evening; then the night passes by itself and a sunny new morning begins.
 - **Celebrations:** every finished mission gets confetti, three stars, a cheer and coins flying into your wallet. Trophies and new ranks too.
 - **Flowers and butterflies** around the village and the fields.
@@ -63,10 +65,13 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Dress up your farmer:** 🎉 Fun → 👕 Dress up opens a dressing room with a live view of your farmer: man or woman, skin, hair colour (even blue or red), turban or cap, sunglasses, mustache or bindi, top colour, lungi, dhoti, pants, shorts, saree or salwar, a towel or dupatta, height and build. 🎲 Surprise me picks a random look.
 - **Funny moves:** the 🎉 Fun button (T on a computer) has 17 moves: wave, namaste, dance, folk dance, clap, laugh, show muscles, chicken dance, cartwheel, spin, jump for joy, yoga, selfie, facepalm, sit down, nap and **Holi colours**. Villagers nearby wave back, clap, laugh or join your dance, with a dhol beat. Holi throws a cloud of gulal: everyone near you turns pink, green and yellow and starts dancing.
 - **More time to explore:** days now run at half speed (about 8 minutes from morning to evening), with ¼× to 8× in Menu → Basic. **Explore mode** stops the clock and tiredness so you can roam as long as you like.
-- **Mini-games** (🎉 Fun, one big gold button for each; F on a computer):
+- **Mini-games** (🎉 Fun, one big gold button for each; F on a computer). Each has its own scene: a rolled cricket pitch with chalk creases, stumps and bails at both ends, boundary flags, village kids fielding and a camera that chases your sixes; two-colour patang kites with tassel tails, pink manja and a sky full of Sankranti kites; a bamboo rod that bends, a red-and-white float, ripples on the water and a basket that fills with fish:
   - 🪁 **Kite fights:** turn the camera to steer your kite, hold **Dive** to swoop onto another kite and cut it (₹150, "Kai po che!"). Now and then a kite swoops at yours: dive first or your string is cut.
   - 🏏 **Gully cricket:** six balls at the open ground. Tap **Hit** as the ball reaches you: perfect timing is a SIX and the villagers dance. ₹30 a run, and your best score is kept.
   - 🎣 **Fishing at the lake:** wait for the red float to dip, then tap **Pull**. Rohu, katla, murrel, prawns and, rarely, a golden fish worth ₹2,500.
+  - 🐓 **Rooster chase:** a rooster gets loose; run after it as it zig-zags and flaps, and tap **Catch** when you are close (₹400).
+  - 💦 **Lake jump:** at the lake ghat your farmer runs, does a cannonball into the water, swims back and climbs out dripping (₹300 once a day, +15 energy).
+  - 🐒 **Naughty monkey:** now and then a monkey snatches your cap (or your lunch box) and runs up a tree. Follow the gold arrow and throw it a banana to get your things back (₹300).
   - 🎡 **Lucky wheel:** one free spin every day for money, seeds, fertilizer, a golden turban or a map to a golden mango.
 - **Fun activities:** 30 **golden mangoes** hidden all over the map (₹500 each, a big prize for all 30, and a "show me the nearest" hint), **places to discover** (₹200 each), and three **checkpoint races** (Village loop, Lake and hill ride, Highway dash) for any vehicle or on foot, with gold, silver and bronze medals and your best times.
 - **Settings like the big mobile games:** the Menu has six tabs.
@@ -88,7 +93,9 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 | Mouse drag, wheel | Drag the screen, pinch | Look around, zoom |
 | E | Use, or tap the prompt | Talk, use shops, buy seeds, rest, get in and out of vehicles |
 | F (hold) | Work (hold) | Auto: does the next job on your field |
-| F | Big gold button | In a mini-game: Dive, Hit or Pull |
+| F | Big gold button | In a mini-game: Dive, Hit, Pull or Catch |
+| R | 😴 Rest | Rest when your farmer is too tired to work |
+| J | Tap the task card | Today's tasks and farm goals |
 | 1 – 6 | Tool bar | Auto, hoe, seeds, fertilizer, sprayer, sickle |
 | Q | Type | Switch seed, fertilizer or spray |
 | G | Lower / Raise | Lower or raise the implement |
@@ -140,7 +147,8 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
 | `src/js/12c_fun.js` | Dressing room, funny moves, Explore mode, golden mangoes, places to discover, races |
-| `src/js/12d_games.js` | Mini-games: Holi colours, kite fights, gully cricket, fishing, the daily lucky wheel |
+| `src/js/12d_games.js` | Mini-games: Holi colours, kite fights, gully cricket, fishing, rooster chase, lake jump, the naughty monkey, the daily lucky wheel |
+| `src/js/15c_tasks.js` | Today's tasks (the corner card and the task list) and the compulsory rest |
 | `src/js/17c_menu.js` | The Menu tabs, graphics styles, button layout editor, floating joystick, gyroscope |
 | `src/js/18_save.js` | Browser and cloud saves |
 | `src/js/18b_account.js` | Sign in / sign up with email, password reset, keeping the farm in step with the account |

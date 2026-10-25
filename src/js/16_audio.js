@@ -119,6 +119,9 @@ const Audio2 = {
       case 'boing': this.tone('sine', 180, 720, 0.35, 0.16, d); this.tone('sine', 720, 300, 0.25, 0.08, d, 0.33); break;
       case 'dhol': this.tone('sine', 110, 55, 0.22, 0.32, d); this.burst(0.06, 0.18, 'lowpass', 500, d); if (Math.random() < 0.5) this.burst(0.05, 0.12, 'bandpass', 2400, d, 0.23, 2); break;
       case 'cluck': for (let i = 0; i < 3; i++) this.tone('square', 650, 500, 0.05, 0.05, d, i * 0.11); break;
+      case 'splash': this.burst(0.55, 0.5, 'lowpass', 1100, d); this.burst(0.4, 0.22, 'bandpass', 2600, d, 0.04, 1.4); this.tone('sine', 240, 60, 0.32, 0.2, d); break;
+      case 'monkey': for (let i = 0; i < 6; i++) this.tone('square', 850 + Math.random() * 500, 1300 + Math.random() * 500, 0.05, 0.05, d, i * 0.075); break;
+      case 'yawn': this.tone('triangle', 430, 230, 0.75, 0.1, d); this.burst(0.6, 0.05, 'bandpass', 700, d, 0.05, 2); break;
       case 'snore': { const s = this.noiseSrc(false); const f = c.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 260; const g = c.createGain(); this.env(g, c.currentTime, 0.6, 0.16, 0.9); s.connect(f); f.connect(g); g.connect(d); s.start(); s.stop(c.currentTime + 1.6); break; }
     }
   },

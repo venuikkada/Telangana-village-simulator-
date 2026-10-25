@@ -172,6 +172,8 @@ const Humans = {
       case 'sleep': { arL = arR = 0.05; armOutL = 0.15; armOutR = -0.15; elL = elR = -0.1; break; }
       case 'bat': { lean = 0.3; thL = -0.3; thR = 0.25; knL = 0.4; knR = 0.35; arL = arR = -0.75; armOutL = -0.4; armOutR = 0.3; elL = elR = -0.5; break; }   // gully cricket
       case 'fish': { arL = arR = -1.0; armOutL = -0.3; armOutR = 0.25; elL = elR = -0.7; lean = 0.08; break; }   // holding the fishing rod
+      case 'tuck': { thL = thR = -1.75; knL = knR = 2.4; arL = arR = -0.8; elL = elR = -1.6; armOutL = 0.15; armOutR = -0.15; lean = 0.35; break; }   // cannonball
+      case 'swim': { const w = h.t * 5; arL = -2.5 + Math.sin(w) * 0.9; arR = -2.5 + Math.sin(w + Math.PI) * 0.9; armOutL = 0.45; armOutR = -0.45; elL = elR = -0.2; thL = Math.sin(w * 2) * 0.35; thR = -thL; lean = 0.5; break; }
     }
     // root; lying down (nap), cartwheels and spins turn the whole body
     if (h.lie || h.roll || h.spin) {
@@ -266,6 +268,7 @@ const SPECIES = {
   sheep: { L: 0.85, H: 0.7, W: 0.46, leg: 0.4, neck: 0.25, head: [0.16, 0.2, 0.28], snout: [0.1, 0.1, 0.1], ear: [0.12, 0.05, 0.02], horn: null, hump: null, tail: 0.15, cols: ['#2e2a28', '#4a4440', '#d8d2c8', '#3a3431'], speed: 1.2, sound: 'bleat', wool: true, earsDown: true },
   dog: { L: 0.72, H: 0.58, W: 0.26, leg: 0.4, neck: 0.25, head: [0.16, 0.17, 0.22], snout: [0.1, 0.09, 0.14], ear: [0.08, 0.1, 0.02], horn: null, hump: null, tail: 0.3, cols: ['#b58352', '#c79a64', '#8a5a34', '#2a2420', '#d8c6a8'], speed: 2.2, sound: 'bark', tailUp: true },
   cat: { L: 0.42, H: 0.3, W: 0.16, leg: 0.2, neck: 0.12, head: [0.12, 0.11, 0.12], snout: [0.05, 0.04, 0.04], ear: [0.05, 0.06, 0.01], horn: null, hump: null, tail: 0.3, cols: ['#d8a060', '#3a3a3a', '#8a8a8a', '#e8e0d0'], speed: 1.4, sound: 'meow', tailUp: true },
+  monkey: { L: 0.42, H: 0.5, W: 0.22, leg: 0.3, neck: 0.12, head: [0.15, 0.15, 0.14], snout: [0.08, 0.07, 0.05], ear: [0.05, 0.05, 0.01], horn: null, hump: null, tail: 0.62, cols: ['#8c7b66', '#7d6d5a'], speed: 3, sound: null, tailUp: true },
   chicken: { L: 0.3, H: 0.32, W: 0.2, leg: 0.14, neck: 0.1, head: [0.09, 0.1, 0.1], snout: [0.03, 0.03, 0.05], ear: null, horn: null, hump: null, tail: 0.14, cols: ['#b85a2a', '#f0e8dc', '#6b3a1e', '#2a2420'], speed: 1.2, sound: 'cluck', biped: true, comb: true },
 };
 const Animals = {

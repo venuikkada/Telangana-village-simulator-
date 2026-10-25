@@ -772,6 +772,7 @@ const Services = {
         Sim.advance(60); hrs++;
       }
       const P = G.S.player; P.energy = Math.min(100, P.energy + hrs * 2.5);
+      Rest.rested(hrs);
       Player.need = null;
       const cd = f.crop ? CROPS[f.crop] : null;
       const what = !f.crop ? '' : f.growth >= 0.97 ? L('It is ready: hold Work to harvest!', 'పంట సిద్ధం: కోయడానికి \'పని\' పట్టుకోండి!') : f.outbreak || f.pests > 10 ? L('Pests! Hold Work to spray.', 'పురుగులు! పిచికారీకి \'పని\' పట్టుకోండి.') : f.weeds > 16 ? L('Weeds came up: hold Work to weed.', 'కలుపు వచ్చింది: \'పని\' పట్టుకోండి.') : f.nut < 40 ? L('The crop is hungry: hold Work to feed it.', 'పంటకు ఆకలి: ఎరువు కోసం \'పని\' పట్టుకోండి.') : cd && f.water < cd.wLo ? L('The field is dry: hold Work to water it.', 'పొలం ఎండిపోయింది: నీటికి \'పని\' పట్టుకోండి.') : '';

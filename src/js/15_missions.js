@@ -78,7 +78,7 @@ const Missions = {
   add(m) {
     const S = G.S; m.uid = S.missions.seq++; m.prog = m.prog || 0; m.t0 = Time.totalMin();
     S.missions.active.push(m);
-    if (G.started && !m.tpl.startsWith('t_')) UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');   // the tutorial shows up in the corner card
+    if (G.started && m.special) UI.toast(L('New mission: ', 'కొత్త లక్ష్యం: ') + LN(m.title), 'mission');   // only the urgent ones: farm goals wait quietly in the task list
     UI.dirty = true;
     return m;
   },

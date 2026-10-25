@@ -222,9 +222,11 @@ const Fun = {
     Celebrate.ribbon({ kind: 'sun', icon: '🥭', top: L('Golden mango!', 'బంగారు మామిడి!'), title: n + ' / ' + this.spots.length, sub: '+' + fmtINR(500), ms: 2200 });
     if (all) { Money.add(10000, 'fun'); Celebrate.shower(170); Celebrate.ribbon({ kind: 'big', icon: '🏆', top: L('All golden mangoes found!', 'అన్ని బంగారు మామిడి పండ్లు దొరికాయి!'), title: L('Mango master', 'మామిడి మాస్టర్'), sub: '+' + fmtINR(10000), ms: 3600 }); Audio2.sfx('fanfare'); }
     if (G.S.waypoint && G.S.waypoint.mango === i) G.S.waypoint = null;
+    Bus.emit('mango', { i });
   },
   discover(p) {
     const f = this.st(); f.places[p.id] = true;
+    Bus.emit('discover', { id: p.id });
     Money.add(200, 'fun');
     const n = Object.keys(f.places).length, all = Map2.places().length;
     Celebrate.ribbon({ kind: 'sun', icon: '📍', top: L('Place discovered', 'కొత్త ప్రదేశం'), title: Map2.placeName(p), sub: n + ' / ' + all + '  +' + fmtINR(200), ms: 2400 });
@@ -302,6 +304,7 @@ const Fun = {
     const prize = { gold: 3000, silver: 2000, bronze: 1000 }[medal] || 300;
     const best = f.best[R.id], isBest = !best || t < best.t;
     if (isBest) f.best[R.id] = { t: +t.toFixed(1), medal };
+    Bus.emit('raceEnd', { id: R.id, medal });
     Money.add(prize, 'fun');
     Celebrate.burst(innerWidth / 2, innerHeight * 0.35, 90, 1); Celebrate.coins(innerWidth / 2, innerHeight * 0.35, prize, 8);
     Celebrate.ribbon({ kind: medal ? 'big' : 'sun', icon: medal === 'gold' ? '🥇' : medal === 'silver' ? '🥈' : medal === 'bronze' ? '🥉' : '🏁', top: LN(R), title: this.fmtT(t) + (isBest ? '  ' + L('New best!', 'కొత్త రికార్డు!') : ''), sub: '+' + fmtINR(prize), ms: 3600 });
@@ -326,11 +329,12 @@ const Fun = {
     if (!b) { b = h('div', { id: 'funbar', class: 'card' }); (UI.el('hud') || document.body).appendChild(b); }
     b.innerHTML = '';
     b.append(h('div', { class: 'fgrid' }, ...EMOTES.map((E) => h('button', { type: 'button', class: 'fe', onclick: () => { Audio2.unlock(); Emote.play(E.id); } }, h('i', null, E.icon), h('span', null, LN(E))))),
-      h('div', { class: 'fgames' }, ...[['🪁', L('Fly a kite', 'గాలిపటం'), () => Games.kiteStart()], ['🏏', L('Cricket', 'క్రికెట్'), () => Games.cricketStart()], ['🎣', L('Fishing', 'చేపల వేట'), () => Games.fishStart()], ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), () => Games.wheel()]].map(([ic, lab, fn]) =>
+      h('div', { class: 'fgames' }, ...[['🪁', L('Fly a kite', 'గాలిపటం'), () => Games.kiteStart()], ['🏏', L('Cricket', 'క్రికెట్'), () => Games.cricketStart()], ['🎣', L('Fishing', 'చేపల వేట'), () => Games.fishStart()], ['🐓', L('Rooster', 'కోడిపుంజు'), () => Games.roosterStart()], ['💦', L('Lake jump', 'చెరువులో దూకు'), () => Games.jumpStart()], ['🐒', L('Monkey', 'కోతి'), () => Games.monkeyStart(false)], ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), () => Games.wheel()]].map(([ic, lab, fn]) =>
         h('button', { type: 'button', class: 'fe fg' + (ic === '🎡' && Games.canSpin() ? ' dot' : ''), onclick: () => { Audio2.unlock(); Audio2.sfx('click'); fn(); } }, h('i', null, ic), h('span', null, lab)))),
       h('div', { class: 'row' },
         h('button', { type: 'button', class: 'btn acc sm', onclick: () => { Audio2.sfx('click'); Wardrobe.open(); } }, '👕 ' + L('Dress up', 'దుస్తులు మార్చు')),
         h('button', { type: 'button', class: 'btn alt sm', onclick: () => { Audio2.sfx('click'); this.open(); } }, '🎯 ' + L('Activities', 'ఆటలు')),
+        h('button', { type: 'button', class: 'btn alt sm', onclick: () => { Audio2.sfx('click'); Tasks.open(); } }, '📋 ' + L("Today's tasks", 'ఈ రోజు పనులు')),
         h('button', { type: 'button', class: 'btn alt sm', onclick: () => { this.bar(false); } }, '✕')));
     b.hidden = false;
   },
@@ -353,6 +357,9 @@ const Fun = {
         ...[['🪁', L('Kite fights', 'గాలిపటాల పోటీ'), L(`${gs.kites} kites cut`, `${gs.kites} గాలిపటాలు తెంపారు`), () => Games.kiteStart()],
           ['🏏', L('Gully cricket', 'వీధి క్రికెట్'), L(`Best: ${gs.best} runs`, `ఉత్తమం: ${gs.best} పరుగులు`), () => Games.cricketStart()],
           ['🎣', L('Fishing', 'చేపల వేట'), L(`${fishN} fish caught`, `${fishN} చేపలు పట్టారు`), () => Games.fishStart()],
+          ['🐓', L('Rooster chase', 'కోడిపుంజు వేట'), L(`${gs.roosters || 0} caught`, `${gs.roosters || 0} పట్టారు`), () => Games.roosterStart()],
+          ['💦', L('Lake jump', 'చెరువులో దూకు'), L(`${gs.splash || 0} jumps`, `${gs.splash || 0} సార్లు దూకారు`), () => Games.jumpStart()],
+          ['🐒', L('Naughty monkey', 'అల్లరి కోతి'), L(`${gs.monkeys || 0} times`, `${gs.monkeys || 0} సార్లు`), () => Games.monkeyStart(false)],
           ['🎡', L('Lucky wheel', 'లక్కీ చక్రం'), Games.canSpin() ? L('Free spin ready!', 'ఉచిత స్పిన్ సిద్ధం!') : L('Next free spin tomorrow', 'తదుపరి ఉచిత స్పిన్ రేపు'), () => Games.wheel()],
           ['🎨', L('Holi colours', 'హోలీ రంగులు'), L('Colour the villagers near you', 'దగ్గరి గ్రామస్తులకు రంగులు చల్లండి'), () => { UI.close(); Emote.play('holi'); }]]
           .map(([ic, name, stat, fn]) => h('div', { class: 'row race' }, h('span', null, ic + ' ' + name + ' · ' + stat), UI.btn(L('Play', 'ఆడు'), fn, 'acc sm')))));

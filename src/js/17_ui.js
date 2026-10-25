@@ -101,6 +101,8 @@ const UI = {
       else if (e.code === 'KeyB' || e.code === 'KeyI' || e.code === 'Tab') { e.preventDefault(); this.office(e.code === 'KeyI' ? 'storage' : undefined); }
       else if (e.code === 'KeyP') this.photo();
       else if (e.code === 'KeyT' && G.started && !this.modalOpen()) Fun.bar();
+      else if (e.code === 'KeyR' && G.S.player.mustRest) Rest.start();
+      else if (e.code === 'KeyJ') Tasks.open();
       else if (e.code === 'Equal' && !Player.vehicle) { Input.autoRun = !Input.autoRun; Input.run = Input.autoRun; if (Input.autoRun) this.toastOnce('autorunpc', L('Auto run on: steer with the mouse. Press W or S to stop.', 'ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.'), 'info'); }
       else if (e.code === 'F1' || e.code === 'Slash') { e.preventDefault(); this.help(); }
     });
@@ -256,15 +258,19 @@ const UI = {
     const nAct = S.missions.active.length;
     const tg = Map2.target(); const tgD = tg ? Math.hypot(tg.x - P.x, tg.z - P.z) : 0;
     const howOpen = !!st && (this.howOpen || performance.now() < (this.howUntil || 0));
-    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on + '|' + howOpen + '|' + !!Settings.v.helper;
+    const mkey = LANG + '|' + (cur ? cur.uid + ':' + Math.round(clamp01(cur.prog / cur.target) * 50) : '-') + '|' + (st ? st.text + st.icon : '') + '|' + nAct + '|' + (tg && !tg.wp ? Math.round(tgD / 10) : '') + '|' + Auto.on + '|' + howOpen + '|' + !!Settings.v.helper + '|' + !!S.player.mustRest + '|' + innerHeight;
     if (mkey !== this._mKey) {
       this._mKey = mkey;
       const mb = this.el('missions'); mb.innerHTML = '';
-      if (!cur) mb.append(h('h4', null, L('Missions', 'లక్ష్యాలు')), h('small', null, L('No active missions.', 'ప్రస్తుతం లక్ష్యాలు లేవు.')));
+      // compulsory rest comes first: nothing else can be done until then
+      if (S.player.mustRest) mb.appendChild(h('div', { class: 'restbar' }, h('span', null, '😴 ' + L(`Time to rest: ${S.player.restH || 3} hours`, `విశ్రాంతి సమయం: ${S.player.restH || 3} గంటలు`)),
+        h('button', { class: 'do', type: 'button', onclick: (e) => { e.stopPropagation(); Rest.start(); } }, L('Rest now', 'ఇప్పుడే విశ్రాంతి'), isMobile ? null : h('span', { class: 'kbd' }, 'R'))));
+      if (!cur) Tasks.card(mb);
       else {
         const tut = cur.tpl.startsWith('t_');
-        mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`) : L('Mission', 'లక్ష్యం') + (nAct > 1 ? L(` · ${nAct - 1} more`, ` · ఇంకా ${nAct - 1}`) : '')),
-          cur.reward ? h('span', { class: 'rw' }, '+' + fmtShortINR(cur.reward)) : null));
+        mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`) : '🧭 ' + L('Guiding you', 'దారి చూపిస్తోంది')),
+          cur.reward ? h('span', { class: 'rw' }, '+' + fmtShortINR(cur.reward)) : null,
+          h('button', { class: 'tmin', type: 'button', title: tut ? L('Skip tutorial', 'శిక్షణ దాటవేయి') : L('Stop guiding', 'దారి చూపడం ఆపు'), 'aria-label': tut ? L('Skip tutorial', 'శిక్షణ దాటవేయి') : L('Stop guiding', 'దారి చూపడం ఆపు'), onclick: (e) => { e.stopPropagation(); Audio2.sfx('click'); if (tut) Tasks.skipTutorial(); else Coach.follow(null); } }, tut ? '⏭' : '✕')));
         mb.appendChild(h('b', { class: 'mt' }, LN(cur.title)));
         if (Auto.on) {
           const sp = h('div', { class: 'step auto' }); sp.innerHTML = COACH_ICON[Auto.mode === 'farm' ? 'work' : 'walk'];
@@ -279,7 +285,7 @@ const UI = {
         // optional helper (Menu → "Do it for me" button): off unless the player turns it on
         if (st && (Settings.v.helper || Auto.on)) mb.appendChild(h('button', { class: 'do' + (Auto.on ? ' stop' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); if (Auto.on) Auto.stop(true); else Auto.doStep(); } }, Auto.on ? L('■ Stop', '■ ఆపు') : L('▶ Do it for me', '▶ నా బదులు చేయి'), isMobile || Auto.on ? null : h('span', { class: 'kbd' }, 'Enter')));
       }
-      mb.onclick = () => this.office('missions');
+      mb.onclick = () => Tasks.open();
       // "How?" tips: a small panel beside the card (never over the controls)
       const tip = this.el('howtip');
       if (tip) {
@@ -431,7 +437,8 @@ const UI = {
     const S = G.S; const hr = Time.hour();
     const night = hr >= 16;   // late afternoon: sleep through to the next morning
     const list = [
-      { id: 'sleep', label: () => night ? L('Sleep until tomorrow morning', 'రేపు ఉదయం వరకు నిద్రపోండి') : L('Rest for 2 hours', '2 గంటలు విశ్రాంతి'), act: () => Sim.sleep(night) },
+      S.player.mustRest && !night ? { id: 'sleep', label: () => L(`Rest for ${S.player.restH || 3} hours`, `${S.player.restH || 3} గంటలు విశ్రాంతి తీసుకోండి`), act: () => Rest.start() }
+        : { id: 'sleep', label: () => night ? L('Sleep until tomorrow morning', 'రేపు ఉదయం వరకు నిద్రపోండి') : L('Rest for 2 hours', '2 గంటలు విశ్రాంతి'), act: () => Sim.sleep(night) },
       { id: 'office', label: () => L('Open the farm office', 'వ్యవసాయ కార్యాలయం తెరవండి'), act: () => this.office() },
       { id: 'store', label: () => L('Storage & supplies', 'నిల్వ & సామాగ్రి'), act: () => this.office('storage') },
       { id: 'save', label: () => L('Save game', 'ఆట సేవ్ చేయండి'), act: () => SaveSys.save(true) },
@@ -842,7 +849,7 @@ const UI = {
         [L('Left stick', 'ఎడమ స్టిక్'), L('Walk; push it all the way to run', 'నడవండి; పూర్తిగా నెడితే పరుగు')], [L('Drag right side', 'కుడివైపు లాగండి'), L('Look around, pinch to zoom', 'చుట్టూ చూడండి, జూమ్ కోసం పించ్')], [L('Work', 'పని'), L('Hold on your field: Auto ploughs, sows, waters, feeds, sprays and harvests', 'పొలంలో పట్టుకోండి: ఆటో దున్నడం, విత్తడం, నీరు, ఎరువు, మందు, కోత అన్నీ చేస్తుంది')], [L('Use', 'వాడు'), L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], [L('Gold arrow', 'బంగారు బాణం'), L('Always points to your next goal', 'మీ తదుపరి లక్ష్యం వైపు చూపిస్తుంది')], [L('Map', 'మ్యాప్'), L('Tap a place, then take an auto straight there', 'ఒక చోటు నొక్కి ఆటోలో నేరుగా వెళ్ళండి')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['V', L('Switch camera view', 'కెమెరా మార్చు')],
       ] : [
         ['W A S D', L('Walk / drive', 'నడవండి / నడపండి')], ['Shift', L('Run', 'పరుగు')], ['Space', L('Jump / brake', 'దూకు / బ్రేక్')], [L('Mouse drag, wheel', 'మౌస్ లాగడం, వీల్'), L('Look around, zoom', 'చూడండి, జూమ్')], ['E', L('Talk, shop, drive, buy seeds, rest, get off', 'మాట్లాడు, కొను, నడుపు, విత్తనాలు, విశ్రాంతి, దిగు')], ['F', L('Hold on your field: Auto does the next job', 'పొలంలో పట్టుకోండి: ఆటో తర్వాతి పని చేస్తుంది')],
-        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['T', L('Fun moves, dress up and activities', 'సరదా కదలికలు, దుస్తులు, ఆటలు')], ['Space / C', L('Helicopter: up / down', 'హెలికాప్టర్: పైకి / కిందికి')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
+        ['1 – 6', L('Auto, hoe, seeds, fertilizer, sprayer, sickle', 'ఆటో, పార, విత్తనాలు, ఎరువు, స్ప్రేయర్, కొడవలి')], ['Q', L('Switch seed / fertilizer / chemical', 'విత్తనం / ఎరువు / మందు మార్చు')], ['G', L('Lower or raise implement', 'పనిముట్టు దించు/ఎత్తు')], ['H / L', L('Horn / headlights', 'హారన్ / లైట్లు')], ['V', L('First / third person', 'ఫస్ట్ / థర్డ్ పర్సన్')], ['M', L('Map', 'మ్యాప్')], ['B / I', L('Farm office / storage', 'వ్యవసాయ కార్యాలయం / నిల్వ')], ['P', L('Photo mode', 'ఫోటో మోడ్')], ['T', L('Fun moves, dress up and activities', 'సరదా కదలికలు, దుస్తులు, ఆటలు')], ['J', L("Today's tasks", 'ఈ రోజు పనులు')], ['R', L('Rest when you are tired', 'అలసినప్పుడు విశ్రాంతి')], ['Space / C', L('Helicopter: up / down', 'హెలికాప్టర్: పైకి / కిందికి')], ['Esc', L('Menu & settings', 'మెనూ & సెట్టింగ్‌లు')],
       ];
       const t = h('table', { class: 't' }); for (const [k, v2] of rows) t.appendChild(h('tr', null, h('td', null, h('span', { class: 'kbd' }, k)), h('td', null, v2)));
       b.appendChild(t);
@@ -927,7 +934,7 @@ const UI = {
     joy.addEventListener('pointermove', (e) => { if (pid !== null && e.pointerId === pid) jmove(e.clientX, e.clientY); });
     const pend = (e) => { if (pid !== null && e.pointerId === pid) jend(); };
     joy.addEventListener('pointerup', pend); joy.addEventListener('pointercancel', pend);
-    hold(this.el('tbWork'), () => { Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
+    hold(this.el('tbWork'), () => { if (G.S && G.S.player.mustRest) { Rest.start(); return; } Input.work = true; this.el('tbWork').classList.add('on'); }, () => { Input.work = false; this.el('tbWork').classList.remove('on'); });
     // driving buttons: hold to steer / accelerate / brake (several at once with more fingers)
     for (const [bid, k] of [['dL', 'l'], ['dR', 'r'], ['dU', 'u'], ['dD', 'd']]) {
       const b = this.el(bid); if (!b) continue;
@@ -967,7 +974,8 @@ const UI = {
     set('tbV', L('View', 'వ్యూ'));
     set('tbJump', inV ? (fly ? L('Up ▲', 'పైకి ▲') : L('Brake', 'బ్రేక్')) : L('Jump', 'దూకు'));
     set('tbRun', L('Run', 'పరుగు'), !inV);
-    set('tbWork', L('Work', 'పని'), !inV && !Games.mode);
+    set('tbWork', G.S.player.mustRest ? '😴 ' + L('Rest', 'విశ్రాంతి') : L('Work', 'పని'), !inV && !Games.mode);
+    this.el('tbWork').classList.toggle('rest', !!G.S.player.mustRest);
     const real = (Interact.current || []).filter((o) => o.id !== 'exit');
     set('tbE', inV && !real.length ? L('Get off', 'దిగు') : real.length ? L('Use', 'వాడు') : L('Use', 'వాడు'));
     this.el('tbE').classList.toggle('dim', !inV && !real.length);

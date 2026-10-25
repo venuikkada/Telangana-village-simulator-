@@ -168,6 +168,7 @@ const Pet = {
     if (now - this.patAt < 90) { UI.toast(L(`${this.name()} wags its tail.`, `${this.name()} తోక ఊపుతోంది.`), 'info'); return; }
     this.patAt = now;
     const P = G.S.player; P.energy = Math.min(100, P.energy + 10);
+    Bus.emit('pat', {});
     UI.toast(L(`${this.name()} is happy! +10 energy`, `${this.name()} సంతోషంగా ఉంది! +10 శక్తి`), 'good');
   },
   // every frame from Fauna.update: trot behind and to the left of the farmer (or the vehicle)

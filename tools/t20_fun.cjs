@@ -45,7 +45,7 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     // ---- funny moves, villagers join in ----
     await ev(() => { const s = window.__tvs.sys; const n = s.NPCs.list.find((q) => !q.worker && q.h.visible); s.Player.x = n.h.x + 3; s.Player.z = n.h.z; s.Player.y = s.World.groundHeight(s.Player.x, s.Player.z); });
     await page.keyboard.press('KeyT');
-    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fgrid .fe').length === 17 && b.querySelectorAll('.fe.fg').length === 4; }, 3000), 'Fun bar with 17 moves and 4 games (T key)');
+    ok(await waitFor(() => { const b = document.getElementById('funbar'); return b && !b.hidden && b.querySelectorAll('.fgrid .fe').length === 17 && b.querySelectorAll('.fe.fg').length === 7; }, 3000), 'Fun bar with 17 moves and 7 games (T key)');
     await shot(page, 'fun_bar');
     await ev(() => [...document.querySelectorAll('#funbar .fe')].find((b) => /Dance/.test(b.textContent)).click());
     await waitFor(() => window.__tvs.sys.Player.h.pose === 'bhangra', 20000);

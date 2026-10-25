@@ -101,6 +101,7 @@ const Sim = {
     else Farm.checkLeases();
   },
   onMorning() {
+    Tasks.st();   // a fresh list of tasks every morning
     const fest = Time.festivalToday();
     if (fest) UI.toast(L(`Today is ${fest.en}! ${fest.desc.en}`, `ఈ రోజు ${fest.te}! ${fest.desc.te}`), 'season');
     if (Time.weekday() === SANTHA_WEEKDAY) UI.toast(L('Sunday santha today: the weekly market is on at the village ground until 2 PM.', 'ఈ రోజు ఆదివారం సంత: మధ్యాహ్నం 2 వరకు గ్రామ మైదానంలో వారపు సంత.'), 'season');
@@ -381,6 +382,7 @@ const Game = {
     if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
     Fun.start();
+    Tasks.init(); Rest.init();
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
@@ -494,6 +496,7 @@ function frame(now) {
       Extras.update(dt);
       Fun.update(dt);
       Games.update(dt);
+      Rest.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -580,7 +583,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));
