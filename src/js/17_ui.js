@@ -266,6 +266,7 @@ const UI = {
       if (S.player.mustRest) mb.appendChild(h('div', { class: 'restbar' }, h('span', null, '😴 ' + L(`Time to rest: ${S.player.restH || 3} hours`, `విశ్రాంతి సమయం: ${S.player.restH || 3} గంటలు`)),
         h('button', { class: 'do', type: 'button', onclick: (e) => { e.stopPropagation(); Rest.start(); } }, L('Rest now', 'ఇప్పుడే విశ్రాంతి'), isMobile ? null : h('span', { class: 'kbd' }, 'R'))));
       if (!cur) Tasks.card(mb);
+      else if (cur.chain) Chain.card(mb, cur, st, tg, tgD, howOpen);
       else {
         const tut = cur.tpl.startsWith('t_');
         mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`) : '🧭 ' + L('Guiding you', 'దారి చూపిస్తోంది')),
@@ -995,7 +996,7 @@ const UI = {
     // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
     const a2 = this.el('a2hs');
     if (a2) {
-      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const ios = isIOS;
       const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches;
       let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
       a2.hidden = !(ios && !standalone && !framed);

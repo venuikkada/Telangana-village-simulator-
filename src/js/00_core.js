@@ -15,7 +15,9 @@ const sq = (x) => x * x;
 function angleDiff(a, b) { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; }
 function dampAngle(a, b, lambda, dt) { return a + angleDiff(a, b) * (1 - Math.exp(-lambda * dt)); }
 const dist2 = (ax, az, bx, bz) => Math.hypot(ax - bx, az - bz);
-const isMobile = (() => { try { return matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent); } catch (e) { return false; } })();
+// iPhone and iPad (an iPad says "Macintosh" but has a touch screen)
+const isIOS = (() => { try { return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); } catch (e) { return false; } })();
+const isMobile = (() => { try { return isIOS || matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent); } catch (e) { return false; } })();
 
 // ---------- seeded random ----------
 function mulberry32(a) {

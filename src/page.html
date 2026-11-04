@@ -127,6 +127,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #missions .restbar .do { justify-self: start; }
 #tbtns #tbWork.rest { background: #4a6fd8; color: #fff; box-shadow: 0 0 0 4px rgba(74, 111, 216, .35), var(--shadow); }
 .act.task.done { opacity: .62; }
+#missions .story { font: italic 500 12px/1.3 var(--font-body); color: var(--ink-2); }
+#missions .play { flex: none; border: 0; border-radius: 99px; padding: 6px 14px; background: linear-gradient(180deg, #4ade80, #16a34a); color: #fff; font: 800 13px/1 var(--font-body); cursor: pointer; box-shadow: 0 2px 0 #0f6b30; animation: pplay 1.6s ease-in-out infinite; }
+@keyframes pplay { 50% { transform: scale(1.07); } }
+#missions .mhead h4.ch { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .05em; }
+#missions .play.sm { padding: 4px 10px; font-size: 12px; animation: none; }
+#missions .mhead .play { align-self: center; }
+#missions .cnt { flex: none; font: 700 11px var(--font-body); font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#missions .tday { font: 700 11px/1.2 var(--font-body); color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { #missions .play { animation: none; } }
 .act.task .prog { margin: 6px 0 2px; }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
@@ -194,6 +203,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .tb.on { outline: 3px solid var(--accent); }
 .tb.dim { opacity: .6; }
 .toast.tip { border-left-color: var(--leaf); font-size: 13px; }
+.toast.music { border-left-color: #8b5cf6; font-weight: 600; font-style: italic; }
 /* ---------- modal sheets ---------- */
 #modal { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: var(--scrim); display: grid; place-items: center; padding: 16px; pointer-events: auto; }
 .sheet { width: min(980px, 100%); max-height: min(86vh, 860px); max-height: min(86dvh, 860px); background: var(--panel-solid); color: var(--ink); border-radius: 18px; box-shadow: var(--shadow); display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; border: 1px solid var(--line); }
@@ -276,6 +286,10 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #lbar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; }
 #lbar b { display: block; height: 100%; width: 0; background: #f2b52d; transition: width .2s; }
 #lmsg { font-size: 13px; color: #b9b2a3; min-height: 1.4em; }
+#bootfail { display: grid; gap: 10px; } #bootfail p { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f4ecdc; } #bootfail small { color: #b9b2a3; font-size: 11.5px; word-break: break-word; }
+#loading .reload { justify-self: start; min-height: 44px; padding: 0 20px; }
+/* iPhone: text fields must stay selectable, or you cannot type in them */
+input, textarea { -webkit-user-select: text; user-select: text; }
 #title { background: linear-gradient(90deg, rgba(12, 10, 20, 0.86) 0%, rgba(12, 10, 20, 0.62) 38%, rgba(12, 10, 20, 0) 70%); color: #f6efe2; padding-inline: max(16px, 6vw); padding-block: calc(env(safe-area-inset-top, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 16px); overflow-y: auto; }
 #title .tbox { margin-block: auto; }
 @media (max-height: 620px) {
@@ -776,6 +790,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
       <div class="ikat"></div>
       <div id="lbar"><b></b></div>
       <div id="lmsg">Preparing the village…</div>
+      <div id="bootfail" hidden></div>
     </div>
   </div>
   <div id="title" hidden>
@@ -807,3 +822,25 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="fade"></div>
   <div id="flash"></div>
 </div>
+<script>
+/* Start-up watchdog: if the game code never starts (an old phone browser, a blocked or very slow
+   connection), say so on the loading screen instead of leaving it waiting for ever. */
+(function () {
+  var errs = [];
+  addEventListener('error', function (e) { if (!window.__tvsUp && errs.length < 3) errs.push(String(e.message || 'Error')); });
+  addEventListener('unhandledrejection', function (e) { if (!window.__tvsUp && errs.length < 3) errs.push(String((e.reason && e.reason.message) || e.reason)); });
+  setTimeout(function () {
+    var el = document.getElementById('bootfail'); if (window.__tvsUp || !el) return;
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var old = errs.some(function (m) { return /Syntax|Unexpected|token|keyword|reserved/i.test(m); });
+    var p = document.createElement('p');
+    p.textContent = old ? (ios ? 'This iPhone browser is too old for the game. Please update to iOS 15 or newer (Settings \u2192 General \u2192 Software Update), then open the game in Safari again.' : 'This browser is too old for the game. Please update it, or use the latest Chrome, Safari, Edge or Firefox.')
+      : 'The game is taking a long time to load. Check your internet connection, then tap Try again.';
+    el.innerHTML = ''; el.appendChild(p);
+    if (errs.length) { var s = document.createElement('small'); s.textContent = errs.join(' \u00b7 ').slice(0, 300); el.appendChild(s); }
+    var b = document.createElement('button'); b.className = 'btn reload'; b.type = 'button'; b.textContent = 'Try again';
+    b.onclick = function () { location.reload(); }; el.appendChild(b);
+    el.hidden = false;
+  }, 25000);
+})();
+</script>

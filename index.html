@@ -144,6 +144,15 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 #missions .restbar .do { justify-self: start; }
 #tbtns #tbWork.rest { background: #4a6fd8; color: #fff; box-shadow: 0 0 0 4px rgba(74, 111, 216, .35), var(--shadow); }
 .act.task.done { opacity: .62; }
+#missions .story { font: italic 500 12px/1.3 var(--font-body); color: var(--ink-2); }
+#missions .play { flex: none; border: 0; border-radius: 99px; padding: 6px 14px; background: linear-gradient(180deg, #4ade80, #16a34a); color: #fff; font: 800 13px/1 var(--font-body); cursor: pointer; box-shadow: 0 2px 0 #0f6b30; animation: pplay 1.6s ease-in-out infinite; }
+@keyframes pplay { 50% { transform: scale(1.07); } }
+#missions .mhead h4.ch { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: .05em; }
+#missions .play.sm { padding: 4px 10px; font-size: 12px; animation: none; }
+#missions .mhead .play { align-self: center; }
+#missions .cnt { flex: none; font: 700 11px var(--font-body); font-style: normal; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+#missions .tday { font: 700 11px/1.2 var(--font-body); color: var(--ink-2); }
+@media (prefers-reduced-motion: reduce) { #missions .play { animation: none; } }
 .act.task .prog { margin: 6px 0 2px; }
 .ms .hint { font: 700 12.5px/1.25 var(--font-body); color: var(--accent-ink); background: color-mix(in srgb, var(--accent) 55%, transparent); border-radius: 6px; padding: 2px 6px; justify-self: start; }
 .ms .go { font: 700 12px/1.2 var(--font-body); color: var(--indigo); }
@@ -211,6 +220,7 @@ button { font: inherit; color: inherit; touch-action: manipulation; }
 .tb.on { outline: 3px solid var(--accent); }
 .tb.dim { opacity: .6; }
 .toast.tip { border-left-color: var(--leaf); font-size: 13px; }
+.toast.music { border-left-color: #8b5cf6; font-weight: 600; font-style: italic; }
 /* ---------- modal sheets ---------- */
 #modal { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: var(--scrim); display: grid; place-items: center; padding: 16px; pointer-events: auto; }
 .sheet { width: min(980px, 100%); max-height: min(86vh, 860px); max-height: min(86dvh, 860px); background: var(--panel-solid); color: var(--ink); border-radius: 18px; box-shadow: var(--shadow); display: grid; grid-template-rows: auto auto 1fr; overflow: hidden; border: 1px solid var(--line); }
@@ -293,6 +303,10 @@ input[type=range] { width: 100%; accent-color: var(--accent); }
 #lbar { height: 6px; border-radius: 3px; background: rgba(255,255,255,.12); overflow: hidden; }
 #lbar b { display: block; height: 100%; width: 0; background: #f2b52d; transition: width .2s; }
 #lmsg { font-size: 13px; color: #b9b2a3; min-height: 1.4em; }
+#bootfail { display: grid; gap: 10px; } #bootfail p { margin: 0; font-size: 14.5px; line-height: 1.45; color: #f4ecdc; } #bootfail small { color: #b9b2a3; font-size: 11.5px; word-break: break-word; }
+#loading .reload { justify-self: start; min-height: 44px; padding: 0 20px; }
+/* iPhone: text fields must stay selectable, or you cannot type in them */
+input, textarea { -webkit-user-select: text; user-select: text; }
 #title { background: linear-gradient(90deg, rgba(12, 10, 20, 0.86) 0%, rgba(12, 10, 20, 0.62) 38%, rgba(12, 10, 20, 0) 70%); color: #f6efe2; padding-inline: max(16px, 6vw); padding-block: calc(env(safe-area-inset-top, 0px) + 16px) calc(env(safe-area-inset-bottom, 0px) + 16px); overflow-y: auto; }
 #title .tbox { margin-block: auto; }
 @media (max-height: 620px) {
@@ -793,6 +807,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
       <div class="ikat"></div>
       <div id="lbar"><b></b></div>
       <div id="lmsg">Preparing the village…</div>
+      <div id="bootfail" hidden></div>
     </div>
   </div>
   <div id="title" hidden>
@@ -824,8 +839,30 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
   <div id="fade"></div>
   <div id="flash"></div>
 </div>
+<script>
+/* Start-up watchdog: if the game code never starts (an old phone browser, a blocked or very slow
+   connection), say so on the loading screen instead of leaving it waiting for ever. */
+(function () {
+  var errs = [];
+  addEventListener('error', function (e) { if (!window.__tvsUp && errs.length < 3) errs.push(String(e.message || 'Error')); });
+  addEventListener('unhandledrejection', function (e) { if (!window.__tvsUp && errs.length < 3) errs.push(String((e.reason && e.reason.message) || e.reason)); });
+  setTimeout(function () {
+    var el = document.getElementById('bootfail'); if (window.__tvsUp || !el) return;
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var old = errs.some(function (m) { return /Syntax|Unexpected|token|keyword|reserved/i.test(m); });
+    var p = document.createElement('p');
+    p.textContent = old ? (ios ? 'This iPhone browser is too old for the game. Please update to iOS 15 or newer (Settings \u2192 General \u2192 Software Update), then open the game in Safari again.' : 'This browser is too old for the game. Please update it, or use the latest Chrome, Safari, Edge or Firefox.')
+      : 'The game is taking a long time to load. Check your internet connection, then tap Try again.';
+    el.innerHTML = ''; el.appendChild(p);
+    if (errs.length) { var s = document.createElement('small'); s.textContent = errs.join(' \u00b7 ').slice(0, 300); el.appendChild(s); }
+    var b = document.createElement('button'); b.className = 'btn reload'; b.type = 'button'; b.textContent = 'Try again';
+    b.onclick = function () { location.reload(); }; el.appendChild(b);
+    el.hidden = false;
+  }, 25000);
+})();
+</script>
 <script type="module">
-const I18N_VER = '5b15ee61b7';
+const I18N_VER = '6dbff93ff5';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -844,7 +881,9 @@ const sq = (x) => x * x;
 function angleDiff(a, b) { let d = (b - a) % TAU; if (d > Math.PI) d -= TAU; if (d < -Math.PI) d += TAU; return d; }
 function dampAngle(a, b, lambda, dt) { return a + angleDiff(a, b) * (1 - Math.exp(-lambda * dt)); }
 const dist2 = (ax, az, bx, bz) => Math.hypot(ax - bx, az - bz);
-const isMobile = (() => { try { return matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent); } catch (e) { return false; } })();
+// iPhone and iPad (an iPad says "Macintosh" but has a touch screen)
+const isIOS = (() => { try { return /iPhone|iPad|iPod/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1); } catch (e) { return false; } })();
+const isMobile = (() => { try { return isIOS || matchMedia('(pointer: coarse)').matches || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent); } catch (e) { return false; } })();
 
 // ---------- seeded random ----------
 function mulberry32(a) {
@@ -1514,7 +1553,9 @@ const Render = {
     this.resize();
   },
   applyPreset(id) {
-    const P = PRESETS[id] || PRESETS.MEDIUM;
+    let P = PRESETS[id] || PRESETS.MEDIUM;
+    // light mode for a phone that ran out of memory before: fewer pixels, trees and people
+    if (G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 0.65, minPr: 0.5, maxPr: 0.8, drawDist: 260, trees: 0.28, npc: 0.3, particles: 0.2, rainDrops: 700, safe: true });
     const prev = G.preset;
     G.preset = P;
     this.pr = clamp(P.pr, P.minPr, P.maxPr);
@@ -10184,7 +10225,7 @@ const Missions = {
   },
   ensure() {
     const S = G.S; const M = S.missions;
-    if (M.tut < TUTORIAL.length && !M.active.some((m) => m.tpl.startsWith('t_'))) { const t = TUTORIAL[M.tut]; this.add(JSON.parse(JSON.stringify(Object.assign({}, t, { prog: 0, mark: t.mark })))); }
+    if (M.tut < TUTORIAL.length && !M.active.some((m) => m.tpl.startsWith('t_')) && !(S.chain && (S.chain.cur || S.chain.breakDue))) { const t = TUTORIAL[M.tut]; this.add(JSON.parse(JSON.stringify(Object.assign({}, t, { prog: 0, mark: t.mark })))); }
     const want = M.tut < 3 ? 0 : M.tut < TUTORIAL.length ? 2 : 3;
     let guard = 0;
     while (M.active.filter((m) => !m.tpl.startsWith('t_') && !m.special).length < want && guard++ < 20) { const m = this.generate(); if (!m) break; this.add(m); }
@@ -10199,6 +10240,7 @@ const Missions = {
     S.missions.history.unshift({ title: m.title, reward: m.reward, day: Time.day() }); if (S.missions.history.length > 30) S.missions.history.pop();
     UI.missionDone(m);   // confetti, coins into the wallet, stars and a fanfare
     Bus.emit('missionDone', { m });
+    if (m.tpl.startsWith('t_') && G.started) Chain.afterLesson(m);   // some fun before the next lesson
     this.ensure();
   },
   fail(m, why) { const S = G.S; S.missions.active = S.missions.active.filter((x) => x !== m); UI.toast(L('Mission failed: ', 'లక్ష్యం విఫలమైంది: ') + LN(m.title) + (why ? ' — ' + LN(why) : ''), 'bad'); this.ensure(); },
@@ -10504,6 +10546,8 @@ const COACH_STEPS = {
     if (Time.hour() < 16.5) return { text: (LANG === 'en' ? `The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM` : L(`The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM`, `వేడుక సాయంత్రం 4:30 నుంచి`, "The celebration is at {0} from 4:30 PM", [m.mark === 'ghat' ? 'the lake ghat' : 'the temple'])), target: { x: t.x, z: t.z, name: nm }, icon: 'wait' };
     return CH.go(t, nm);
   },
+  c_fun: (m) => Chain.step(m),
+  c_farm: (m) => Chain.step(m),
   _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office(L('Missions', 'లక్ష్యాలు')), icon: 'office', tab: 'missions' }; },
 };
 
@@ -10513,8 +10557,10 @@ const Coach = {
   // After the tutorial nothing is pushed: the corner card shows today's tasks instead.
   current() {
     const S = G.S; if (!S || !S.missions) return null;
-    const act = Missions.ordered(); if (!act.length) return null;
-    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act.find((m) => m.tpl.startsWith('t_')) || null;
+    const act = Missions.ordered();
+    const foc = S.missions.focus && act.find((m) => m.uid === S.missions.focus); if (foc) return foc;
+    if (S.chain && S.chain.cur) return S.chain.cur;   // mission after mission
+    return act.find((m) => m.tpl.startsWith('t_')) || null;
   },
   follow(m) { G.S.missions.focus = m ? m.uid : null; this.key = ''; UI.dirty = true; UI._mKey = ''; },
   compute() {
@@ -10580,6 +10626,10 @@ const Coach = {
       case 'map': return [
         m ? L('Tap the map button at the top (or the round mini map).', 'పైన మ్యాప్ బటన్ (లేదా గుండ్రటి చిన్న మ్యాప్) నొక్కండి.') : L('Press M, or click the round mini map.', 'M నొక్కండి, లేదా గుండ్రటి చిన్న మ్యాప్ క్లిక్ చేయండి.'),
         L('Tap a place on the map to see it and take an auto there.', 'మ్యాప్‌లో ఒక చోటు నొక్కి చూడండి, ఆటోలో అక్కడికి వెళ్ళండి.')];
+      case 'play': return [
+        L('Tap ▶ Play on the mission card.', 'లక్ష్యం కార్డులో ▶ ఆడండి నొక్కండి.'),
+        L('Then use the big round button to play.', 'తర్వాత పెద్ద గుండ్రటి బటన్‌తో ఆడండి.'),
+        L('Finish it for the reward and the next mission.', 'పూర్తి చేస్తే బహుమతి, తర్వాతి లక్ష్యం వస్తాయి.')];
       case 'coin': return [
         L('Harvest and sell crops at the market yard to earn money.', 'పంట కోసి మార్కెట్ యార్డులో అమ్మి డబ్బు సంపాదించండి.'),
         L('Short of money? The bank in Nagaram gives crop loans.', 'డబ్బు తక్కువగా ఉందా? నగరం బ్యాంకు పంట రుణాలు ఇస్తుంది.')];
@@ -10603,6 +10653,7 @@ const Coach = {
   prime() { if (this._primed || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return; this._primed = true; try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) { /* ignore */ } },
 };
 const COACH_ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>',
   walk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2" fill="currentColor"/><path d="M9 21l3-7 3 3v4M7 12l3-4h4l3 4M12 8l-1 6"/></svg>',
   drive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M4 14V8h7l2 5h6v5M11 8V5h-4"/></svg>',
   work: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M13 5.5L8 13h4l-1 5.5 5-7.5h-4z" fill="currentColor"/></svg>',
@@ -10761,6 +10812,19 @@ const Tasks = {
     Fun.bar(false);
     UI.sheet({ title: L("Today's tasks", 'ఈ రోజు పనులు'), sub: (LANG === 'en' ? `Day ${Time.day()} · finish all for a bonus of ${fmtINR(TASK_BONUS)}` : L(`Day ${Time.day()} · finish all for a bonus of ${fmtINR(TASK_BONUS)}`, `రోజు ${Time.day()} · అన్నీ చేస్తే ${fmtINR(TASK_BONUS)} బోనస్`, "Day {0} · finish all for a bonus of {1}", [Time.day(), fmtINR(TASK_BONUS)])), narrow: true, kind: 'tasks', render: (b) => {
       const T = this.st(), S = G.S;
+      // the mission on the corner card comes first
+      const cm = Chain.cur();
+      if (cm) {
+        const st = Coach.step && Coach.step.m === cm ? Coach.step : null;
+        const r = h('div', { class: 'row' });
+        if (st && st.play) r.appendChild(UI.btn('▶ ' + L('Play', 'ఆడండి'), () => { UI.close(); Chain.play(); }, 'acc sm'));
+        else if (st && st.target) r.appendChild(UI.btn(L('Go', 'వెళ్దాం') + ' ➜', () => { UI.close(); Auto.doStep(); }, 'acc sm'));
+        r.appendChild(UI.btn('⏭ ' + L('Skip this mission', 'ఈ లక్ష్యం దాటవేయి'), () => { Chain.skip(); UI.rerender(); }, 'alt sm'));
+        b.appendChild(h('div', { class: 'act task' }, h('div', { class: 'row', style: { justifyContent: 'space-between', flexWrap: 'nowrap' } }, h('b', null, '🎯 ' + (LANG === 'en' ? `Mission ${cm.n}` : L(`Mission ${cm.n}`, `లక్ష్యం ${cm.n}`, "Mission {0}", [cm.n])) + ': ' + cm.icon + ' ' + LN(cm.title)), h('span', { class: 'chip good' }, '+' + fmtINR(cm.reward))),
+          cm.story ? h('p', { class: 'empty', style: { textAlign: 'left', padding: '2px 0', fontStyle: 'italic' } }, LN(cm.story)) : null,
+          h('div', { class: 'prog' }, h('b', { style: { width: Math.round(clamp01(cm.prog / cm.target) * 100) + '%' } })), r));
+        b.appendChild(h('div', { class: 'sec' }, L("Today's tasks", 'ఈ రోజు పనులు')));
+      }
       T.list.forEach((e, i) => {
         const t = TASK_BY[e.id]; if (!t) return;
         const row = h('div', { class: 'act task' + (e.done ? ' done' : '') },
@@ -10800,7 +10864,7 @@ const Tasks = {
     M.active = M.active.filter((m) => !m.tpl.startsWith('t_')); M.tut = TUTORIAL.length;
     if (M.focus && !M.active.some((m) => m.uid === M.focus)) M.focus = null;
     Missions.ensure(); Coach.key = ''; UI._mKey = ''; UI.dirty = true;
-    UI.close(); UI.toast(L("Tutorial skipped. Here are today's tasks!", 'శిక్షణ దాటవేశారు. ఇవీ ఈ రోజు పనులు!'), 'good');
+    UI.close(); UI.toast(L('Tutorial skipped. Here comes your first mission!', 'శిక్షణ దాటవేశారు. ఇదిగో మీ మొదటి లక్ష్యం!'), 'good');
   },
 };
 
@@ -10881,25 +10945,277 @@ const Rest = {
   },
 };
 
+// ---- 15d_chain.js ----
+// ============================================================================
+// Mission after mission: one mission at a time on the corner card, the next one
+// right after it, for ever. Farm work and fun take turns: plough the field, then a
+// cup of chai; sow, then the temple bell; harvest, then gully cricket... each with a
+// little story and a reward, and a bonus for every five in a row. During the
+// tutorial the fun comes as breaks between the lessons and while the crop grows.
+// ============================================================================
+// fun and village missions: the matching rules and titles come from TASK_POOL
+const CHAIN_FUN = {
+  chai: { story: { en: "All that work made you thirsty. Yadamma's chai is the best in Ramapuram!", te: 'అంత పని చేశాక దాహం వేసింది. రామాపురంలో యాదమ్మ చాయ్‌ను మించింది లేదు!' },
+    step: () => CH.visit('tea', L("Yadamma's tea stall", 'యాదమ్మ టీ స్టాల్'), L('buy a cup of chai', 'ఒక చాయ్ కొనండి')) },
+  pray: { story: { en: "Ammamma says a good crop needs Hanuman's blessing. Off to the temple!", te: 'మంచి పంటకు ఆంజనేయుడి దీవెన కావాలని అమ్మమ్మ అంటోంది. పదండి గుడికి!' }, step: () => COACH_STEPS.pray() },
+  six: { story: { en: "The village kids say you can't hit a six. Show them!", te: 'మీరు సిక్స్ కొట్టలేరని ఊరి పిల్లలు అంటున్నారు. చూపించండి!' }, play: () => Games.cricketStart() },
+  splash: { story: { en: 'Phew, it is so hot! Run and jump into the lake with a big splash.', te: 'అబ్బా, ఎంత ఎండ! పరిగెత్తి చెరువులో ధబాల్న దూకండి.' }, lake: true, play: () => Games.jumpStart() },
+  rooster: { story: { en: "Ranga's rooster ran away again and he is shouting the village down. Catch it!", te: 'రంగడి కోడిపుంజు మళ్ళీ పారిపోయింది, ఊరంతా అరుస్తున్నాడు. పట్టుకోండి!' }, play: () => Games.roosterStart() },
+  monkey: { story: { en: 'A naughty monkey lives in the big trees. It loves stealing caps and lunch boxes!', te: 'పెద్ద చెట్లలో అల్లరి కోతి ఉంది. టోపీలు, టిఫిన్ బాక్సులు ఎత్తుకెళ్ళడం దానికి సరదా!' }, tree: true, play: () => Games.monkeyStart(false) },
+  kites: { story: { en: 'The boy next door is showing off his kite. Cut 2 kites out of the sky!', te: 'పక్కింటి పిల్లాడు గాలిపటంతో గొప్పలు చెబుతున్నాడు. 2 గాలిపటాలు తెంపండి!' }, play: () => Games.kiteStart() },
+  fish: { story: { en: 'Amma wants fish curry tonight. Catch 2 fish at the lake!', te: 'ఈ రాత్రి చేపల కూర కావాలని అమ్మ అంటోంది. చెరువులో 2 చేపలు పట్టండి!' }, lake: true, play: () => Games.fishStart() },
+  chicken: { story: { en: 'The kids dare you to do the chicken dance in front of everyone!', te: 'అందరి ముందు కోడి డాన్స్ చేయమని పిల్లలు సవాలు చేస్తున్నారు!' }, play: () => { UI.close(); Emote.play('chicken'); } },
+  dance: { story: { en: 'Music is playing at the rachabanda. Dance with the villagers!', te: 'రచ్చబండ దగ్గర పాటలు మోగుతున్నాయి. గ్రామస్తులతో కలిసి డాన్స్ చేయండి!' }, play: () => { UI.close(); Emote.play('dance'); } },
+  selfie: { story: { en: 'Your cousin in Hyderabad wants a village selfie. Strike a pose!', te: 'హైదరాబాద్‌లో ఉన్న మీ చుట్టానికి ఊరి సెల్ఫీ కావాలట. ఫోజు ఇవ్వండి!' }, play: () => { UI.close(); Emote.play('selfie'); } },
+  holi: { story: { en: 'Holi fun! Throw colours on 3 villagers.', te: 'హోలీ సరదా! ముగ్గురు గ్రామస్తులపై రంగులు చల్లండి.' }, play: () => { UI.close(); Emote.play('holi'); } },
+  dog: { story: { en: 'Your dog has waited all day for you. Give it a good pat!', te: 'మీ కుక్క రోజంతా మీ కోసం ఎదురుచూసింది. బాగా నిమరండి!' },
+    step: () => { const a = Pet.a; if (!a) return { text: L('Your dog follows you: walk close and pat it.', 'మీ కుక్క మీ వెంటే ఉంది: దగ్గరికి వెళ్ళి నిమరండి.'), icon: 'tap' }; const p = { x: a.x, z: a.z }; return CH.near(p, 3) ? { text: L('Your dog follows you: walk close and pat it.', 'మీ కుక్క మీ వెంటే ఉంది: దగ్గరికి వెళ్ళి నిమరండి.'), icon: 'tap' } : CH.go(p, L('your dog', 'మీ కుక్క')); } },
+  shop: { story: { en: "It is little Chinni's birthday. Buy something at Mallesh kirana!", te: 'ఈ రోజు చిన్ని పుట్టినరోజు. మల్లేష్ కిరాణంలో ఏదైనా కొనండి!' },
+    step: () => CH.visit('kirana', L('the kirana shop', 'కిరాణం'), L('buy something', 'ఏదైనా కొనండి')) },
+  bus: { story: { en: 'Time for a joyride! Take the bus to Nagaram town.', te: 'షికారు సమయం! బస్సులో నగరం పట్టణానికి వెళ్ళండి.' },
+    step: () => CH.visit('busV', L('the bus stop', 'బస్ స్టాప్'), L('take the bus to Nagaram', 'నగరానికి బస్సు ఎక్కండి')) },
+  talk: { story: { en: 'What is the latest village gossip? Talk to 2 villagers to find out.', te: 'ఊర్లో తాజా ముచ్చట్లు ఏంటి? తెలుసుకోవడానికి ఇద్దరితో మాట్లాడండి.' },
+    step: () => { const P = Player.pos(); const n = NPCs.list.filter((q) => q.named && q.h && q.h.visible).sort((a, b) => Math.hypot(a.h.x - P.x, a.h.z - P.z) - Math.hypot(b.h.x - P.x, b.h.z - P.z))[0]; if (n && !CH.near({ x: n.h.x, z: n.h.z }, 3)) return CH.go({ x: n.h.x, z: n.h.z }, LN(n.name)); return { text: L('Walk up to any villager and talk.', 'ఏ గ్రామస్తుడి దగ్గరికైనా వెళ్ళి మాట్లాడండి.'), icon: 'tap' }; } },
+  mango: { story: { en: 'They say golden mangoes are hidden around the village. Find one!', te: 'ఊరి చుట్టూ బంగారు మామిడిపండ్లు దాచి ఉన్నాయట. ఒకటి కనిపెట్టండి!' },
+    step: () => { const f = Fun.st(), P = Player.pos(); let s = null, bd = 1e9; Fun.spots.forEach((q, i) => { if (f.mangoes.includes(i)) return; const d = Math.hypot(q.x - P.x, q.z - P.z); if (d < bd) { bd = d; s = q; } }); return s ? CH.go(s, L('Golden mango', 'బంగారు మామిడి')) : null; } },
+  wheel: { story: { en: 'Feeling lucky? Spin the lucky wheel!', te: 'అదృష్టం పరీక్షిద్దామా? లక్కీ చక్రం తిప్పండి!' }, play: () => Games.wheel() },
+  race: { story: { en: 'The village race is on. Win a medal!', te: 'ఊరి పందెం మొదలైంది. పతకం గెలవండి!' }, play: () => Fun.open() },
+  place: { story: { en: 'There is more to see. Discover a new place!', te: 'చూడాల్సింది ఇంకా చాలా ఉంది. కొత్త ప్రదేశం కనుక్కోండి!' },
+    step: () => { const P = Player.pos(), f = Fun.st(); const p = Map2.places().filter((q) => !f.places[q.id]).sort((a, b) => Math.hypot(a.x - P.x, a.z - P.z) - Math.hypot(b.x - P.x, b.z - P.z))[0]; return p ? CH.go(p, Map2.placeName(p)) : null; } },
+};
+// the first breaks follow a story: chai after ploughing, the temple after sowing, cricket while the crop grows...
+const CHAIN_OPENING = ['chai', 'pray', 'six', 'splash', 'rooster', 'monkey', 'kites', 'fish'];
+// farm jobs: whatever the farm needs right now
+const CHAIN_FARM = {
+  plough: { icon: '🚜', title: { en: 'Plough your field', te: 'మీ పొలాన్ని దున్నండి' }, story: { en: 'The soil is soft after the rain. Time to plough!', te: 'వాన తర్వాత నేల మెత్తగా ఉంది. దున్నే సమయం!' }, reward: 1200 },
+  sow: { icon: '🌱', title: { en: 'Sow your field', te: 'పొలంలో విత్తండి' }, story: { en: 'The field is ready. Sow the seeds and pray for rain!', te: 'పొలం సిద్ధం. విత్తనాలు వేసి వాన కోసం ఎదురుచూడండి!' }, reward: 1500 },
+  tend: { icon: '🧺', title: { en: 'Feed, weed or spray your crop', te: 'పంటకు ఎరువు, కలుపు లేదా పిచికారీ' }, story: { en: 'Your crop needs some care: water, food or a little weeding.', te: 'మీ పంటకు కాస్త శ్రద్ధ కావాలి: నీరు, ఎరువు లేదా కలుపు తీయడం.' }, reward: 1000 },
+  harvest: { icon: '🌾', title: { en: 'Harvest your crop', te: 'పంట కోయండి' }, story: { en: 'The crop has turned golden. Harvest time!', te: 'పంట బంగారు రంగుకు మారింది. కోత సమయం!' }, reward: 2000 },
+  sell: { icon: '💰', title: { en: 'Sell your harvest', te: 'పంట అమ్మండి' }, story: { en: 'Your harvest is waiting. Sell it and count the money!', te: 'మీ పంట ఎదురుచూస్తోంది. అమ్మి డబ్బులు లెక్కపెట్టండి!' }, reward: 1500 },
+};
+const CHAIN_STREAK = 5, CHAIN_STREAK_BONUS = 2500;
+// tutorial lessons that are followed by a fun break
+const CHAIN_BREAK_AFTER = ['t_plough', 't_sow', 't_fert', 't_sell'];
+
+const Chain = {
+  t: 0, waitT: 0,
+  st() { const S = G.S; if (!S.chain) S.chain = { n: 0, seq: 0, cur: null, next: 'farm', recent: [], streak: 0, funN: 0 }; return S.chain; },
+  cur() { return G.S && G.S.chain ? G.S.chain.cur : null; },
+  init() {
+    if (!this._bound) {
+      this._bound = true;
+      const evs = new Set(['work', 'sold']); for (const id in CHAIN_FUN) if (TASK_BY[id]) evs.add(TASK_BY[id].ev);
+      for (const ev of evs) Bus.on(ev, (p) => { if (G.started) this.onEvent(ev, p || {}); });
+    }
+    this.st(); this.waitT = 1.5;
+  },
+  ok(id) { const t = TASK_BY[id]; return !!t && Tasks.ok(t); },
+  // ---- making missions ----
+  makeFun(not) {
+    const c = this.st();
+    let id = null;
+    if (c.funN < CHAIN_OPENING.length) { const o = CHAIN_OPENING.slice(c.funN).find((x) => x !== not && this.ok(x)); if (o) id = o; }
+    if (!id) {
+      const ids = Object.keys(CHAIN_FUN).filter((x) => x !== not && this.ok(x));
+      const fresh = ids.filter((x) => !c.recent.includes(x));
+      const pool = fresh.length ? fresh : ids; if (!pool.length) return null;
+      id = pool[Math.floor(Math.random() * pool.length)];
+    }
+    const t = TASK_BY[id], D = CHAIN_FUN[id];
+    c.funN++;
+    return { tpl: 'c_fun', kind: 'fun', id, icon: t.icon, title: { en: t.en, te: t.te }, story: D.story, target: t.n, reward: Math.max(600, t.reward) };
+  },
+  needsCare(f) { const cd = CROPS[f.crop]; return !!(f.crop && f.sownTiles > 0 && f.growth < 0.97 && (f.outbreak || f.pests > 10 || f.weeds > 16 || f.nut < 40 || (cd && cd.wLo && f.water < cd.wLo && !f.pump && !f.gate))); },
+  farmJob() {
+    const pf = Fields.playerFields(); if (!pf.length) return null;
+    let f = pf.find((q) => q.crop && q.sownTiles > 0 && q.growth >= 0.97);
+    if (f) return { job: 'harvest', field: f.id, need: Math.max(4, Math.round(f.sownTiles * 0.7)) };
+    if (CH.heapField() || CH.stored() > 0.05) return { job: 'sell' };
+    f = pf.find((q) => this.needsCare(q)); if (f) return { job: 'tend', field: f.id };
+    f = pf.find((q) => !q.crop && q.countMin(1) < q.n * 0.8); if (f) return { job: 'plough', field: f.id };
+    f = CH.freeField(); if (f && f.countMin(3) < f.n * 0.8) return { job: 'sow', field: f.id };
+    return null;   // the crops are growing: nothing to do on the farm right now
+  },
+  makeFarm() {
+    const j = this.farmJob(); if (!j) return null;
+    const D = CHAIN_FARM[j.job];
+    return Object.assign({ tpl: 'c_farm', kind: 'farm', icon: D.icon, title: D.title, story: D.story, target: 1, reward: D.reward }, j);
+  },
+  start(m) {
+    if (!m) return;
+    const c = this.st();
+    m.uid = 'c' + (++c.seq); m.n = c.n + 1; m.chain = true; m.prog = 0; m.t0 = Time.totalMin();
+    c.cur = m;
+    Coach.key = ''; UI._mKey = ''; UI.dirty = true;
+    Bus.emit('chainNew', { id: m.id || m.job, n: m.n });
+  },
+  // a tutorial lesson just finished: some fun before the next one
+  afterLesson(m) {
+    const c = this.st(); if (c.cur || !CHAIN_BREAK_AFTER.includes(m.tpl)) return;
+    c.breakDue = true; this.waitT = 2.4;   // the lesson's celebration first, then the fun
+  },
+  ensure() {
+    const c = this.st(); if (c.cur) return;
+    const M = G.S.missions;
+    if (c.breakDue) { c.breakDue = false; this.start(this.makeFun()); if (!c.cur) Missions.ensure(); return; }
+    if (M.tut < TUTORIAL.length) {
+      // still learning: a fun break while the crop grows and there is nothing to do
+      const tm = M.active.find((m) => m.tpl.startsWith('t_')), st = Coach.step;
+      if (tm && st && st.m === tm && st.icon === 'wait' && !Auto.on && Time.totalMin() >= (c.calmUntil || 0)) this.start(this.makeFun());
+      return;
+    }
+    let m = c.next === 'farm' ? this.makeFarm() : null;
+    if (!m) m = this.makeFun();
+    if (!m) m = this.makeFarm();
+    this.start(m);
+  },
+  // ---- progress ----
+  setProg(m, v) { if (Math.abs(v - m.prog) > 0.004) { m.prog = v; UI.dirty = true; } },
+  onEvent(ev, p) {
+    const m = this.cur(); if (!m) return;
+    if (m.kind === 'fun') {
+      const t = TASK_BY[m.id]; if (!t || t.ev !== ev) return;
+      let a = 0; try { a = t.amt ? t.amt(p) : t.test ? (t.test(p) ? 1 : 0) : 1; } catch (e) { a = 0; }
+      if (a <= 0) return;
+      m.prog = Math.min(m.target, m.prog + a); UI._mKey = ''; UI.dirty = true;
+      if (m.prog >= m.target - 1e-6) this.done(m);
+      return;
+    }
+    if (m.job === 'harvest' && ev === 'work' && p.op === 'harvest' && p.field && p.field.id === m.field && p.by !== 'ai') m.got = (m.got || 0) + (p.n || 0);
+    if (m.job === 'sell' && ev === 'sold') { m.prog = 1; this.done(m); }
+  },
+  check(m) {
+    if (m.kind !== 'farm') return;
+    const f = m.field ? Fields.byId[m.field] : null;
+    if (m.field && (!f || !f.isPlayer)) { this.drop(); return; }
+    switch (m.job) {
+      case 'plough': { const fr = f.countMin(1) / f.n; this.setProg(m, clamp01(fr / 0.8)); if (fr >= 0.8 || f.crop) this.done(m); break; }
+      case 'sow': { const fr = f.countMin(3) / f.n; this.setProg(m, clamp01(fr / 0.8)); if (fr >= 0.8) this.done(m); break; }
+      case 'tend': if (!f.crop) this.drop(); else if (!this.needsCare(f)) { m.prog = 1; this.done(m); } break;
+      case 'harvest': this.setProg(m, clamp01((m.got || 0) / (m.need || 4))); if ((m.got || 0) >= (m.need || 4) || !f.crop) { m.prog = 1; this.done(m); } break;
+      case 'sell': if (!CH.heapField() && CH.stored() <= 0.05 && !CH.growing()) this.drop(); break;
+    }
+  },
+  update(dt) {
+    if (!G.started || !G.S || G.S.explore) return;
+    this.t += dt; if (this.t < 0.5) return;
+    const step = this.t; this.t = 0;
+    const m = this.cur();
+    if (m) { this.check(m); return; }
+    if (this.waitT > 0) { this.waitT -= step; return; }   // a moment to enjoy the last one
+    if (UI.modalOpen() || Rest.busy) return;
+    this.ensure();
+  },
+  // ---- finishing ----
+  done(m) {
+    const c = this.st(); if (!m || c.cur !== m) return;
+    c.cur = null; c.n++; c.streak++;
+    c.recent.unshift(m.id || m.job); c.recent.length = Math.min(c.recent.length, 6);
+    c.next = m.kind === 'farm' ? 'fun' : 'farm';
+    Money.add(m.reward, 'mission');
+    Celebrate.ribbon({ kind: 'sun', icon: m.icon, top: (LANG === 'en' ? `Mission ${m.n} done!` : L(`Mission ${m.n} done!`, `లక్ష్యం ${m.n} పూర్తి!`, "Mission {0} done!", [m.n])), title: LN(m.title), sub: '+' + fmtINR(m.reward), ms: 2600 });
+    Audio2.sfx('mission');
+    if (c.streak % CHAIN_STREAK === 0) setTimeout(() => {
+      if (!G.started) return;
+      Money.add(CHAIN_STREAK_BONUS, 'mission');
+      Celebrate.ribbon({ kind: 'big', icon: '🔥', top: (LANG === 'en' ? `${c.streak} missions in a row!` : L(`${c.streak} missions in a row!`, `వరుసగా ${c.streak} లక్ష్యాలు!`, "{0} missions in a row!", [c.streak])), title: L('Bonus', 'బోనస్') + ' ' + fmtINR(CHAIN_STREAK_BONUS), sub: L('Keep going!', 'ఇలాగే కొనసాగించండి!'), ms: 3200 });
+      Celebrate.shower(120); Audio2.sfx('fanfare');
+    }, 2900);
+    this.waitT = 0;
+    Coach.key = ''; UI._mKey = ''; UI.dirty = true;
+    Bus.emit('chainDone', { id: m.id || m.job, n: m.n });
+    if (G.S.missions.tut < TUTORIAL.length) Missions.ensure();   // back to the lessons
+    else this.ensure();   // and straight on to the next mission
+  },
+  // the farm job went away (field sold, crop lost...): on to the next one, no reward
+  drop() { const c = this.st(); c.cur = null; c.next = 'fun'; this.waitT = 0; Coach.key = ''; UI._mKey = ''; UI.dirty = true; if (G.S.missions.tut < TUTORIAL.length) Missions.ensure(); else this.ensure(); },
+  // not this one: a different fun mission instead (during the tutorial: back to the lesson)
+  skip() {
+    const c = this.st(), m = c.cur; if (!m) return;
+    Audio2.sfx('switch');
+    c.cur = null; c.recent.unshift(m.id || m.job); c.recent.length = Math.min(c.recent.length, 6);
+    Coach.key = ''; UI._mKey = ''; UI.dirty = true;
+    if (G.S.missions.tut < TUTORIAL.length) { c.calmUntil = Time.totalMin() + 180; Missions.ensure(); return; }   // back to the lesson, no breaks for 3 game hours
+    this.start(this.makeFun(m.id) || this.makeFarm());
+  },
+  play() {
+    const m = this.cur(); if (!m || m.kind !== 'fun') return;
+    const D = CHAIN_FUN[m.id]; if (!D || !D.play) return;
+    Audio2.unlock(); Audio2.sfx('click');
+    try { D.play(); } catch (e) { console.warn('chain play', e); }
+  },
+  // ---- the coach's one step for the mission ----
+  step(m) {
+    const P = Player.pos();
+    if (m.kind === 'farm') {
+      if (G.S.player.mustRest) return { text: isMobile ? L('Rest first: tap 😴 Rest on the card', 'ముందు విశ్రాంతి: కార్డులో 😴 విశ్రాంతి నొక్కండి') : L('Rest first: press R', 'ముందు విశ్రాంతి: R నొక్కండి'), icon: 'wait', act: () => Rest.start() };
+      const f = m.field ? Fields.byId[m.field] : null;
+      switch (m.job) {
+        case 'plough': if (!CH.onField(f)) return CH.goField(f); return { text: CH.hold(L('and walk around the field to plough it', 'పొలమంతా నడిచి దున్నండి')), icon: 'work' };
+        case 'sow': return coachSow(f && f.crop || null);
+        case 'tend': case 'harvest': return f ? coachGrow(f) : null;
+        case 'sell': return coachSell(null, 'trader');
+      }
+      return null;
+    }
+    const D = CHAIN_FUN[m.id]; if (!D) return null;
+    if (D.step) return D.step(m);
+    if (Games.mode) return { text: L('Playing! Use the big round button.', 'ఆడుతున్నారు! పెద్ద గుండ్రటి బటన్ వాడండి.'), icon: 'play' };
+    if (D.lake && lakeSD(P.x, P.z) > 12) return CH.go({ x: POI.ghat.x, z: POI.ghat.z }, L('the lake ghat', 'చెరువు ఘాట్'));
+    if (D.tree && !Games.monkeyTree(P.x, P.z, 6, 45)) { const t = Games.monkeyTree(P.x, P.z, 0, 1200); if (t) return CH.go({ x: t.x, z: t.z }, L('the big trees', 'పెద్ద చెట్లు')); }
+    return { text: L('Tap ▶ Play on this card', 'ఈ కార్డులో ▶ ఆడండి నొక్కండి'), icon: 'play', play: true, act: () => this.play() };
+  },
+  // ---- the corner card ----
+  card(mb, cur, st, tg, tgD, howOpen) {
+    const short = innerHeight < 430;   // a phone on its side: only what matters, with ▶ Play always in view
+    const play = st && st.play && !Auto.on ? h('button', { class: 'play' + (short ? ' sm' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); this.play(); } }, '▶ ' + L('Play', 'ఆడండి')) : null;
+    mb.appendChild(h('div', { class: 'mhead' }, h('h4', { class: 'ch' }, (innerWidth >= 700 ? '🎯 ' : '') + (LANG === 'en' ? `Mission ${cur.n}` : L(`Mission ${cur.n}`, `లక్ష్యం ${cur.n}`, "Mission {0}", [cur.n]))),
+      short ? play : null,
+      cur.reward ? h('span', { class: 'rw' }, '+' + fmtShortINR(cur.reward)) : null,
+      h('button', { class: 'tmin', type: 'button', title: L('Skip this mission', 'ఈ లక్ష్యం దాటవేయి'), 'aria-label': L('Skip this mission', 'ఈ లక్ష్యం దాటవేయి'), onclick: (e) => { e.stopPropagation(); this.skip(); } }, '⏭')));
+    mb.appendChild(h('b', { class: 'mt' }, cur.icon + ' ' + LN(cur.title)));
+    if (cur.story && !short) mb.appendChild(h('i', { class: 'story' }, LN(cur.story)));
+    if (Auto.on) {
+      const sp = h('div', { class: 'step auto' }); sp.innerHTML = COACH_ICON[Auto.mode === 'farm' ? 'work' : 'walk'];
+      sp.appendChild(h('span', null, Auto.mode === 'farm' ? (LANG === 'en' ? `Working ${Auto.name}…` : L(`Working ${Auto.name}…`, `${Auto.name}లో పని చేస్తున్నారు…`, "Working {0}…", [Auto.name])) : Auto.name ? (LANG === 'en' ? `Walking to ${Auto.name}…` : L(`Walking to ${Auto.name}…`, `${Auto.name} వైపు నడుస్తున్నారు…`, "Walking to {0}…", [Auto.name])) : L('Walking there…', 'అక్కడికి నడుస్తున్నారు…')));
+      mb.appendChild(sp);
+    } else if (st) { const sp = h('div', { class: 'step' }); sp.innerHTML = COACH_ICON[st.icon] || COACH_ICON.walk; sp.appendChild(h('span', null, short && st.play ? cur.icon + ' ' + LN(cur.title) : st.text)); mb.appendChild(sp); }
+    if (tg && !tg.wp && tg.m === cur && !short) mb.appendChild(h('span', { class: 'go' }, `➜ ${tg.name ? tg.name + ' · ' : ''}${Map2.fmtDist(tgD)}`));
+    const row = h('div', { class: 'mrow' });
+    if (play && !short) row.appendChild(play);
+    else if (st && !Auto.on && !st.play) row.appendChild(h('button', { class: 'how' + (howOpen ? ' on' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); UI.howOpen = !howOpen; UI.howUntil = 0; Audio2.sfx('click'); UI.dirty = true; } }, howOpen ? L('Hide tips', 'చిట్కాలు దాచు') : L('How? ❓', 'ఎలా? ❓')));
+    row.appendChild(h('div', { class: 'prog' }, h('b', { style: { width: (clamp01(cur.prog / cur.target) * 100).toFixed(0) + '%' } })));
+    if (cur.target > 1) row.appendChild(h('em', { class: 'cnt' }, `${Math.floor(cur.prog + 1e-6)}/${cur.target}`));
+    mb.appendChild(row);
+    if (st && (Settings.v.helper || Auto.on) && cur.kind === 'farm') mb.appendChild(h('button', { class: 'do' + (Auto.on ? ' stop' : ''), type: 'button', onclick: (e) => { e.stopPropagation(); if (Auto.on) Auto.stop(true); else Auto.doStep(); } }, Auto.on ? L('■ Stop', '■ ఆపు') : L('▶ Do it for me', '▶ నా బదులు చేయి')));
+    // today's tasks still count in the background
+    const tc = Tasks.count(); if (!short) mb.appendChild(h('small', { class: 'tday' }, '📋 ' + L("Today's tasks", 'ఈ రోజు పనులు') + ` ${tc.d}/${tc.n}`));
+  },
+};
+
 // ---- 16_audio.js ----
 // ============================================================================
 // Audio: synthesized ambience, spatial one-shots, engines, generative raga music
 // ============================================================================
-const RAGAS = {
-  morning: { name: 'Mohanam', notes: [0, 2, 4, 7, 9] },
-  noon: { name: 'Madhyamavati', notes: [0, 2, 5, 7, 10] },
-  evening: { name: 'Hamsadhwani', notes: [0, 2, 4, 7, 11] },
-  night: { name: 'Hindolam', notes: [0, 3, 5, 8, 10] },
-};
 const Audio2 = {
-  ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null, nextBeat: 0, beatIdx: 0, phraseQ: [], droneT: 0, melT: 0, lastNote: 0,
+  ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null,
   unlock() {
-    if (this.ctx) { if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') this.ctx.resume().catch(() => {}); return; }
+    if (this.ctx) {
+      if (this.ctx.state !== 'running' && this.ctx.state !== 'closed' && !document.hidden) this.ctx.resume().catch(() => {});
+      if (this.keep && this.keep.paused && !document.hidden) this.keep.play().catch(() => {});
+      return;
+    }
+    // iPhone: let the music play even when the ring/silent switch is on silent (the volume buttons and
+    // the in-game sliders still work). Newer iOS has a setting for it; older iOS needs a silent
+    // HTML audio loop playing alongside.
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ }
+    if (isIOS && !navigator.audioSession) this.silentLoop();
     try {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       this.ctx = new AC();
     } catch (e) { return; }
     const c = this.ctx;
+    if (c.state !== 'running') c.resume().catch(() => {});
     this.master = c.createGain(); this.comp = c.createDynamicsCompressor(); this.comp.threshold.value = -14; this.comp.ratio.value = 3;
     this.master.connect(this.comp); this.comp.connect(c.destination);
     this.musicBus = c.createGain(); this.ambBus = c.createGain(); this.sfxBus = c.createGain();
@@ -10910,13 +11226,35 @@ const Audio2 = {
     this.buildAmbience();
     this.applyVolumes();
     this.ok = true;
-    this.nextBeat = c.currentTime + 0.3;
+  },
+  // a quiet 8 kHz WAV on loop: on older iPhones it switches the page to "media" sound
+  silentLoop() {
+    if (this.keep) return;
+    try {
+      const n = 4000, b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+      const str = (o, s) => { for (let i = 0; i < s.length; i++) b[o + i] = s.charCodeAt(i); };
+      str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); str(36, 'data'); v.setUint32(40, n, true);
+      b.fill(128, 44);
+      const a = new Audio(URL.createObjectURL(new Blob([b], { type: 'audio/wav' })));
+      a.loop = true; a.setAttribute('playsinline', ''); a.volume = 0.01;
+      const p = a.play(); if (p && p.catch) p.catch(() => {});
+      this.keep = a;
+    } catch (e) { this.keep = null; }
+  },
+  // the page was hidden or shown: rest the sound, then pick it up again
+  pageVisible(on) {
+    if (!this.ctx) return;
+    try {
+      if (!on) { this.ctx.suspend(); if (this.keep) this.keep.pause(); }
+      else { if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {}); if (this.keep) { const p = this.keep.play(); if (p && p.catch) p.catch(() => {}); } }
+    } catch (e) { /* ignore */ }
   },
   makeNoise(sec) { const c = this.ctx; const b = c.createBuffer(1, c.sampleRate * sec, c.sampleRate); const d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; },
   makeIR(sec) { const c = this.ctx; const n = c.sampleRate * sec; const b = c.createBuffer(2, n, c.sampleRate); for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); } return b; },
   applyVolumes() {
     if (!this.ctx) return; const v = Settings.v;
-    this.master.gain.value = v.vol; this.musicBus.gain.value = v.music * 0.5; this.ambBus.gain.value = v.amb; this.sfxBus.gain.value = v.sfx;
+    this.master.gain.value = v.vol; this.musicBus.gain.value = v.music * 1.6; this.ambBus.gain.value = v.amb; this.sfxBus.gain.value = v.sfx;
   },
   noiseSrc(loop = true) { const s = this.ctx.createBufferSource(); s.buffer = this.noise; s.loop = loop; return s; },
   buildAmbience() {
@@ -11092,63 +11430,288 @@ const Audio2 = {
     if (hr > 5.2 && hr < 6.4 && Math.random() < dt * 0.15) { const h = POI.houses[Math.floor(Math.random() * POI.houses.length)]; if (h) this.at('rooster', h.x, h.z, 1.5); }
     this.music(now);
   },
-  // ---------- generative music ----------
-  raga() { const h = Time.hour(); return h >= 5 && h < 11 ? RAGAS.morning : h >= 11 && h < 16 ? RAGAS.noon : h >= 16 && h < 20 ? RAGAS.evening : RAGAS.night; },
+  // ---------- background music (16b_music.js) ----------
   music(now) {
-    if (Settings.v.music <= 0.001) return;
-    const SA = 146.83; // D3
-    const fest = Time.festivalToday() && Time.hour() > 16;
-    const busy = Sky.daylight > 0.5 || fest;
-    while (this.nextBeat < now + 0.4) {
-      const t = this.nextBeat; const i = this.beatIdx++;
-      const eighth = fest ? 0.24 : 0.32;
-      this.nextBeat += eighth;
-      // tanpura drone every 12 eighths
-      if (i % 12 === 0) { [[SA * 1.5, 0], [SA * 2, 0.6], [SA * 2, 1.2], [SA, 1.8]].forEach(([f, dt2]) => this.pluck(f, t + dt2 * (eighth / 0.32))); }
-      // dappu + talam rhythm (6/8 tisra)
-      if (busy && G.started) {
-        const pat = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0];
-        if (pat[i % 12]) this.dappu(t, i % 6 === 0 ? 1 : 0.6);
-        if (i % 6 === 0 || (fest && i % 3 === 0)) this.talam(t);
-      }
-      // melody: bansuri phrases
-      if (i % 2 === 0) {
-        if (!this.phraseQ.length && (i % 24 === 0) && Math.random() < (busy ? 0.75 : 0.5)) this.phraseQ = this.makePhrase();
-        const n = this.phraseQ.shift();
-        if (n !== undefined && n !== null) this.flute(SA * 2 * Math.pow(2, n / 12), t, eighth * 2 * (this.phraseQ.length === 0 ? 2.5 : 1));
-      }
-    }
+    if (Settings.v.music <= 0.001) { if (!this.musicOff) { this.musicOff = true; Music.hush(); } return; }
+    this.musicOff = false;
+    Music.tick(this, now);
   },
-  makePhrase() {
-    const R = this.raga().notes; const deg = [...R, 12, 14, 16].filter((x) => x <= 16);
-    const len = 5 + Math.floor(Math.random() * 6); const out = [];
-    let idx = deg.indexOf(this.lastNote); if (idx < 0) idx = Math.floor(Math.random() * 5);
-    for (let k = 0; k < len; k++) { idx = clamp(idx + Math.round((Math.random() - 0.5) * 3), 0, deg.length - 1); out.push(Math.random() < 0.12 ? null : deg[idx]); }
-    out.push(Math.random() < 0.5 ? 0 : 7); this.lastNote = out[out.length - 1];
+};
+
+// ---- 16b_music.js ----
+// ============================================================================
+// Background music: a small village band playing live in the browser.
+// Tanpura drone, bansuri (bamboo flute) with gentle glides, santoor, tabla and a
+// soft harmonium, in a raga for the time of day. Every song has a tune that comes
+// back (intro, A, A, B, A, ending) over keherwa or dadra on the tabla, with a short
+// rest between songs. Festivals and the mini-games play faster; nights are slow
+// and quiet, rain brings the santoor.
+// ============================================================================
+const MOODS = {
+  morning: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 148, tala: 'keherwa', lead: 'flute', en: 'Morning in Ramapuram', te: 'రామాపురంలో ఉదయం' },
+  noon: { raga: 'Madhyamavati', notes: [0, 2, 5, 7, 10], tan: 7, mpm: 158, tala: 'keherwa', lead: 'santoor', en: 'Fields at noon', te: 'మధ్యాహ్నం పొలాలు' },
+  evening: { raga: 'Hamsadhwani', notes: [0, 2, 4, 7, 11], tan: 7, mpm: 136, tala: 'dadra', lead: 'flute', en: 'Evening by the lake', te: 'చెరువు ఒడ్డున సాయంత్రం' },
+  night: { raga: 'Hindolam', notes: [0, 3, 5, 8, 10], tan: 5, mpm: 100, tala: null, lead: 'flute', soft: true, en: 'Village lullaby', te: 'పల్లె జోల పాట' },
+  rain: { raga: 'Megh', notes: [0, 2, 5, 7, 10], tan: 7, mpm: 118, tala: 'soft', lead: 'santoor', soft: true, en: 'Monsoon rain', te: 'వాన చినుకులు' },
+  festival: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 192, tala: 'keherwa', lead: 'flute', fest: true, en: 'Festival night', te: 'పండుగ రాత్రి' },
+  game: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 184, tala: 'keherwa', lead: 'santoor', fest: true, en: 'Game time!', te: 'ఆట సమయం!' },
+};
+// tabla patterns: one bol per beat (matra); null is a rest
+const TALAS = {
+  keherwa: { n: 8, theka: ['dha', 'ge', 'na', 'ti', 'na', 'ka', 'dhi', 'na'], fill: ['dha', 'ti', 'ta', 'dha', 'ti', 'ta', 'dha', null], end: ['dha', 'ti', 'dha', null, 'dha', 'ti', 'dha', null] },
+  dadra: { n: 6, theka: ['dha', 'dhi', 'na', 'dha', 'ti', 'na'], fill: ['dha', 'ti', 'ta', 'dha', 'ti', 'ta'], end: ['dha', null, 'dha', null, 'dha', null] },
+  soft: { n: 8, theka: ['ge', null, null, 'tin', 'ge', null, 'na', null], fill: ['ge', null, 'na', null, 'ge', 'na', 'na', null], end: ['ge', null, null, null, 'ge', null, null, null] },
+  none: { n: 8, theka: [], fill: [], end: [] },
+};
+// rhythms of one bar (beats per note) and of the closing bar of a phrase
+const RHY8 = [[2, 1, 1, 2, 2], [1, 1, 2, 4], [3, 1, 2, 2], [2, 2, 4], [2, 1, 1, 4], [4, 2, 2], [2, 2, 2, 2], [3, 1, 4], [1, 1, 2, 2, 2], [2, 2, 1, 1, 2]];
+const RHY6 = [[2, 1, 3], [1, 1, 1, 3], [3, 3], [2, 2, 2], [1, 1, 2, 2], [3, 1, 2], [2, 1, 1, 2]];
+const CAD8 = [[2, 2, 4], [1, 1, 2, 4], [3, 1, 4], [2, 6]], CAD6 = [[1, 2, 3], [2, 1, 3], [3, 3]];
+
+const Music = {
+  SA: 146.83,   // D: the tanpura's Sa; the flute and santoor play an octave above
+  song: null, tBar: 0, tTan: 0, tanI: 0, songN: 0, heard: null, ready: false,
+  // the band's mixing desk: one bus per instrument, a little reverb on each
+  setup(A) {
+    const c = A.ctx, mk = (pan, wet) => {
+      const g = c.createGain(); let o = g;
+      if (c.createStereoPanner) { const p = c.createStereoPanner(); p.pan.value = pan; g.connect(p); o = p; }
+      o.connect(A.musicBus);
+      if (wet > 0) { const s = c.createGain(); s.gain.value = wet; g.connect(s); s.connect(A.verb); }
+      return g;
+    };
+    this.bFlute = mk(-0.18, 0.55); this.bSant = mk(0.3, 0.5); this.bTabla = mk(0.06, 0.16); this.bTanL = mk(-0.45, 0.35); this.bTanR = mk(0.45, 0.35); this.bHarm = mk(-0.05, 0.35); this.bBell = mk(0.2, 0.4);
+    // harmonium bellows: a slow, soft tremolo
+    const lfo = c.createOscillator(); lfo.frequency.value = 4.6; const lg = c.createGain(); lg.gain.value = 0.12; lfo.connect(lg); lg.connect(this.bHarm.gain); lfo.start();
+    const wave = (h) => { const re = new Float32Array(h.length), im = new Float32Array(h.length); h.forEach((v, i) => { im[i] = v; }); return c.createPeriodicWave(re, im); };
+    this.wFlute = wave([0, 1, 0.2, 0.07, 0.025]);
+    this.wSant = wave([0, 1, 0.55, 0.3, 0.16, 0.08, 0.05]);
+    this.wNa = wave([0, 1, 0.5, 0.3, 0.15, 0.08]);
+    this.wReed = wave([0, 1, 0.6, 0.45, 0.32, 0.22, 0.15, 0.1, 0.06]);
+    this.ready = true;
+  },
+  pickMood() {
+    if (typeof Games !== 'undefined' && Games.mode) return 'game';
+    if (!G.started || !G.S) return 'morning';
+    const hr = Time.hour(), W = Weather.cur;
+    if (Time.festivalToday() && hr > 16 && hr < 23) return 'festival';
+    if (W && W.rain > 0.45) return 'rain';
+    if (hr >= 20.5 || hr < 5) return 'night';
+    return hr < 11 ? 'morning' : hr < 16 ? 'noon' : 'evening';
+  },
+  // ---------------- composing ----------------
+  fq(deg, base) { const N = this.song.mood.notes, o = Math.floor(deg / 5), k = ((deg % 5) + 5) % 5; return base * Math.pow(2, (N[k] + 12 * o) / 12); },
+  motif(rng, rhy, start, lo, hi) {
+    const out = []; let d = start;
+    for (let i = 0; i < rhy.length; i++) {
+      if (i > 0) { const r = rng(); d = clamp(d + (r < 0.33 ? 1 : r < 0.66 ? -1 : r < 0.78 ? 2 : r < 0.9 ? -2 : 0), lo, hi); }
+      out.push([d, rhy[i]]);
+    }
     return out;
   },
-  pluck(f, t) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; const o2 = c.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = f * 1.003;
-    const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.setValueAtTime(2400, t); fl.frequency.exponentialRampToValueAtTime(500, t + 1.8);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
-    o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(this.musicBus); g.connect(this.verb); o.start(t); o2.start(t); o.stop(t + 2.7); o2.stop(t + 2.7);
+  // the same tune with a new ending, so the phrase answers itself
+  vary(rng, m, lo, hi) { const out = m.map((x) => x.slice()); const k = out.length - 1; out[k][0] = clamp(out[k][0] + (rng() < 0.5 ? 1 : -1) * (1 + Math.floor(rng() * 2)), lo, hi); return out; },
+  // walk home step by step and hold the home note
+  cadence(rng, rhy, home) { const a = rng() < 0.6 ? 1 : -1, k = rhy.length; return rhy.map((b, i) => [i === k - 1 ? home : home + a * (k - 1 - i), b]); },
+  compose(id) {
+    const mood = MOODS[id], T = TALAS[mood.tala || 'none'], n = T.n;
+    const rng = mulberry32((++this.songN * 7919 + Math.floor(Math.random() * 1e9)) >>> 0);
+    const RH = n === 6 ? RHY6 : RHY8, CD = n === 6 ? CAD6 : CAD8, pick = (a) => a[Math.floor(rng() * a.length)];
+    const a1 = this.motif(rng, pick(RH), pick([0, 2, 3]), -2, 6), a2 = this.motif(rng, pick(RH), a1[a1.length - 1][0], -2, 6);
+    const A = [a1, a2, this.vary(rng, a1, -2, 6), this.cadence(rng, pick(CD), 0)];
+    const b1 = this.motif(rng, pick(RH), pick([5, 6, 7]), 3, 9), b2 = this.motif(rng, pick(RH), b1[b1.length - 1][0], 3, 9);
+    const B = [b1, b2, this.vary(rng, b1, 3, 9), this.cadence(rng, pick(CD), rng() < 0.5 ? 5 : 3)];
+    const other = mood.lead === 'flute' ? 'santoor' : 'flute';
+    const bars = [{ part: 'intro' }, { part: 'intro', fillIn: true }];
+    const secs = mood.soft ? [['A', mood.lead], ['B', other], ['A3', mood.lead]] : [['A', mood.lead], ['A2', mood.lead], ['B', other], ['A3', mood.lead]];
+    for (const [s, who] of secs) for (let i = 0; i < 4; i++) bars.push({ part: s, who, mel: (s === 'B' ? B : A)[i], i, last: i === 3 });
+    bars.push({ part: 'end' });
+    return { id, mood, T, n, md: 60 / mood.mpm, bars, at: 0, rng };
   },
-  flute(f, t, dur) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(f * 0.985, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
-    const vib = c.createOscillator(); vib.frequency.value = 5.3; const vg = c.createGain(); vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * 0.006, t + 0.35); vib.connect(vg); vg.connect(o.frequency);
-    const o2 = c.createOscillator(); o2.type = 'triangle'; o2.frequency.value = f * 2; const g2 = c.createGain(); g2.gain.value = 0.12; o2.connect(g2);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t + 0.06); g.gain.setValueAtTime(0.065, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.25);
-    o.connect(g); g2.connect(g); g.connect(this.musicBus); g.connect(this.verb);
-    const b = this.noiseSrc(false); const bf = c.createBiquadFilter(); bf.type = 'bandpass'; bf.frequency.value = f * 3; bf.Q.value = 3; const bg = c.createGain(); this.env(bg, t, 0.02, 0.03, 0.12); b.connect(bf); bf.connect(bg); bg.connect(this.musicBus);
-    o.start(t); vib.start(t); o2.start(t); b.start(t, Math.random()); o.stop(t + dur + 0.3); vib.stop(t + dur + 0.3); o2.stop(t + dur + 0.3); b.stop(t + 0.2);
+  // ---------------- the band ----------------
+  tick(A, now) {
+    if (!this.ready) this.setup(A);
+    if (this.tBar < now - 0.5) this.tBar = now + 0.15;   // the page was asleep: start again cleanly
+    if (this.tTan < now - 0.5) this.tTan = now + 0.1;
+    while (this.tTan < now + 0.6) this.tanpura();
+    const want = this.pickMood();
+    // a mini-game starting or ending changes the song at the next bar
+    if (this.song && this.song.at < this.song.bars.length - 1 && (want === 'game') !== (this.song.id === 'game')) { this.song.at = this.song.bars.length - 1; this.hush(); }
+    let guard = 0;
+    while (this.tBar < now + 0.6 && guard++ < 6) {
+      if (!this.song || this.song.at >= this.song.bars.length) {
+        const first = !this.song;
+        this.song = this.compose(want);
+        if (!first) this.tBar += this.song.n * this.song.md * (want === 'game' ? 0.5 : 2);   // a breath between songs
+        // the name of the new music, now and then (not for every mini-game)
+        if (this.heard !== want && G.started && want !== 'game') { this.heard = want; if (Settings.v.music > 0.05 && performance.now() - (this.heardAt || -1e9) > 150000) { this.heardAt = performance.now(); UI.toast('🎵 ' + LN(MOODS[want]), 'music'); } }
+        if (this.tBar >= now + 0.6) break;
+      }
+      const s = this.song, b = s.bars[s.at];
+      this.bar(s, b, this.tBar);
+      this.tBar += s.n * s.md; s.at++;
+    }
   },
-  dappu(t, acc) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(115, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22 * acc, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
-    o.connect(g); g.connect(this.musicBus); o.start(t); o.stop(t + 0.32);
-    this.burst(0.05, 0.1 * acc, 'bandpass', 1800, this.musicBus, t - c.currentTime, 0.8);
+  bar(s, b, t) {
+    const md = s.md, n = s.n, M = s.mood, F = this.SA * 2;
+    // tabla: joins after the intro; fills at the end of a phrase, a flourish to finish
+    if (b.part !== 'intro' || b.fillIn) {
+      const pat = b.part === 'end' ? s.T.end : (b.last || b.fillIn) ? s.T.fill : s.T.theka;
+      const vol = M.soft ? 0.55 : 1;
+      pat.forEach((bol, i) => { if (bol && !(b.fillIn && i < n / 2)) this.bol(bol, t + i * md + (i % 2 ? md * 0.035 : 0), (i === 0 ? 1 : 0.62) * vol); });
+      if (M.fest) for (let i = 0; i < n; i += n / 2) this.manjira(t + i * md);
+    }
+    // harmonium: swells in under the tune
+    if (b.i === 0 && (b.part === 'A2' || b.part === 'A3' || (b.part === 'B' && !M.soft))) this.harmonium([this.SA, this.SA * Math.pow(2, M.tan / 12), this.SA * 2], t, n * md * 4, M.soft ? 0.5 : 0.85);
+    if (b.part === 'intro' && !b.fillIn) this.harmonium([this.SA, this.SA * Math.pow(2, M.tan / 12)], t, n * md * 2.2, 0.6);
+    // santoor: a rising run to open, and at the very end
+    if (b.part === 'intro' && !b.fillIn) { const run = [0, 1, 2, 3, 4, 5, 7]; for (let i = 0; i < Math.min(n, run.length); i++) this.santoor(this.fq(run[i], F), t + i * md, 0.05 + i * 0.004); }
+    if (b.part === 'intro' && b.fillIn) { this.santoor(this.fq(5, F), t, 0.06); this.roll(this.fq(5, F), t + md, md * 2, 0.04); }
+    if (b.part === 'end') { [7, 5, 3, 2, 0].forEach((d, i) => this.santoor(this.fq(d, F), t + i * md * 0.5, 0.05)); this.flute([[{ f: this.fq(0, F), t: t + md * 2.5, d: md * (n - 2) }]], 0.75); }
+    // the tune: the flute plays a whole four-bar phrase as one breath; the santoor strikes and rolls
+    if (b.mel) {
+      if (b.who === 'flute') { if (b.i === 0) this.fluteLine(s, b, t); }
+      else this.santoorLine(s, b, t);
+      // answers in the second A: the santoor echoes the end of each bar
+      if (b.part === 'A2' && b.who === 'flute' && !b.last) { const lastDeg = b.mel[b.mel.length - 1][0]; this.santoor(this.fq(lastDeg + 5, F), t + (n - 1) * md, 0.035); this.santoor(this.fq(lastDeg + 3, F), t + (n - 0.5) * md, 0.03); }
+    }
   },
-  talam(t) { for (const r of [1, 1.47, 2.09]) this.tone('sine', 3100 * r, 3100 * r, 0.25, 0.012, this.musicBus, t - this.ctx.currentTime); },
+  fluteLine(s, b, t) {
+    const F = this.SA * 2, md = s.md, rng = s.rng, notes = [];
+    const at0 = s.at;
+    for (let k = 0; k < 4; k++) {
+      const bb = s.bars[at0 + k]; if (!bb || !bb.mel || bb.who !== 'flute') break;
+      let tt = t + k * s.n * md;
+      for (const [deg, beats] of bb.mel) {
+        const d = beats * md;
+        if (beats >= 2 && rng() < 0.3) notes.push({ f: this.fq(deg + 1, F), t: tt, d: 0.07, grace: true });   // a quick touch of the note above
+        notes.push({ f: this.fq(deg, F), t: tt + (notes.length && notes[notes.length - 1].grace ? 0.07 : 0), d });
+        tt += d;
+      }
+    }
+    if (notes.length) this.flute([notes], s.mood.soft ? 0.7 : 1);
+  },
+  santoorLine(s, b, t) {
+    const F = this.SA * 2, md = s.md; let tt = t;
+    for (const [deg, beats] of b.mel) {
+      const f = this.fq(deg, F), d = beats * md;
+      this.santoor(f, tt, 0.07);
+      if (beats >= 2) this.roll(f, tt + md * 0.5, d - md * 0.5, 0.045);   // long notes ring on as a soft roll
+      tt += d;
+    }
+  },
+  // ---------------- instruments ----------------
+  osc(c, wave, f, t) { const o = c.createOscillator(); if (wave && typeof wave !== 'string') o.setPeriodicWave(wave); else o.type = wave || 'sine'; o.frequency.setValueAtTime(f, t); return o; },
+  // bansuri: one voice per phrase, sliding between notes, breath noise, vibrato on long notes
+  flute(lines, vol) {
+    const A = Audio2, c = A.ctx;
+    for (const notes of lines) {
+      if (!notes.length) continue;
+      const t0 = notes[0].t, last = notes[notes.length - 1], t1 = last.t + last.d;
+      const o = this.osc(c, this.wFlute, notes[0].f * 0.97, t0);
+      const vib = c.createOscillator(); vib.frequency.value = 5.2; const vg = c.createGain(); vg.gain.value = 0; vib.connect(vg); vg.connect(o.frequency);
+      const g = c.createGain(); g.gain.setValueAtTime(0.0001, t0);
+      const gk = c.createGain();   // lets a song change fade this breath out early
+      const pk = 0.1 * vol;
+      const br = A.noiseSrc(); const bf = c.createBiquadFilter(); bf.type = 'bandpass'; bf.Q.value = 0.9; bf.frequency.value = notes[0].f * 2.2; const bg = c.createGain(); bg.gain.value = 0.16;
+      br.connect(bf); bf.connect(bg); bg.connect(g);
+      o.connect(g); g.connect(gk); gk.connect(this.bFlute);
+      let prev = null;
+      for (const nt of notes) {
+        const leap = prev ? Math.abs(Math.log2(nt.f / prev.f)) : 0;
+        if (!prev) { o.frequency.setTargetAtTime(nt.f, t0, 0.03); g.gain.setTargetAtTime(pk, t0, 0.03); }
+        else {
+          const glide = nt.grace || prev.grace ? 0.012 : leap > 0.2 ? 0.05 : 0.018;   // big jumps slide (meend)
+          o.frequency.setTargetAtTime(nt.f, nt.t - glide, glide);
+          if (!nt.grace && !prev.grace && (leap < 0.01 || Math.random() < 0.35)) { g.gain.setTargetAtTime(pk * 0.45, nt.t - 0.03, 0.01); g.gain.setTargetAtTime(pk, nt.t + 0.005, 0.02); }   // tonguing
+        }
+        bf.frequency.setTargetAtTime(nt.f * 2.2, nt.t, 0.03);
+        vg.gain.setTargetAtTime(0, nt.t, 0.04);
+        if (nt.d > 0.55 && !nt.grace) vg.gain.setTargetAtTime(nt.f * 0.009, nt.t + 0.28, 0.18);
+        prev = nt;
+      }
+      g.gain.setTargetAtTime(0.0001, t1 - 0.05, 0.14);
+      const end = t1 + 0.9;
+      o.start(t0); vib.start(t0); br.start(t0, Math.random()); o.stop(end); vib.stop(end); br.stop(end);
+      this.live = (this.live || []).filter((x) => x.end > c.currentTime); this.live.push({ gk, end });
+    }
+  },
+  // stop the flute that is still playing (a mini-game starts, or the music is turned off)
+  hush() { const c = Audio2.ctx; if (!c) return; for (const x of this.live || []) if (x.end > c.currentTime) x.gk.gain.setTargetAtTime(0.0001, c.currentTime, 0.08); this.live = []; },
+  // santoor: a hammered pair of strings, bright then mellow
+  santoor(f, t, vol, soft) {
+    const A = Audio2, c = A.ctx;
+    const o = this.osc(c, this.wSant, f, t), o2 = this.osc(c, this.wSant, f, t); o2.detune.value = 6;
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(Math.min(12000, f * 9), t); lp.frequency.exponentialRampToValueAtTime(f * 2.2, t + 0.45);
+    const g = c.createGain(); const dec = clamp(1.7 - Math.log2(f / 300) * 0.35, 0.6, 2.2);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + dec);
+    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(this.bSant);
+    o.start(t); o2.start(t); o.stop(t + dec + 0.05); o2.stop(t + dec + 0.05);
+    if (!soft) A.burst(0.012, vol * 0.6, 'highpass', 3200, this.bSant, t - c.currentTime, 0.7);   // the hammer
+  },
+  roll(f, t, d, vol) { const step = 0.12; for (let x = 0, k = 0; x < d - 0.05 && k < 12; x += step, k++) this.santoor(f, t + x, vol * (1 - x / (d + 0.4)) * (k % 2 ? 0.8 : 1), true); },
+  // tanpura: Pa (or Ma), Sa, Sa, low Sa, again and again, each string buzzing as it rings
+  tanpura() {
+    const A = Audio2, c = A.ctx, M = (this.song || { mood: MOODS.morning }).mood, t = this.tTan, i = this.tanI++ % 4;
+    const f = i === 0 ? this.SA * Math.pow(2, M.tan / 12) / 2 : i === 3 ? this.SA / 2 : this.SA;
+    this.tTan += i === 3 ? 1.6 : 0.95;
+    const o = this.osc(c, 'sawtooth', f, t), o2 = this.osc(c, 'sawtooth', f * 1.0018, t);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 850; lp.Q.value = 0.4;
+    const bp = c.createBiquadFilter(); bp.type = 'bandpass'; bp.Q.value = 5; bp.frequency.setValueAtTime(f * 3, t); bp.frequency.exponentialRampToValueAtTime(f * 15, t + 3);   // the jawari shimmer
+    const sg = c.createGain(); sg.gain.value = 0.55;
+    const g = c.createGain(); const v = (M.soft ? 0.017 : 0.022) * (i === 3 ? 1.15 : 1);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.03); g.gain.exponentialRampToValueAtTime(v * 0.45, t + 1.2); g.gain.exponentialRampToValueAtTime(0.0001, t + 4.4);
+    o.connect(lp); o2.connect(lp); o.connect(bp); bp.connect(sg); lp.connect(g); sg.connect(g); g.connect(i % 2 ? this.bTanR : this.bTanL);
+    o.start(t); o2.start(t); o.stop(t + 4.5); o2.stop(t + 4.5);
+  },
+  harmonium(fs, t, d, vol) {
+    const c = Audio2.ctx;
+    for (const f of fs) {
+      const o = this.osc(c, this.wReed, f, t), o2 = this.osc(c, this.wReed, f, t); o2.detune.value = 9;
+      const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 1300; lp.Q.value = 0.5;
+      const g = c.createGain(); const v = 0.0105 * vol;
+      g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(v, t + 0.7); g.gain.setValueAtTime(v, t + d - 1.1); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(this.bHarm);
+      o.start(t); o2.start(t); o.stop(t + d + 0.05); o2.stop(t + d + 0.05);
+    }
+  },
+  manjira(t) {
+    const A = Audio2, c = A.ctx;
+    for (const [r, a] of [[1, 1], [1.49, 0.7], [2.13, 0.45]]) { const o = this.osc(c, 'sine', 3400 * r, t); const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.011 * a, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.9); o.connect(g); g.connect(this.bBell); o.start(t); o.stop(t + 0.95); }
+    A.burst(0.04, 0.03, 'highpass', 7000, this.bBell, t - c.currentTime, 0.7);
+  },
+  // tabla: bayan (left, deep, with the wrist slide) and dayan (right, tuned to Sa)
+  bol(name, t, a) {
+    switch (name) {
+      case 'dha': this.ge(t, a); this.na(t, a); break;
+      case 'dhi': this.ge(t, a); this.tin(t, a); break;
+      case 'ge': this.ge(t, a); break;
+      case 'na': this.na(t, a); break;
+      case 'tin': this.tin(t, a); break;
+      case 'ti': case 'ta': this.ti(t, a); break;
+      case 'ka': this.ka(t, a); break;
+    }
+  },
+  ge(t, a) {
+    const c = Audio2.ctx, f = this.SA / 2; const o = this.osc(c, 'sine', f * 1.2, t);
+    o.frequency.exponentialRampToValueAtTime(f * 0.9, t + 0.07); o.frequency.exponentialRampToValueAtTime(f * 1.1, t + 0.4);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.34 * a, t + 0.006); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.55);
+    o.connect(g); g.connect(this.bTabla); o.start(t); o.stop(t + 0.58);
+  },
+  na(t, a) {
+    const A = Audio2, c = A.ctx, f = this.SA * 2; const o = this.osc(c, this.wNa, f, t);
+    const lp = c.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.setValueAtTime(5200, t); lp.frequency.exponentialRampToValueAtTime(700, t + 0.2);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.085 * a, t + 0.003); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.38);
+    o.connect(lp); lp.connect(g); g.connect(this.bTabla); o.start(t); o.stop(t + 0.4);
+    A.burst(0.016, 0.07 * a, 'bandpass', 3300, this.bTabla, t - c.currentTime, 1.4);
+  },
+  tin(t, a) {
+    const c = Audio2.ctx, f = this.SA * 2; const o = this.osc(c, 'sine', f, t);
+    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07 * a, t + 0.004); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.65);
+    o.connect(g); g.connect(this.bTabla); o.start(t); o.stop(t + 0.67);
+  },
+  ti(t, a) { const A = Audio2; A.burst(0.045, 0.1 * a, 'bandpass', 2300, this.bTabla, t - A.ctx.currentTime, 1.2); },
+  ka(t, a) { const A = Audio2; A.burst(0.05, 0.16 * a, 'lowpass', 520, this.bTabla, t - A.ctx.currentTime, 0.8); },
 };
 
 // ---- 17_ui.js ----
@@ -11420,6 +11983,7 @@ const UI = {
       if (S.player.mustRest) mb.appendChild(h('div', { class: 'restbar' }, h('span', null, '😴 ' + (LANG === 'en' ? `Time to rest: ${S.player.restH || 3} hours` : L(`Time to rest: ${S.player.restH || 3} hours`, `విశ్రాంతి సమయం: ${S.player.restH || 3} గంటలు`, "Time to rest: {0} hours", [S.player.restH || 3]))),
         h('button', { class: 'do', type: 'button', onclick: (e) => { e.stopPropagation(); Rest.start(); } }, L('Rest now', 'ఇప్పుడే విశ్రాంతి'), isMobile ? null : h('span', { class: 'kbd' }, 'R'))));
       if (!cur) Tasks.card(mb);
+      else if (cur.chain) Chain.card(mb, cur, st, tg, tgD, howOpen);
       else {
         const tut = cur.tpl.startsWith('t_');
         mb.appendChild(h('div', { class: 'mhead' }, h('h4', null, tut ? (LANG === 'en' ? `Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}` : L(`Tutorial ${Math.min(TUTORIAL.length, S.missions.tut + 1)} of ${TUTORIAL.length}`, `శిక్షణ ${Math.min(TUTORIAL.length, S.missions.tut + 1)} / ${TUTORIAL.length}`, "Tutorial {0} of {1}", [Math.min(TUTORIAL.length, S.missions.tut + 1), TUTORIAL.length])) : '🧭 ' + L('Guiding you', 'దారి చూపిస్తోంది')),
@@ -12149,7 +12713,7 @@ const UI = {
     // iPhone/iPad Safari cannot go full screen from a web page: suggest adding it to the home screen
     const a2 = this.el('a2hs');
     if (a2) {
-      const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+      const ios = isIOS;
       const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches || matchMedia('(display-mode: fullscreen)').matches;
       let framed = false; try { framed = window.self !== window.top; } catch (e) { framed = true; }
       a2.hidden = !(ios && !standalone && !framed);
@@ -13788,6 +14352,8 @@ const Game = {
   },
   setPreset(p) {
     if (!PRESETS[p]) return;
+    if (Settings.v.safe) { Settings.v.safe = false; Settings.save(); }   // picked by hand: no more light mode next time
+    G.safe = false;
     Render.applyPreset(p);
     if (!G.ready) return;
     const P = G.preset;
@@ -13799,7 +14365,7 @@ const Game = {
   async build() {
     const steps = [];
     const step = (w, en, te, fn) => steps.push({ w, en, te, fn });
-    step(1, 'Shaping the land', 'నేలను తీర్చిదిద్దుతున్నాం', () => { Sky.init(); layoutFields(); World.buildTerrain(isMobile ? 224 : 256); World.initOcc(); });
+    step(1, 'Shaping the land', 'నేలను తీర్చిదిద్దుతున్నాం', () => { Sky.init(); layoutFields(); World.buildTerrain(G.safe ? 160 : isMobile ? 224 : 256); World.initOcc(); });
     step(1, 'Laying roads and canals', 'రోడ్లు, కాలువలు వేస్తున్నాం', () => { World.buildRoads(); World.buildWater(); Atlas.init(); });
     step(3, 'Building Ramapuram', 'రామాపురం నిర్మిస్తున్నాం', () => { World.buildVillage(); Village.reserveSpots(); });
     step(2, 'Marking out the fields', 'పొలాల గట్లు వేస్తున్నాం', () => { Fields.init(); this.setupFields(); });
@@ -14011,7 +14577,8 @@ const Game = {
     if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
     Fun.start();
-    Tasks.init(); Rest.init();
+    Tasks.init(); Rest.init(); Chain.init();
+    if (Guard.fresh) { Guard.fresh = false; setTimeout(() => UI.toast(L('Light graphics are on so the game runs smoothly on this phone. Change it any time in Menu → Graphics.', 'ఈ ఫోన్‌లో ఆట సాఫీగా నడవడానికి తేలికపాటి గ్రాఫిక్స్ పెట్టాం. మెనూ → గ్రాఫిక్స్‌లో ఎప్పుడైనా మార్చుకోండి.'), 'info'), 5000); }
     if (data) {
       UI.toast((LANG === 'en' ? `Welcome back, ${S.player.name}. ${Time.fmtDate()}` : L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`, "Welcome back, {0}. {1}", [S.player.name, Time.fmtDate()])), 'good');
     } else {
@@ -14125,7 +14692,7 @@ function frame(now) {
       Extras.update(dt);
       Fun.update(dt);
       Games.update(dt);
-      Rest.update(dt);
+      Rest.update(dt); Chain.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -14148,9 +14715,34 @@ function showFatal(e) {
   const m = document.getElementById('lmsg');
   const webgl = /WebGL|context/i.test(String(e && e.message));
   if (m) m.textContent = webgl
-    ? L('This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.', 'ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.')
+    ? (isIOS ? L('This iPhone could not start the 3D graphics. Please update it to iOS 15 or newer (Settings → General → Software Update), then open the game again in Safari.', 'ఈ ఐఫోన్‌లో 3D గ్రాఫిక్స్ ప్రారంభం కాలేదు. దయచేసి iOS 15 లేదా కొత్తదానికి అప్‌డేట్ చేయండి (Settings → General → Software Update), తర్వాత Safariలో మళ్ళీ తెరవండి.')
+      : L('This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.', 'ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.'))
     : L('Something went wrong while loading: ', 'లోడ్ చేస్తుండగా సమస్య వచ్చింది: ') + (e && e.message ? e.message : String(e));
+  // a way out on phones, where there is no reload key
+  if (box.querySelector('.reload')) return;
+  const b = h('button', { class: 'btn reload', type: 'button', onclick: () => location.reload() }, L('Try again', 'మళ్ళీ ప్రయత్నించండి'));
+  const lb = box.querySelector('.lbox'); if (lb) lb.appendChild(b);
 }
+
+// Phones that ran out of memory (the browser reloads the page by itself) start in light mode the
+// next time. A heartbeat is kept while the game runs; leaving the page normally counts as a clean exit.
+const Guard = {
+  n: 0, safe: false, fresh: false,
+  init() {
+    const b = Store.get('tvs_guard', null);
+    const crashed = !!(b && !b.clean && Date.now() - (b.alive || 0) < 120000);
+    this.n = crashed ? (b.n || 0) + 1 : 0;
+    if (isMobile && this.n >= 1 && !Settings.v.safe) { Settings.v.safe = true; Settings.v.preset = 'LOW'; Settings.save(); this.fresh = true; }
+    this.safe = isMobile && !!Settings.v.safe;
+    this.beat();
+    setInterval(() => { if (!document.hidden) this.beat(); }, 10000);
+    const bye = () => Store.set('tvs_guard', { alive: Date.now(), n: this.n, clean: true });
+    addEventListener('pagehide', bye);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) bye(); else this.beat(); });
+    setTimeout(() => { this.n = 0; if (!document.hidden) this.beat(); }, 180000);   // a few calm minutes: forget the old crash
+  },
+  beat() { Store.set('tvs_guard', { alive: Date.now(), n: this.n, clean: false }); },
+};
 
 // every device: touch class for CSS, no page zoom or bounce, sound and voice start on the first tap,
 // re-layout on rotation, and recover if the phone pauses the 3D graphics
@@ -14161,9 +14753,13 @@ function deviceSetup() {
   document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
   const first = () => { Audio2.unlock(); Coach.prime(); };
   document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
-  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
+  const reflow = () => { if (isIOS && (window.scrollX || window.scrollY)) window.scrollTo(0, 0); Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
   window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
   if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
+  // iPhone: the keyboard pushes the page up and can leave it there; put it back when typing ends
+  if (isIOS) document.addEventListener('focusout', () => setTimeout(() => { if (window.scrollX || window.scrollY) window.scrollTo(0, 0); }, 80));
+  // sound pauses with the page and comes back on the next tap (iPhone also pauses it for calls)
+  document.addEventListener('visibilitychange', () => Audio2.pageVisible(!document.hidden));
   const cv = document.getElementById('gl');
   cv.addEventListener('webglcontextlost', (e) => {
     e.preventDefault(); SaveSys.quickLocal();
@@ -14174,7 +14770,10 @@ function deviceSetup() {
 
 async function boot(hot) {
   try {
+    window.__tvsUp = true;   // the game code runs: the page's start-up watchdog can stand down
+    const bf = document.getElementById('bootfail'); if (bf) bf.hidden = true;
     Settings.load();
+    Guard.init(); G.safe = Guard.safe;
     if (!LANGS.some((x) => x.id === Settings.v.lang)) Settings.v.lang = 'en';
     if (!(await Lang.load(Settings.v.lang))) Settings.v.lang = 'en';   // offline or file missing: English
     LANG = Settings.v.lang; Lang.fonts(LANG); Time.scale = Settings.v.timeScale || 1;
@@ -14184,6 +14783,7 @@ async function boot(hot) {
     UI.loading(0.03, L('Loading fonts…', 'అక్షరాలు లోడ్ అవుతున్నాయి…'));
     try { await Promise.race([Promise.all(['700 40px "Baloo Tammudu 2"', '700 26px "Hind Guntur"', '600 26px "Hind Guntur"'].map((f) => document.fonts.load(f, 'అఆ Aa'))), sleepMs(2500)]); } catch (e) { /* fallback fonts */ }
     initPrims(); buildMaterials();
+    if (typeof WebGL2RenderingContext === 'undefined') throw new Error('WebGL 2 is not available');
     Render.init(document.getElementById('gl'));
     Render.applyPreset(Game.pickPreset());
     G.S = Game.titleState();
@@ -14212,7 +14812,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Chain, CHAIN_FUN, CHAIN_FARM, Music, MOODS, Guard, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

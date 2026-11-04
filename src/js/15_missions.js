@@ -84,7 +84,7 @@ const Missions = {
   },
   ensure() {
     const S = G.S; const M = S.missions;
-    if (M.tut < TUTORIAL.length && !M.active.some((m) => m.tpl.startsWith('t_'))) { const t = TUTORIAL[M.tut]; this.add(JSON.parse(JSON.stringify(Object.assign({}, t, { prog: 0, mark: t.mark })))); }
+    if (M.tut < TUTORIAL.length && !M.active.some((m) => m.tpl.startsWith('t_')) && !(S.chain && (S.chain.cur || S.chain.breakDue))) { const t = TUTORIAL[M.tut]; this.add(JSON.parse(JSON.stringify(Object.assign({}, t, { prog: 0, mark: t.mark })))); }
     const want = M.tut < 3 ? 0 : M.tut < TUTORIAL.length ? 2 : 3;
     let guard = 0;
     while (M.active.filter((m) => !m.tpl.startsWith('t_') && !m.special).length < want && guard++ < 20) { const m = this.generate(); if (!m) break; this.add(m); }
@@ -99,6 +99,7 @@ const Missions = {
     S.missions.history.unshift({ title: m.title, reward: m.reward, day: Time.day() }); if (S.missions.history.length > 30) S.missions.history.pop();
     UI.missionDone(m);   // confetti, coins into the wallet, stars and a fanfare
     Bus.emit('missionDone', { m });
+    if (m.tpl.startsWith('t_') && G.started) Chain.afterLesson(m);   // some fun before the next lesson
     this.ensure();
   },
   fail(m, why) { const S = G.S; S.missions.active = S.missions.active.filter((x) => x !== m); UI.toast(L('Mission failed: ', 'లక్ష్యం విఫలమైంది: ') + LN(m.title) + (why ? ' — ' + LN(why) : ''), 'bad'); this.ensure(); },

@@ -20,7 +20,7 @@ It runs in the browser on PC and on phones, in English, हिन्दी, ব�
 
 Works on Android phones, iPhones, iPads, tablets and computers, in any modern browser (Chrome, Safari, Edge, Firefox).
 
-- **iPhone / iPad:** open the game in Safari, tap **Share → Add to Home Screen**, then start it from the home screen. It opens full screen like an app.
+- **iPhone / iPad:** open the game in Safari (iOS 15 or newer), tap **Share → Add to Home Screen**, then start it from the home screen. It opens full screen like an app. Sound plays even with the silent switch on (use the volume buttons or Menu → Audio). If a phone ever runs out of memory, the next start switches to light graphics by itself, and if the game cannot start, the loading screen says why and offers **Try again**.
 - **Android:** the game goes full screen when you tap Start. You can also use Chrome's **Install app / Add to Home screen**.
 - **Turn the phone sideways** for the best view. Phones start on the Low quality setting so the game stays smooth.
 - **Just follow the coach:** the yellow strip at the bottom and the mission card always say the next step ("Go to your field", "Hold Work", "Tap Buy seeds"), and the gold arrow shows the way. The steps can also be read aloud (Menu → Voice guide).
@@ -42,13 +42,14 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 - **Village development:** fund CC roads, street lights, a drinking water tank, a shopping complex, a school, the health centre, canal lining, a village godown and a market expansion.
 - **Ranks:** Small Farmer → Successful Farmer → Large Farmer → Agricultural Business Owner → Village Agribusiness → Agricultural Company.
 - **Missions:** an eight-step tutorial (you can skip it), then farm goals that adapt to your farm, plus pest attacks, droughts and the festivals Bonalu, Bathukamma, Sankranti and Ugadi.
+- **Mission after mission:** one mission at a time on the card at the top right, and the next one comes right after it, for ever. Farm work and fun take turns: plough the field, then a cup of chai at Yadamma's stall; sow, then ring the temple bell; harvest, then hit a six in gully cricket, chase Ranga's runaway rooster, get your things back from the naughty monkey, cannonball into the lake, do the chicken dance... Each mission has a little story and a reward, ▶ **Play** starts a mini-game straight away, ⏭ swaps a mission you don't fancy, and every five in a row pays a ₹2,500 bonus. During the tutorial the fun comes as breaks between the lessons and while the crop grows.
 - **Today's tasks:** every morning brings five new tasks: one farm job, one in the village (chai at the tea stall, the temple, the bus, your dog), two fun ones (hit a six, cut kites, catch fish, Holi, the rooster, the monkey, a lake jump) and one trip (the helicopter, the jeep, a new place). Each pays a reward, all five pay a ₹3,000 bonus, and you can swap one task a day.
 - **Village life:** up to about 70 villagers with daily routines, including the sarpanch, the seed shop owner, the mechanic, the doctor, the moneylender and the shepherd. There are cattle, buffaloes, goats, sheep, dogs, chickens and birds, plus buses, lorries, autos and motorbikes on the roads.
-- **Sound:** wind, rain, crickets, temple bells, engines and animals, and music that follows the time of day. All of it is generated live in the browser.
+- **Sound and music:** wind, rain, crickets, temple bells, engines and animals, and a little village band playing live: tanpura drone, bansuri flute with gentle glides, santoor, tabla and a soft harmonium. Every song has a tune that comes back (intro, A, A, B, A) in a raga for the time of day: Mohanam in the morning, Madhyamavati at noon, Hamsadhwani by the lake in the evening, a Hindolam lullaby at night, santoor in the monsoon rain, and faster songs for festivals and mini-games. All of it is generated in the browser.
 - **Easy to play:** one Auto button does the next job on your field: plough, sow, water, feed, weed, spray or harvest. Missing seeds or fertilizer? One tap gets them delivered to the field. When the crop is growing, "Rest" jumps ahead to the next thing it needs.
 - **Never lost:** a gold arrow and an on-screen marker always point to your next goal. The minimap faces north and shows shops, roads and your fields. On the full map, tap any place and take an auto straight there.
 - **Graphics:** Low, Medium, High, Ultra and Cinematic presets. Phones start on Low and run at a steady 60 or 30 FPS ("Auto" picks what the phone can hold). Far trees and fields switch to lighter models, and resolution adjusts automatically to keep the game smooth.
-- **Your tasks in the corner:** after the tutorial the card at the top right lists today's tasks instead of telling you to go to your field and work. Tap it for the full list; fold it away with –. Want help with a farm goal? Tap **Guide me** and the card and the gold arrow show you each step until you stop guiding.
+- **Your mission in the corner:** the card at the top right shows the current mission and the next step, and the gold arrow points the way. Tap the card for the full list: the mission, today's tasks and the bigger farm goals. Want help with a farm goal? Tap **Guide me** and the card and the gold arrow show you each step until you stop guiding.
 - **Compulsory rest:** after about 4 hours of work (5 in Easy mode) your farmer must rest for 3 to 5 hours before working again. Tap **😴 Rest** (it replaces the Work button) or press R; the hours pass and you wake up fresh. A night's sleep resets it too.
 - **Daytime only:** play runs from 6:30 in the morning to 6 in the evening; then the night passes by itself and a sunny new morning begins.
 - **Celebrations:** every finished mission gets confetti, three stars, a cheer and coins flying into your wallet. Trophies and new ranks too.
@@ -95,7 +96,7 @@ Works on Android phones, iPhones, iPads, tablets and computers, in any modern br
 | F (hold) | Work (hold) | Auto: does the next job on your field |
 | F | Big gold button | In a mini-game: Dive, Hit, Pull or Catch |
 | R | 😴 Rest | Rest when your farmer is too tired to work |
-| J | Tap the task card | Today's tasks and farm goals |
+| J | Tap the mission card | Your mission, today's tasks and farm goals |
 | 1 – 6 | Tool bar | Auto, hoe, seeds, fertilizer, sprayer, sickle |
 | Q | Type | Switch seed, fertilizer or spray |
 | G | Lower / Raise | Lower or raise the implement |
@@ -144,11 +145,13 @@ The browser tests drive the game in headless Chromium. They need Playwright's Ch
 | `src/js/14c_extras.js` | Daily gift, trophies, pet dog, photo sharing, easy mode, how-to-play cards |
 | `src/js/15_missions.js` | Tutorial and generated missions |
 | `src/js/15b_coach.js` | Step-by-step coach, gold guide arrow, spoken instructions |
-| `src/js/16_audio.js` | Ambience, spatial sounds, engines, music |
+| `src/js/16_audio.js` | Ambience, spatial sounds, engines, sound effects |
+| `src/js/16b_music.js` | The background music: a live village band (tanpura, bansuri, santoor, tabla, harmonium) |
 | `src/js/17_ui.js` | HUD, map, menus, shops, dialogue, settings, touch controls |
 | `src/js/12c_fun.js` | Dressing room, funny moves, Explore mode, golden mangoes, places to discover, races |
 | `src/js/12d_games.js` | Mini-games: Holi colours, kite fights, gully cricket, fishing, rooster chase, lake jump, the naughty monkey, the daily lucky wheel |
-| `src/js/15c_tasks.js` | Today's tasks (the corner card and the task list) and the compulsory rest |
+| `src/js/15c_tasks.js` | Today's tasks (the task list) and the compulsory rest |
+| `src/js/15d_chain.js` | Mission after mission: farm work and funny village tasks taking turns on the corner card |
 | `src/js/17c_menu.js` | The Menu tabs, graphics styles, button layout editor, floating joystick, gyroscope |
 | `src/js/18_save.js` | Browser and cloud saves |
 | `src/js/18b_account.js` | Sign in / sign up with email, password reset, keeping the farm in step with the account |

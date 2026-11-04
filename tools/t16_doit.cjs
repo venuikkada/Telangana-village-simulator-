@@ -22,6 +22,7 @@ const path = require('path');
       if (st.tut >= 8) { log.push('TUTORIAL DONE'); console.log('TUTORIAL DONE'); break; }
       if (st.modal) { await page.evaluate(() => { const m = document.getElementById('modal'); const b = m.querySelector('.btn.acc') || m.querySelector('.opts .btn'); if (b) b.click(); else window.__tvs.sys.UI.close(); }); await page.waitForTimeout(800); continue; }
       if (st.auto) { await page.waitForTimeout(1500); continue; }
+      if (st.m === 'c_fun') { await page.evaluate(() => window.__tvs.sys.Chain.skip()); continue; }   // fun breaks: back to the lesson
       const key = st.m + ': ' + st.text; if (log[log.length - 1] !== key) { log.push(key); console.log(`[${Math.round((Date.now() - t0) / 1000)}s] ${key}`); }
       await page.evaluate(() => window.__tvs.sys.Auto.doStep()); taps++;
       await page.waitForTimeout(1800);

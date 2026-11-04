@@ -145,6 +145,19 @@ const Tasks = {
     Fun.bar(false);
     UI.sheet({ title: L("Today's tasks", 'ఈ రోజు పనులు'), sub: L(`Day ${Time.day()} · finish all for a bonus of ${fmtINR(TASK_BONUS)}`, `రోజు ${Time.day()} · అన్నీ చేస్తే ${fmtINR(TASK_BONUS)} బోనస్`), narrow: true, kind: 'tasks', render: (b) => {
       const T = this.st(), S = G.S;
+      // the mission on the corner card comes first
+      const cm = Chain.cur();
+      if (cm) {
+        const st = Coach.step && Coach.step.m === cm ? Coach.step : null;
+        const r = h('div', { class: 'row' });
+        if (st && st.play) r.appendChild(UI.btn('▶ ' + L('Play', 'ఆడండి'), () => { UI.close(); Chain.play(); }, 'acc sm'));
+        else if (st && st.target) r.appendChild(UI.btn(L('Go', 'వెళ్దాం') + ' ➜', () => { UI.close(); Auto.doStep(); }, 'acc sm'));
+        r.appendChild(UI.btn('⏭ ' + L('Skip this mission', 'ఈ లక్ష్యం దాటవేయి'), () => { Chain.skip(); UI.rerender(); }, 'alt sm'));
+        b.appendChild(h('div', { class: 'act task' }, h('div', { class: 'row', style: { justifyContent: 'space-between', flexWrap: 'nowrap' } }, h('b', null, '🎯 ' + L(`Mission ${cm.n}`, `లక్ష్యం ${cm.n}`) + ': ' + cm.icon + ' ' + LN(cm.title)), h('span', { class: 'chip good' }, '+' + fmtINR(cm.reward))),
+          cm.story ? h('p', { class: 'empty', style: { textAlign: 'left', padding: '2px 0', fontStyle: 'italic' } }, LN(cm.story)) : null,
+          h('div', { class: 'prog' }, h('b', { style: { width: Math.round(clamp01(cm.prog / cm.target) * 100) + '%' } })), r));
+        b.appendChild(h('div', { class: 'sec' }, L("Today's tasks", 'ఈ రోజు పనులు')));
+      }
       T.list.forEach((e, i) => {
         const t = TASK_BY[e.id]; if (!t) return;
         const row = h('div', { class: 'act task' + (e.done ? ' done' : '') },
@@ -184,7 +197,7 @@ const Tasks = {
     M.active = M.active.filter((m) => !m.tpl.startsWith('t_')); M.tut = TUTORIAL.length;
     if (M.focus && !M.active.some((m) => m.uid === M.focus)) M.focus = null;
     Missions.ensure(); Coach.key = ''; UI._mKey = ''; UI.dirty = true;
-    UI.close(); UI.toast(L("Tutorial skipped. Here are today's tasks!", 'శిక్షణ దాటవేశారు. ఇవీ ఈ రోజు పనులు!'), 'good');
+    UI.close(); UI.toast(L('Tutorial skipped. Here comes your first mission!', 'శిక్షణ దాటవేశారు. ఇదిగో మీ మొదటి లక్ష్యం!'), 'good');
   },
 };
 

@@ -170,6 +170,8 @@ const COACH_STEPS = {
     if (Time.hour() < 16.5) return { text: L(`The celebration is at ${m.mark === 'ghat' ? 'the lake ghat' : 'the temple'} from 4:30 PM`, `వేడుక సాయంత్రం 4:30 నుంచి`), target: { x: t.x, z: t.z, name: nm }, icon: 'wait' };
     return CH.go(t, nm);
   },
+  c_fun: (m) => Chain.step(m),
+  c_farm: (m) => Chain.step(m),
   _default: (m) => { const t = Missions.markerPos(m.mark); if (t) return CH.go(t, Missions.markerName(m.mark) || LN(m.title)); return { text: CH.office(L('Missions', 'లక్ష్యాలు')), icon: 'office', tab: 'missions' }; },
 };
 
@@ -179,8 +181,10 @@ const Coach = {
   // After the tutorial nothing is pushed: the corner card shows today's tasks instead.
   current() {
     const S = G.S; if (!S || !S.missions) return null;
-    const act = Missions.ordered(); if (!act.length) return null;
-    return (S.missions.focus && act.find((m) => m.uid === S.missions.focus)) || act.find((m) => m.tpl.startsWith('t_')) || null;
+    const act = Missions.ordered();
+    const foc = S.missions.focus && act.find((m) => m.uid === S.missions.focus); if (foc) return foc;
+    if (S.chain && S.chain.cur) return S.chain.cur;   // mission after mission
+    return act.find((m) => m.tpl.startsWith('t_')) || null;
   },
   follow(m) { G.S.missions.focus = m ? m.uid : null; this.key = ''; UI.dirty = true; UI._mKey = ''; },
   compute() {
@@ -246,6 +250,10 @@ const Coach = {
       case 'map': return [
         m ? L('Tap the map button at the top (or the round mini map).', 'పైన మ్యాప్ బటన్ (లేదా గుండ్రటి చిన్న మ్యాప్) నొక్కండి.') : L('Press M, or click the round mini map.', 'M నొక్కండి, లేదా గుండ్రటి చిన్న మ్యాప్ క్లిక్ చేయండి.'),
         L('Tap a place on the map to see it and take an auto there.', 'మ్యాప్‌లో ఒక చోటు నొక్కి చూడండి, ఆటోలో అక్కడికి వెళ్ళండి.')];
+      case 'play': return [
+        L('Tap ▶ Play on the mission card.', 'లక్ష్యం కార్డులో ▶ ఆడండి నొక్కండి.'),
+        L('Then use the big round button to play.', 'తర్వాత పెద్ద గుండ్రటి బటన్‌తో ఆడండి.'),
+        L('Finish it for the reward and the next mission.', 'పూర్తి చేస్తే బహుమతి, తర్వాతి లక్ష్యం వస్తాయి.')];
       case 'coin': return [
         L('Harvest and sell crops at the market yard to earn money.', 'పంట కోసి మార్కెట్ యార్డులో అమ్మి డబ్బు సంపాదించండి.'),
         L('Short of money? The bank in Nagaram gives crop loans.', 'డబ్బు తక్కువగా ఉందా? నగరం బ్యాంకు పంట రుణాలు ఇస్తుంది.')];
@@ -269,6 +277,7 @@ const Coach = {
   prime() { if (this._primed || !window.speechSynthesis || !window.SpeechSynthesisUtterance) return; this._primed = true; try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; speechSynthesis.speak(u); } catch (e) { /* ignore */ } },
 };
 const COACH_ICON = {
+  play: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M10 8.5v7l6-3.5z" fill="currentColor"/></svg>',
   walk: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="13" cy="4" r="2" fill="currentColor"/><path d="M9 21l3-7 3 3v4M7 12l3-4h4l3 4M12 8l-1 6"/></svg>',
   drive: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="7" cy="17" r="3"/><circle cx="18" cy="18" r="2"/><path d="M4 14V8h7l2 5h6v5M11 8V5h-4"/></svg>',
   work: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M13 5.5L8 13h4l-1 5.5 5-7.5h-4z" fill="currentColor"/></svg>',

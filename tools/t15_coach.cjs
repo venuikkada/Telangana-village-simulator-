@@ -31,6 +31,7 @@ const { open, waitReady } = require('./harness.cjs');
     const log = [];
     for (let i = 0; i < 40; i++) {
       const st = await step(); if (!st) { log.push('no step'); break; }
+      if (st.m === 'c_fun') { await page.evaluate(() => window.__tvs.sys.Chain.skip()); log.push('(fun break skipped)'); continue; }
       const key = st.m + ': ' + st.text; if (log[log.length - 1] !== key) log.push(key);
       const did = await page.evaluate((st) => {
         const s = window.__tvs.sys, P = s.Player; const g = window.__tvs;

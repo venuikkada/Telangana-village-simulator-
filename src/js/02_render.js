@@ -287,7 +287,9 @@ const Render = {
     this.resize();
   },
   applyPreset(id) {
-    const P = PRESETS[id] || PRESETS.MEDIUM;
+    let P = PRESETS[id] || PRESETS.MEDIUM;
+    // light mode for a phone that ran out of memory before: fewer pixels, trees and people
+    if (G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 0.65, minPr: 0.5, maxPr: 0.8, drawDist: 260, trees: 0.28, npc: 0.3, particles: 0.2, rainDrops: 700, safe: true });
     const prev = G.preset;
     G.preset = P;
     this.pr = clamp(P.pr, P.minPr, P.maxPr);

@@ -159,6 +159,8 @@ const Game = {
   },
   setPreset(p) {
     if (!PRESETS[p]) return;
+    if (Settings.v.safe) { Settings.v.safe = false; Settings.save(); }   // picked by hand: no more light mode next time
+    G.safe = false;
     Render.applyPreset(p);
     if (!G.ready) return;
     const P = G.preset;
@@ -170,7 +172,7 @@ const Game = {
   async build() {
     const steps = [];
     const step = (w, en, te, fn) => steps.push({ w, en, te, fn });
-    step(1, 'Shaping the land', 'నేలను తీర్చిదిద్దుతున్నాం', () => { Sky.init(); layoutFields(); World.buildTerrain(isMobile ? 224 : 256); World.initOcc(); });
+    step(1, 'Shaping the land', 'నేలను తీర్చిదిద్దుతున్నాం', () => { Sky.init(); layoutFields(); World.buildTerrain(G.safe ? 160 : isMobile ? 224 : 256); World.initOcc(); });
     step(1, 'Laying roads and canals', 'రోడ్లు, కాలువలు వేస్తున్నాం', () => { World.buildRoads(); World.buildWater(); Atlas.init(); });
     step(3, 'Building Ramapuram', 'రామాపురం నిర్మిస్తున్నాం', () => { World.buildVillage(); Village.reserveSpots(); });
     step(2, 'Marking out the fields', 'పొలాల గట్లు వేస్తున్నాం', () => { Fields.init(); this.setupFields(); });
@@ -382,7 +384,8 @@ const Game = {
     if (Sim.nightMins() > 0) Sim.advance(Sim.nightMins());   // a save from the night: wake up to the morning
     Extras.start(!!data);
     Fun.start();
-    Tasks.init(); Rest.init();
+    Tasks.init(); Rest.init(); Chain.init();
+    if (Guard.fresh) { Guard.fresh = false; setTimeout(() => UI.toast(L('Light graphics are on so the game runs smoothly on this phone. Change it any time in Menu → Graphics.', 'ఈ ఫోన్‌లో ఆట సాఫీగా నడవడానికి తేలికపాటి గ్రాఫిక్స్ పెట్టాం. మెనూ → గ్రాఫిక్స్‌లో ఎప్పుడైనా మార్చుకోండి.'), 'info'), 5000); }
     if (data) {
       UI.toast(L(`Welcome back, ${S.player.name}. ${Time.fmtDate()}`, `మళ్లీ స్వాగతం, ${S.player.name}. ${Time.fmtDate()}`), 'good');
     } else {
@@ -496,7 +499,7 @@ function frame(now) {
       Extras.update(dt);
       Fun.update(dt);
       Games.update(dt);
-      Rest.update(dt);
+      Rest.update(dt); Chain.update(dt);
       Loop.touchT -= dt; if (isMobile && Loop.touchT <= 0) { Loop.touchT = 0.25; UI.updateTouchLabels(); }
       SaveSys.tick(dt);
     }
@@ -519,9 +522,34 @@ function showFatal(e) {
   const m = document.getElementById('lmsg');
   const webgl = /WebGL|context/i.test(String(e && e.message));
   if (m) m.textContent = webgl
-    ? L('This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.', 'ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.')
+    ? (isIOS ? L('This iPhone could not start the 3D graphics. Please update it to iOS 15 or newer (Settings → General → Software Update), then open the game again in Safari.', 'ఈ ఐఫోన్‌లో 3D గ్రాఫిక్స్ ప్రారంభం కాలేదు. దయచేసి iOS 15 లేదా కొత్తదానికి అప్‌డేట్ చేయండి (Settings → General → Software Update), తర్వాత Safariలో మళ్ళీ తెరవండి.')
+      : L('This browser could not start 3D graphics (WebGL). Try the latest Chrome, Edge or Firefox with hardware acceleration turned on.', 'ఈ బ్రౌజర్‌లో 3D గ్రాఫిక్స్ (WebGL) ప్రారంభం కాలేదు. హార్డ్‌వేర్ యాక్సిలరేషన్ ఆన్ చేసి తాజా Chrome/Edge/Firefox వాడండి.'))
     : L('Something went wrong while loading: ', 'లోడ్ చేస్తుండగా సమస్య వచ్చింది: ') + (e && e.message ? e.message : String(e));
+  // a way out on phones, where there is no reload key
+  if (box.querySelector('.reload')) return;
+  const b = h('button', { class: 'btn reload', type: 'button', onclick: () => location.reload() }, L('Try again', 'మళ్ళీ ప్రయత్నించండి'));
+  const lb = box.querySelector('.lbox'); if (lb) lb.appendChild(b);
 }
+
+// Phones that ran out of memory (the browser reloads the page by itself) start in light mode the
+// next time. A heartbeat is kept while the game runs; leaving the page normally counts as a clean exit.
+const Guard = {
+  n: 0, safe: false, fresh: false,
+  init() {
+    const b = Store.get('tvs_guard', null);
+    const crashed = !!(b && !b.clean && Date.now() - (b.alive || 0) < 120000);
+    this.n = crashed ? (b.n || 0) + 1 : 0;
+    if (isMobile && this.n >= 1 && !Settings.v.safe) { Settings.v.safe = true; Settings.v.preset = 'LOW'; Settings.save(); this.fresh = true; }
+    this.safe = isMobile && !!Settings.v.safe;
+    this.beat();
+    setInterval(() => { if (!document.hidden) this.beat(); }, 10000);
+    const bye = () => Store.set('tvs_guard', { alive: Date.now(), n: this.n, clean: true });
+    addEventListener('pagehide', bye);
+    document.addEventListener('visibilitychange', () => { if (document.hidden) bye(); else this.beat(); });
+    setTimeout(() => { this.n = 0; if (!document.hidden) this.beat(); }, 180000);   // a few calm minutes: forget the old crash
+  },
+  beat() { Store.set('tvs_guard', { alive: Date.now(), n: this.n, clean: false }); },
+};
 
 // every device: touch class for CSS, no page zoom or bounce, sound and voice start on the first tap,
 // re-layout on rotation, and recover if the phone pauses the 3D graphics
@@ -532,9 +560,13 @@ function deviceSetup() {
   document.addEventListener('touchmove', (e) => { if (e.touches.length > 1 && !(e.target.closest && e.target.closest('#fullmap'))) e.preventDefault(); }, { passive: false });
   const first = () => { Audio2.unlock(); Coach.prime(); };
   document.addEventListener('touchend', first, { passive: true }); document.addEventListener('click', first); document.addEventListener('keydown', first);
-  const reflow = () => { Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
+  const reflow = () => { if (isIOS && (window.scrollX || window.scrollY)) window.scrollTo(0, 0); Render.resize(); UI.dirty = true; Game.rotateHint(); if (Map2.full) Map2.sizeFull(); Hud.apply(); };
   window.addEventListener('orientationchange', () => { setTimeout(reflow, 250); setTimeout(reflow, 900); });
   if (window.visualViewport) window.visualViewport.addEventListener('resize', () => { clearTimeout(deviceSetup.t); deviceSetup.t = setTimeout(reflow, 150); });
+  // iPhone: the keyboard pushes the page up and can leave it there; put it back when typing ends
+  if (isIOS) document.addEventListener('focusout', () => setTimeout(() => { if (window.scrollX || window.scrollY) window.scrollTo(0, 0); }, 80));
+  // sound pauses with the page and comes back on the next tap (iPhone also pauses it for calls)
+  document.addEventListener('visibilitychange', () => Audio2.pageVisible(!document.hidden));
   const cv = document.getElementById('gl');
   cv.addEventListener('webglcontextlost', (e) => {
     e.preventDefault(); SaveSys.quickLocal();
@@ -545,7 +577,10 @@ function deviceSetup() {
 
 async function boot(hot) {
   try {
+    window.__tvsUp = true;   // the game code runs: the page's start-up watchdog can stand down
+    const bf = document.getElementById('bootfail'); if (bf) bf.hidden = true;
     Settings.load();
+    Guard.init(); G.safe = Guard.safe;
     if (!LANGS.some((x) => x.id === Settings.v.lang)) Settings.v.lang = 'en';
     if (!(await Lang.load(Settings.v.lang))) Settings.v.lang = 'en';   // offline or file missing: English
     LANG = Settings.v.lang; Lang.fonts(LANG); Time.scale = Settings.v.timeScale || 1;
@@ -555,6 +590,7 @@ async function boot(hot) {
     UI.loading(0.03, L('Loading fonts…', 'అక్షరాలు లోడ్ అవుతున్నాయి…'));
     try { await Promise.race([Promise.all(['700 40px "Baloo Tammudu 2"', '700 26px "Hind Guntur"', '600 26px "Hind Guntur"'].map((f) => document.fonts.load(f, 'అఆ Aa'))), sleepMs(2500)]); } catch (e) { /* fallback fonts */ }
     initPrims(); buildMaterials();
+    if (typeof WebGL2RenderingContext === 'undefined') throw new Error('WebGL 2 is not available');
     Render.init(document.getElementById('gl'));
     Render.applyPreset(Game.pickPreset());
     G.S = Game.titleState();
@@ -583,7 +619,7 @@ async function boot(hot) {
 }
 
 // debug / test handle
-G.sys = { THREE, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
+G.sys = { THREE, Chain, CHAIN_FUN, CHAIN_FARM, Music, MOODS, Guard, Tasks, Rest, TASK_POOL, Games, Fun, Emote, EMOTES, Wardrobe, Account, Menu, Hud, HudEdit, Gyro, Look, World, Fields, Farm, Village, Workers, Services, Progress, Missions, Coach, Guide, CH, COACH_STEPS, Auto, Celebrate, Nature, Lang, I18N, LANGS, DailyGift, Trophies, TROPHIES, Pet, Photo, HowTo, Extras, Market, Storage, Finance, Inv, Money, Weather, Time, Sky, Render, Player, Cam, Interact, Input, Vehicles, Traffic, NPCs, Fauna, Humans, Animals, Veg, Chunks, UI, Map2, Audio2, Sim, Game, SaveSys, Settings, POI, Graph, FX, Dialog, Rel, Bus, CROPS, ITEMS, PRESETS };
 
 window.claude?.hot?.snapshot?.(() => (G.started ? { save: SaveSys.serialize() } : {}));
 if (window.claude?.hot?.ready) window.claude.hot.ready((d) => boot(d || {}));

@@ -18,8 +18,10 @@ const shot = (page, n) => page.screenshot({ path: path.join(ROOT, 'shots', n + '
     await page.waitForTimeout(800);
 
     // ---- tasks instead of nagging ----
-    ok(await ev(() => /Tutorial 1 of 8/i.test(document.getElementById('missions').innerText) && !!document.querySelector('#missions .tmin')), 'the tutorial card has a skip button');
+    ok(await waitFor(() => /Tutorial 1 of 8/i.test(document.getElementById('missions').innerText) && !!document.querySelector('#missions .tmin'), 60000), 'the tutorial card has a skip button');
     await ev(() => document.querySelector('#missions .tmin').click());
+    // (the mission chain has its own test, t23: here it is paused so the card shows today's tasks)
+    await ev(() => { const s = window.__tvs.sys; s.Chain.update = () => {}; window.__tvs.S.chain.cur = null; s.UI._mKey = ''; s.Coach.key = ''; });
     ok(await waitFor(() => /Today's tasks · 0\/5/i.test(document.getElementById('missions').innerText), 8000), 'after skipping: the corner card shows today\'s tasks');
     const card = await ev(() => ({ txt: document.getElementById('missions').innerText, arrow: !!window.__tvs.sys.Map2.target(), rows: document.querySelectorAll('#missions .trow').length }));
     ok(!/Go to your field|Hold Work/.test(card.txt) && !card.arrow && card.rows >= 2, 'no "go to your field and work" and no arrow pushed on you ' + JSON.stringify({ rows: card.rows, arrow: card.arrow }));

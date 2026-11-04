@@ -1,21 +1,25 @@
 // ============================================================================
 // Audio: synthesized ambience, spatial one-shots, engines, generative raga music
 // ============================================================================
-const RAGAS = {
-  morning: { name: 'Mohanam', notes: [0, 2, 4, 7, 9] },
-  noon: { name: 'Madhyamavati', notes: [0, 2, 5, 7, 10] },
-  evening: { name: 'Hamsadhwani', notes: [0, 2, 4, 7, 11] },
-  night: { name: 'Hindolam', notes: [0, 3, 5, 8, 10] },
-};
 const Audio2 = {
-  ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null, nextBeat: 0, beatIdx: 0, phraseQ: [], droneT: 0, melT: 0, lastNote: 0,
+  ctx: null, ok: false, active: 0, birdT: 2, dogT: 8, cowT: 6, bellDone: {}, engType: null,
   unlock() {
-    if (this.ctx) { if (this.ctx.state !== 'running' && this.ctx.state !== 'closed') this.ctx.resume().catch(() => {}); return; }
+    if (this.ctx) {
+      if (this.ctx.state !== 'running' && this.ctx.state !== 'closed' && !document.hidden) this.ctx.resume().catch(() => {});
+      if (this.keep && this.keep.paused && !document.hidden) this.keep.play().catch(() => {});
+      return;
+    }
+    // iPhone: let the music play even when the ring/silent switch is on silent (the volume buttons and
+    // the in-game sliders still work). Newer iOS has a setting for it; older iOS needs a silent
+    // HTML audio loop playing alongside.
+    try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch (e) { /* not supported */ }
+    if (isIOS && !navigator.audioSession) this.silentLoop();
     try {
       const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
       this.ctx = new AC();
     } catch (e) { return; }
     const c = this.ctx;
+    if (c.state !== 'running') c.resume().catch(() => {});
     this.master = c.createGain(); this.comp = c.createDynamicsCompressor(); this.comp.threshold.value = -14; this.comp.ratio.value = 3;
     this.master.connect(this.comp); this.comp.connect(c.destination);
     this.musicBus = c.createGain(); this.ambBus = c.createGain(); this.sfxBus = c.createGain();
@@ -26,13 +30,35 @@ const Audio2 = {
     this.buildAmbience();
     this.applyVolumes();
     this.ok = true;
-    this.nextBeat = c.currentTime + 0.3;
+  },
+  // a quiet 8 kHz WAV on loop: on older iPhones it switches the page to "media" sound
+  silentLoop() {
+    if (this.keep) return;
+    try {
+      const n = 4000, b = new Uint8Array(44 + n), v = new DataView(b.buffer);
+      const str = (o, s) => { for (let i = 0; i < s.length; i++) b[o + i] = s.charCodeAt(i); };
+      str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVEfmt '); v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true);
+      v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true); str(36, 'data'); v.setUint32(40, n, true);
+      b.fill(128, 44);
+      const a = new Audio(URL.createObjectURL(new Blob([b], { type: 'audio/wav' })));
+      a.loop = true; a.setAttribute('playsinline', ''); a.volume = 0.01;
+      const p = a.play(); if (p && p.catch) p.catch(() => {});
+      this.keep = a;
+    } catch (e) { this.keep = null; }
+  },
+  // the page was hidden or shown: rest the sound, then pick it up again
+  pageVisible(on) {
+    if (!this.ctx) return;
+    try {
+      if (!on) { this.ctx.suspend(); if (this.keep) this.keep.pause(); }
+      else { if (this.ctx.state !== 'running') this.ctx.resume().catch(() => {}); if (this.keep) { const p = this.keep.play(); if (p && p.catch) p.catch(() => {}); } }
+    } catch (e) { /* ignore */ }
   },
   makeNoise(sec) { const c = this.ctx; const b = c.createBuffer(1, c.sampleRate * sec, c.sampleRate); const d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; return b; },
   makeIR(sec) { const c = this.ctx; const n = c.sampleRate * sec; const b = c.createBuffer(2, n, c.sampleRate); for (let ch = 0; ch < 2; ch++) { const d = b.getChannelData(ch); for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / n, 3); } return b; },
   applyVolumes() {
     if (!this.ctx) return; const v = Settings.v;
-    this.master.gain.value = v.vol; this.musicBus.gain.value = v.music * 0.5; this.ambBus.gain.value = v.amb; this.sfxBus.gain.value = v.sfx;
+    this.master.gain.value = v.vol; this.musicBus.gain.value = v.music * 1.6; this.ambBus.gain.value = v.amb; this.sfxBus.gain.value = v.sfx;
   },
   noiseSrc(loop = true) { const s = this.ctx.createBufferSource(); s.buffer = this.noise; s.loop = loop; return s; },
   buildAmbience() {
@@ -208,61 +234,10 @@ const Audio2 = {
     if (hr > 5.2 && hr < 6.4 && Math.random() < dt * 0.15) { const h = POI.houses[Math.floor(Math.random() * POI.houses.length)]; if (h) this.at('rooster', h.x, h.z, 1.5); }
     this.music(now);
   },
-  // ---------- generative music ----------
-  raga() { const h = Time.hour(); return h >= 5 && h < 11 ? RAGAS.morning : h >= 11 && h < 16 ? RAGAS.noon : h >= 16 && h < 20 ? RAGAS.evening : RAGAS.night; },
+  // ---------- background music (16b_music.js) ----------
   music(now) {
-    if (Settings.v.music <= 0.001) return;
-    const SA = 146.83; // D3
-    const fest = Time.festivalToday() && Time.hour() > 16;
-    const busy = Sky.daylight > 0.5 || fest;
-    while (this.nextBeat < now + 0.4) {
-      const t = this.nextBeat; const i = this.beatIdx++;
-      const eighth = fest ? 0.24 : 0.32;
-      this.nextBeat += eighth;
-      // tanpura drone every 12 eighths
-      if (i % 12 === 0) { [[SA * 1.5, 0], [SA * 2, 0.6], [SA * 2, 1.2], [SA, 1.8]].forEach(([f, dt2]) => this.pluck(f, t + dt2 * (eighth / 0.32))); }
-      // dappu + talam rhythm (6/8 tisra)
-      if (busy && G.started) {
-        const pat = [1, 0, 0, 1, 0, 1, 1, 0, 1, 1, 0, 0];
-        if (pat[i % 12]) this.dappu(t, i % 6 === 0 ? 1 : 0.6);
-        if (i % 6 === 0 || (fest && i % 3 === 0)) this.talam(t);
-      }
-      // melody: bansuri phrases
-      if (i % 2 === 0) {
-        if (!this.phraseQ.length && (i % 24 === 0) && Math.random() < (busy ? 0.75 : 0.5)) this.phraseQ = this.makePhrase();
-        const n = this.phraseQ.shift();
-        if (n !== undefined && n !== null) this.flute(SA * 2 * Math.pow(2, n / 12), t, eighth * 2 * (this.phraseQ.length === 0 ? 2.5 : 1));
-      }
-    }
+    if (Settings.v.music <= 0.001) { if (!this.musicOff) { this.musicOff = true; Music.hush(); } return; }
+    this.musicOff = false;
+    Music.tick(this, now);
   },
-  makePhrase() {
-    const R = this.raga().notes; const deg = [...R, 12, 14, 16].filter((x) => x <= 16);
-    const len = 5 + Math.floor(Math.random() * 6); const out = [];
-    let idx = deg.indexOf(this.lastNote); if (idx < 0) idx = Math.floor(Math.random() * 5);
-    for (let k = 0; k < len; k++) { idx = clamp(idx + Math.round((Math.random() - 0.5) * 3), 0, deg.length - 1); out.push(Math.random() < 0.12 ? null : deg[idx]); }
-    out.push(Math.random() < 0.5 ? 0 : 7); this.lastNote = out[out.length - 1];
-    return out;
-  },
-  pluck(f, t) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; const o2 = c.createOscillator(); o2.type = 'sawtooth'; o2.frequency.value = f * 1.003;
-    const fl = c.createBiquadFilter(); fl.type = 'lowpass'; fl.frequency.setValueAtTime(2400, t); fl.frequency.exponentialRampToValueAtTime(500, t + 1.8);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.05, t + 0.02); g.gain.exponentialRampToValueAtTime(0.0001, t + 2.6);
-    o.connect(fl); o2.connect(fl); fl.connect(g); g.connect(this.musicBus); g.connect(this.verb); o.start(t); o2.start(t); o.stop(t + 2.7); o2.stop(t + 2.7);
-  },
-  flute(f, t, dur) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(f * 0.985, t); o.frequency.exponentialRampToValueAtTime(f, t + 0.08);
-    const vib = c.createOscillator(); vib.frequency.value = 5.3; const vg = c.createGain(); vg.gain.setValueAtTime(0, t); vg.gain.linearRampToValueAtTime(f * 0.006, t + 0.35); vib.connect(vg); vg.connect(o.frequency);
-    const o2 = c.createOscillator(); o2.type = 'triangle'; o2.frequency.value = f * 2; const g2 = c.createGain(); g2.gain.value = 0.12; o2.connect(g2);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.07, t + 0.06); g.gain.setValueAtTime(0.065, t + dur * 0.7); g.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.25);
-    o.connect(g); g2.connect(g); g.connect(this.musicBus); g.connect(this.verb);
-    const b = this.noiseSrc(false); const bf = c.createBiquadFilter(); bf.type = 'bandpass'; bf.frequency.value = f * 3; bf.Q.value = 3; const bg = c.createGain(); this.env(bg, t, 0.02, 0.03, 0.12); b.connect(bf); bf.connect(bg); bg.connect(this.musicBus);
-    o.start(t); vib.start(t); o2.start(t); b.start(t, Math.random()); o.stop(t + dur + 0.3); vib.stop(t + dur + 0.3); o2.stop(t + dur + 0.3); b.stop(t + 0.2);
-  },
-  dappu(t, acc) {
-    const c = this.ctx; const o = c.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(115, t); o.frequency.exponentialRampToValueAtTime(48, t + 0.22);
-    const g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.22 * acc, t + 0.005); g.gain.exponentialRampToValueAtTime(0.0001, t + 0.3);
-    o.connect(g); g.connect(this.musicBus); o.start(t); o.stop(t + 0.32);
-    this.burst(0.05, 0.1 * acc, 'bandpass', 1800, this.musicBus, t - c.currentTime, 0.8);
-  },
-  talam(t) { for (const r of [1, 1.47, 2.09]) this.tone('sine', 3100 * r, 3100 * r, 0.25, 0.012, this.musicBus, t - this.ctx.currentTime); },
 };
