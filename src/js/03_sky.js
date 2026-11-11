@@ -223,7 +223,7 @@ const Sky = {
     f.color.copy(hor);
     if (World.skylineMat) World.skylineMat.uniforms.uHaze.value.copy(hor);
     const P = G.preset;
-    const base = Math.max(1.7 / P.drawDist, 0.0011);
+    const base = Math.max(1.4 / P.drawDist, 0.0011);   // clear air: the haze only closes in at the edge of the view
     f.density = base + fog * 0.011 * (hour < 10 ? 1 : 0.55) + rain * 0.0032 + haze * 0.0016 + cloud * 0.0004;
     // glow for windows / lamps at night
     U.uGlow.value = clamp01(this.night * 1.2 + (1 - day) * 0.3) * (0.85 + rain * 0.15);

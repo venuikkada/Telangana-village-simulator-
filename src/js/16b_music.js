@@ -13,6 +13,7 @@ const MOODS = {
   night: { raga: 'Hindolam', notes: [0, 3, 5, 8, 10], tan: 5, mpm: 100, tala: null, lead: 'flute', soft: true, en: 'Village lullaby', te: 'పల్లె జోల పాట' },
   rain: { raga: 'Megh', notes: [0, 2, 5, 7, 10], tan: 7, mpm: 118, tala: 'soft', lead: 'santoor', soft: true, en: 'Monsoon rain', te: 'వాన చినుకులు' },
   festival: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 192, tala: 'keherwa', lead: 'flute', fest: true, en: 'Festival night', te: 'పండుగ రాత్రి' },
+  work: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 166, tala: 'keherwa', lead: 'flute', en: 'Song of the fields', te: 'పొలం పాట' },
   game: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 184, tala: 'keherwa', lead: 'santoor', fest: true, en: 'Game time!', te: 'ఆట సమయం!' },
 };
 // tabla patterns: one bol per beat (matra); null is a rest
@@ -54,6 +55,7 @@ const Music = {
     if (!G.started || !G.S) return 'morning';
     const hr = Time.hour(), W = Weather.cur;
     if (Time.festivalToday() && hr > 16 && hr < 23) return 'festival';
+    if (performance.now() - (this.workAt || -1e9) < 45000) return 'work';   // a bright, steady song to work to
     if (W && W.rain > 0.45) return 'rain';
     if (hr >= 20.5 || hr < 5) return 'night';
     return hr < 11 ? 'morning' : hr < 16 ? 'noon' : 'evening';
@@ -93,6 +95,7 @@ const Music = {
     if (this.tBar < now - 0.5) this.tBar = now + 0.15;   // the page was asleep: start again cleanly
     if (this.tTan < now - 0.5) this.tTan = now + 0.1;
     while (this.tTan < now + 0.6) this.tanpura();
+    if (typeof Player !== 'undefined' && Player.working) this.workAt = performance.now();
     const want = this.pickMood();
     // a mini-game starting or ending changes the song at the next bar
     if (this.song && this.song.at < this.song.bars.length - 1 && (want === 'game') !== (this.song.id === 'game')) { this.song.at = this.song.bars.length - 1; this.hush(); }

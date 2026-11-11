@@ -2,19 +2,44 @@
 // Instanced humanoid + animal rigs with procedural animation
 // ============================================================================
 const HPART_DEFS = [
-  ['torso', 1], ['head', 1], ['hair', 1], ['bun', 1], ['eye', 2], ['stache', 1], ['bindi', 1],
-  ['uarm', 2], ['farm', 2], ['thigh', 2], ['shin', 2], ['foot', 2], ['skirt', 1], ['pallu', 1], ['turban', 1], ['item', 1],
+  ['torso', 1], ['hips', 1], ['neck', 1], ['head', 1], ['hair', 1], ['bun', 1], ['ear', 2], ['nose', 1], ['eyew', 2], ['eye', 2], ['brow', 2], ['mouth', 1], ['stache', 1], ['bindi', 1],
+  ['uarm', 2], ['farm', 2], ['hand', 2], ['thigh', 2], ['shin', 2], ['foot', 2], ['skirt', 1], ['pallu', 1], ['turban', 1], ['item', 1],
 ];
+// a smooth, rounded body part turned from a profile ([radius, height] from the bottom up), facing outwards
+function hLathe(pts, seg = 9) {
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(Math.max(p[0], 0.0005), p[1])), seg);
+  const pos = g.attributes.position, nor = g.attributes.normal; let dot = 0;
+  for (let i = 0; i < pos.count; i++) dot += pos.getX(i) * nor.getX(i) + pos.getZ(i) * nor.getZ(i);
+  if (dot < 0) { const ix = g.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i]; ix[i] = ix[i + 2]; ix[i + 2] = t; } g.computeVertexNormals(); }
+  return g;
+}
 function hpartGeom(id) {
   let g;
   switch (id) {
-    case 'torso': g = new THREE.CylinderGeometry(0.44, 0.5, 1, 8); g.translate(0, 0.5, 0); g.scale(1, 1, 0.62); break;
-    case 'head': g = new THREE.IcosahedronGeometry(0.5, 1); break;
-    case 'hair': g = new THREE.SphereGeometry(0.5, 10, 6, 0, TAU, 0, Math.PI * 0.56); break;
-    case 'bun': case 'eye': case 'bindi': g = new THREE.IcosahedronGeometry(0.5, 0); break;
-    case 'stache': g = new THREE.BoxGeometry(1, 1, 1); break;
-    case 'uarm': case 'farm': case 'thigh': case 'shin': g = new THREE.BoxGeometry(1, 1, 1); g.translate(0, -0.5, 0); break;
-    case 'foot': g = new THREE.BoxGeometry(1, 1, 1); g.translate(0, -0.5, 0.3); break;
+    // chest and shoulders wider than the waist
+    case 'torso': g = hLathe([[0, -0.03], [0.4, 0], [0.42, 0.16], [0.4, 0.36], [0.47, 0.6], [0.53, 0.8], [0.47, 0.93], [0.24, 1.0], [0, 1.03]], 12); g.scale(1, 1, 0.64); break;
+    case 'hips': g = new THREE.SphereGeometry(0.5, 12, 8); break;
+    case 'neck': g = new THREE.CylinderGeometry(0.42, 0.5, 1, 8); break;
+    case 'head': {   // a head with a jaw and a chin, not a ball
+      g = new THREE.SphereGeometry(0.5, 16, 12); const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) {
+        let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+        if (y < 0) { const k = Math.pow(-y / 0.5, 1.5); x *= 1 - 0.3 * k; z *= 1 - 0.2 * k; z += 0.05 * k; }
+        if (z > 0.3) z = 0.3 + (z - 0.3) * 0.72;   // a flatter face
+        p.setXYZ(i, x, y, z);
+      }
+      g.computeVertexNormals(); break;
+    }
+    case 'hair': g = new THREE.SphereGeometry(0.5, 14, 8, 0, TAU, 0, Math.PI * 0.55); g.rotateX(-0.6); break;   // high on the forehead, low at the back
+    case 'bun': case 'eye': case 'bindi': case 'eyew': g = new THREE.SphereGeometry(0.5, 8, 6); break;
+    case 'ear': case 'nose': case 'hand': g = new THREE.SphereGeometry(0.5, 8, 6); break;
+    case 'stache': case 'brow': case 'mouth': g = new THREE.BoxGeometry(1, 1, 1); break;
+    // limbs hang down from their joint (0 to -1), muscle near the top, slim at the wrist and ankle
+    case 'uarm': g = hLathe([[0.34, -1.02], [0.44, -0.92], [0.5, -0.55], [0.62, -0.22], [0.64, -0.04], [0.46, 0.08], [0, 0.13]]); break;
+    case 'farm': g = hLathe([[0, -1.03], [0.3, -1.0], [0.36, -0.85], [0.5, -0.4], [0.54, -0.16], [0.44, 0.02], [0, 0.06]]); break;
+    case 'thigh': g = hLathe([[0.34, -1.03], [0.44, -0.95], [0.5, -0.7], [0.6, -0.3], [0.6, -0.06], [0.44, 0.05], [0, 0.09]]); break;
+    case 'shin': g = hLathe([[0, -1.03], [0.3, -1.0], [0.33, -0.82], [0.48, -0.42], [0.53, -0.22], [0.44, 0.0], [0, 0.05]]); break;
+    case 'foot': g = new THREE.SphereGeometry(0.5, 10, 6); g.scale(1, 1.25, 1.05); g.translate(0, -0.42, 0.3); break;
     case 'skirt': g = new THREE.CylinderGeometry(0.4, 0.5, 1, 12); g.translate(0, -0.5, 0); break;
     case 'pallu': g = new THREE.BoxGeometry(1, 1, 1); break;
     case 'turban': g = new THREE.CylinderGeometry(0.5, 0.46, 1, 10); break;
@@ -75,6 +100,10 @@ const Humans = {
     const set = (id, k, c) => { const p = this.parts[id]; p.mesh.setColorAt(i * p.mult + k, c); p.mesh.instanceColor.needsUpdate = true; };
     set('torso', 0, a.shirt); set('head', 0, a.skin); set('hair', 0, a.hair); set('bun', 0, a.hair);
     set('eye', 0, C('#15100d')); set('eye', 1, C('#15100d')); set('stache', 0, a.hair); set('bindi', 0, C('#c0161b'));
+    const lip = C(a.skin).multiplyScalar(0.62); lip.r = Math.min(1, lip.r * 1.25);
+    set('neck', 0, a.skin); set('nose', 0, C(a.skin).multiplyScalar(0.93)); set('mouth', 0, lip);
+    set('hips', 0, a.lower === 'pants' || a.lower === 'shorts' ? a.legs : (a.skirtCol || a.shirt));
+    for (const k of [0, 1]) { set('ear', k, a.skin); set('hand', k, a.skin); set('eyew', k, C('#f1ece2')); set('brow', k, a.hair); }
     for (const k of [0, 1]) { set('uarm', k, a.gender === 'f' ? a.skin : a.shirt); set('farm', k, a.skin); set('thigh', k, a.lower === 'pants' ? a.legs : a.lower === 'shorts' ? a.legs : a.skin); set('shin', k, a.lower === 'pants' ? a.legs : a.skin); set('foot', k, C('#3a2a20')); }
     set('skirt', 0, a.skirtCol || a.shirt); set('pallu', 0, a.gender === 'f' ? (a.saree || a.shirt) : (a.towel || a.shirt)); set('turban', 0, a.turban || a.hair);
     set('item', 0, C('#b8862a'));
@@ -189,6 +218,8 @@ const Humans = {
     const pY = sitting ? 0.0 : pelvis;
     this.joint(tor, root, 0, pY, 0, lean, 0, 0);
     this.put('torso', 0, i, this.scaled(tmp, tor, 0.4 * ws, 0.56, 0.28 * ws));
+    this.put('hips', 0, i, sitting ? this.zero : this.scaled(tmp, tor, 0.39 * ws, 0.2, 0.26 * ws, 0, 0.0, 0));
+    this.put('neck', 0, i, this.scaled(tmp, tor, 0.085, 0.13, 0.085, 0, 0.585, 0.005));
     // skirt (lungi/saree/frock)
     const skirtLen = a.lower === 'saree' ? 0.86 : a.lower === 'lungi' ? 0.55 : a.lower === 'frock' ? 0.36 : 0;
     if (skirtLen > 0 && !sitting) this.put('skirt', 0, i, this.scaled(tmp, this.joint(jA, root, 0, pY + 0.06, 0, lean * 0.3 + (thL + thR) * 0.1), a.lower === 'saree' ? 0.42 * ws : 0.4 * ws, skirtLen, a.lower === 'saree' ? 0.36 * ws : 0.33 * ws));
@@ -204,10 +235,19 @@ const Humans = {
     this.put('hair', 0, i, this.scaled(tmp, jA, 0.24, 0.27, 0.25, 0, 0.01, -0.012));
     this.put('bun', 0, i, a.bun ? this.scaled(tmp, jA, 0.12, 0.12, 0.1, 0, 0.0, -0.13) : this.zero);
     // eyes, or sunglasses
-    if (a.shades) { this.put('eye', 0, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, -0.055, 0.025, 0.108)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, 0.055, 0.025, 0.108)); }
-    else { this.put('eye', 0, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, -0.05, 0.02, 0.105)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, 0.05, 0.02, 0.105)); }
-    this.put('stache', 0, i, a.stache ? this.scaled(tmp, jA, 0.09, 0.022, 0.03, 0, -0.045, 0.105) : this.zero);
-    this.put('bindi', 0, i, a.bindi ? this.scaled(tmp, jA, 0.022, 0.022, 0.012, 0, 0.065, 0.113) : this.zero);
+    if (a.shades) { this.put('eye', 0, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, -0.05, 0.025, 0.095)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, 0.05, 0.025, 0.095)); this.put('eyew', 0, i, this.zero); this.put('eyew', 1, i, this.zero); }
+    else for (const [k, sx] of [[0, -1], [1, 1]]) {   // eye whites with dark pupils
+      this.put('eyew', k, i, this.scaled(tmp, jA, 0.042, 0.026, 0.02, sx * 0.044, 0.022, 0.088));
+      this.put('eye', k, i, this.scaled(tmp, jA, 0.021, 0.023, 0.012, sx * 0.044, 0.022, 0.096));
+    }
+    for (const [k, sx] of [[0, -1], [1, 1]]) {
+      this.put('brow', k, i, this.scaled(tmp, jA, 0.046, 0.009, 0.014, sx * 0.045, 0.052, 0.088));
+      this.put('ear', k, i, this.scaled(tmp, jA, 0.024, 0.055, 0.034, sx * 0.108, 0.005, -0.004));
+    }
+    this.put('nose', 0, i, this.scaled(tmp, jA, 0.03, 0.05, 0.036, 0, -0.012, 0.1));
+    this.put('mouth', 0, i, this.scaled(tmp, jA, 0.05, 0.011, 0.012, 0, -0.068, 0.086));
+    this.put('stache', 0, i, a.stache ? this.scaled(tmp, jA, 0.075, 0.018, 0.02, 0, -0.045, 0.094) : this.zero);
+    this.put('bindi', 0, i, a.bindi ? this.scaled(tmp, jA, 0.02, 0.02, 0.01, 0, 0.068, 0.09) : this.zero);
     this.put('turban', 0, i, !a.turban ? this.zero : a.hat === 'cap' ? this.scaled(tmp, jA, 0.25, 0.075, 0.2, 0, 0.15, -0.01) : this.scaled(tmp, jA, 0.27, 0.1, 0.27, 0, 0.1, -0.005));
     this.put('item', 0, i, h.carry === 'pot' ? this.scaled(tmp, jA, 0.34, 0.3, 0.34, 0, 0.3, 0) : this.zero);
     // arms
@@ -216,6 +256,7 @@ const Humans = {
       this.put('uarm', k, i, this.scaled(tmp, jB, 0.085, 0.3, 0.085));
       this.joint(jC, jB, 0, -0.3, 0, el, 0, 0);
       this.put('farm', k, i, this.scaled(tmp, jC, 0.075, 0.3, 0.075));
+      this.put('hand', k, i, this.scaled(tmp, jC, 0.05, 0.1, 0.068, 0, -0.34, 0.004));
     }
     // legs
     const hipY = sitting ? 0.0 : pY;
@@ -225,7 +266,7 @@ const Humans = {
       this.joint(jC, jB, 0, -0.45, 0, kn, 0, 0);
       this.put('shin', k, i, this.scaled(tmp, jC, 0.11, 0.45, 0.11));
       this.joint(jA, jC, 0, -0.45, 0, sitting ? -0.1 : -kn * 0.3, 0, 0);
-      this.put('foot', k, i, this.scaled(tmp, jA, 0.1, 0.06, 0.22));
+      this.put('foot', k, i, this.scaled(tmp, jA, 0.1, 0.075, 0.23));
     }
   },
   update(dt, cam) {

@@ -200,9 +200,9 @@ const Audio2 = {
     const W = Weather.cur; const night = Sky.night; const hr = Time.hour();
     const set = (param, v) => param.setTargetAtTime(v, now, 0.4);
     set(this.windG.gain, W.wind * 0.18 + 0.01); set(this.windF.frequency, 300 + W.wind * 500 + Math.sin(G.t * 0.7) * 80);
-    set(this.rainG.gain, W.rain * 0.07); set(this.rumbleG.gain, W.rain * 0.05);
+    set(this.rainG.gain, W.rain * 0.016); set(this.rumbleG.gain, W.rain * 0.01);   // rain stays far in the background: the music leads
     // pitter-patter: a few soft drops a second, more when it pours
-    if (W.rain > 0.05) { this.dripT = (this.dripT || 0) - dt; let n = 0; while (this.dripT < 0 && n++ < 4) { this.dripT += 1 / (4 + 18 * W.rain) * (0.5 + Math.random()); this.burst(0.012 + Math.random() * 0.02, 0.025 + Math.random() * 0.03, 'bandpass', 1800 + Math.random() * 2600, this.ambBus, Math.random() * 0.05, 3 + Math.random() * 4); } }
+    if (W.rain > 0.05) { this.dripT = (this.dripT || 0) - dt; let n = 0; while (this.dripT < 0 && n++ < 4) { this.dripT += 1 / (1.5 + 5 * W.rain) * (0.5 + Math.random()); this.burst(0.012 + Math.random() * 0.02, 0.008 + Math.random() * 0.01, 'bandpass', 1800 + Math.random() * 2600, this.ambBus, Math.random() * 0.05, 3 + Math.random() * 4); } }
     set(this.crickG.gain, night * (1 - W.rain) * (Time.season() === 2 ? 0.4 : 1) * 0.6);
     // murmur near gatherings
     const P = Player.pos(); let mp = null, md = 1e9;

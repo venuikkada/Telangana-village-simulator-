@@ -341,6 +341,7 @@ input, textarea { -webkit-user-select: text; user-select: text; }
 #newgame .av button { padding: 10px; border-radius: 10px; border: 1px solid rgba(246,239,226,.3); background: transparent; color: #f6efe2; cursor: pointer; font: 700 15px var(--font-display); }
 #newgame .av button.on { background: #f2b52d; color: #1c1405; border-color: transparent; }
 .credit { font-size: 11.5px; color: #a89f8e; }
+.devby { font-size: 13px; color: #d9cfbb; letter-spacing: .02em; } .devby b { color: #f3c969; font-weight: 800; }
 #fade { position: absolute; top: 0; right: 0; bottom: 0; left: 0; inset: 0; background: #000; opacity: 0; pointer-events: none; transition: opacity .45s; display: grid; place-items: center; color: #f4ecdc; font: 700 22px var(--font-display); }
 #fade.on { opacity: 1; pointer-events: auto; }
 /* ---------- daily gift, trophies, pet, photos, how to play ---------- */
@@ -807,6 +808,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
       <div class="ikat"></div>
       <div id="lbar"><b></b></div>
       <div id="lmsg">Preparing the village…</div>
+      <div class="devby">Developed by <b>Venu Brushwood</b></div>
       <div id="bootfail" hidden></div>
     </div>
   </div>
@@ -823,6 +825,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
         <span data-en="Quality" data-te="నాణ్యత">Quality</span><div class="seg" id="tqual"></div>
       </div>
       <div id="a2hs" hidden></div>
+      <div class="devby">Developed by <b>Venu Brushwood</b></div>
       <div class="credit" id="tcredit">Prototype build · the world, sound and music are generated live in your browser.</div>
     </div>
   </div>
@@ -862,7 +865,7 @@ html.rtl .sheet p, html.rtl .sheet h2, html.rtl .sheet h3, html.rtl .sheet span,
 })();
 </script>
 <script type="module">
-const I18N_VER = '6dbff93ff5';
+const I18N_VER = '9eb300e430';
 // ---- 00_core.js ----
 // ============================================================================
 // TELANGANA VILLAGE SIMULATOR — core utilities
@@ -1360,6 +1363,7 @@ function patchMaterial(mat, kind, extra = {}) {
     fs = fs.replace('getDirectionalLightInfo( directionalLight, directLight );', 'getDirectionalLightInfo( directionalLight, directLight );\n directLight.color *= tvsCS;');
     if (kind === 'glow') fs = fs.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance = tvsGlowCol * uGlow * 2.2;');
     if (kind !== 'glow') fs = fs.replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + (kind === 'terrain' ? 'roughnessFactor = tvsRough;' : 'roughnessFactor = mix(roughnessFactor, roughnessFactor*0.5, uWet);'));
+    fs = fs.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n#ifdef TONE_MAPPING\n{ float tvsL = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722)); gl_FragColor.rgb = mix(vec3(tvsL), gl_FragColor.rgb, 1.13); gl_FragColor.rgb = clamp((gl_FragColor.rgb - 0.5) * 1.06 + 0.5, 0.0, 1.0); }\n#endif');
     if (extra.fsEnd) fs = fs.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + extra.fsEnd);
     sh.vertexShader = vs; sh.fragmentShader = fs;
     if (extra.onShader) extra.onShader(sh);
@@ -1440,8 +1444,8 @@ function buildMaterials() {
   MAT.terrain = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 }), 'terrain', { uniforms: TERRAIN_U, fsHead: TERRAIN_HEAD });
   MAT.road = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }), 'std', { key: 'road',
     color: '#ifdef TVS_LITE\nfloat rn = tvsNoise(vTvsW.xz*0.2)*0.24;\n#else\nfloat rn = tvsNoise(vTvsW.xz*1.3)*0.18 + tvsNoise(vTvsW.xz*0.2)*0.12;\n#endif\ndiffuseColor.rgb *= 0.88 + rn;' });
-  MAT.char = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, metalness: 0 });
-  patchMaterial(MAT.char, 'std', { key: 'char', noWet: true });
+  MAT.char = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.66, metalness: 0 });
+  patchMaterial(MAT.char, 'std', { key: 'char', noWet: true, color: 'totalEmissiveRadiance += diffuseColor.rgb * 0.24 * (1.0 - 0.85 * uGlow);' });
   MAT.animal = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, metalness: 0 });
   patchMaterial(MAT.animal, 'std', { key: 'animal', noWet: true });
 }
@@ -1555,6 +1559,8 @@ const Render = {
   applyPreset(id) {
     let P = PRESETS[id] || PRESETS.MEDIUM;
     // light mode for a phone that ran out of memory before: fewer pixels, trees and people
+    // phones: a sharp picture with real sun shadows and a longer view (drops back by itself if the phone is slow)
+    if (isMobile && !G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 1.0, minPr: 0.6, maxPr: 1.35, shadows: !Settings.v.noShadow, shadowSize: 1024, shadowRange: 34, drawDist: 400, phone: true });
     if (G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 0.65, minPr: 0.5, maxPr: 0.8, drawDist: 260, trees: 0.28, npc: 0.3, particles: 0.2, rainDrops: 700, safe: true });
     const prev = G.preset;
     G.preset = P;
@@ -1601,6 +1607,8 @@ const Render = {
     const target = 1000 / Math.min(Loop.capFps || P.fps, Math.max(30, Loop.hz || 60));
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
+    // a phone that is still slow at the lowest sharpness gives up its shadows (remembered for next time)
+    else if (med > target * 1.3 && P.phone && P.shadows) { Settings.v.noShadow = true; Settings.save(); this.applyPreset('LOW'); }
     else if (med < target * 1.02) { this.goodWindows++; if (this.goodWindows >= 3 && this.pr < P.maxPr - 0.001) { this.pr = Math.min(P.maxPr, this.pr + 0.05); this.goodWindows = 0; this.resize(); } }
     else this.goodWindows = 0;
   },
@@ -1850,7 +1858,7 @@ const Sky = {
     f.color.copy(hor);
     if (World.skylineMat) World.skylineMat.uniforms.uHaze.value.copy(hor);
     const P = G.preset;
-    const base = Math.max(1.7 / P.drawDist, 0.0011);
+    const base = Math.max(1.4 / P.drawDist, 0.0011);   // clear air: the haze only closes in at the edge of the view
     f.density = base + fog * 0.011 * (hour < 10 ? 1 : 0.55) + rain * 0.0032 + haze * 0.0016 + cloud * 0.0004;
     // glow for windows / lamps at night
     U.uGlow.value = clamp01(this.night * 1.2 + (1 - day) * 0.3) * (0.85 + rain * 0.15);
@@ -4815,19 +4823,44 @@ const Fields = {
 // Instanced humanoid + animal rigs with procedural animation
 // ============================================================================
 const HPART_DEFS = [
-  ['torso', 1], ['head', 1], ['hair', 1], ['bun', 1], ['eye', 2], ['stache', 1], ['bindi', 1],
-  ['uarm', 2], ['farm', 2], ['thigh', 2], ['shin', 2], ['foot', 2], ['skirt', 1], ['pallu', 1], ['turban', 1], ['item', 1],
+  ['torso', 1], ['hips', 1], ['neck', 1], ['head', 1], ['hair', 1], ['bun', 1], ['ear', 2], ['nose', 1], ['eyew', 2], ['eye', 2], ['brow', 2], ['mouth', 1], ['stache', 1], ['bindi', 1],
+  ['uarm', 2], ['farm', 2], ['hand', 2], ['thigh', 2], ['shin', 2], ['foot', 2], ['skirt', 1], ['pallu', 1], ['turban', 1], ['item', 1],
 ];
+// a smooth, rounded body part turned from a profile ([radius, height] from the bottom up), facing outwards
+function hLathe(pts, seg = 9) {
+  const g = new THREE.LatheGeometry(pts.map((p) => new THREE.Vector2(Math.max(p[0], 0.0005), p[1])), seg);
+  const pos = g.attributes.position, nor = g.attributes.normal; let dot = 0;
+  for (let i = 0; i < pos.count; i++) dot += pos.getX(i) * nor.getX(i) + pos.getZ(i) * nor.getZ(i);
+  if (dot < 0) { const ix = g.index.array; for (let i = 0; i < ix.length; i += 3) { const t = ix[i]; ix[i] = ix[i + 2]; ix[i + 2] = t; } g.computeVertexNormals(); }
+  return g;
+}
 function hpartGeom(id) {
   let g;
   switch (id) {
-    case 'torso': g = new THREE.CylinderGeometry(0.44, 0.5, 1, 8); g.translate(0, 0.5, 0); g.scale(1, 1, 0.62); break;
-    case 'head': g = new THREE.IcosahedronGeometry(0.5, 1); break;
-    case 'hair': g = new THREE.SphereGeometry(0.5, 10, 6, 0, TAU, 0, Math.PI * 0.56); break;
-    case 'bun': case 'eye': case 'bindi': g = new THREE.IcosahedronGeometry(0.5, 0); break;
-    case 'stache': g = new THREE.BoxGeometry(1, 1, 1); break;
-    case 'uarm': case 'farm': case 'thigh': case 'shin': g = new THREE.BoxGeometry(1, 1, 1); g.translate(0, -0.5, 0); break;
-    case 'foot': g = new THREE.BoxGeometry(1, 1, 1); g.translate(0, -0.5, 0.3); break;
+    // chest and shoulders wider than the waist
+    case 'torso': g = hLathe([[0, -0.03], [0.4, 0], [0.42, 0.16], [0.4, 0.36], [0.47, 0.6], [0.53, 0.8], [0.47, 0.93], [0.24, 1.0], [0, 1.03]], 12); g.scale(1, 1, 0.64); break;
+    case 'hips': g = new THREE.SphereGeometry(0.5, 12, 8); break;
+    case 'neck': g = new THREE.CylinderGeometry(0.42, 0.5, 1, 8); break;
+    case 'head': {   // a head with a jaw and a chin, not a ball
+      g = new THREE.SphereGeometry(0.5, 16, 12); const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) {
+        let x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+        if (y < 0) { const k = Math.pow(-y / 0.5, 1.5); x *= 1 - 0.3 * k; z *= 1 - 0.2 * k; z += 0.05 * k; }
+        if (z > 0.3) z = 0.3 + (z - 0.3) * 0.72;   // a flatter face
+        p.setXYZ(i, x, y, z);
+      }
+      g.computeVertexNormals(); break;
+    }
+    case 'hair': g = new THREE.SphereGeometry(0.5, 14, 8, 0, TAU, 0, Math.PI * 0.55); g.rotateX(-0.6); break;   // high on the forehead, low at the back
+    case 'bun': case 'eye': case 'bindi': case 'eyew': g = new THREE.SphereGeometry(0.5, 8, 6); break;
+    case 'ear': case 'nose': case 'hand': g = new THREE.SphereGeometry(0.5, 8, 6); break;
+    case 'stache': case 'brow': case 'mouth': g = new THREE.BoxGeometry(1, 1, 1); break;
+    // limbs hang down from their joint (0 to -1), muscle near the top, slim at the wrist and ankle
+    case 'uarm': g = hLathe([[0.34, -1.02], [0.44, -0.92], [0.5, -0.55], [0.62, -0.22], [0.64, -0.04], [0.46, 0.08], [0, 0.13]]); break;
+    case 'farm': g = hLathe([[0, -1.03], [0.3, -1.0], [0.36, -0.85], [0.5, -0.4], [0.54, -0.16], [0.44, 0.02], [0, 0.06]]); break;
+    case 'thigh': g = hLathe([[0.34, -1.03], [0.44, -0.95], [0.5, -0.7], [0.6, -0.3], [0.6, -0.06], [0.44, 0.05], [0, 0.09]]); break;
+    case 'shin': g = hLathe([[0, -1.03], [0.3, -1.0], [0.33, -0.82], [0.48, -0.42], [0.53, -0.22], [0.44, 0.0], [0, 0.05]]); break;
+    case 'foot': g = new THREE.SphereGeometry(0.5, 10, 6); g.scale(1, 1.25, 1.05); g.translate(0, -0.42, 0.3); break;
     case 'skirt': g = new THREE.CylinderGeometry(0.4, 0.5, 1, 12); g.translate(0, -0.5, 0); break;
     case 'pallu': g = new THREE.BoxGeometry(1, 1, 1); break;
     case 'turban': g = new THREE.CylinderGeometry(0.5, 0.46, 1, 10); break;
@@ -4888,6 +4921,10 @@ const Humans = {
     const set = (id, k, c) => { const p = this.parts[id]; p.mesh.setColorAt(i * p.mult + k, c); p.mesh.instanceColor.needsUpdate = true; };
     set('torso', 0, a.shirt); set('head', 0, a.skin); set('hair', 0, a.hair); set('bun', 0, a.hair);
     set('eye', 0, C('#15100d')); set('eye', 1, C('#15100d')); set('stache', 0, a.hair); set('bindi', 0, C('#c0161b'));
+    const lip = C(a.skin).multiplyScalar(0.62); lip.r = Math.min(1, lip.r * 1.25);
+    set('neck', 0, a.skin); set('nose', 0, C(a.skin).multiplyScalar(0.93)); set('mouth', 0, lip);
+    set('hips', 0, a.lower === 'pants' || a.lower === 'shorts' ? a.legs : (a.skirtCol || a.shirt));
+    for (const k of [0, 1]) { set('ear', k, a.skin); set('hand', k, a.skin); set('eyew', k, C('#f1ece2')); set('brow', k, a.hair); }
     for (const k of [0, 1]) { set('uarm', k, a.gender === 'f' ? a.skin : a.shirt); set('farm', k, a.skin); set('thigh', k, a.lower === 'pants' ? a.legs : a.lower === 'shorts' ? a.legs : a.skin); set('shin', k, a.lower === 'pants' ? a.legs : a.skin); set('foot', k, C('#3a2a20')); }
     set('skirt', 0, a.skirtCol || a.shirt); set('pallu', 0, a.gender === 'f' ? (a.saree || a.shirt) : (a.towel || a.shirt)); set('turban', 0, a.turban || a.hair);
     set('item', 0, C('#b8862a'));
@@ -5002,6 +5039,8 @@ const Humans = {
     const pY = sitting ? 0.0 : pelvis;
     this.joint(tor, root, 0, pY, 0, lean, 0, 0);
     this.put('torso', 0, i, this.scaled(tmp, tor, 0.4 * ws, 0.56, 0.28 * ws));
+    this.put('hips', 0, i, sitting ? this.zero : this.scaled(tmp, tor, 0.39 * ws, 0.2, 0.26 * ws, 0, 0.0, 0));
+    this.put('neck', 0, i, this.scaled(tmp, tor, 0.085, 0.13, 0.085, 0, 0.585, 0.005));
     // skirt (lungi/saree/frock)
     const skirtLen = a.lower === 'saree' ? 0.86 : a.lower === 'lungi' ? 0.55 : a.lower === 'frock' ? 0.36 : 0;
     if (skirtLen > 0 && !sitting) this.put('skirt', 0, i, this.scaled(tmp, this.joint(jA, root, 0, pY + 0.06, 0, lean * 0.3 + (thL + thR) * 0.1), a.lower === 'saree' ? 0.42 * ws : 0.4 * ws, skirtLen, a.lower === 'saree' ? 0.36 * ws : 0.33 * ws));
@@ -5017,10 +5056,19 @@ const Humans = {
     this.put('hair', 0, i, this.scaled(tmp, jA, 0.24, 0.27, 0.25, 0, 0.01, -0.012));
     this.put('bun', 0, i, a.bun ? this.scaled(tmp, jA, 0.12, 0.12, 0.1, 0, 0.0, -0.13) : this.zero);
     // eyes, or sunglasses
-    if (a.shades) { this.put('eye', 0, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, -0.055, 0.025, 0.108)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, 0.055, 0.025, 0.108)); }
-    else { this.put('eye', 0, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, -0.05, 0.02, 0.105)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.035, 0.035, 0.02, 0.05, 0.02, 0.105)); }
-    this.put('stache', 0, i, a.stache ? this.scaled(tmp, jA, 0.09, 0.022, 0.03, 0, -0.045, 0.105) : this.zero);
-    this.put('bindi', 0, i, a.bindi ? this.scaled(tmp, jA, 0.022, 0.022, 0.012, 0, 0.065, 0.113) : this.zero);
+    if (a.shades) { this.put('eye', 0, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, -0.05, 0.025, 0.095)); this.put('eye', 1, i, this.scaled(tmp, jA, 0.085, 0.05, 0.025, 0.05, 0.025, 0.095)); this.put('eyew', 0, i, this.zero); this.put('eyew', 1, i, this.zero); }
+    else for (const [k, sx] of [[0, -1], [1, 1]]) {   // eye whites with dark pupils
+      this.put('eyew', k, i, this.scaled(tmp, jA, 0.042, 0.026, 0.02, sx * 0.044, 0.022, 0.088));
+      this.put('eye', k, i, this.scaled(tmp, jA, 0.021, 0.023, 0.012, sx * 0.044, 0.022, 0.096));
+    }
+    for (const [k, sx] of [[0, -1], [1, 1]]) {
+      this.put('brow', k, i, this.scaled(tmp, jA, 0.046, 0.009, 0.014, sx * 0.045, 0.052, 0.088));
+      this.put('ear', k, i, this.scaled(tmp, jA, 0.024, 0.055, 0.034, sx * 0.108, 0.005, -0.004));
+    }
+    this.put('nose', 0, i, this.scaled(tmp, jA, 0.03, 0.05, 0.036, 0, -0.012, 0.1));
+    this.put('mouth', 0, i, this.scaled(tmp, jA, 0.05, 0.011, 0.012, 0, -0.068, 0.086));
+    this.put('stache', 0, i, a.stache ? this.scaled(tmp, jA, 0.075, 0.018, 0.02, 0, -0.045, 0.094) : this.zero);
+    this.put('bindi', 0, i, a.bindi ? this.scaled(tmp, jA, 0.02, 0.02, 0.01, 0, 0.068, 0.09) : this.zero);
     this.put('turban', 0, i, !a.turban ? this.zero : a.hat === 'cap' ? this.scaled(tmp, jA, 0.25, 0.075, 0.2, 0, 0.15, -0.01) : this.scaled(tmp, jA, 0.27, 0.1, 0.27, 0, 0.1, -0.005));
     this.put('item', 0, i, h.carry === 'pot' ? this.scaled(tmp, jA, 0.34, 0.3, 0.34, 0, 0.3, 0) : this.zero);
     // arms
@@ -5029,6 +5077,7 @@ const Humans = {
       this.put('uarm', k, i, this.scaled(tmp, jB, 0.085, 0.3, 0.085));
       this.joint(jC, jB, 0, -0.3, 0, el, 0, 0);
       this.put('farm', k, i, this.scaled(tmp, jC, 0.075, 0.3, 0.075));
+      this.put('hand', k, i, this.scaled(tmp, jC, 0.05, 0.1, 0.068, 0, -0.34, 0.004));
     }
     // legs
     const hipY = sitting ? 0.0 : pY;
@@ -5038,7 +5087,7 @@ const Humans = {
       this.joint(jC, jB, 0, -0.45, 0, kn, 0, 0);
       this.put('shin', k, i, this.scaled(tmp, jC, 0.11, 0.45, 0.11));
       this.joint(jA, jC, 0, -0.45, 0, sitting ? -0.1 : -kn * 0.3, 0, 0);
-      this.put('foot', k, i, this.scaled(tmp, jA, 0.1, 0.06, 0.22));
+      this.put('foot', k, i, this.scaled(tmp, jA, 0.1, 0.075, 0.23));
     }
   },
   update(dt, cam) {
@@ -11396,9 +11445,9 @@ const Audio2 = {
     const W = Weather.cur; const night = Sky.night; const hr = Time.hour();
     const set = (param, v) => param.setTargetAtTime(v, now, 0.4);
     set(this.windG.gain, W.wind * 0.18 + 0.01); set(this.windF.frequency, 300 + W.wind * 500 + Math.sin(G.t * 0.7) * 80);
-    set(this.rainG.gain, W.rain * 0.07); set(this.rumbleG.gain, W.rain * 0.05);
+    set(this.rainG.gain, W.rain * 0.016); set(this.rumbleG.gain, W.rain * 0.01);   // rain stays far in the background: the music leads
     // pitter-patter: a few soft drops a second, more when it pours
-    if (W.rain > 0.05) { this.dripT = (this.dripT || 0) - dt; let n = 0; while (this.dripT < 0 && n++ < 4) { this.dripT += 1 / (4 + 18 * W.rain) * (0.5 + Math.random()); this.burst(0.012 + Math.random() * 0.02, 0.025 + Math.random() * 0.03, 'bandpass', 1800 + Math.random() * 2600, this.ambBus, Math.random() * 0.05, 3 + Math.random() * 4); } }
+    if (W.rain > 0.05) { this.dripT = (this.dripT || 0) - dt; let n = 0; while (this.dripT < 0 && n++ < 4) { this.dripT += 1 / (1.5 + 5 * W.rain) * (0.5 + Math.random()); this.burst(0.012 + Math.random() * 0.02, 0.008 + Math.random() * 0.01, 'bandpass', 1800 + Math.random() * 2600, this.ambBus, Math.random() * 0.05, 3 + Math.random() * 4); } }
     set(this.crickG.gain, night * (1 - W.rain) * (Time.season() === 2 ? 0.4 : 1) * 0.6);
     // murmur near gatherings
     const P = Player.pos(); let mp = null, md = 1e9;
@@ -11454,6 +11503,7 @@ const MOODS = {
   night: { raga: 'Hindolam', notes: [0, 3, 5, 8, 10], tan: 5, mpm: 100, tala: null, lead: 'flute', soft: true, en: 'Village lullaby', te: 'పల్లె జోల పాట' },
   rain: { raga: 'Megh', notes: [0, 2, 5, 7, 10], tan: 7, mpm: 118, tala: 'soft', lead: 'santoor', soft: true, en: 'Monsoon rain', te: 'వాన చినుకులు' },
   festival: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 192, tala: 'keherwa', lead: 'flute', fest: true, en: 'Festival night', te: 'పండుగ రాత్రి' },
+  work: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 166, tala: 'keherwa', lead: 'flute', en: 'Song of the fields', te: 'పొలం పాట' },
   game: { raga: 'Mohanam', notes: [0, 2, 4, 7, 9], tan: 7, mpm: 184, tala: 'keherwa', lead: 'santoor', fest: true, en: 'Game time!', te: 'ఆట సమయం!' },
 };
 // tabla patterns: one bol per beat (matra); null is a rest
@@ -11495,6 +11545,7 @@ const Music = {
     if (!G.started || !G.S) return 'morning';
     const hr = Time.hour(), W = Weather.cur;
     if (Time.festivalToday() && hr > 16 && hr < 23) return 'festival';
+    if (performance.now() - (this.workAt || -1e9) < 45000) return 'work';   // a bright, steady song to work to
     if (W && W.rain > 0.45) return 'rain';
     if (hr >= 20.5 || hr < 5) return 'night';
     return hr < 11 ? 'morning' : hr < 16 ? 'noon' : 'evening';
@@ -11534,6 +11585,7 @@ const Music = {
     if (this.tBar < now - 0.5) this.tBar = now + 0.15;   // the page was asleep: start again cleanly
     if (this.tTan < now - 0.5) this.tTan = now + 0.1;
     while (this.tTan < now + 0.6) this.tanpura();
+    if (typeof Player !== 'undefined' && Player.working) this.workAt = performance.now();
     const want = this.pickMood();
     // a mini-game starting or ending changes the song at the next bar
     if (this.song && this.song.at < this.song.bars.length - 1 && (want === 'game') !== (this.song.id === 'game')) { this.song.at = this.song.bars.length - 1; this.hush(); }
@@ -14353,7 +14405,7 @@ const Game = {
   setPreset(p) {
     if (!PRESETS[p]) return;
     if (Settings.v.safe) { Settings.v.safe = false; Settings.save(); }   // picked by hand: no more light mode next time
-    G.safe = false;
+    G.safe = false; Settings.v.noShadow = false;
     Render.applyPreset(p);
     if (!G.ready) return;
     const P = G.preset;

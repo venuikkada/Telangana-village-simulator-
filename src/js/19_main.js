@@ -160,7 +160,7 @@ const Game = {
   setPreset(p) {
     if (!PRESETS[p]) return;
     if (Settings.v.safe) { Settings.v.safe = false; Settings.save(); }   // picked by hand: no more light mode next time
-    G.safe = false;
+    G.safe = false; Settings.v.noShadow = false;
     Render.applyPreset(p);
     if (!G.ready) return;
     const P = G.preset;

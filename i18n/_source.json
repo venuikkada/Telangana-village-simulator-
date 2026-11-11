@@ -4019,9 +4019,13 @@
   "te": "పండుగ రాత్రి",
   "at": "16b_music.js:15"
  },
+ "Song of the fields": {
+  "te": "పొలం పాట",
+  "at": "16b_music.js:16"
+ },
  "Game time!": {
   "te": "ఆట సమయం!",
-  "at": "16b_music.js:16"
+  "at": "16b_music.js:17"
  },
  "Auto run on: steer with the mouse. Press W or S to stop.": {
   "te": "ఆటో పరుగు ఆన్: మౌస్‌తో దిశ మార్చండి. ఆపడానికి W లేదా S నొక్కండి.",

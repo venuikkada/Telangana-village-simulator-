@@ -94,6 +94,7 @@ function patchMaterial(mat, kind, extra = {}) {
     fs = fs.replace('getDirectionalLightInfo( directionalLight, directLight );', 'getDirectionalLightInfo( directionalLight, directLight );\n directLight.color *= tvsCS;');
     if (kind === 'glow') fs = fs.replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\n totalEmissiveRadiance = tvsGlowCol * uGlow * 2.2;');
     if (kind !== 'glow') fs = fs.replace('#include <roughnessmap_fragment>', '#include <roughnessmap_fragment>\n' + (kind === 'terrain' ? 'roughnessFactor = tvsRough;' : 'roughnessFactor = mix(roughnessFactor, roughnessFactor*0.5, uWet);'));
+    fs = fs.replace('#include <tonemapping_fragment>', '#include <tonemapping_fragment>\n#ifdef TONE_MAPPING\n{ float tvsL = dot(gl_FragColor.rgb, vec3(0.2126, 0.7152, 0.0722)); gl_FragColor.rgb = mix(vec3(tvsL), gl_FragColor.rgb, 1.13); gl_FragColor.rgb = clamp((gl_FragColor.rgb - 0.5) * 1.06 + 0.5, 0.0, 1.0); }\n#endif');
     if (extra.fsEnd) fs = fs.replace('#include <dithering_fragment>', '#include <dithering_fragment>\n' + extra.fsEnd);
     sh.vertexShader = vs; sh.fragmentShader = fs;
     if (extra.onShader) extra.onShader(sh);
@@ -174,8 +175,8 @@ function buildMaterials() {
   MAT.terrain = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0 }), 'terrain', { uniforms: TERRAIN_U, fsHead: TERRAIN_HEAD });
   MAT.road = patchMaterial(new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -4 }), 'std', { key: 'road',
     color: '#ifdef TVS_LITE\nfloat rn = tvsNoise(vTvsW.xz*0.2)*0.24;\n#else\nfloat rn = tvsNoise(vTvsW.xz*1.3)*0.18 + tvsNoise(vTvsW.xz*0.2)*0.12;\n#endif\ndiffuseColor.rgb *= 0.88 + rn;' });
-  MAT.char = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.78, metalness: 0 });
-  patchMaterial(MAT.char, 'std', { key: 'char', noWet: true });
+  MAT.char = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.66, metalness: 0 });
+  patchMaterial(MAT.char, 'std', { key: 'char', noWet: true, color: 'totalEmissiveRadiance += diffuseColor.rgb * 0.24 * (1.0 - 0.85 * uGlow);' });
   MAT.animal = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.9, metalness: 0 });
   patchMaterial(MAT.animal, 'std', { key: 'animal', noWet: true });
 }
@@ -289,6 +290,8 @@ const Render = {
   applyPreset(id) {
     let P = PRESETS[id] || PRESETS.MEDIUM;
     // light mode for a phone that ran out of memory before: fewer pixels, trees and people
+    // phones: a sharp picture with real sun shadows and a longer view (drops back by itself if the phone is slow)
+    if (isMobile && !G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 1.0, minPr: 0.6, maxPr: 1.35, shadows: !Settings.v.noShadow, shadowSize: 1024, shadowRange: 34, drawDist: 400, phone: true });
     if (G.safe && P.id === 'LOW') P = Object.assign({}, P, { pr: 0.65, minPr: 0.5, maxPr: 0.8, drawDist: 260, trees: 0.28, npc: 0.3, particles: 0.2, rainDrops: 700, safe: true });
     const prev = G.preset;
     G.preset = P;
@@ -335,6 +338,8 @@ const Render = {
     const target = 1000 / Math.min(Loop.capFps || P.fps, Math.max(30, Loop.hz || 60));
     this.lastAdjust = now;
     if (med > target * 1.3 && this.pr > P.minPr + 0.001) { this.pr = Math.max(P.minPr, this.pr - 0.1); this.goodWindows = 0; this.resize(); }
+    // a phone that is still slow at the lowest sharpness gives up its shadows (remembered for next time)
+    else if (med > target * 1.3 && P.phone && P.shadows) { Settings.v.noShadow = true; Settings.save(); this.applyPreset('LOW'); }
     else if (med < target * 1.02) { this.goodWindows++; if (this.goodWindows >= 3 && this.pr < P.maxPr - 0.001) { this.pr = Math.min(P.maxPr, this.pr + 0.05); this.goodWindows = 0; this.resize(); } }
     else this.goodWindows = 0;
   },
